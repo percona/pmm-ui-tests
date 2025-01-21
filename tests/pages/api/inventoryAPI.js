@@ -14,7 +14,6 @@ module.exports = {
     for (let i = 0; i < 60; i++) {
       const resp = await this.apiGetServices(service.serviceType);
 
-      console.log(resp.data);
       const services = Object.values(resp.data).flat(Infinity);
 
       responseService = services.find((service) => service.service_name === serviceName);
@@ -36,6 +35,8 @@ module.exports = {
 
       // Filter out non-empty agent arrays and flatten them into a single array
       const agents = Object.values(resp.data).flat().filter((entry) => entry);
+
+      console.log(agents)
 
       // Check if all agents have the status "AGENT_STATUS.RUNNING"
       const areRunning = agents.every(({ status }) => status === AGENT_STATUS.RUNNING);

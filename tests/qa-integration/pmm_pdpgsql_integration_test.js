@@ -21,7 +21,10 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
     await I.verifyCommand('pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"');
     await I.verifyCommand('pmm-admin list | grep "postgres_exporter" | grep "Running"');
-    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(SERVICE_TYPE.POSTGRESQL, service.service_name);
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus({
+      serviceType: SERVICE_TYPE.POSTGRESQL,
+      service: 'postgresql',
+    }, service.service_name);
   },
 ).retry(3);
 

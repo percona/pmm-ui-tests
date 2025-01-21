@@ -127,7 +127,10 @@ Scenario(
     adminPage.performPageUp(5);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
 
-    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(SERVICE_TYPE.MONGODB, clientServiceName);
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus({
+      serviceType: SERVICE_TYPE.MONGODB,
+      service: 'mongodb',
+    }, clientServiceName);
   },
 ).retry(1);
 

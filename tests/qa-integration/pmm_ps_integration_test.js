@@ -118,7 +118,11 @@ Scenario(
       } else {
         await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
       }
-      await inventoryAPI.verifyServiceExistsAndHasRunningStatus(SERVICE_TYPE.MYSQL, service);
+
+      await inventoryAPI.verifyServiceExistsAndHasRunningStatus({
+        serviceType: SERVICE_TYPE.MYSQL,
+        service: 'mysql',
+      }, service);
     }
   },
 ).retry(2);
