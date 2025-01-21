@@ -36,7 +36,12 @@ module.exports = {
       // Filter out non-empty agent arrays and flatten them into a single array
       const agents = Object.values(resp.data).flat().filter((entry) => entry);
 
-      agents.every(({ status, agent_type }) => console.log(`Agent status is: ${status} for agent type: ${agent_type}`));
+      agents.every(({ status, agent_type }) => {
+        console.log(`Agent status is: ${status} for agent type: ${agent_type}`);
+        console.log(`Expected status is: ${AGENT_STATUS.RUNNING} do statuses equal? ${status === AGENT_STATUS.RUNNING}`);
+
+        return status === AGENT_STATUS.RUNNING;
+      });
 
       // Check if all agents have the status "AGENT_STATUS.RUNNING"
       const areRunning = agents.every(({ status }) => status === AGENT_STATUS.RUNNING);
