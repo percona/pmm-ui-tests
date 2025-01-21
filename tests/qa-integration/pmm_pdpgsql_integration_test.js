@@ -14,8 +14,6 @@ Scenario(
   }) => {
     const service = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'PDPGSQL_'));
 
-    console.log(`PDPGSQL client service name is: ${service}`);
-
     I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, { from: 'now-5m', service_name: service.service_name }));
     await dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
@@ -23,6 +21,7 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
     await I.verifyCommand('pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"');
     await I.verifyCommand('pmm-admin list | grep "postgres_exporter" | grep "Running"');
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(SERVICE_TYPE.POSTGRESQL, service.service_name);
   },
 ).retry(3);
 
