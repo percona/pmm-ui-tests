@@ -5,6 +5,10 @@ Feature('PMM upgrade tests for external services');
 
 const serviceName = 'pmm-ui-tests-redis-external-remote';
 
+Before(async ({ I }) => {
+  await I.Authorize();
+});
+
 Scenario(
   'Adding Redis as external Service before Upgrade @pre-external-upgrade',
   async ({
