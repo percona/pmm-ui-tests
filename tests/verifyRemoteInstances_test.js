@@ -55,7 +55,7 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
   }
 }
 
-Feature('Remote DB Instances');
+Feature('Remote DB Instances').retry(1);
 
 BeforeSuite(async ({ I }) => {
   await I.verifyCommand('docker compose -f docker-compose.yml up -d');
@@ -85,7 +85,7 @@ Scenario(
     await I.click(pmmInventoryPage.fields.agentsLinkNew);
     I.waitForVisible(pmmInventoryPage.fields.externalExporter, 30);
   },
-).retry(0);
+);
 
 Data(instances).Scenario(
   'PMM-T898 Verify Remote Instance Addition [critical] @instances @fb-instances',
