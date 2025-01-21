@@ -20,8 +20,6 @@ Scenario(
 Scenario(
   'Verify user can create Remote Instances before upgrade @pre-external-upgrade',
   async ({ I, addInstanceAPI, remoteInstancesHelper }) => {
-    // Adding instances for monitoring
-
     const aurora_details = {
       add_node: {
         node_name: 'pmm-qa-aurora2-mysql-instance-1',
