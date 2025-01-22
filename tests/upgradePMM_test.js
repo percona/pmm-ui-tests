@@ -585,7 +585,7 @@ Scenario('@PMM-T1647 Verify pmm-server package doesn\'t exist @post-upgrade @pmm
 
 Scenario(
   'PMM-T391 PMM-T1818 Verify that custom home dashboard stays as home dashboard after upgrade'
-    + ' @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+    + ' @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade @pmm-migration',
   async ({ I, grafanaAPI, dashboardPage }) => {
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
@@ -853,7 +853,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days, Custom Resolution is still preserved after upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days, Custom Resolution is still preserved after upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade @pmm-migration',
   async ({ I, pmmSettingsPage }) => {
     const advancedSection = pmmSettingsPage.sectionTabsList.advanced;
     const metricResoltionSection = pmmSettingsPage.sectionTabsList.metrics;
