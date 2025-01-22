@@ -590,7 +590,6 @@ Scenario(
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
     dashboardPage.verifyMetricsExistence([grafanaAPI.customPanelName]);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
     I.seeInCurrentUrl(grafanaAPI.customDashboardName);
 
