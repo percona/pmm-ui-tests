@@ -24,7 +24,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
     await inventoryAPI.deleteNode(oldNodeId, true);
   }
 
-  await I.verifyCommand(`sudo docker exec ${psContainerName} pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=${pmmServerUrl} --server-insecure-tls --config-file=/usr/local/percona/pmm/config/pmm-agent.yaml`);
+  await I.verifyCommand(`sudo docker exec ${psContainerName} pmm-agent setup --server-username=service_token --server-password=${tokenValue} --server-address=pmm-server:8443 --server-insecure-tls --config-file=/usr/local/percona/pmm/config/pmm-agent.yaml`);
   await I.wait(15);
   await I.verifyCommand(`sudo docker exec ${psContainerName} pmm-admin add mysql --username=msandbox --password=msandbox --host=127.0.0.1  --port=3307 --service-name=${newServiceName}`);
   await I.wait(60);
