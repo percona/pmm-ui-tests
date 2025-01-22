@@ -161,7 +161,7 @@ Scenario(
 
 Scenario(
   'PMM-T391 PMM-T1818 Verify user is able to create and set custom home dashboard'
-    + ' @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+    + ' @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade @pmm-pre-migration',
   async ({
     I, grafanaAPI, dashboardPage, searchDashboardsModal,
   }) => {
