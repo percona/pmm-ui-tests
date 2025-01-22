@@ -80,6 +80,7 @@ module.exports = {
     nodesOverviewPage: './tests/pages/nodesOverviewPage.js',
     queryAnalyticsPage: './tests/pages/queryAnalyticsPage.js',
     usersPage: './tests/pages/administration/usersPage.js',
+    pmmUpgradePage: './tests/pages/pmmUpgradePage.js',
     agentCli: './tests/pages/cliHelpers/agentCli.js',
   },
   getChunks: (files) => {

@@ -5,6 +5,22 @@ const folderWrapper = locate(I.useDataQA('data-testid Search section')).find('.p
 module.exports = {
   url: 'graph/dashboards',
   folders: {
+    experimental: {
+      name: 'Experimental',
+      items: [
+        'DB Cluster Summary',
+        'Databases Overview',
+        'Environments Overview (Designed for PMM)',
+        'MongoDB Cluster Summary (Old)',
+        'MongoDB ReplSet Summary (Old)',
+        'Patroni Details',
+        'PMM Health',
+        'PostgreSQL Checkpoints, Buffers and WAL Usage',
+        'PostgreSQL Vacuum Monitoring',
+        'PostgreSQL Instance',
+        'PXC Galera Cluster Summary (experimental)',
+      ],
+    },
     insight: {
       name: 'Insight',
       items: [
@@ -14,6 +30,13 @@ module.exports = {
         'Prometheus Exporters Overview',
         'VictoriaMetrics',
         'VictoriaMetrics Agents Overview',
+      ],
+    },
+    k8sExperimental: {
+      name: 'Kubernetes (experimental)',
+      items: [
+        'Databases on Kubernetes - Summary',
+        'Kubernetes Cluster Overview',
       ],
     },
     mongoDb: {
@@ -82,35 +105,14 @@ module.exports = {
         'PostgreSQL Instances Overview',
       ],
     },
-    experimental: {
-      name: 'Experimental',
-      items: [
-        'DB Cluster Summary',
-        'Databases Overview',
-        'Environments Overview (Designed for PMM)',
-        'MongoDB Cluster Summary (Old)',
-        'MongoDB ReplSet Summary (Old)',
-        'Patroni Details',
-        'PMM Health',
-        'PostgreSQL Checkpoints, Buffers and WAL Usage',
-        'PostgreSQL Vacuum Monitoring',
-        'PostgreSQL Instance',
-        'PXC Galera Cluster Summary (experimental)',
-      ],
-    },
+
     queryAnalytics: {
       name: 'Query Analytics',
       items: [
         'PMM Query Analytics',
       ],
     },
-    k8sExperimental: {
-      name: 'Kubernetes (experimental)',
-      items: [
-        'Databases on Kubernetes - Summary',
-        'Kubernetes Cluster Overview',
-      ],
-    },
+
   },
   fields: {
     searchInput: 'input[placeholder="Search for dashboards and folders"]',
@@ -119,7 +121,8 @@ module.exports = {
     collapsedFolderLocator: (folderName) => locate(`[aria-label="Expand folder ${folderName}"]`),
     expandedFolderLocator: (folderName) => locate(`[aria-label="Collapse folder ${folderName}"]`),
     folderItemLocator: (itemName) => I.useDataQA(`data-testid browse dashboards row ${itemName}`),
-    folderItemWithTagLocator: (itemName, tag) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`))
+    folderItemLocatorExpand: (itemName) => locate(I.useDataQA(`data-testid browse dashboards row ${itemName}`)).find('button'),
+    folderItemWithTagLocator: (itemName, tag) => locate(I.useDataQA(`data-testid browse dashboards row ${itemName}`))
       .find('[aria-label="Tags"] li').withText(tag),
     itemLocator: (itemName) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`)),
     closeButton: locate('button[aria-label="Close search"]').as('Close button'),

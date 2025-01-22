@@ -129,10 +129,10 @@ module.exports = {
         clusterName: 'mysql_clstr',
       },
       ps_8_0: {
-        host: 'mysql8',
-        port: DB_CONFIG.MYSQL_SERVER_PORT,
-        username: 'pmm-agent',
-        password: 'pmm%*&agent-password',
+        host: 'ps_pmm_8.0',
+        port: '3307',
+        username: 'msandbox',
+        password: 'msandbox',
         clusterName: 'mysql_clstr',
       },
       ms_8_0_ssl: {
@@ -155,6 +155,13 @@ module.exports = {
         password: 'root-!@#%^password',
         clusterName: 'mongo_clstr',
       },
+      psmdb_7: {
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'rs101'),
+        port: DB_CONFIG.MONGODB_SERVER_PORT,
+        username: 'pbm',
+        password: 'pbmpass',
+        clusterName: 'mongo_clstr',
+      },
       mongodb_4_4_ssl: {
         host: '192.168.0.1',
         port: '27018',
@@ -171,6 +178,13 @@ module.exports = {
         port: DB_CONFIG.POSTGRES_SERVER_PORT,
         username: 'postgres',
         password: 'pmm-^*&@agent-password',
+        clusterName: 'pgsql_clstr',
+      },
+      pdpgsql_17: {
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'pgsql_pgss_pmm_17'),
+        port: DB_CONFIG.POSTGRES_SERVER_PORT,
+        username: 'pmm',
+        password: 'pmm',
         clusterName: 'pgsql_clstr',
       },
       postgres_13_3_ssl: {
@@ -192,7 +206,16 @@ module.exports = {
         environment: 'proxy_env',
         clusterName: 'proxy_clstr',
       },
+      pxc_proxysql_8: {
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'pxc_proxysql_pmm_8.0'),
+        port: DB_CONFIG.PROXYSQL_SERVER_PORT,
+        username: 'proxysql_user',
+        password: 'passw0rd',
+        environment: 'proxy_env',
+        clusterName: 'proxy_clstr',
+      },
     },
+
     haproxy: {
       haproxy_2: {
         host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? EXTERNAL_EXPORTER_HOST : 'haproxy_pmm'),
@@ -390,7 +413,7 @@ module.exports = {
 
   // Used for Adding Remote Instance during Upgrade Tests runs for AMI and Docker via API
   instanceTypes: {
-    mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'MySQL' : undefined),
+    mysql: (remoteInstanceStatus.mysql.ps_8_0.enabled ? 'MySQL' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'PostgreSQL' : undefined),
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'MongoDB' : undefined),
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'ProxySQL' : undefined),
