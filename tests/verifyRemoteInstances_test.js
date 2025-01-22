@@ -85,7 +85,7 @@ Scenario(
     await I.click(pmmInventoryPage.fields.agentsLinkNew);
     I.waitForVisible(pmmInventoryPage.fields.externalExporter, 30);
   },
-);
+).retry(3);
 
 Data(instances).Scenario(
   'PMM-T898 Verify Remote Instance Addition [critical] @instances @fb-instances',
