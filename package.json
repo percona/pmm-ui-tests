@@ -12,7 +12,8 @@
     "e2e:ia": "npx codeceptjs run -c pr.codecept.js --grep '@fb-alerting'",
     "e2e:stt": "npx codeceptjs run -c pr.codecept.js --grep '@stt'",
     "e2e:dbaas": "npx codeceptjs run -c pr.codecept.js --grep '@dbaas'",
-    "e2e:grafana-pr": "npx codeceptjs run -c pr.codecept.js --grep '@grafana-pr'"
+    "e2e:grafana-pr": "npx codeceptjs run -c pr.codecept.js --grep '@grafana-pr'",
+    "e2e:def": "npx codeceptjs def"
   },
   "dependencies": {
     "@faker-js/faker": "^7.6.0",
@@ -63,6 +64,8 @@
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-playwright": "^1.6.2"
+    "eslint-plugin-playwright": "^1.6.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
   }
 }
