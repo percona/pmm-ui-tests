@@ -3,14 +3,15 @@
     "files": true
   },
   "compilerOptions": {
-    "target": "es2018",
-    "lib": ["es2018", "DOM"],
+    "target": "esnext",
+    "lib": ["esnext", "DOM"],
     "esModuleInterop": true,
-    "module": "commonjs",
+    "module": "nodenext",
     "strictNullChecks": false,
     "types": ["codeceptjs", "node"],
     "declaration": true,
     "skipLibCheck": true
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "include": ["./"]
 }
