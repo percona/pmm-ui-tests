@@ -33,8 +33,8 @@ const psmdb:PmmFrameworkService = {
   serviceName: 'rs101',
   standardMetric: 'mongodb_connections',
   serviceType: 'mongodb',
-  username: 'dba',
-  password: 'test1234',
+  username: 'pbm',
+  password: 'pbmpass',
   port: 27027,
 }
 
