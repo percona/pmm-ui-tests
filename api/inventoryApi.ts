@@ -1,6 +1,6 @@
 const { I } = inject();
 
-class Inventory {
+export default class Inventory {
   constructor() {}
 
   getServices = async () => {
@@ -23,5 +23,3 @@ class Inventory {
     return services.find((service) => service.service_name.includes(partialName));
   }
 }
-
-export default Inventory;

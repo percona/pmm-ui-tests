@@ -11,7 +11,7 @@ interface PmmFrameworkService {
 const pgsql:PmmFrameworkService = {
   containerName: 'pgsql_pgss_pmm',
   serviceName: 'pgsql_pgss_pmm',
-  standardMetric: 'mysql_global_status_max_used_connections',
+  standardMetric: 'pg_stat_database_xact_rollback',
   serviceType: 'postgresql',
   username: 'pmm',
   password: 'pmm',

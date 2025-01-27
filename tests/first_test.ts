@@ -2,10 +2,9 @@ import { pmmFrameworkServices } from '../utils/pmmFrameworkServices';
 
 Feature('This is a test');
 
-const data = [pmmFrameworkServices.psmdb];
+const data = [pmmFrameworkServices.psmdb, pmmFrameworkServices.pgsql, pmmFrameworkServices.ps];
 
-Data(data).Scenario('This is a test', async ({ I, api, current }) => {
-  console.log(current);
+Data(data).Scenario('Adding custom agent Password, Custom Label before upgrade At service Level @pre-custom-password-upgrade', async ({ I, api, current }) => {
   const service = await api.inventory.getServiceByPartialName(current.serviceName);
   const pmmAgentId = service.agents.find((agent) => agent.agent_type === 'pmm-agent').agent_id;
 
@@ -21,4 +20,16 @@ Data(data).Scenario('This is a test', async ({ I, api, current }) => {
       break;
     default:
   }
+});
+
+Data(data).Scenario('Verify if Agents added with custom password and custom label work as expected Post Upgrade @post-client-upgrade @post-custom-password-upgrade', async ({ I, api, current }) => {
+  const service = await api.inventory.getServiceByPartialName(`upgrade-${current.serviceType}`);
+
+  if (!service.custom_labels.testing) {
+    throw new Error('Custom label was not present');
+  } else if (service.custom_labels.testing !== 'upgrade') {
+    throw new Error(`Custom label should be upgrade but was: ${service.custom_labels.testing}`);
+  }
+
+  await api.grafana.checkMetricExist(current.standardMetric, { type: 'service_name', value: service.service_name });
 });
