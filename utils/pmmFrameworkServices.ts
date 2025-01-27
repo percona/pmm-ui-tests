@@ -30,8 +30,8 @@ const psmdb:PmmFrameworkService = {
   serviceName: 'rs101',
   standardMetric: 'mongodb_connections',
   serviceType: 'mongodb',
-  username: 'pmm_mongodb',
-  password: '5M](Q%q/U+YQ<^m',
+  username: 'dba',
+  password: 'test1234',
 }
 
 export const pmmFrameworkServices = {
