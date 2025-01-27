@@ -5,6 +5,7 @@ interface PmmFrameworkService {
   serviceType: 'mysql' | 'postgresql' | 'mongodb';
   username: string,
   password: string,
+  port: number,
 }
 
 const pgsql:PmmFrameworkService = {
@@ -14,6 +15,7 @@ const pgsql:PmmFrameworkService = {
   serviceType: 'postgresql',
   username: 'pmm',
   password: 'pmm',
+  port: 3306,
 }
 
 const ps:PmmFrameworkService = {
@@ -23,6 +25,7 @@ const ps:PmmFrameworkService = {
   serviceType: 'mysql',
   username: 'root',
   password: 'GRgrO9301RuF',
+  port: 5432,
 }
 
 const psmdb:PmmFrameworkService = {
@@ -32,6 +35,7 @@ const psmdb:PmmFrameworkService = {
   serviceType: 'mongodb',
   username: 'dba',
   password: 'test1234',
+  port: 27027,
 }
 
 export const pmmFrameworkServices = {
