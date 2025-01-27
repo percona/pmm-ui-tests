@@ -7,6 +7,7 @@ const data = [pmmFrameworkServices.ps];
 Data(data).Scenario('This is a test', async ({ I, api, current }) => {
   console.log(current);
   const service = await api.inventory.getServiceByPartialName(current.containerName);
+  console.log(service);
   const pmmAgentId = service.agents.find((agent) => agent.agent_type === 'pmm-agent').agent_id;
 
   switch (current.serviceType) {
