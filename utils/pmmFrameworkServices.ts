@@ -2,7 +2,7 @@ interface PmmFrameworkService {
   containerName: string;
   serviceName: string;
   standardMetric: string;
-  serviceType: 'mysql' | 'postgresql';
+  serviceType: 'mysql' | 'postgresql' | 'mongodb';
   username: string,
   password: string,
 }
@@ -25,7 +25,17 @@ const ps:PmmFrameworkService = {
   password: 'GRgrO9301RuF',
 }
 
+const psmdb:PmmFrameworkService = {
+  containerName: 'rs101',
+  serviceName: 'rs101',
+  standardMetric: 'mongodb_connections',
+  serviceType: 'mongodb',
+  username: 'pmm_mongodb',
+  password: '5M](Q%q/U+YQ<^m',
+}
+
 export const pmmFrameworkServices = {
   pgsql,
-  ps
+  ps,
+  psmdb
 }
