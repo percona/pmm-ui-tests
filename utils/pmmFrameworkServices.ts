@@ -14,6 +14,15 @@ const pgsql:PmmFrameworkService = {
   password: 'pmm',
 }
 
+const ps:PmmFrameworkService = {
+  containerName: 'ps_pmm',
+  standardMetric: 'mysql_global_status_max_used_connections',
+  serviceType: 'mysql',
+  username: 'root',
+  password: 'GRgrO9301RuF',
+}
+
 export const pmmFrameworkServices = {
-  pgsql
+  pgsql,
+  ps
 }
