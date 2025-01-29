@@ -35,8 +35,22 @@ module.exports = {
       // Filter out non-empty agent arrays and flatten them into a single array
       const agents = Object.values(resp.data).flat().filter((entry) => entry);
 
+      agents.every((agent) => {
+        console.log('Returned agent details are:');
+        console.log(agent);
+
+        return agent;
+      });
+
+      console.log(`Agent Status is: ${AGENT_STATUS.RUNNING}`);
+      agents.every(({ status }) => console.log(`Do statuses equal? ${status === AGENT_STATUS.RUNNING}`));
+      agents.every(({ status }) => console.log(`Do statuses equal? ${status.localeCompare(AGENT_STATUS.RUNNING)}`));
+
       // Check if all agents have the status "AGENT_STATUS.RUNNING"
       const areRunning = agents.every(({ status }) => status === AGENT_STATUS.RUNNING);
+
+      console.log('Response of are running: ');
+      console.log(areRunning);
 
       if (areRunning) {
         return resp;
@@ -63,24 +77,19 @@ module.exports = {
     return data ? data[0] : null;
   },
 
-  async apiGetNodeInfoForAllNodesByServiceName(serviceType, serviceName) {
-    const service = await this.apiGetServices(serviceType);
+  async getServiceDetailsByPartialName(serviceName) {
+    const service = await this.apiGetServices();
 
-    const data = service.data.services
-      .filter(({ service_name }) => service_name.startsWith(serviceName));
-
-    return data;
+    return service
+      .data
+      .services
+      .find((service) => service.service_name.startsWith(serviceName));
   },
 
-  async apiGetPMMAgentInfoByServiceId(serviceId, agentType = AGENT_TYPE.PMM_AGENT) {
+  async apiGetPMMAgentInfoByServiceId(serviceId) {
     const resp = await this.apiGetAgents(serviceId);
 
-    const agent = resp.data.agents
-      .find(({ agent_type }) => agent_type === agentType);
-
-    await I.say(JSON.stringify(agent, null, 2));
-
-    return agent;
+    return resp.data.agents.find((agentData) => agentData.agent_type === AGENT_TYPE.PMM_AGENT);
   },
 
   async apiGetAgents(serviceId) {

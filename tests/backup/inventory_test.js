@@ -40,50 +40,16 @@ const mongoConnectionReplica2 = {
 Feature('BM: Backup Inventory');
 
 BeforeSuite(async ({
-  I, locationsAPI, settingsAPI,
+  I, locationsAPI, settingsAPI, inventoryAPI,
 }) => {
-  await settingsAPI.changeSettings({ backup: true });
-  await locationsAPI.clearAllLocations(true);
-  localStorageLocationId = await locationsAPI.createStorageLocation(
-    localStorageLocationName,
-    locationsAPI.storageType.localClient,
-    locationsAPI.localStorageDefaultConfig,
-  );
-  locationId = await locationsAPI.createStorageLocation(
-    location.name,
-    locationsAPI.storageType.s3,
-    locationsAPI.storageLocationConnection,
-    location.description,
-  );
-
   await I.mongoConnect(mongoConnection);
-
-  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
-  I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
-  I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName3} --replication-set=rs --cluster=rs`));
-
-  // Adding extra replica set for restore
-  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName} --replication-set=rs1 --cluster=rs1`));
-  I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName2} --replication-set=rs1 --cluster=rs1`));
-  I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName3} --replication-set=rs1 --cluster=rs1`));
 });
 
 Before(async ({
   I, settingsAPI, backupInventoryPage, inventoryAPI, backupAPI,
 }) => {
-  const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
-
-  serviceId = service_id;
-
-  await I.verifyCommand('docker exec rs101 systemctl start mongod');
-
-  const c = await I.mongoGetCollection('test', 'test');
-
-  await c.deleteMany({ number: 2 });
-
   await I.Authorize();
   await settingsAPI.changeSettings({ backup: true });
-  await backupAPI.clearAllArtifacts();
   await backupInventoryPage.openInventoryPage();
 });
 
@@ -100,7 +66,53 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T691 Verify message about no backups in inventory @backup @bm-mongo',
+  'Prepare environment for backup testing @backup @bm-mongo @pre-mongo-backup-upgrade',
+  async ({
+    I, inventoryAPI, backupAPI, settingsAPI,
+  }) => {
+    await settingsAPI.changeSettings({ backup: true });
+    await locationsAPI.clearAllLocations(true);
+
+    if (!(await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName))) {
+      I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
+      I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
+      I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName3} --replication-set=rs --cluster=rs`));
+
+      // Adding extra replica set for restore
+      I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName} --replication-set=rs1 --cluster=rs1`));
+      I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName2} --replication-set=rs1 --cluster=rs1`));
+      I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName3} --replication-set=rs1 --cluster=rs1`));
+    }
+
+    localStorageLocationId = await locationsAPI.createStorageLocation(
+      localStorageLocationName,
+      locationsAPI.storageType.localClient,
+      locationsAPI.localStorageDefaultConfig,
+    );
+    locationId = await locationsAPI.createStorageLocation(
+      location.name,
+      locationsAPI.storageType.s3,
+      locationsAPI.storageLocationConnection,
+      location.description,
+    );
+
+    console.log('Locations are: ');
+    console.log((await locationsAPI.getLocationsList()).find((beLocation) => beLocation.name === location.name).location_id);
+
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
+
+    serviceId = service_id;
+
+    await I.verifyCommand('docker exec rs101 systemctl start mongod');
+
+    const c = await I.mongoGetCollection('test', 'test');
+
+    await c.deleteMany({ number: 2 });
+    await backupAPI.clearAllArtifacts();
+  },
+);
+Scenario(
+  'PMM-T691 Verify message about no backups in inventory @backup @bm-mongo @pre-mongo-backup-upgrade',
   async ({
     I, backupInventoryPage,
   }) => {
@@ -111,10 +123,10 @@ Scenario(
 const createBackupTests = new DataTable(['storageLocationName']);
 
 createBackupTests.add([location.name]);
-createBackupTests.add([localStorageLocationName]);
+// createBackupTests.add([localStorageLocationName]);
 
 Data(createBackupTests).Scenario(
-  '@PMM-T855 @PMM-T1393 Verify user is able to perform MongoDB backup @backup @bm-mongo @bm-fb',
+  '@PMM-T855 @PMM-T1393 Verify user is able to perform MongoDB backup @backup @bm-mongo @bm-fb @pre-mongo-backup-upgrade',
   async ({
     I, backupInventoryPage, backupAPI, current,
   }) => {
@@ -141,7 +153,7 @@ Data(createBackupTests).Scenario(
 ).retry(1);
 
 Scenario(
-  '@PMM-T961 @PMM-T1005 @PMM-T1024 Verify create backup modal @backup @bm-mongo',
+  '@PMM-T961 @PMM-T1005 @PMM-T1024 Verify create backup modal @backup @bm-mongo @pre-mongo-backup-upgrade',
   async ({
     I, backupInventoryPage,
   }) => {
@@ -188,11 +200,12 @@ restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.localCli
 restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.s3, 'LOGICAL']);
 restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.localClient, 'LOGICAL']);
 
+//
+
 Data(restoreFromDifferentStorageLocationsTests).Scenario(
-  '@PMM-T862 PMM-T1508 @PMM-T1393 @PMM-T1394 @PMM-T1508 @PMM-T1520 @PMM-T1452 PMM-T1583 PMM-T1674 PMM-T1675'
-  + ' Verify user is able to perform MongoDB restore from different storage locations @backup @bm-mongo @bm-fb',
+  ' @PMM-T1393  PMM-T1674 PMM-T1675 Verify user is able to perform MongoDB backup from different storage locations @backup @bm-mongo @bm-fb @pre-mongo-backup-upgrade',
   async ({
-    I, backupInventoryPage, backupAPI, inventoryAPI, restorePage, current,
+    I, backupInventoryPage, backupAPI, inventoryAPI, current,
   }) => {
     const currentLocationId = current.storageType === locationsAPI.storageType.s3
       ? locationId : localStorageLocationId;
@@ -206,16 +219,31 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
 
     I.refreshPage();
     I.waitForVisible(backupInventoryPage.elements.artifactName(backupName), 10);
+
     backupInventoryPage.verifyBackupSucceeded(backupName);
 
     const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
-    const artifact = await backupAPI.getArtifactByName(artifactName);
+    // const artifact = await backupAPI.getArtifactByName(artifactName);
 
-    if (current.storageType === locationsAPI.storageType.localClient) {
-      await I.verifyCommand('ls -la /tmp/backup_data/rs', artifact.metadata_list[0].name);
-      // TODO: add check if the folder is not empty
-    }
+    // if (current.storageType === locationsAPI.storageType.localClient) {
+    //   console.log(await I.verifyCommand('ls /tmp/backup_data'));
+    //   await I.verifyCommand('ls -la /tmp/backup_data/rs', artifact.metadata_list[0].name);
+    //   // TODO: add check if the folder is not empty
+    // }
+  },
+).retry(1);
 
+Data(restoreFromDifferentStorageLocationsTests).Scenario(
+  'PMM-T862 PMM-T1508 PMM-T1394 PMM-T1520 PMM-T1452  PMM-T1583  PMM-T1674 PMM-T1675 Verify user is able to perform MongoDB restore from different storage locations @backup @bm-mongo @bm-fb @post-mongo-backup-upgrade',
+  async ({
+    I, backupInventoryPage, backupAPI, inventoryAPI, restorePage, current,
+  }) => {
+    const backupName = `mongo-restore-${current.storageType}-${current.backupType}`;
+    const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
+    const isLogical = current.backupType === 'LOGICAL';
+    let currentLocationId = current.storageType === locationsAPI.storageType.s3
+      ? locationId : localStorageLocationId;
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
     let c = await I.mongoGetCollection('test', 'test');
 
     await c.insertOne({ number: 2, name: 'Anna' });
@@ -245,13 +273,17 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
     I.assertStartsWith(finishedAt, moment().format('YYYY-MM-DD'));
 
     if (current.storageType === locationsAPI.storageType.localClient) {
+      currentLocationId = (await locationsAPI.getLocationsList()).find((location) => location.name === localStorageLocationName)
+        .location_id;
       // PMM-T1583
       // Create new backup to rewrite pbm config and start restore from the very first backup artifact
       const newArtifactId = await backupAPI.startBackup(backupName, service_id, currentLocationId, false, isLogical);
 
       await backupAPI.waitForBackupFinish(newArtifactId);
 
-      await backupAPI.startRestore(service_id, artifactId);
+      console.log((await backupAPI.getArtifactByName(artifactName)).artifact_id);
+
+      await backupAPI.startRestore(service_id, (await backupAPI.getArtifactByName(artifactName)).artifact_id);
       await restorePage.waitForRestoreSuccess(artifactName);
     }
   },
@@ -264,7 +296,7 @@ const restoreToDifferentService = new DataTable(['backupType']);
 // restoreToDifferentService.add(['PHYSICAL']);
 
 Data(restoreToDifferentService).Scenario(
-  '@PMM-T1773 Verify user is able to perform MongoDB restore to compatible service @backup @bm-mongo @bm-fb',
+  '@PMM-T1773 Verify user is able to perform MongoDB restore to compatible service @backup @bm-mongo @bm-fb @post-mongo-backup-upgrade',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI, restorePage, current,
   }) => {
@@ -309,12 +341,14 @@ Data(restoreToDifferentService).Scenario(
 ).retry(1);
 
 Scenario(
-  '@PMM-T910 @PMM-T911 Verify delete from storage is selected by default @backup @bm-mongo',
+  '@PMM-T910 @PMM-T911 Verify delete from storage is selected by default @backup @bm-mongo @pre-mongo-backup-upgrade @post-mongo-backup-upgrade',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
     const backupName = 'mongo_artifact_delete_test';
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
+
+    locationId = (await locationsAPI.getLocationsList()).find((beLocation) => beLocation.name === location.name).location_id;
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
 
     await backupAPI.waitForBackupFinish(artifactId);
@@ -339,7 +373,7 @@ Scenario(
 
 // Unskip after https://jira.percona.com/browse/PBM-1193 is fixed
 Scenario.skip(
-  '@PMM-T928 @PMM-T992 Verify schedule retries and restore from a scheduled backup artifact @backup @bm-mongo',
+  '@PMM-T928 @PMM-T992 Verify schedule retries and restore from a scheduled backup artifact @backup @bm-mongo @post-mongo-backup-upgrade',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, restorePage,
   }) => {

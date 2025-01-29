@@ -6,7 +6,7 @@ module.exports = {
   customDashboardName: 'auto-test-dashboard',
   customFolderName: 'auto-test-folder',
   customPanelName: 'Monitored DB',
-  randomDashboardName: 'uto-dashboard-custom',
+  randomDashboardName: 'auto-dashboard-custom',
   randomTag: 'tag-random',
 
   /**
@@ -169,6 +169,9 @@ module.exports = {
     if (additionalPanels && additionalPanels.length > 0) {
       additionalPanels.forEach((i) => body.dashboard.panels.push(i));
     }
+
+    console.log(body);
+    console.log(headers);
 
     const resp = await I.sendPostRequest('graph/api/dashboards/db/', body, headers);
 
@@ -511,11 +514,15 @@ module.exports = {
   async checkMetricExist(metricName, refineBy) {
     let response;
 
-    await I.asyncWaitFor(async () => {
-      response = await this.getMetric(metricName, refineBy);
+    try {
+      await I.asyncWaitFor(async () => {
+        response = await this.getMetric(metricName, refineBy);
 
-      return response.data.results.A.frames[0].data.values.length !== 0;
-    }, 60);
+        return response.data.results.A.frames[0].data.values.length !== 0;
+      }, 60);
+    } catch (e) {
+      throw new Error(`Metrics '${metricName}' ${refineBy === null ? '' : `with filters as ${JSON.stringify(refineBy)} `}should be available but got empty.`);
+    }
 
     const result = JSON.stringify(response.data.results);
 

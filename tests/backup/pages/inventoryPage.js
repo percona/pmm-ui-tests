@@ -91,6 +91,13 @@ module.exports = {
     I.waitForVisible(this.elements.backupStatusSuccessIconByName(backupName), 120);
   },
 
+  verifyBackupSucceededTest(backupName) {
+    I.amOnPage(this.url);
+    I.waitForVisible(this.buttons.backupLogsByName(backupName));
+    I.click(this.buttons.backupLogsByName(backupName));
+    I.waitForVisible(this.elements.backupStatusSuccessIconByName(backupName), 120);
+  },
+
   verifyBackupFailed(backupName) {
     I.amOnPage(this.url);
     I.waitForVisible(this.elements.backupStatusFailureIconByName(backupName), 120);

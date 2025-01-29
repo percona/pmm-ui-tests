@@ -49,13 +49,13 @@ module.exports = {
           node_name: serviceName,
           node_type: NODE_TYPE.REMOTE,
         },
-        port: port || remoteInstancesHelper.remote_instance.mysql.ps_5_7.port,
+        port: port || remoteInstancesHelper.remote_instance.mysql.ps_8_0.port,
         qan_mysql_perfschema: true,
-        address: host || remoteInstancesHelper.remote_instance.mysql.ps_5_7.host,
+        address: host || remoteInstancesHelper.remote_instance.mysql.ps_8_0.host,
         service_name: serviceName,
-        username: username || remoteInstancesHelper.remote_instance.mysql.ps_5_7.username,
-        password: password || remoteInstancesHelper.remote_instance.mysql.ps_5_7.password,
-        cluster: remoteInstancesHelper.remote_instance.mysql.ps_5_7.clusterName,
+        username: username || remoteInstancesHelper.remote_instance.mysql.ps_8_0.username,
+        password: password || remoteInstancesHelper.remote_instance.mysql.ps_8_0.password,
+        cluster: remoteInstancesHelper.remote_instance.mysql.ps_8_0.clusterName,
         engine: DISCOVER_RDS.MYSQL,
         pmm_agent_id: 'pmm-server',
       },
@@ -65,6 +65,8 @@ module.exports = {
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 
     I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring. ${resp.data.message}`);
+
+    console.log(`Successfully added pgsql instance type with name: ${serviceName}`);
 
     return resp.data;
   },
@@ -107,21 +109,31 @@ module.exports = {
           node_name: serviceName,
           node_type: NODE_TYPE.REMOTE,
         },
-        port: port || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
-        address: host || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.host,
+        port: port || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_17.port,
+        address: host || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_17.host,
         service_name: serviceName,
-        username: username || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,
-        password: password || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.password,
-        cluster: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.clusterName,
+        username: username || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_17.username,
+        password: password || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_17.password,
+        cluster: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_17.clusterName,
         pmm_agent_id: 'pmm-server',
         qan_postgresql_pgstatements_agent: true,
         tls_skip_verify: true,
       },
     };
+
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 
+    console.log(await I.verifyCommand('docker ps -a'));
+
+    if (resp.status === 400) {
+      console.log(JSON.stringify(body));
+      console.log(resp.data);
+    }
+
     I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
+
+    console.log(`Successfully added pgsql instance type with name: ${serviceName}`);
   },
 
   async addPostgreSqlSSL(connection) {
@@ -183,18 +195,22 @@ module.exports = {
           node_name: serviceName,
           node_type: NODE_TYPE.REMOTE,
         },
-        port: remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1.port,
-        address: remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1.host,
+        port: remoteInstancesHelper.remote_instance.proxysql.pxc_proxysql_8.port,
+        address: remoteInstancesHelper.remote_instance.proxysql.pxc_proxysql_8.host,
         service_name: serviceName,
-        username: remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1.username,
-        password: remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1.password,
-        cluster: remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1.clusterName,
+        username: remoteInstancesHelper.remote_instance.proxysql.pxc_proxysql_8.username,
+        password: remoteInstancesHelper.remote_instance.proxysql.pxc_proxysql_8.password,
+        cluster: remoteInstancesHelper.remote_instance.proxysql.pxc_proxysql_8.clusterName,
         pmm_agent_id: 'pmm-server',
         tls_skip_verify: true,
       },
     };
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
+
+    if (resp.status !== 200) {
+      console.log(body);
+    }
 
     I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
   },
@@ -209,21 +225,29 @@ module.exports = {
           node_name: serviceName,
           node_type: NODE_TYPE.REMOTE,
         },
-        port: port || remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.port,
-        address: host || remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.host,
+        port: port || remoteInstancesHelper.remote_instance.mongodb.psmdb_7.port,
+        address: host || remoteInstancesHelper.remote_instance.mongodb.psmdb_7.host,
         service_name: serviceName,
-        username: username || remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.username,
-        password: password || remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.password,
-        cluster: remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.clusterName,
+        username: username || remoteInstancesHelper.remote_instance.mongodb.psmdb_7.username,
+        password: password || remoteInstancesHelper.remote_instance.mongodb.psmdb_7.password,
+        cluster: remoteInstancesHelper.remote_instance.mongodb.psmdb_7.clusterName,
         pmm_agent_id: 'pmm-server',
         qan_mongodb_profiler: true,
         tls_skip_verify: true,
       },
     };
+
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 
+    if (resp.status === 400) {
+      console.log(JSON.stringify(body));
+      console.log(resp);
+    }
+
     I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring, \n ${JSON.stringify(resp.data, null, 2)}`);
+
+    console.log(`Successfully added mongodb instance type with name: ${serviceName}`);
   },
 
   async addMongoDBSSL(connection) {
