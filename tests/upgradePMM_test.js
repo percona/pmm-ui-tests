@@ -153,7 +153,7 @@ Scenario(
 
 Scenario(
   'PMM-T391 PMM-T1818 Verify user is able to create and set custom home dashboard'
-    + ' @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+    + ' @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade @pmm-pre-migration',
   async ({
     I, grafanaAPI, dashboardPage, searchDashboardsModal,
   }) => {
@@ -164,7 +164,7 @@ Scenario(
     let additionalPanel = null;
 
     // Panels Library is present from 2.27.0
-    if (versionMinor > 26) {
+    if (versionMinor > 26 && process.env.JOB_NAME !== 'pmm3-migration-tests') {
       const libResp = await grafanaAPI.savePanelToLibrary('Lib Panel', folder.id);
       const libPanel = libResp.result.model;
 
@@ -187,7 +187,7 @@ Scenario(
 ).retry(0);
 
 Scenario(
-  'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade @pmm-pre-migration',
   async ({ settingsAPI, I }) => {
     const body = {
       telemetry_enabled: true,
