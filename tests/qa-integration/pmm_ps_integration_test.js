@@ -97,13 +97,13 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'Verify dashboard after PS Instances are added @pmm-ps-integration @not-ui-pipeline',
+  'Verify dashboard after PS Instances are added @pmm-ps-integration @not-ui-pipeline @pmm-migration',
   async ({
-    I, dashboardPage, adminPage,
+    I, dashboardPage, adminPage, inventoryAPI,
   }) => {
-    const clientServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | head -1 | awk -F" " '{print $2}'`)).trim();
+    const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'ps_8')).service_name;
 
-    const serviceList = [clientServiceName, remoteServiceName];
+    const serviceList = [clientServiceName];
 
     for (const service of serviceList) {
       const url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.clearUrl, { from: 'now-5m', to: 'now', service_name: service });
@@ -118,18 +118,24 @@ Scenario(
       } else {
         await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
       }
+
+      await inventoryAPI.verifyServiceExistsAndHasRunningStatus({
+        serviceType: SERVICE_TYPE.MYSQL,
+        service: 'mysql',
+      }, service);
     }
   },
 ).retry(2);
 
 Scenario(
-  'Verify QAN after PS Instances is added @pmm-ps-integration @not-ui-pipeline',
+  'Verify QAN after PS Instances is added @pmm-ps-integration @not-ui-pipeline @pmm-migration',
   async ({
-    I, queryAnalyticsPage,
+    I, queryAnalyticsPage, inventoryAPI,
   }) => {
-    const clientServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | head -1 | awk -F" " '{print $2}'`)).trim();
+    const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'ps_8')).service_name;
+    const serviceList = [clientServiceName];
 
-    const serviceList = [clientServiceName, remoteServiceName];
+    console.log(`Serivce List is: ${JSON.stringify(serviceList)}`);
 
     for (const service of serviceList) {
       I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));

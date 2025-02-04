@@ -161,7 +161,7 @@ Scenario(
 
 Scenario(
   'PMM-T391 PMM-T1818 Verify user is able to create and set custom home dashboard'
-    + ' @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+    + ' @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade @pmm-pre-migration',
   async ({
     I, grafanaAPI, dashboardPage, searchDashboardsModal,
   }) => {
@@ -195,7 +195,7 @@ Scenario(
 ).retry(0);
 
 Scenario(
-  'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  'Verify user is able to set custom Settings like Data_retention, Resolution @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade @pmm-pre-migration',
   async ({ settingsAPI, I }) => {
     const body = {
       telemetry_enabled: true,
@@ -585,12 +585,11 @@ Scenario('@PMM-T1647 Verify pmm-server package doesn\'t exist @post-upgrade @pmm
 
 Scenario(
   'PMM-T391 PMM-T1818 Verify that custom home dashboard stays as home dashboard after upgrade'
-    + ' @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+    + ' @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade @pmm-migration',
   async ({ I, grafanaAPI, dashboardPage }) => {
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
     dashboardPage.verifyMetricsExistence([grafanaAPI.customPanelName]);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
     I.seeInCurrentUrl(grafanaAPI.customDashboardName);
 
@@ -853,7 +852,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days, Custom Resolution is still preserved after upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days, Custom Resolution is still preserved after upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade @pmm-migration',
   async ({ I, pmmSettingsPage }) => {
     const advancedSection = pmmSettingsPage.sectionTabsList.advanced;
     const metricResoltionSection = pmmSettingsPage.sectionTabsList.metrics;

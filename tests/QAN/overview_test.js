@@ -32,7 +32,7 @@ Scenario(
   async ({
     I, adminPage, queryAnalyticsPage,
   }) => {
-    queryAnalyticsPage.filters.selectContainFilter('pdpgsql_pgsm_pmm');
+    queryAnalyticsPage.filters.selectContainFilter('PDPGSQL_17');
     queryAnalyticsPage.waitForLoaded();
     await adminPage.applyTimeRange('Last 12 hours');
     queryAnalyticsPage.waitForLoaded();

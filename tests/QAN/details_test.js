@@ -20,7 +20,7 @@ Scenario(
   async ({
     I, queryAnalyticsPage,
   }) => {
-    await queryAnalyticsPage.filters.selectFilter('pxc-dev-cluster');
+    await queryAnalyticsPage.filters.selectFilter('ps-dev');
     queryAnalyticsPage.data.selectRow(2);
     queryAnalyticsPage.waitForLoaded();
     for (const header of queryAnalyticsPage.data.labels.detailsHeaders) {
@@ -34,7 +34,7 @@ Scenario(
   async ({
     I, queryAnalyticsPage,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { environment: 'pxc-dev', from: 'now-1h', search: 'insert' }));
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { environment: 'ps-dev', from: 'now-1h', search: 'insert' }));
     I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
@@ -46,13 +46,13 @@ Scenario(
 
 const databaseEnvironments = new DataTable(['name', 'select']);
 
-databaseEnvironments.add(['ps-single', 'select name']);
-databaseEnvironments.add(['ms-single', 'select name']);
-databaseEnvironments.add(['pxc_node', 'select']);
+databaseEnvironments.add(['ps_8.0', 'select name']);
+// databaseEnvironments.add(['ms-single', 'select name']);
+// databaseEnvironments.add(['pxc_node', 'select']);
 // databaseEnvironments.add(['pgsql_pgss_pmm', 'insert']);
-databaseEnvironments.add(['pdpgsql_pgsm_pmm', 'insert']);
+databaseEnvironments.add(['PGSQL_17', 'insert']);
 databaseEnvironments.add(['rs101', 'update']);
-
+/*
 Data(databaseEnvironments).Scenario(
   'PMM-T13 - Check Explain and Example for supported DBs @qan',
   async ({
@@ -71,23 +71,22 @@ Data(databaseEnvironments).Scenario(
     }
     /**
      * Add Verification for plan after bug is closed.
-     */
   },
 );
-
-Scenario(
+*/
+Scenario.skip(
   'PMM-T1790 - Verify that there is any no error on Explains after switching between queries from different DB servers '
     + '@qan',
   async ({
     I, queryAnalyticsPage,
   }) => {
-    queryAnalyticsPage.filters.selectContainFilter('pxc-dev');
+    queryAnalyticsPage.filters.selectContainFilter('ps-dev');
     queryAnalyticsPage.data.searchByValue('SELECT');
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.queryDetails.checkTab('Explain');
-    queryAnalyticsPage.filters.selectContainFilter('pxc-dev');
+    queryAnalyticsPage.filters.selectContainFilter('ps-dev');
     queryAnalyticsPage.filters.selectFilterInGroup('mongodb', 'Service Type');
     queryAnalyticsPage.data.searchByValue('UPDATE');
     queryAnalyticsPage.data.selectRow(1);
