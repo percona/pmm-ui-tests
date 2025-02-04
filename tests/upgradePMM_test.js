@@ -157,6 +157,7 @@ Scenario(
   async ({
     I, grafanaAPI, dashboardPage, searchDashboardsModal,
   }) => {
+    console.log(`Jenkins Job name is: ${process.env.JOB_NAME}`);
     const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
 
     await grafanaAPI.createCustomDashboard(grafanaAPI.randomDashboardName, insightFolder.id, null, ['pmm-qa', grafanaAPI.randomTag]);
