@@ -15,7 +15,7 @@ Before(async ({ I }) => {
 });
 
 Data(panels).Scenario(
-  '@PMM-T1565 Verify ability to access OS dashboards with correct filter setup from Home Dashboard @nightly @dashboards',
+  'PMM-T1565 Verify ability to access OS dashboards with correct filter setup from Home Dashboard @nightly @dashboards',
   async ({
     I, current, dashboardPage, homePage,
   }) => {
