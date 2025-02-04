@@ -55,7 +55,7 @@ xScenario(
 );
 
 Scenario(
-  'PMM-9550 + PMM-T1830 Verify downloading server diagnostics logs @menu',
+  'PMM-T1830 Verify downloading server diagnostics logs @menu',
   async ({ I, homePage, serverApi }) => {
     await homePage.open();
 

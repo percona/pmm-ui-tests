@@ -5,7 +5,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T305 Open the MongoDB Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  'PMM-T305 - Open the MongoDB Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     const url = I.buildUrlWithParams(dashboardPage.mongodbOverviewDashboard.url, {
       from: 'now-5m',
