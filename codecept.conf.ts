@@ -1,10 +1,12 @@
+const { pageObjects, getChunks } = require('./codeceptConfigHelper');
+
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
 
 const pmmUrl = process.env.PMM_UI_URL ? process.env.PMM_UI_URL : 'http://65.108.252.32/';
 
 export const config: CodeceptJS.MainConfig = {
-  tests: './tests/*_test.ts',
+  tests: './tests/*_test.*',
   output: './output',
   helpers: {
     Playwright: {
@@ -32,7 +34,8 @@ export const config: CodeceptJS.MainConfig = {
   },
   include: {
     I: './steps_file',
-    api: './api/api'
+    api: './api/api',
+    ...pageObjects,
   },
   name: 'codeceptjs-poc'
 }
