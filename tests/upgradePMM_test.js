@@ -157,7 +157,6 @@ Scenario(
   async ({
     I, grafanaAPI, dashboardPage, searchDashboardsModal,
   }) => {
-    console.log(`Jenkins Job name is: ${process.env.JOB_NAME}`);
     const insightFolder = await grafanaAPI.lookupFolderByName(searchDashboardsModal.folders.insight.name);
 
     await grafanaAPI.createCustomDashboard(grafanaAPI.randomDashboardName, insightFolder.id, null, ['pmm-qa', grafanaAPI.randomTag]);
@@ -165,7 +164,7 @@ Scenario(
     let additionalPanel = null;
 
     // Panels Library is present from 2.27.0
-    if (versionMinor > 26) {
+    if (versionMinor > 26 && process.env.JOB_NAME !== 'pmm3-migration-tests') {
       const libResp = await grafanaAPI.savePanelToLibrary('Lib Panel', folder.id);
       const libPanel = libResp.result.model;
 
