@@ -42,6 +42,20 @@ export const config: CodeceptJS.MainConfig = {
     api: './api/api',
     ...pageObjects,
   },
+  plugins: {
+    autoDelay: {
+      enabled: true,
+    },
+    customLocator: {
+      enabled: true,
+      strategy: 'css',
+      attribute: 'data-testid',
+      showActual: false,
+    },
+    tryTo: {
+      enabled: true,
+    },
+  },
   mocha: {
     reporterOptions: {
       'codeceptjs-cli-reporter': {
