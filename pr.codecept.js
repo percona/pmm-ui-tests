@@ -92,6 +92,9 @@ exports.config = {
     ApiHelper: {
       require: './tests/helper/apiHelper.js',
     },
+    ReporterHelper: {
+      require: './tests/helper/reporter_helper.js',
+    },
   },
   include: pageObjects,
   multiple: {
