@@ -31,6 +31,11 @@ export const config: CodeceptJS.MainConfig = {
       endpoint: process.env.PMM_UI_URL || pmmUrl,
       timeout: 60000,
     },
+    Grafana: {
+      require: './tests/helper/grafana_helper.js',
+      username: process.env.GRAFANA_USERNAME,
+      password: process.env.GRAFANA_PASSWORD,
+    },
   },
   include: {
     I: './steps_file',
