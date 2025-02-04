@@ -6,8 +6,8 @@ process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
 const pmmUrl = process.env.PMM_UI_URL ? process.env.PMM_UI_URL : 'http://65.108.252.32/';
 
 export const config: CodeceptJS.MainConfig = {
-  tests: './tests/*_test.*',
-  output: './output',
+  tests: './tests/**/*_test.*',
+  output: 'tests/output',
   helpers: {
     Playwright: {
       browser: 'chromium',
@@ -60,5 +60,5 @@ export const config: CodeceptJS.MainConfig = {
       },
     },
   },
-  name: 'codeceptjs-poc'
+  name: 'pmm-ui-tests'
 }
