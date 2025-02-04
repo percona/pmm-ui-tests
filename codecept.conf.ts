@@ -37,5 +37,23 @@ export const config: CodeceptJS.MainConfig = {
     api: './api/api',
     ...pageObjects,
   },
+  mocha: {
+    reporterOptions: {
+      'codeceptjs-cli-reporter': {
+        stdout: '-',
+        options: {
+          verbose: false,
+          steps: false,
+        },
+      },
+      'mocha-junit-reporter': {
+        stdout: '-',
+        options: {
+          mochaFile: './tests/output/result.xml',
+          jenkinsMode: true,
+        },
+      },
+    },
+  },
   name: 'codeceptjs-poc'
 }
