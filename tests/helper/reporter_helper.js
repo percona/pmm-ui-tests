@@ -39,12 +39,12 @@ class ReporterHelper extends Helper {
         }
       }
 
-      if (successUploadTests) {
+      if (successUploadTests.length > 0) {
         console.log(`Successfully uploaded test results for the tests: "${successUploadTests}" into test cycle: "${testCycleKey}".`);
       }
 
-      if (failUploadTests) {
-        console.log(`Error while uploading tests results: "${failUploadTests}".`);
+      if (failUploadTests.length > 0) {
+        console.log(`Error while uploading tests results: "${JSON.stringify(failUploadTests)}".`);
       }
     }
   }
