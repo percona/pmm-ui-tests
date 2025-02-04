@@ -7,7 +7,7 @@ Before(async ({ I }) => {
 let serviceAccountUsername = '';
 const newServiceName = 'mysql_service_service_token1';
 
-Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-account', async ({
+Scenario('PMM-T1883 - Configuring pmm-agent to use service account @service-account', async ({
   I, codeceptjsConfig, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage, credentials,
 }) => {
   serviceAccountUsername = `service_account_${Date.now()}`;
@@ -58,7 +58,7 @@ Scenario('PMM-T1883 Configuring pmm-agent to use service account @service-accoun
   await dashboardPage.waitForGraphsToHaveData(1, 300);
 }).retry(1);
 
-Scenario('PMM-T1884 Verify disabling service account @service-account', async ({ I, serviceAccountsPage }) => {
+Scenario('PMM-T1884 - Verify disabling service account @service-account', async ({ I, serviceAccountsPage }) => {
   await I.amOnPage(serviceAccountsPage.url);
   await serviceAccountsPage.disableServiceAccount(serviceAccountUsername);
   await I.wait(10);
@@ -79,7 +79,7 @@ Scenario('PMM-T1884 Verify disabling service account @service-account', async ({
   I.assertFalse(responseEnabled.includes(expectedDisabledMessage), 'Expected message for enabled user is not present');
 });
 
-Scenario('PMM-T1900 PMM3 Client pmm-admin unregister w/o force removes nodes & pmm-admin config errors command if the node was removed and added @service-account', async ({
+Scenario('PMM-T1900 - PMM3 Client pmm-admin unregister w/o force removes nodes & pmm-admin config errors command if the node was removed and added @service-account', async ({
   I, codeceptjsConfig, serviceAccountsPage, dashboardPage, inventoryAPI, nodesOverviewPage, credentials,
 }) => {
   const newServiceName = 'mysql_service_service_token2';

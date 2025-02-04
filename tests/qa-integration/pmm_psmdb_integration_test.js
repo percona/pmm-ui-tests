@@ -169,7 +169,7 @@ Scenario.skip(
 ).retry(2);
 
 Scenario(
-  'T1775, T1888 Verify Wrong Replication Lag by Set values if RS is PSA -( MongoDB Cluster Summary) @pmm-psmdb-arbiter-integration @not-ui-pipeline',
+  'PMM-T1775 + PMM-T1888 - Verify Wrong Replication Lag by Set values if RS is PSA -( MongoDB Cluster Summary) @pmm-psmdb-arbiter-integration @not-ui-pipeline',
   async ({
     I, dashboardPage,
   }) => {
@@ -208,7 +208,7 @@ Scenario(
   },
 ).retry(1);
 
-Scenario('PMM-T1889 Verify Mongo replication lag graph shows correct info @pmm-psmdb-replica-integration', async ({ I, dashboardPage }) => {
+Scenario('PMM-T1889 - Verify Mongo replication lag graph shows correct info @pmm-psmdb-replica-integration', async ({ I, dashboardPage }) => {
   const lagValue = 10;
   const testConfigFile = `c = rs.conf(); c.members[2].secondaryDelaySecs = ${lagValue}; c.members[2].priority = 0; c.members[2].hidden = true; rs.reconfig(c);`;
   const serviceName = 'rs103';

@@ -134,7 +134,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T289 Verify Whats New link is presented on Update Widget @ovf-upgrade @ami-upgrade @pre-upgrade @pmm-upgrade',
+  'PMM-T289 - Verify Whats New link is presented on Update Widget @ovf-upgrade @ami-upgrade @pre-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
     const locators = homePage.getLocators(versionMinor);
 
@@ -152,7 +152,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T288 Verify user can see Update widget before upgrade [critical] @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  'PMM-T288 - Verify user can see Update widget before upgrade [critical] @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
     await homePage.verifyPreUpdateWidgetIsPresent(versionMinor);
@@ -160,7 +160,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T391 PMM-T1818 Verify user is able to create and set custom home dashboard'
+  'PMM-T391 + PMM-T1818 - Verify user is able to create and set custom home dashboard'
     + ' @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({
     I, grafanaAPI, dashboardPage, searchDashboardsModal,
@@ -363,7 +363,7 @@ Scenario(
 
 if (versionMinor < 16 && versionMinor >= 10) {
   Scenario(
-    'PMM-T720 Verify Platform registration for PMM before 2.16.0 @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+    'PMM-T720 - Verify Platform registration for PMM before 2.16.0 @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
     async ({ I }) => {
       const message = 'Please upgrade PMM to v2.16 or higher to use the new Percona Platform registration flow.';
       const body = {
@@ -390,7 +390,7 @@ if (versionMinor < 16 && versionMinor >= 10) {
 
 if (iaReleased) {
   Scenario.skip(
-    'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+    'PMM-T577 - Verify user is able to see IA alerts before upgrade @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
     async ({
       settingsAPI, rulesAPI, alertsAPI,
     }) => {
@@ -422,7 +422,7 @@ if (versionMinor >= 13) {
 
 if (versionMinor >= 23) {
   Data(sslinstances).Scenario(
-    'PMM-T948 PMM-T947 Verify Adding Postgresql, MySQL, MongoDB SSL services remotely via API before upgrade @pre-upgrade @pmm-upgrade',
+    'PMM-T948 + PMM-T947 - Verify Adding Postgresql, MySQL, MongoDB SSL services remotely via API before upgrade @pre-upgrade @pmm-upgrade',
     async ({
       I, remoteInstancesPage, pmmInventoryPage, current, addInstanceAPI, inventoryAPI,
     }) => {
@@ -559,7 +559,7 @@ if (versionMinor >= 32) {
 }
 
 Scenario(
-  'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ovf-upgrade @ami-upgrade  ',
+  'PMM-T3 - Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ovf-upgrade @ami-upgrade  ',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
     await homePage.upgradePMM(versionMinor);
@@ -576,7 +576,7 @@ Scenario(
   },
 );
 
-Scenario('@PMM-T1647 Verify pmm-server package doesn\'t exist @post-upgrade @pmm-upgrade', async ({ I }) => {
+Scenario('PMM-T1647 - Verify pmm-server package doesn\'t exist @post-upgrade @pmm-upgrade', async ({ I }) => {
   await I.amOnPage('');
   const packages = await I.verifyCommand('docker exec pmm-server rpm -qa');
 
@@ -584,7 +584,7 @@ Scenario('@PMM-T1647 Verify pmm-server package doesn\'t exist @post-upgrade @pmm
 });
 
 Scenario(
-  'PMM-T391 PMM-T1818 Verify that custom home dashboard stays as home dashboard after upgrade'
+  'PMM-T391 + PMM-T1818 - Verify that custom home dashboard stays as home dashboard after upgrade'
     + ' @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
     I.amOnPage('');
@@ -800,7 +800,7 @@ if (versionMinor >= 16) {
 
 if (iaReleased) {
   Scenario.skip(
-    'PMM-T577 Verify user can see IA alerts after upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+    'PMM-T577 - Verify user can see IA alerts after upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
     async ({
       I, alertsPage, alertsAPI,
     }) => {
@@ -818,7 +818,7 @@ if (iaReleased) {
   );
 } else {
   Scenario(
-    'PMM-T531 Verify IA is enabled by default after upgrading from older PMM version @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+    'PMM-T531 - Verify IA is enabled by default after upgrading from older PMM version @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
     async ({
       I, pmmSettingsPage,
     }) => {
@@ -853,7 +853,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days, Custom Resolution is still preserved after upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+  'PMM-T262 - Open PMM Settings page and verify DATA_RETENTION value is set to 2 days, Custom Resolution is still preserved after upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({ I, pmmSettingsPage }) => {
     const advancedSection = pmmSettingsPage.sectionTabsList.advanced;
     const metricResoltionSection = pmmSettingsPage.sectionTabsList.metrics;
@@ -886,7 +886,7 @@ xScenario(
 );
 
 Scenario(
-  'PMM-T424 Verify PT Summary Panel is available after Upgrade @post-upgrade @ovf-upgrade @ami-upgrade @post-client-upgrade @pmm-upgrade',
+  'PMM-T424 - Verify PT Summary Panel is available after Upgrade @post-upgrade @ovf-upgrade @ami-upgrade @post-client-upgrade @pmm-upgrade',
   async ({ I, dashboardPage }) => {
     const filter = 'Node Name';
 
@@ -998,7 +998,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T102 Verify Custom Prometheus Configuration File is still available at targets after Upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
+  'PMM-T102 - Verify Custom Prometheus Configuration File is still available at targets after Upgrade @ovf-upgrade @ami-upgrade @post-upgrade @pmm-upgrade',
   async ({ I }) => {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
@@ -1204,7 +1204,7 @@ if (versionMinor >= 32) {
   );
 
   Scenario(
-    '@PMM-T1503 PMM-T970 - The user is able to do a restore for MongoDB after the upgrade'
+    'PMM-T1503 + PMM-T970 - The user is able to do a restore for MongoDB after the upgrade'
     + ' @post-upgrade @pmm-upgrade',
     async ({
       I, backupInventoryPage, restorePage, credentials,

@@ -112,7 +112,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T144 Verify that Details tab is the only one available when total row is selected @qan',
+  'PMM-T144 - Verify that Details tab is the only one available when total row is selected @qan',
   async ({
     I, queryAnalyticsPage,
   }) => {
@@ -128,7 +128,7 @@ Scenario(
 
 // Skip until https://jira.percona.com/browse/PMM-12218 is fixed
 // Data(querySources).Scenario(
-//   '@PMM-T1667 Verify that SQL injection is filtered in placeholders on QAN tab @qan',
+//   'PMM-T1667 - Verify that SQL injection is filtered in placeholders on QAN tab @qan',
 //   async ({
 //     I, adminPage, current,
 //   }) => {
