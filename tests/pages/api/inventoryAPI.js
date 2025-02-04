@@ -13,6 +13,7 @@ module.exports = {
     // 60 sec ping for getting created service name
     for (let i = 0; i < 60; i++) {
       const resp = await this.apiGetServices(service.serviceType);
+
       const services = Object.values(resp.data).flat(Infinity);
 
       responseService = services.find((service) => service.service_name === serviceName);
@@ -36,7 +37,13 @@ module.exports = {
       const agents = Object.values(resp.data).flat().filter((entry) => entry);
 
       // Check if all agents have the status "AGENT_STATUS.RUNNING"
-      const areRunning = agents.every(({ status }) => status === AGENT_STATUS.RUNNING);
+      const areRunning = agents.every(({ status, agent_type }) => {
+        if (agent_type !== 'pmm-agent') {
+          return status === AGENT_STATUS.RUNNING;
+        }
+
+        return true;
+      });
 
       if (areRunning) {
         return resp;

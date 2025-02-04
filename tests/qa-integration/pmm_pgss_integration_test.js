@@ -22,7 +22,7 @@ const version = process.env.PGSQL_VERSION ? `${process.env.PGSQL_VERSION}` : '17
 const container = process.env.PGSQL_PGSS_CONTAINER ? `${process.env.PGSQL_PGSS_CONTAINER}` : 'pgsql_pgss_pmm';
 const database = `pgss${Math.floor(Math.random() * 99) + 1}`;
 let pgss_service_name;
-const container_name = `${container}_${version}`;
+const container_name = 'pgsql_pgss_17';
 const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 const pgsqlVersionPgss = new DataTable(['pgsqlVersion', 'expectedPgssVersion', 'expectedColumnName']);
 
@@ -35,7 +35,7 @@ const labels = [{ key: 'database', value: [`${database}`] }];
 Feature('PMM + pgss Integration Scenarios');
 
 BeforeSuite(async ({ inventoryAPI }) => {
-  const pgss_service = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pgsql_');
+  const pgss_service = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pgsql_pgss_17');
 
   pgss_service_name = pgss_service.service_name;
 });
@@ -177,7 +177,7 @@ Scenario(
     // adding service which will be used to verify various inventory addition commands
     await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin remove postgresql ${pgsql_service_name} || true`));
     await I.say(await I.verifyCommand(`docker exec ${container_name} pmm-admin add postgresql --query-source=pgstatements --agent-password='testing' --password=${connection.password} --username=${connection.user} --service-name=${pgsql_service_name}`));
-    //
+
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, pgsql_service_name);
     const pmm_agent_id = (await I.verifyCommand(`docker exec ${container_name} pmm-admin status | grep "Agent ID" | awk -F " " '{print $4}'`)).trim();
 

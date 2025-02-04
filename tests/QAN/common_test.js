@@ -53,7 +53,7 @@ Scenario(
     queryAnalyticsPage.waitForLoaded();
     await adminPage.applyTimeRange('Last 1 hour');
     queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.filters.selectFilter('pxc-dev');
+    queryAnalyticsPage.filters.selectFilter('ps-dev');
     queryAnalyticsPage.data.searchByValue('insert');
     I.waitForElement(queryAnalyticsPage.data.elements.queryRow(1), 30);
     queryAnalyticsPage.data.selectRow(1);

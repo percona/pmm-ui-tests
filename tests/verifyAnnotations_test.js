@@ -6,9 +6,9 @@ const annotation = new DataTable(['annotationName', 'service', 'dashboard', 'ser
 
 annotation.add(['annotation-for-postgres-server', 'pmm-server', dashboardPage.postgresqlInstanceSummaryDashboard.url, SERVICE_TYPE.POSTGRESQL]);
 annotation.add(['annotation-for-mongo', 'rs101', dashboardPage.mongoDbInstanceSummaryDashboard.url, SERVICE_TYPE.MONGODB]);
-annotation.add(['annotation-for-postgres', 'pgsql', dashboardPage.postgresqlInstanceSummaryDashboard.url, SERVICE_TYPE.POSTGRESQL]);
-annotation.add(['annotation-for-mysql', 'ps-', dashboardPage.mysqlInstanceSummaryDashboard.url, SERVICE_TYPE.MYSQL]);
-annotation.add(['mysql-node-name', 'ps-', dashboardPage.nodesCompareDashboard.url, SERVICE_TYPE.MYSQL]);
+annotation.add(['annotation-for-postgres', 'PGSQL_17', dashboardPage.postgresqlInstanceSummaryDashboard.url, SERVICE_TYPE.POSTGRESQL]);
+annotation.add(['annotation-for-mysql', 'ps_', dashboardPage.mysqlInstanceSummaryDashboard.url, SERVICE_TYPE.MYSQL]);
+annotation.add(['mysql-node-name', 'ps_', dashboardPage.nodesCompareDashboard.url, SERVICE_TYPE.MYSQL]);
 
 Feature('Test annotation on dashboards');
 
@@ -58,7 +58,7 @@ Scenario(
   }) => {
     I.amOnPage(pmmInventoryPage.url);
 
-    const service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'ps-');
+    const service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'ps_');
     const serviceName = service_response.service_name;
 
     // wrong node name

@@ -12,7 +12,7 @@ Scenario(
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
-    const ps_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'ps-');
+    const ps_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'ps_');
     const url = I.buildUrlWithParams(
       dashboardPage.mysqlInstanceSummaryDashboard.clearUrl,
       { service_name: ps_service_response.service_name, from: 'now-15m' },
@@ -31,7 +31,7 @@ Scenario(
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
-    const pgsql_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pgsql_');
+    const pgsql_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'PGSQL_17');
     const url = I.buildUrlWithParams(
       dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl,
       { service_name: pgsql_service_response.service_name, from: 'now-15m' },
