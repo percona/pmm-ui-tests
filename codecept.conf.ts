@@ -31,10 +31,38 @@ export const config: CodeceptJS.MainConfig = {
       endpoint: process.env.PMM_UI_URL || pmmUrl,
       timeout: 60000,
     },
+    FileHelper: {
+      require: './tests/helper/file_helper.js',
+    },
+    FileSystem: {},
+    PerformanceHelper: {
+      require: './tests/helper/performance_helper.js',
+    },
+    BrowserHelper: {
+      require: './tests/helper/browser_helper.js',
+    },
     Grafana: {
       require: './tests/helper/grafana_helper.js',
       username: process.env.GRAFANA_USERNAME,
       password: process.env.GRAFANA_PASSWORD,
+    },
+    Mailosaur: {
+      require: 'codeceptjs-mailosaurhelper',
+      apiKey: process.env.MAILOSAUR_API_KEY || 'key',
+      serverId: process.env.MAILOSAUR_SERVER_ID || 'id',
+      timeout: 15000,
+    },
+    DbHelper: {
+      require: 'codeceptjs-dbhelper',
+    },
+    ChaiWrapper: {
+      require: 'codeceptjs-chai',
+    },
+    LocalStorageHelper: {
+      require: './tests/helper/localStorageHelper.js',
+    },
+    ApiHelper: {
+      require: './tests/helper/apiHelper.js',
     },
   },
   include: {
