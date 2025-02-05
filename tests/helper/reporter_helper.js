@@ -1,7 +1,6 @@
 class ReporterHelper extends Helper {
   // eslint-disable-next-line no-underscore-dangle
   async _afterSuite(suite) {
-    console.log(`Length is: ${process.env.ZEPHYR_PMM_API_KEY.length}`);
     if (process.env.CI) {
       const testCycleKey = process.env.ZEPHYR_TEST_CYCLE_KEY || 'PMM-R196';
       const successUploadTests = [];
