@@ -277,7 +277,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-9919 Verify smart metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=400 specified to allow fetching metrics from all collectors'
+  'PMM-9919 - Verify smart metrics of MongoDB with --stats-collections=db1,db2.col2 & --max-collections-limit=400 specified to allow fetching metrics from all collectors'
   + ' @mongodb-exporter',
   async ({ I, inventoryAPI, grafanaAPI }) => {
     await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --agent-password='testing' --password=${pmm_user_mongodb.password} --username=${pmm_user_mongodb.username} --enable-all-collectors --max-collections-limit=400 --stats-collections=db1,db2.col2 --service-name=${mongodb_service_name} --replication-set=rs0s`));
@@ -314,7 +314,7 @@ Scenario(
 );
 
 Scenario.skip(
-  'PMM-T1280 Verify that pmm-admin inventory add agent mongodb-exporter with --log-level flag adds MongoDB exporter with corresponding log-level'
+  'PMM-T1280 - Verify that pmm-admin inventory add agent mongodb-exporter with --log-level flag adds MongoDB exporter with corresponding log-level'
   + 'PMM-T1282, PMM-T1284, PMM-T1291 Verify that pmm-admin inventory add agent node-exporter with --log-level flag adds Node exporter with corresponding log-level @mongodb-exporter',
   async ({
     I, inventoryAPI, dashboardPage,
@@ -357,7 +357,7 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T1352 + PMM-T610 Verify that pmm-admin inventory remove service with --force flag stops running agents and collecting data from exporters'
+  'PMM-T1352 + PMM-T610 - Verify that pmm-admin inventory remove service with --force flag stops running agents and collecting data from exporters'
   + ' @mongodb-exporter',
   async ({
     I, inventoryAPI, grafanaAPI, dashboardPage,

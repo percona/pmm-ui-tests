@@ -124,7 +124,7 @@ Scenario(
 );
 
 Scenario.skip(
-  'PMM-T1499 Verify an alert with non-existing filter (label) does not show up in list @fb-alerting',
+  'PMM-T1499 - Verify an alert with non-existing filter (label) does not show up in list @fb-alerting',
   async ({ I, alertsPage, rulesAPI }) => {
     await rulesAPI.removeAllAlertRules();
     const wrongFilterRule = {

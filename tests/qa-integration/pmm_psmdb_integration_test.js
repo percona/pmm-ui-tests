@@ -153,7 +153,7 @@ Scenario.skip(
 ).retry(1);
 
 Scenario.skip(
-  'T2269 Verify Replicaset dashboard for MongoDB Instances contains ARBITER node @pmm-psmdb-arbiter-integration @not-ui-pipeline',
+  'PMM-T2269 - Verify Replicaset dashboard for MongoDB Instances contains ARBITER node @pmm-psmdb-arbiter-integration @not-ui-pipeline',
   async ({
     I, dashboardPage,
   }) => {

@@ -74,7 +74,7 @@ Scenario.skip(
 ).retry(2);
 
 Scenario(
-  'PMM-T532 PMM-T533 PMM-T536 - Verify user can disable/enable IA in Settings @fb-alerting @settings',
+  'PMM-T532 + PMM-T533 + PMM-T536 - Verify user can disable/enable IA in Settings @fb-alerting @settings',
   async ({
     I, pmmSettingsPage, settingsAPI, adminPage,
   }) => {
@@ -299,7 +299,7 @@ Scenario.skip(
 ).retry(1);
 
 Scenario(
-  'PMM-T1967 Verify Update modal respects update settings @fb-settings',
+  'PMM-T1967 - Verify Update modal respects update settings @fb-settings',
   async ({
     I, homePage, settingsAPI, pmmSettingsPage,
   }) => {
