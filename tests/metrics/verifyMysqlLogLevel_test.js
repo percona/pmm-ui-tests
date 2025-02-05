@@ -79,7 +79,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1351 PMM-T1350 Verify that MySQL exporter cannot be added by pmm-admin add mysql with --log-level=fatal @not-ui-pipeline @exporters',
+  'PMM-T1351 + PMM-T1350 - Verify that MySQL exporter cannot be added by pmm-admin add mysql with --log-level=fatal @not-ui-pipeline @exporters',
   async ({
     I, inventoryAPI, dashboardPage,
   }) => {
