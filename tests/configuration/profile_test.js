@@ -18,7 +18,7 @@ After(async ({ I, profileAPI }) => {
 });
 
 Scenario(
-  'PMM-T1559 Verify clients still can connect to PMM server after password\'s changing @user-password',
+  'PMM-T1559 - Verify clients still can connect to PMM server after password\'s changing @user-password',
   async ({
     I, changePasswordPage, loginPage, pmmInventoryPage, grafanaAPI, inventoryAPI,
   }) => {
