@@ -2,7 +2,7 @@ class ReporterHelper extends Helper {
   // eslint-disable-next-line no-underscore-dangle
   async _afterSuite(suite) {
     if (process.env.CI) {
-      const testCycleKey = process.env.ZEPHYR_TEST_CYCLE_KEY || 'PMM-R196';
+      const testCycleKey = process.env.ZEPHYR_TEST_CYCLE_KEY || 'PMM-R203';
       const successUploadTests = [];
       const failUploadTests = [];
 
