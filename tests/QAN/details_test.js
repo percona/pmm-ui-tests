@@ -81,13 +81,13 @@ Scenario(
   async ({
     I, queryAnalyticsPage,
   }) => {
-    queryAnalyticsPage.filters.selectContainFilter('ps-dev');
+    queryAnalyticsPage.filters.selectContainFilter('pxc-dev');
     queryAnalyticsPage.data.searchByValue('SELECT');
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.queryDetails.checkTab('Explain');
-    queryAnalyticsPage.filters.selectContainFilter('ps-dev');
+    queryAnalyticsPage.filters.selectContainFilter('pxc-dev');
     queryAnalyticsPage.filters.selectFilterInGroup('mongodb', 'Service Type');
     queryAnalyticsPage.data.searchByValue('UPDATE');
     queryAnalyticsPage.data.selectRow(1);
