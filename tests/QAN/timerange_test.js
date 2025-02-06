@@ -76,7 +76,7 @@ Scenario(
       `Expected main metric ${group} and real main metric ${mainMetricsText} are not equal`,
     );
   },
-).retry(2);
+);
 
 Scenario(
   'Open the QAN Dashboard and check that changing the time range doesn\'t reset sorting. @qan',

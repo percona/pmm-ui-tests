@@ -29,7 +29,7 @@ Data(filters).Scenario(
   async ({
     I, current, queryAnalyticsPage,
   }) => {
-    queryAnalyticsPage.filters.selectContainFilter('PGSQL_17');
+    queryAnalyticsPage.filters.selectContainFilter('pdpgsql_pgsm_pmm');
     I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
     queryAnalyticsPage.filters.selectFilterInGroup(current.filterToApply, 'Command Type');
     queryAnalyticsPage.data.searchByValue(current.searchValue);
@@ -41,13 +41,13 @@ Data(filters).Scenario(
 Scenario(
   'PMM-T175 - Verify user is able to apply filter that has dots in label @qan',
   async ({ I, queryAnalyticsPage }) => {
-    const serviceName = 'ps_8.0';
+    const serviceName = '127.0.0.1';
 
     const countBefore = await queryAnalyticsPage.data.getCountOfItems();
 
     queryAnalyticsPage.waitForLoaded();
     await queryAnalyticsPage.filters.selectContainFilter(serviceName);
-    I.seeInCurrentUrl(serviceName);
+    I.seeInCurrentUrl(`client_host=${serviceName}`);
     const countAfter = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(countBefore !== countAfter, 'Query count was expected to change');
@@ -57,7 +57,7 @@ Scenario(
 Scenario(
   'PMM-T172 - Verify that selecting a filter updates the table data and URL @qan',
   async ({ I, queryAnalyticsPage }) => {
-    const environmentName = 'ps-dev';
+    const environmentName = 'pxc-dev';
 
     const countBefore = await queryAnalyticsPage.data.getCountOfItems();
 
@@ -180,7 +180,7 @@ Scenario(
   async ({
     I, adminPage, queryAnalyticsPage,
   }) => {
-    const serviceName = 'ps_8.0';
+    const serviceName = 'ps-single';
     const db1 = 'postgres';
     const db2 = 'n/a';
     const section = 'Database';
@@ -210,7 +210,7 @@ Scenario(
     I, adminPage, queryAnalyticsPage,
   }) => {
     const serviceType = 'mysql';
-    const serviceName = 'ps_8.0';
+    const serviceName = 'ps-single';
 
     await adminPage.applyTimeRange('Last 2 days');
     queryAnalyticsPage.waitForLoaded();
