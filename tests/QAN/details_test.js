@@ -75,7 +75,7 @@ Data(databaseEnvironments).Scenario(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T1790 - Verify that there is any no error on Explains after switching between queries from different DB servers '
     + '@qan',
   async ({
