@@ -29,6 +29,6 @@ Scenario(
       return (await I.grabNumberOfVisibleElements(dashboardPage.graphsLocator('Network  Usage')));
     }, 90);
     await dashboardPage.verifyMetricsExistence(dashboardPage.victoriaMetricsAgentsOverviewDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 );
