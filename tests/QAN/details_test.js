@@ -20,7 +20,7 @@ Scenario(
   async ({
     I, queryAnalyticsPage,
   }) => {
-    await queryAnalyticsPage.filters.selectFilter('ps-dev');
+    await queryAnalyticsPage.filters.selectFilter('pxc-dev-cluster');
     queryAnalyticsPage.data.selectRow(2);
     queryAnalyticsPage.waitForLoaded();
     for (const header of queryAnalyticsPage.data.labels.detailsHeaders) {
@@ -34,7 +34,7 @@ Scenario(
   async ({
     I, queryAnalyticsPage,
   }) => {
-    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { environment: 'ps-dev', from: 'now-1h', search: 'insert' }));
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { environment: 'pxc-dev', from: 'now-1h', search: 'insert' }));
     I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
@@ -52,7 +52,7 @@ databaseEnvironments.add(['ps_8.0', 'select name']);
 // databaseEnvironments.add(['pgsql_pgss_pmm', 'insert']);
 databaseEnvironments.add(['PGSQL_17', 'insert']);
 databaseEnvironments.add(['rs101', 'update']);
-/*
+
 Data(databaseEnvironments).Scenario(
   'PMM-T13 - Check Explain and Example for supported DBs @qan',
   async ({
@@ -71,9 +71,10 @@ Data(databaseEnvironments).Scenario(
     }
     /**
      * Add Verification for plan after bug is closed.
+     */
   },
 );
-*/
+
 Scenario.skip(
   'PMM-T1790 - Verify that there is any no error on Explains after switching between queries from different DB servers '
     + '@qan',
