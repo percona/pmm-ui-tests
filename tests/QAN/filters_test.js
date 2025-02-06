@@ -72,8 +72,8 @@ Scenario(
 Scenario(
   'PMM-T126 - Verify user is able to Reset All filters @qan',
   async ({ I, queryAnalyticsPage }) => {
-    const environmentName1 = 'pdpgsql-dev';
-    const environmentName2 = 'ps-dev';
+    const environmentName1 = 'pxc-dev';
+    const environmentName2 = 'dev';
 
     const countBefore = await queryAnalyticsPage.data.getCountOfItems();
 
@@ -95,8 +95,8 @@ Scenario(
 Scenario(
   'PMM-T125 - Verify user is able to Show only selected filter values and Show All filter values @qan',
   async ({ I, queryAnalyticsPage }) => {
-    const environmentName1 = 'ps-dev';
-    const environmentName2 = 'pgsql-dev';
+    const environmentName1 = 'pxc-dev';
+    const environmentName2 = 'dev';
 
     queryAnalyticsPage.filters.selectFilter(environmentName1);
     queryAnalyticsPage.filters.selectFilter(environmentName2);
@@ -117,7 +117,7 @@ Scenario(
       'Cluster',
       'Replication Set',
       'Database',
-      // 'Schema',
+      'Schema',
       'Node Name',
       'Service Name',
       'Client Host',
@@ -151,8 +151,8 @@ Scenario(
 Scenario(
   'PMM-T191 - Verify Reset All and Show Selected filters @qan',
   async ({ I, queryAnalyticsPage }) => {
-    const environmentName1 = 'pgsql-dev';
-    const environmentName2 = 'ps-dev';
+    const environmentName1 = 'pxc-dev';
+    const environmentName2 = 'dev';
 
     await queryAnalyticsPage.filters.selectFilter(environmentName1);
     await queryAnalyticsPage.filters.selectFilter(environmentName2);
@@ -175,12 +175,12 @@ Scenario('PMM-T190 - Verify user is able to see n/a filter @qan', async ({ I, qu
   await queryAnalyticsPage.filters.verifyCountOfFiltersDisplayed(0, 'bigger');
 });
 
-Scenario.skip(
+Scenario(
   'PMM-T390 - Verify that we show info message when empty result is returned @qan',
   async ({
     I, adminPage, queryAnalyticsPage,
   }) => {
-    const serviceName = 'ps_';
+    const serviceName = 'ps_8.0';
     const db1 = 'postgres';
     const db2 = 'n/a';
     const section = 'Database';
@@ -268,7 +268,7 @@ Data(shortCutTests).Scenario(
 */
 Scenario('PMM-T437 - Verify short-cut navigation for n/a items @qan', async ({ I, queryAnalyticsPage }) => {
   queryAnalyticsPage.waitForLoaded();
-  queryAnalyticsPage.filters.checkLink('ps-dev-cluster', 'Cluster', true);
+  queryAnalyticsPage.filters.checkLink('pxc-dev-cluster', 'Cluster', true);
   queryAnalyticsPage.filters.filterBy('n/a');
   queryAnalyticsPage.filters.checkLink('undefined', 'Cluster', false);
   queryAnalyticsPage.filters.checkLink('undefined', 'Replication Set', false);
