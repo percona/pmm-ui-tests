@@ -3,6 +3,10 @@ const { SERVICE_TYPE } = require('../helper/constants');
 
 Feature('Integration tests for Percona Server & PMM');
 
+Before(async ({ I }) => {
+  await I.Authorize();
+});
+
 Scenario(
   'PMM-T1982 - Verify Percona Server dashboard after PMM migration to V3 @not-ui-pipeline @pmm-migration',
   async ({

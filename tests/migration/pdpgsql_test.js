@@ -3,6 +3,10 @@ const { SERVICE_TYPE } = require('../helper/constants');
 
 Feature('Postgres Tests after PMM migration to V3');
 
+Before(async ({ I }) => {
+  await I.Authorize();
+});
+
 Scenario(
   'PMM-T1980 - Verify Postgres dashboard after PMM migration to V3 @pmm-migration',
   async ({

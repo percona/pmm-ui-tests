@@ -3,6 +3,10 @@ const { SERVICE_TYPE } = require('../helper/constants');
 
 Feature('MongoDB Tests after PMM migration to V3');
 
+Before(async ({ I }) => {
+  await I.Authorize();
+});
+
 Scenario(
   'PMM-T1978 - Verify MongoDB dashboard after PMM migration to V3 @not-ui-pipeline @pmm-migration',
   async ({
