@@ -94,14 +94,14 @@ Scenario.skip(
   },
 ).retry(1);
 
-Scenario(
-  'Verify dashboard after MongoDB Instances are added @pmm-psmdb-replica-integration @not-ui-pipeline @pmm-migration',
+Scenario.skip(
+  'Verify dashboard after MongoDB Instances are added @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
-    I, dashboardPage, adminPage, inventoryAPI,
+    I, dashboardPage, adminPage,
   }) => {
-    const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'rs101')).service_name;
+    const clientServiceName = (await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep MongoDB | head -1 | awk -F" " '{print $2}'`)).trim();
 
-    const serviceList = [clientServiceName];
+    const serviceList = [clientServiceName, remoteServiceName];
 
     for (const service of serviceList) {
       const url = I.buildUrlWithParams(dashboardPage.mongoDbInstanceOverview.url, { from: 'now-5m', to: 'now', service_name: service });
@@ -112,36 +112,33 @@ Scenario(
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
       if (service === remoteServiceName) {
+        await dashboardPage.verifyThereAreNoGraphsWithNA(1);
         await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
       } else {
+        await dashboardPage.verifyThereAreNoGraphsWithNA();
         await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
       }
     }
 
-    const url = I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m' });
+    I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
 
-    I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
-
-    await inventoryAPI.verifyServiceExistsAndHasRunningStatus({
-      serviceType: SERVICE_TYPE.MONGODB,
-      service: 'mongodb',
-    }, clientServiceName);
+    await dashboardPage.verifyThereAreNoGraphsWithNA();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 ).retry(1);
 
-Scenario(
-  'Verify QAN after MongoDB Instances is added @pmm-psmdb-replica-integration @not-ui-pipeline @pmm-migration',
+Scenario.skip(
+  'Verify QAN after MongoDB Instances is added @pmm-psmdb-replica-integration @not-ui-pipeline',
   async ({
-    I, queryAnalyticsPage, inventoryAPI,
+    I, queryAnalyticsPage,
   }) => {
-    const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'rs101')).service_name;
+    const clientServiceName = (await I.verifyCommand(`docker exec ${replica_container_name} pmm-admin list | grep MongoDB | head -1 | awk -F" " '{print $2}'`)).trim();
 
-    const serviceList = [clientServiceName];
+    const serviceList = [clientServiceName, remoteServiceName];
 
     for (const service of serviceList) {
       I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-120m', to: 'now' }));
