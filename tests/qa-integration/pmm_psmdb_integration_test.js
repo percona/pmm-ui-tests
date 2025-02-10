@@ -121,7 +121,6 @@ Scenario.skip(
     }
 
     I.amOnPage(`${dashboardPage.mongodbReplicaSetSummaryDashboard.url}&var-replset=rs1`);
-
     dashboardPage.waitForDashboardOpened();
     adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
