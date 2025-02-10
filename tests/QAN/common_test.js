@@ -114,7 +114,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T188 Verify dashboard refresh @qan',
+  'PMM-T188 - Verify dashboard refresh @qan',
   async ({
     dashboardPage, adminPage, queryAnalyticsPage,
   }) => {

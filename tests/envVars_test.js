@@ -13,7 +13,7 @@ AfterSuite(async ({ settingsAPI }) => {
 });
 
 Scenario(
-  'PMM-T1265 Disable telemetry while having DATA_RETENTION set @nightly',
+  'PMM-T1265 - Disable telemetry while having DATA_RETENTION set @nightly',
   async ({ I, pmmSettingsPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();

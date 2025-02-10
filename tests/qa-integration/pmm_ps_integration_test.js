@@ -146,7 +146,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T1897 Verify Query Count metric on QAN page for MySQL @fb-pmm-ps-integration',
+  'PMM-T1897 - Verify Query Count metric on QAN page for MySQL @fb-pmm-ps-integration',
   async ({
     I, credentials, queryAnalyticsPage,
   }) => {

@@ -34,12 +34,12 @@ After(async ({ I, rolesApi }) => {
   await I.deleteUser(rbacPgUserId);
 });
 
-Scenario('PMM-T1580 Verify creating Access Role @rbac', async ({ I, accessRolesPage }) => {
+Scenario('PMM-T1580 - Verify creating Access Role @rbac', async ({ I, accessRolesPage }) => {
   I.amOnPage(accessRolesPage.url);
   accessRolesPage.createAccessRole(psRole);
 });
 
-Scenario('PMM-T1584 Verify assigning Access role to user @rbac', async ({ I, usersPage, rolesApi }) => {
+Scenario('PMM-T1584 - Verify assigning Access role to user @rbac', async ({ I, usersPage, rolesApi }) => {
   await rolesApi.createRole(psRole);
 
   I.amOnPage(usersPage.url);
@@ -119,7 +119,7 @@ Scenario(
   },
 );
 
-Scenario('PMM-T1585 Verify deleting Access role @rbac', async ({ I, accessRolesPage, rolesApi }) => {
+Scenario('PMM-T1585 - Verify deleting Access role @rbac', async ({ I, accessRolesPage, rolesApi }) => {
   await rolesApi.createRole(psRole);
   await rolesApi.createRole(pgRole);
 

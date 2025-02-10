@@ -26,7 +26,7 @@ AfterSuite(async ({ I }) => {
 const withCustomBaseUrl = (url) => `${basePmmUrl}${url}`;
 
 Scenario(
-  '@PMM-T1442 Verify metrics are saved if PMM server was offline @disconnect',
+  'PMM-T1442 - Verify metrics are saved if PMM server was offline @disconnect',
   async ({ I, dashboardPage }) => {
     await I.amOnPage(withCustomBaseUrl(dashboardPage.mySQLInstanceOverview.url));
     await dashboardPage.waitForDashboardOpened();
@@ -46,7 +46,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1443 Verify metrics are saved if pmm-agent is stopped @disconnect',
+  'PMM-T1443 - Verify metrics are saved if pmm-agent is stopped @disconnect',
   async ({ I, dashboardPage }) => {
     await I.amOnPage(withCustomBaseUrl(dashboardPage.mySQLInstanceOverview.url));
     await dashboardPage.waitForDashboardOpened();

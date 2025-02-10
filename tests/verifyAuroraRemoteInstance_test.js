@@ -26,7 +26,7 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Data(instances).Scenario('@PMM-T1295 Verify adding Aurora remote instance @instances', async ({
+Data(instances).Scenario('PMM-T1295 - Verify adding Aurora remote instance @instances', async ({
   I, addInstanceAPI, inventoryAPI, current,
 }) => {
   const {
@@ -69,7 +69,7 @@ Data(instances).Scenario('@PMM-T1295 Verify adding Aurora remote instance @insta
 // FIXME: Can be removed once https://jira.percona.com/browse/PMM-10201 is fixed
 // TODO: unskip after PMM-13541
 // Data(instances)
-//   .Scenario('PMM-T1295 Verify Aurora instance metrics @instances', async ({ I, current, grafanaAPI }) => {
+//   .Scenario('PMM-T1295 - Verify Aurora instance metrics @instances', async ({ I, current, grafanaAPI }) => {
 //     const { instance_id } = current;
 //
 //     // Waiting for metrics to start hitting for remotely added services
@@ -89,7 +89,7 @@ Data(instances).Scenario('@PMM-T1295 Verify adding Aurora remote instance @insta
 
 // FIXME: Add also check for Aurora3 once https://jira.percona.com/browse/PMM-10201 is fixed
 // TODO: unskip after PMM-13541
-Scenario.skip('PMM-T1295 Verify Aurora instance metrics @instances', async ({ I, grafanaAPI }) => {
+Scenario.skip('PMM-T1295 - Verify Aurora instance metrics @instances', async ({ I, grafanaAPI }) => {
   // Waiting for metrics to start hitting for remotely added services
   I.wait(10);
 
@@ -100,7 +100,7 @@ Scenario.skip('PMM-T1295 Verify Aurora instance metrics @instances', async ({ I,
 }).retry(1);
 
 // FIXME: Add also check for Aurora3 once https://jira.percona.com/browse/PMM-10201 is fixed
-Scenario('PMM-T1295 Verify MySQL Amazon Aurora Details @instances', async ({ I, dashboardPage, adminPage }) => {
+Scenario('PMM-T1295 - Verify MySQL Amazon Aurora Details @instances', async ({ I, dashboardPage, adminPage }) => {
   I.amOnPage(dashboardPage.mysqlAmazonAuroraDetails.url);
   dashboardPage.waitForDashboardOpened();
   await adminPage.applyTimeRange('Last 5 minutes');
@@ -110,7 +110,7 @@ Scenario('PMM-T1295 Verify MySQL Amazon Aurora Details @instances', async ({ I, 
 
 Data(instances)
   .Scenario(
-    'PMM-T1295 Verify dashboard after Aurora instance is added @instances',
+    'PMM-T1295 - Verify dashboard after Aurora instance is added @instances',
     async ({
       I, dashboardPage, adminPage, current,
     }) => {
@@ -130,7 +130,7 @@ Data(instances)
 
 Data(instances)
   .Scenario(
-    'PMM-T1295 Verify QAN after Aurora instance is added @instances',
+    'PMM-T1295 - Verify QAN after Aurora instance is added @instances',
     async ({
       I, queryAnalyticsPage, current, adminPage,
     }) => {

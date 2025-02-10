@@ -21,7 +21,7 @@ After(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1201 Verify yum-cron updates are removed from PMM Server',
+  'PMM-T1201 - Verify yum-cron updates are removed from PMM Server',
   async ({ I }) => {
     const pmm_server = await I.verifyCommand('docker ps --format "table {{.ID}}\\t{{.Image}}\\t{{.Names}}" | grep \'pmm-server\' | awk \'{print $3}\'');
 
@@ -39,7 +39,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1696 Verify that PostgreSQL exporter collects uptime on Ubuntu',
+  'PMM-T1696 - Verify that PostgreSQL exporter collects uptime on Ubuntu',
   async ({ I }) => {
     await I.wait(30);
     await I.verifyCommand('docker exec pmm-client-ubuntu pmm-admin list', 'postgres-ubuntu', 'pass');

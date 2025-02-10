@@ -22,7 +22,7 @@ After(async ({ settingsAPI }) => {
 });
 
 Scenario(
-  'PMM-T1831 Verify adding PostgreSQL RDS with specified Auto-discovery limit @aws @instances',
+  'PMM-T1831 - Verify adding PostgreSQL RDS with specified Auto-discovery limit @aws @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, agentsPage,
   }) => {
@@ -60,8 +60,8 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T716 - Verify adding PostgreSQL RDS monitoring to PMM via UI @aws @instances'
-  + '@PMM-T1596 Verify that PostgreSQL exporter ignores connection error to "rdsadmin" database for Amazon RDS instance @aws @instances',
+  'PMM-T716 + PMM-T1596 - Verify adding PostgreSQL RDS monitoring to PMM via UI @aws @instances'
+  + 'Verify that PostgreSQL exporter ignores connection error to "rdsadmin" database for Amazon RDS instance @aws @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI,
   }) => {

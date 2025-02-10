@@ -105,7 +105,7 @@ Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T937 PMM-T938 Verify MySQL cannot be added without specified --tls-key, Verify MySQL cannot be added without specified --tls-cert @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
+  'PMM-T937 + PMM-T938 - Verify MySQL cannot be added without specified --tls-key, Verify MySQL cannot be added without specified --tls-cert @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
     I, current, grafanaAPI, remoteInstancesPage,
   }) => {
@@ -171,7 +171,7 @@ Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T1277 (1.0) Verify tlsCa, tlsCert, tlsKey are generated on every MySQL exporter (added with TLS flags) restart @ssl-mysql @ssl @ssl-remote @not-ui-pipeline',
+  'PMM-T1277 - Verify tlsCa, tlsCert, tlsKey are generated on every MySQL exporter (added with TLS flags) restart @ssl-mysql @ssl @ssl-remote @not-ui-pipeline',
   async ({
     I, current, dashboardPage,
   }) => {
@@ -195,7 +195,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(maxQueryLengthTestData).Scenario(
-  'PMM-T1405 Verify validation of Max Query Length option on Add remote MySQL page @max-length @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
+  'PMM-T1405 - Verify validation of Max Query Length option on Add remote MySQL page @max-length @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, current,
   }) => {
@@ -210,10 +210,10 @@ Data(maxQueryLengthTestData).Scenario(
 );
 
 Data(maxQueryLengthInstances).Scenario(
-  ' PMM-T1403 Verify Max Query Length field is not required on Add remote MySQL instance page'
-    + ' PMM-T1404 Verify Max Query Length option can be set to -1 on Add remote MySQL page'
-    + ' PMM-T1426 Verify remote PostgreSQL can be added with specified Max Query Length'
-    + ' PMM-T1431 Verify adding MongoDB instance via UI with specified Max Query Length option @max-length @ssl @ssl-remote @ssl-mysql @not-ui-pipeline',
+  'PMM-T1403 + PMM-T1404 + PMM-T1426 + PMM-T1431 - Verify Max Query Length field is not required on Add remote MySQL instance page'
+    + ' Verify Max Query Length option can be set to -1 on Add remote MySQL page'
+    + ' Verify remote PostgreSQL can be added with specified Max Query Length'
+    + ' Verify adding MongoDB instance via UI with specified Max Query Length option @max-length @ssl @ssl-remote @ssl-mysql @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, current, queryAnalyticsPage,
   }) => {
@@ -285,7 +285,7 @@ Data(maxQueryLengthInstances).Scenario(
 );
 
 Data(instances).Scenario(
-  'PMM-T1896 Verify MySQL w/ tls/ssl certs can be added when specified with --tls-skip-verify @ssl @ssl-mysql @not-ui-pipeline',
+  'PMM-T1896 - Verify MySQL w/ tls/ssl certs can be added when specified with --tls-skip-verify @ssl @ssl-mysql @not-ui-pipeline',
   async ({
     I, current, pmmInventoryPage,
   }) => {

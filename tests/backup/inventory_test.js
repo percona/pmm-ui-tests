@@ -100,7 +100,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T691 Verify message about no backups in inventory @backup @bm-mongo',
+  'PMM-T691 - Verify message about no backups in inventory @backup @bm-mongo',
   async ({
     I, backupInventoryPage,
   }) => {
@@ -114,7 +114,7 @@ createBackupTests.add([location.name]);
 createBackupTests.add([localStorageLocationName]);
 
 Data(createBackupTests).Scenario(
-  '@PMM-T855 @PMM-T1393 Verify user is able to perform MongoDB backup @backup @bm-mongo @bm-fb',
+  'PMM-T855 + PMM-T1393 - Verify user is able to perform MongoDB backup @backup @bm-mongo @bm-fb',
   async ({
     I, backupInventoryPage, backupAPI, current,
   }) => {
@@ -141,7 +141,7 @@ Data(createBackupTests).Scenario(
 ).retry(1);
 
 Scenario(
-  '@PMM-T961 @PMM-T1005 @PMM-T1024 Verify create backup modal @backup @bm-mongo',
+  'PMM-T961 + PMM-T1005 + PMM-T1024 - Verify create backup modal @backup @bm-mongo',
   async ({
     I, backupInventoryPage,
   }) => {
@@ -189,7 +189,7 @@ restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.s3, 'LOG
 restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.localClient, 'LOGICAL']);
 
 Data(restoreFromDifferentStorageLocationsTests).Scenario(
-  '@PMM-T862 PMM-T1508 @PMM-T1393 @PMM-T1394 @PMM-T1508 @PMM-T1520 @PMM-T1452 PMM-T1583 PMM-T1674 PMM-T1675'
+  'PMM-T862 + PMM-T1508 + PMM-T1393 + PMM-T1394 + PMM-T1508 + PMM-T1520 + PMM-T1452 + PMM-T1583 + PMM-T1674 + PMM-T1675 -'
   + ' Verify user is able to perform MongoDB restore from different storage locations @backup @bm-mongo @bm-fb',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI, restorePage, current,
@@ -309,7 +309,7 @@ Data(restoreToDifferentService).Scenario(
 ).retry(1);
 
 Scenario(
-  '@PMM-T910 @PMM-T911 Verify delete from storage is selected by default @backup @bm-mongo',
+  'PMM-T910 + PMM-T911 - Verify delete from storage is selected by default @backup @bm-mongo',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
@@ -339,7 +339,7 @@ Scenario(
 
 // Unskip after https://jira.percona.com/browse/PBM-1193 is fixed
 Scenario.skip(
-  '@PMM-T928 @PMM-T992 Verify schedule retries and restore from a scheduled backup artifact @backup @bm-mongo',
+  'PMM-T928 + PMM-T992 - Verify schedule retries and restore from a scheduled backup artifact @backup @bm-mongo',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, restorePage,
   }) => {
@@ -388,7 +388,7 @@ Scenario.skip(
 ).retry(1);
 
 Scenario(
-  '@PMM-T848 Verify service no longer exists error message during restore @backup @bm-mongo',
+  'PMM-T848 - Verify service no longer exists error message during restore @backup @bm-mongo',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {
@@ -415,7 +415,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1159 @PMM-T1160 Verify that backup with long backup name is displayed correctly, Verify that backup names are limited to 100 chars length @backup @bm-mongo',
+  'PMM-T1159 + PMM-T1160 - Verify that backup with long backup name is displayed correctly, Verify that backup names are limited to 100 chars length @backup @bm-mongo',
   async ({
     I, backupInventoryPage,
   }) => {
@@ -439,7 +439,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1163 Verify that Backup time format is identical for whole feature @backup @bm-mongo',
+  'PMM-T1163 - Verify that Backup time format is identical for whole feature @backup @bm-mongo',
   async ({
     I, backupInventoryPage, backupAPI, scheduledAPI, scheduledPage,
   }) => {
@@ -472,7 +472,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1033 - Verify that user is able to display backup logs from MongoDB on UI @backup @bm-mongo',
+  'PMM-T1033 - Verify that user is able to display backup logs from MongoDB on UI @backup @bm-mongo',
   async ({
     I, inventoryAPI, backupAPI, backupInventoryPage,
   }) => {
@@ -502,7 +502,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1551 - Verify Mongod binary error during backup @backup @bm-mongo',
+  'PMM-T1551 - Verify Mongod binary error during backup @backup @bm-mongo',
   async ({
     I, backupInventoryPage, addInstanceAPI,
   }) => {
@@ -528,7 +528,7 @@ Scenario(
 
 // Unskip after https://jira.percona.com/browse/PBM-1193 is fixed
 Scenario.skip(
-  '@PMM-T1562 - Verify Mongo restore error logs when replica primary down @backup @bm-mongo',
+  'PMM-T1562 - Verify Mongo restore error logs when replica primary down @backup @bm-mongo',
   async ({
     I, inventoryAPI, backupInventoryPage, backupAPI, restorePage,
   }) => {
@@ -565,7 +565,7 @@ const deleteArtifactsTests = new DataTable(['storageType']);
 deleteArtifactsTests.add([locationsAPI.storageType.s3]);
 deleteArtifactsTests.add([locationsAPI.storageType.localClient]);
 Data(deleteArtifactsTests).Scenario(
-  '@PMM-T1563 @PMM-T1564 - Verify Mongo restore error logs when deleted artifact @backup @bm-mongo',
+  'PMM-T1563 + PMM-T1564 - Verify Mongo restore error logs when deleted artifact @backup @bm-mongo',
   async ({
     I, inventoryAPI, backupInventoryPage, backupAPI, restorePage, current,
   }) => {
@@ -602,7 +602,7 @@ Data(deleteArtifactsTests).Scenario(
 
 // Unskip after https://jira.percona.com/browse/PBM-1193 is fixed
 Scenario.skip(
-  '@PMM-T991 - Verify retries for backup on demand @backup @bm-mongo',
+  'PMM-T991 - Verify retries for backup on demand @backup @bm-mongo',
   async ({
     I, inventoryAPI, backupInventoryPage, backupAPI,
   }) => {

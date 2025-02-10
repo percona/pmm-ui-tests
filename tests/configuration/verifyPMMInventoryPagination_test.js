@@ -33,7 +33,7 @@ subPages.add(['agents']);
 subPages.add(['nodes']);
 
 Data(subPages).Scenario(
-  '@PMM-T1346 - Verify Inventory page has pagination on Services tab @inventory',
+  'PMM-T1346 - Verify Inventory page has pagination on Services tab @inventory',
   async ({ I, pmmInventoryPage, current }) => {
     const subPageLocator = pmmInventoryPage.fields[`${current.name}Link`];
 

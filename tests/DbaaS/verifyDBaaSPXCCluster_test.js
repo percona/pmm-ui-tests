@@ -49,7 +49,7 @@ Before(async ({ I, dbaasAPI }) => {
 });
 
 Scenario(
-  'PMM-T665 PMM-T455 PMM-T575 Verify that Advanced Options are optional for DB Cluster Creation, '
+  'PMM-T665 + PMM-T455 + PMM-T575 - Verify that Advanced Options are optional for DB Cluster Creation, '
   + 'creating PXC cluster with default settings, log popup @dbaas',
   async ({
     I, dbaasPage, dbaasAPI, dbaasActionsPage,
@@ -66,7 +66,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1577 Verify Edit DB Cluster page @dbaas',
+  'PMM-T1577 - Verify Edit DB Cluster page @dbaas',
   async ({ I, dbaasPage }) => {
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.fields.clusterActionsMenu(pxc_cluster_name), 30);
@@ -119,7 +119,7 @@ Scenario.skip('PMM-T582 Verify Adding Cluster with Same Name and Same DB Type @d
 });
 
 Scenario(
-  'PMM-T717 Verify insufficient resources warning @dbaas',
+  'PMM-T717 - Verify insufficient resources warning @dbaas',
   async ({
     I, dbaasPage, dbaasActionsPage,
   }) => {
@@ -144,7 +144,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T502 Verify monitoring of PXC cluster @dbaas',
+  'PMM-T502 - Verify monitoring of PXC cluster @dbaas',
   async ({
     I, dbaasPage, dashboardPage, queryAnalyticsPage,
   }) => {
@@ -158,7 +158,7 @@ Scenario(
 );
 
 Data(pxcDBClusterDetails).Scenario(
-  'PMM-T502 Verify monitoring of PXC service and node @dbaas',
+  'PMM-T502 - Verify monitoring of PXC service and node @dbaas',
   async ({ I, dbaasPage, current }) => {
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
@@ -172,10 +172,10 @@ Data(pxcDBClusterDetails).Scenario(
 );
 
 Scenario(
-  'PMM-T459 Verify DB Cluster Details are listed '
-    + 'PMM-T473 Verify shortcut link for DB Clusters '
-    + 'PMM-T478 Verify Hide Password button on DB cluster page '
-    + 'PMM-T485 Verify user can restart Percona PXC cluster @dbaas',
+  'PMM-T459 + PMM-T473 + PMM-T478 + PMM-T485 - Verify DB Cluster Details are listed '
+    + 'Verify shortcut link for DB Clusters '
+    + 'Verify Hide Password button on DB cluster page '
+    + 'Verify user can restart Percona PXC cluster @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     const clusterDetails = {
       clusterDashboardRedirectionLink: dbaasPage.clusterDashboardUrls.pxcDashboard(pxc_cluster_name),
@@ -204,7 +204,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T460, PMM-T452 Verify force unregistering Kubernetes cluster @dbaas',
+  'PMM-T460 + PMM-T452 - Verify force unregistering Kubernetes cluster @dbaas',
   async ({ I, dbaasPage }) => {
     I.amOnPage(dbaasPage.url);
     await dbaasPage.goToKubernetesClusterTab();
@@ -217,7 +217,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T524 Delete PXC Cluster and Unregister K8s Cluster @dbaas',
+  'PMM-T524 - Delete PXC Cluster and Unregister K8s Cluster @dbaas',
   async ({ I, dbaasPage, dbaasActionsPage }) => {
     I.amOnPage(dbaasPage.url);
     I.waitForVisible(dbaasPage.tabs.dbClusterTab.dbClusterAddButtonTop, 30);
@@ -427,7 +427,7 @@ Scenario(
   },
 );
 
-Scenario('PMM-T1184 Verify there are no users with empty passwords, verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, dbaasActionsPage }) => {
+Scenario('PMM-T1184 - Verify there are no users with empty passwords, verify update PXC DB Cluster version @dbaas', async ({ I, dbaasPage, dbaasActionsPage }) => {
   const mysqlVersion = '8.0.19-10.1';
   const dbClusterRandomName = dbaasPage.randomizeClusterName(pxc_cluster_name);
 
