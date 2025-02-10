@@ -14,7 +14,7 @@ Scenario(
   }) => {
     const pdpgsqlServices = await inventoryAPI.apiGetServices(SERVICE_TYPE.POSTGRESQL);
     console.log('Found Services: ');
-    console.log(pdpgsqlServices);
+    console.log(pdpgsqlServices.data);
 
     const service = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pdpgsql_'));
 
@@ -40,7 +40,7 @@ Scenario(
   }) => {
     const pdpgsqlServices = await inventoryAPI.apiGetServices(SERVICE_TYPE.POSTGRESQL);
     console.log('Found Services: ');
-    console.log(pdpgsqlServices);
+    console.log(pdpgsqlServices.data);
     const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pdpgsql_')).service_name;
 
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
