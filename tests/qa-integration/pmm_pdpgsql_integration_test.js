@@ -9,8 +9,8 @@ Before(async ({ I }) => {
 Scenario(
   'PMM-T1262 - Verify Postgresql Dashboard Instance Summary has Data @not-ui-pipeline @pdpgsql-pmm-integration',
   async ({
-           I, dashboardPage, adminPage,
-         }) => {
+    I, dashboardPage, adminPage,
+  }) => {
     I.amOnPage(dashboardPage.postgresqlInstanceSummaryDashboard.url);
     await dashboardPage.waitForDashboardOpened();
     await dashboardPage.applyFilter('Service Name', 'pdpgsql_');
