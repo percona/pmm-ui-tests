@@ -58,9 +58,17 @@ module.exports = {
     const resp = await this.apiGetServices(serviceType);
 
     const data = Object.values(resp.data).flat()
-      .filter(({ service_name }) => service_name.includes(serviceName));
+      .filter(({ service_name }) => {
+        if (service_name) return service_name.includes(serviceName);
 
-    if (data.length === 0) await I.say(`Service "${serviceName}" of "${serviceType}" type is not found!`);
+        return null;
+      });
+
+    if (data.length === 0) {
+      await I.say(`Service "${serviceName}" of "${serviceType}" type is not found!`);
+
+      return undefined;
+    }
 
     if (excludeSubstring) {
       return data.find(({ service_name }) => !service_name.includes(excludeSubstring));

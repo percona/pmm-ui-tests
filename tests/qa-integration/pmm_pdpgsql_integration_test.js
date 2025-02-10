@@ -12,15 +12,27 @@ Scenario(
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
-    const service = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'PDPGSQL_'));
+    let service = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'PDPGSQL_'));
+
+    if (!service) {
+      service = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pdpgsql_'));
+    }
 
     I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, { from: 'now-5m', service_name: service.service_name }));
     await dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
-    await I.verifyCommand('pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"');
-    await I.verifyCommand('pmm-admin list | grep "postgres_exporter" | grep "Running"');
+    if (process.env.JOB_NAME === 'pmm3-migration-tests') {
+      await I.verifyCommand('pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"');
+      await I.verifyCommand('pmm-admin list | grep "postgres_exporter" | grep "Running"');
+    } else {
+      const containerServiceName = await I.verifyCommand('docker ps -f name=pdpgsql --format "{{ .Names }}"');
+
+      await I.verifyCommand(`docker exec ${containerServiceName} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
+      await I.verifyCommand(`docker exec ${containerServiceName} pmm-admin list | grep "postgres_exporter" | grep "Running"`);
+    }
+
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus({
       serviceType: SERVICE_TYPE.POSTGRESQL,
       service: 'postgresql',
