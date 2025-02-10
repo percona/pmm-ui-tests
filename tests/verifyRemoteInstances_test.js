@@ -91,11 +91,26 @@ Data(instances).Scenario(
   'PMM-T898 Verify Remote Instance Addition [critical] @instances @fb-instances',
   async ({ I, remoteInstancesPage, current }) => {
     const serviceName = remoteInstancesHelper.services[current.name];
+    const nodeName = 'pmm-server';
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage(current.name);
-    await remoteInstancesPage.fillRemoteFields(serviceName);
+    await remoteInstancesPage.fillRemoteFields(serviceName, nodeName);
+    remoteInstancesPage.createRemoteInstance(serviceName);
+  },
+);
+
+Data(instances).Scenario(
+  'PMM-13166 Verify Remote Instance Addition [critical] (Verify Ability to monitor DBs from a different node) @instances @fb-instances',
+  async ({ I, remoteInstancesPage, current }) => {
+    const serviceName = remoteInstancesHelper.services[current.name];
+    const nodeName = 'client_container';
+
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.openAddRemotePage(current.name);
+    await remoteInstancesPage.fillRemoteFields(serviceName, nodeName);
     remoteInstancesPage.createRemoteInstance(serviceName);
   },
 );
