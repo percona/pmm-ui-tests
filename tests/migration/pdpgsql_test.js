@@ -12,6 +12,9 @@ Scenario(
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
+    const pdpgsqlServices = await this.apiGetServices(SERVICE_TYPE.POSTGRESQL);
+    console.log(pdpgsqlServices.data);
+
     const service = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pdpgsql_'));
 
     I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, { from: 'now-5m', service_name: service.service_name }));
@@ -34,6 +37,8 @@ Scenario(
   async ({
     I, queryAnalyticsPage, inventoryAPI, adminPage,
   }) => {
+    const pdpgsqlServices = await this.apiGetServices(SERVICE_TYPE.POSTGRESQL);
+    console.log(pdpgsqlServices.data);
     const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pdpgsql_')).service_name;
 
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
