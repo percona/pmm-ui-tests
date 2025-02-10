@@ -26,6 +26,7 @@ class ReporterHelper extends Helper {
                 testCaseKey,
                 testCycleKey,
                 statusName,
+                comment: test.err.toString(),
               },
               { Authorization: `Bearer ${process.env.ZEPHYR_PMM_API_KEY}` },
             );
