@@ -8,7 +8,7 @@ Before(async ({ I, rulesAPI }) => {
 });
 
 Scenario(
-  'PMM-T643 Verify message about disabled IA @fb-alerting',
+  'PMM-T643 - Verify message about disabled IA @fb-alerting',
   async ({
     I, pmmSettingsPage, codeceptjsConfig,
   }) => {
@@ -24,9 +24,9 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T481 Verify IA tab bar, '
-  + 'PMM-T620 Verify after reloading the page user is on the same IA tab, '
-  + 'PMM-T776 Verify that user is able to see valid HTML Title on alerts page @fb-alerting',
+  'PMM-T481 + PMM-T620 + PMM-T776 - Verify IA tab bar, '
+  + 'Verify after reloading the page user is on the same IA tab, '
+  + 'Verify that user is able to see valid HTML Title on alerts page @fb-alerting',
   async ({
     I, alertRulesPage, ruleTemplatesPage, contactPointsPage, nPoliciesPage, silencesPage, alertGroupsPage, aiAdminPage,
   }) => {

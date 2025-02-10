@@ -34,7 +34,7 @@ After(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1307 PMM-T1306 PMM-T1305 PMM-T1304 PMM-T1290 PMM-T1281 Verify that pmm-admin inventory add agent mysqld-exporter with --log-level flag adds MySQL exporter with corresponding log-level @not-ui-pipeline @exporters',
+  'PMM-T1307 + PMM-T1306 + PMM-T1305 + PMM-T1304 + PMM-T1290 + PMM-T1281 - Verify that pmm-admin inventory add agent mysqld-exporter with --log-level flag adds MySQL exporter with corresponding log-level @not-ui-pipeline @exporters',
   async ({
     I, inventoryAPI, dashboardPage, agentCli,
   }) => {
@@ -79,7 +79,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1351 PMM-T1350 Verify that MySQL exporter cannot be added by pmm-admin add mysql with --log-level=fatal @not-ui-pipeline @exporters',
+  'PMM-T1351 + PMM-T1350 - Verify that MySQL exporter cannot be added by pmm-admin add mysql with --log-level=fatal @not-ui-pipeline @exporters',
   async ({
     I, inventoryAPI, dashboardPage,
   }) => {

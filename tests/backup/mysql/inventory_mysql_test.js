@@ -109,7 +109,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T910 @PMM-T911 Verify delete from storage is selected by default @bm-mysql @not-ui-pipeline',
+  'PMM-T910 + PMM-T911 - Verify delete from storage is selected by default @bm-mysql @not-ui-pipeline',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,
   }) => {

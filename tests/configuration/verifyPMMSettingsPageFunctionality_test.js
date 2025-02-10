@@ -43,7 +43,7 @@ Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [c
 });
 
 Scenario.skip(
-  'PMM-T253 Verify user can see correct tooltip for STT [trivial] @settings @stt @grafana-pr',
+  'PMM-T253 - Verify user can see correct tooltip for STT [trivial] @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
@@ -57,7 +57,7 @@ Scenario.skip(
 );
 
 Scenario.skip(
-  'PMM-T254 PMM-T253 Verify disable telemetry while Advisors enabled @settings @stt @grafana-pr',
+  'PMM-T254 + PMM-T253 - Verify disable telemetry while Advisors enabled @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -74,7 +74,7 @@ Scenario.skip(
 ).retry(2);
 
 Scenario(
-  'PMM-T532 PMM-T533 PMM-T536 - Verify user can disable/enable IA in Settings @fb-alerting @settings',
+  'PMM-T532 + PMM-T533 + PMM-T536 - Verify user can disable/enable IA in Settings @fb-alerting @settings',
   async ({
     I, pmmSettingsPage, settingsAPI, adminPage,
   }) => {
@@ -231,7 +231,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1227 @PMM-T1338 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
+  'PMM-T1227 + PMM-T1338 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
   + 'Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
@@ -252,7 +252,7 @@ Scenario(
   },
 );
 
-Scenario('PMM-T1401 Verify Percona Alerting wording in Settings @max-length @settings', async ({
+Scenario('PMM-T1401 - Verify Percona Alerting wording in Settings @max-length @settings', async ({
   I,
   pmmSettingsPage,
 }) => {
@@ -299,7 +299,7 @@ Scenario.skip(
 ).retry(1);
 
 Scenario(
-  'PMM-T1967 Verify Update modal respects update settings @fb-settings',
+  'PMM-T1967 - Verify Update modal respects update settings @fb-settings',
   async ({
     I, homePage, settingsAPI, pmmSettingsPage,
   }) => {

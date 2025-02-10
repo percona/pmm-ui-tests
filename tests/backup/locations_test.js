@@ -36,7 +36,7 @@ s3Errors.add(['access_key', 'invalid', 'InvalidAccessKeyId: The Access Key Id yo
 s3Errors.add(['secret_key', 'invalid', 'SignatureDoesNotMatch: The request signature we calculated does not match the signature you provided. Check your key and signing method.']);
 
 Scenario(
-  'PMM-T691 Verify message about no storage locations @backup',
+  'PMM-T691 - Verify message about no storage locations @backup',
   async ({
     I, locationsPage,
   }) => {
@@ -80,7 +80,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T696 Verify validation for add storage location modal @backup @bm-locations',
+  'PMM-T696 - Verify validation for add storage location modal @backup @bm-locations',
   async ({
     I, locationsPage,
   }) => {
@@ -102,7 +102,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T707 Verify user is able to test connection for storage location @backup @bm-locations',
+  'PMM-T707 - Verify user is able to test connection for storage location @backup @bm-locations',
   async ({
     I, locationsPage,
   }) => {
@@ -126,7 +126,7 @@ Scenario(
 );
 
 Data(s3Errors).Scenario(
-  'PMM-T708 Verify errors related to s3 storage location @backup @bm-locations ',
+  'PMM-T708 - Verify errors related to s3 storage location @backup @bm-locations ',
   async ({
     I, locationsPage, current,
   }) => {
@@ -145,7 +145,7 @@ Data(s3Errors).Scenario(
 );
 
 Scenario(
-  'PMM-T683 PMM-T684 Verify user is able to add storage location @backup @bm-fb @bm-locations',
+  'PMM-T683 + PMM-T684 - Verify user is able to add storage location @backup @bm-fb @bm-locations',
   async ({
     I, locationsPage,
   }) => {
@@ -179,7 +179,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T690 Verify user is not able to add storage location with the same name @backup @bm-locations',
+  'PMM-T690 - Verify user is not able to add storage location with the same name @backup @bm-locations',
   async ({
     I, locationsPage, locationsAPI,
   }) => {
@@ -206,7 +206,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T693 Verify user is able to delete storage location @backup @bm-fb @bm-locations',
+  'PMM-T693 - Verify user is able to delete storage location @backup @bm-fb @bm-locations',
   async ({
     I, locationsPage, locationsAPI,
   }) => {
@@ -238,7 +238,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T695 Verify user is not able to delete storage location that has backups @backup @bm-locations',
+  'PMM-T695 - Verify user is not able to delete storage location that has backups @backup @bm-locations',
   async ({
     I, locationsPage, locationsAPI, backupAPI, inventoryAPI,
   }) => {
@@ -260,7 +260,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T694 Verify user is able to force delete storage location that has backups @backup @bm-locations',
+  'PMM-T694 - Verify user is able to force delete storage location that has backups @backup @bm-locations',
   async ({
     I, locationsPage, locationsAPI, backupAPI, backupInventoryPage, inventoryAPI,
   }) => {
@@ -288,7 +288,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T692 Verify user is able to edit storage location @backup @bm-locations',
+  'PMM-T692 - Verify user is able to edit storage location @backup @bm-locations',
   async ({
     I, locationsPage, locationsAPI,
   }) => {
@@ -340,7 +340,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T689 Verify user is able see storage location details @backup @bm-locations',
+  'PMM-T689 - Verify user is able see storage location details @backup @bm-locations',
   async ({
     I, locationsPage, locationsAPI,
   }) => {
@@ -376,7 +376,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T896 Verify user is able to force delete location after MongoDB restore @backup @bm-locations',
+  'PMM-T896 - Verify user is able to force delete location after MongoDB restore @backup @bm-locations',
   async ({
     I, locationsPage, backupAPI, inventoryAPI, locationsAPI, restorePage, backupInventoryPage,
   }) => {

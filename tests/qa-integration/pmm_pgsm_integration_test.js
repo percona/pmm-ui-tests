@@ -523,7 +523,7 @@ Scenario(
 
 // Need to fix this and revert skip
 xScenario(
-  'PMM-T1253 Verify pg_stat_monitor.pgsm_normalized_query settings @not-ui-pipeline @pgsm-pmm-integration',
+  'PMM-T1253 - Verify pg_stat_monitor.pgsm_normalized_query settings @not-ui-pipeline @pgsm-pmm-integration',
   async ({
     I, queryAnalyticsPage,
   }) => {
@@ -580,7 +580,7 @@ xScenario(
 );
 
 Scenario(
-  'PMM-T1292 PMM-T1302 PMM-T1303 PMM-T1283 Verify that pmm-admin inventory add agent postgres-exporter with --log-level flag adds PostgreSQL exporter with corresponding log-level @not-ui-pipeline @pgsm-pmm-integration',
+  'PMM-T1292 + PMM-T1302 + PMM-T1303 + PMM-T1283 - Verify that pmm-admin inventory add agent postgres-exporter with --log-level flag adds PostgreSQL exporter with corresponding log-level @not-ui-pipeline @pgsm-pmm-integration',
   async ({
     I, inventoryAPI, dashboardPage, agentCli,
   }) => {
@@ -624,7 +624,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1254 Verify pg_stat_monitor.pgsm_bucket_time settings @not-ui-pipeline @pgsm-pmm-integration',
+  'PMM-T1254 - Verify pg_stat_monitor.pgsm_bucket_time settings @not-ui-pipeline @pgsm-pmm-integration',
   async ({ I }) => {
     const defaultValue = 60;
     const alteredValue = 61;
