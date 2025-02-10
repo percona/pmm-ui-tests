@@ -45,7 +45,11 @@ Scenario(
   async ({
     I, queryAnalyticsPage, inventoryAPI, adminPage,
   }) => {
-    const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'PDPGSQL_')).service_name;
+    let clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'PDPGSQL_')).service_name;
+
+    if (!clientServiceName) {
+      clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pdpgsql_')).service_name;
+    }
 
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     queryAnalyticsPage.waitForLoaded();
