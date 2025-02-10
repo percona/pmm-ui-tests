@@ -12,8 +12,9 @@ Scenario(
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
-    const pdpgsqlServices = await this.apiGetServices(SERVICE_TYPE.POSTGRESQL);
-    console.log(pdpgsqlServices.data);
+    const pdpgsqlServices = await inventoryAPI.apiGetServices(SERVICE_TYPE.POSTGRESQL);
+    console.log('Found Services: ');
+    console.log(pdpgsqlServices);
 
     const service = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pdpgsql_'));
 
@@ -37,8 +38,9 @@ Scenario(
   async ({
     I, queryAnalyticsPage, inventoryAPI, adminPage,
   }) => {
-    const pdpgsqlServices = await this.apiGetServices(SERVICE_TYPE.POSTGRESQL);
-    console.log(pdpgsqlServices.data);
+    const pdpgsqlServices = await inventoryAPI.apiGetServices(SERVICE_TYPE.POSTGRESQL);
+    console.log('Found Services: ');
+    console.log(pdpgsqlServices);
     const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pdpgsql_')).service_name;
 
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
