@@ -334,7 +334,7 @@ module.exports = {
           ...remoteInstancesHelper.remote_instance.mysql.ps_5_7,
           ...this.mysqlSettings,
         };
-        hostName = nodeName.startsWith('client_container') ? 'localhost' : inputs.host;
+        hostName = nodeName.startsWith('client_container') ? '192.168.0.1' : inputs.host;
         I.fillField(this.fields.hostName, hostName);
         I.fillField(this.fields.userName, inputs.username);
         I.fillField(this.fields.password, inputs.password);
@@ -380,7 +380,7 @@ module.exports = {
           ...remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2,
           ...this.mongodbSettings,
         };
-        hostName = nodeName.startsWith('client_container') ? 'localhost' : inputs.host;
+        hostName = nodeName.startsWith('client_container') ? '192.168.0.1' : inputs.host;
         I.fillField(this.fields.hostName, hostName);
         I.fillField(this.fields.userName, inputs.username);
         I.fillField(this.fields.password, inputs.password);
@@ -421,7 +421,7 @@ module.exports = {
           ...remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3,
           ...this.potgresqlSettings,
         };
-        hostName = nodeName.startsWith('client_container') ? 'localhost' : inputs.host;
+        hostName = nodeName.startsWith('client_container') ? '192.168.0.1' : inputs.host;
         I.fillField(this.fields.hostName, hostName);
         I.fillField(this.fields.userName, inputs.username);
         I.fillField(this.fields.password, inputs.password);
@@ -465,7 +465,7 @@ module.exports = {
         break;
       case remoteInstancesHelper.services.proxysql:
         inputs = remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1;
-        hostName = nodeName.startsWith('client_container') ? 'localhost' : inputs.host;
+        hostName = nodeName.startsWith('client_container') ? '192.168.0.1' : inputs.host;
         I.fillField(this.fields.hostName, hostName);
         I.fillField(this.fields.userName, inputs.username);
         I.fillField(this.fields.password, inputs.password);
