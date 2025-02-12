@@ -12,7 +12,7 @@ Scenario(
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
-    const service = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'PDPGSQL_'));
+    const service = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'PDPGSQL_');
 
     I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, { from: 'now-5m', service_name: service.service_name }));
     await dashboardPage.waitForDashboardOpened();
@@ -36,18 +36,13 @@ Scenario(
   }) => {
     const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'PDPGSQL_')).service_name;
 
-    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-30m', to: 'now-10m' }));
-
-    queryAnalyticsPage.waitForLoaded();
-    await queryAnalyticsPage.filters.selectFilterInGroup(clientServiceName, 'Service Name');
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-30m', to: 'now-10m', service_name: clientServiceName }));
     queryAnalyticsPage.waitForLoaded();
     const countBeforeMigration = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(countBeforeMigration > 0, `The queries for service ${clientServiceName} instance do NOT exist, check QAN Data`);
 
-    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
-    queryAnalyticsPage.waitForLoaded();
-    await queryAnalyticsPage.filters.selectFilterInGroup(clientServiceName, 'Service Name');
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m', service_name: clientServiceName }));
     queryAnalyticsPage.waitForLoaded();
     const countAfterMigration = await queryAnalyticsPage.data.getCountOfItems();
 
