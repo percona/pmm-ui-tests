@@ -11,6 +11,9 @@ networks:
       config:
         - subnet: 192.168.0.0/24
           gateway: 192.168.0.1
+  pmm-qa:
+    name: pmm-qa
+    external: true
 
 services:
   pmm-server:
