@@ -33,18 +33,24 @@ Scenario(
 Scenario(
   'PMM-T1983 - Verify QAN have data for Percona Server after PMM migration to V3 @not-ui-pipeline @pmm-migration',
   async ({
-    I, queryAnalyticsPage, inventoryAPI, adminPage,
+    I, queryAnalyticsPage, inventoryAPI,
   }) => {
     const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'ps_8')).service_name;
 
-    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
-    queryAnalyticsPage.waitForLoaded();
-    await adminPage.applyTimeRange('Last 12 hours');
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-30m', to: 'now-10m' }));
     queryAnalyticsPage.waitForLoaded();
     await queryAnalyticsPage.filters.selectFilterInGroup(clientServiceName, 'Service Name');
     queryAnalyticsPage.waitForLoaded();
-    const count = await queryAnalyticsPage.data.getCountOfItems();
+    const countBeforeMigration = await queryAnalyticsPage.data.getCountOfItems();
 
-    assert.ok(count > 0, `The queries for service ${clientServiceName} instance do NOT exist, check QAN Data`);
+    assert.ok(countBeforeMigration > 0, `The queries for service ${clientServiceName} instance do NOT exist, check QAN Data`);
+
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.selectFilterInGroup(clientServiceName, 'Service Name');
+    queryAnalyticsPage.waitForLoaded();
+    const countAfterMigration = await queryAnalyticsPage.data.getCountOfItems();
+
+    assert.ok(countAfterMigration > 0, `The queries for service ${clientServiceName} instance do NOT exist, check QAN Data`);
   },
 ).retry(1);
