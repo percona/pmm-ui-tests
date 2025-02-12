@@ -64,11 +64,7 @@ module.exports = {
         return null;
       });
 
-    if (data.length === 0) {
-      await I.say(`Service "${serviceName}" of "${serviceType}" type is not found!`);
-
-      return undefined;
-    }
+    if (data.length === 0) await I.say(`Service "${serviceName}" of "${serviceType}" type is not found!`);
 
     if (excludeSubstring) {
       return data.find(({ service_name }) => !service_name.includes(excludeSubstring));
