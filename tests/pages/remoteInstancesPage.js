@@ -339,7 +339,7 @@ module.exports = {
         I.fillField(this.fields.userName, inputs.username);
         I.fillField(this.fields.password, inputs.password);
         adminPage.customClearField(this.fields.portNumber);
-        port = nodeName.startsWith('client_container') ? Number(inputs.port) + 1 : inputs.port;
+        port = nodeName.startsWith('client_container') ? Number(inputs.port) + 3 : inputs.port;
         I.fillField(this.fields.portNumber, port);
         srviceName = nodeName.startsWith('client_container') ? `${serviceName}_client` : serviceName;
         I.fillField(this.fields.serviceName, srviceName);
