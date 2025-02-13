@@ -8,8 +8,6 @@ services:
     ports:
       - '8082:8080'
       - '8445:8443'
-    volumes:
-      - ./encryption:/encryption
     environment:
       - PMM_DEBUG=1
-      - PMM_ENCRYPTION_KEY_PATH=/encryption/encryption.key
+      - PMM_ENCRYPTION_KEY_PATH=/srv/non-default.key

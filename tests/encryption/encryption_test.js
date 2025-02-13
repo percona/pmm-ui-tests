@@ -42,12 +42,12 @@ Scenario(
   }) => {
     I.amOnPage(pmmInventoryPage.url);
     await I.verifyCommand('docker exec pmm-server-encryption cat /srv/pmm-encryption.key', null, 'fail');
-    const encryptionKey = await I.verifyCommand('docker exec pmm-server-encryption cat /encryption/encryption.key');
+    const encryptionKey = await I.verifyCommand('docker exec pmm-server-encryption cat /srv/non-default.key');
 
-    assert.ok(encryptionKey, 'Failed to get encryption key from /encryption/encryption.key');
+    assert.ok(encryptionKey, 'Failed to get encryption key from /srv/non-default.key');
     await verifyEncryptionRotation('pmm-server-encryption');
 
-    const newEncryptionKey = await I.verifyCommand('docker exec pmm-server-encryption cat /encryption/encryption.key');
+    const newEncryptionKey = await I.verifyCommand('docker exec pmm-server-encryption cat /srv/non-default.key');
 
     assert.ok(encryptionKey !== newEncryptionKey, 'New and old encryption keys are the same');
   },
