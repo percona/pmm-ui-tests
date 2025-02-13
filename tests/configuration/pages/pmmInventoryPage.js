@@ -12,9 +12,9 @@ module.exports = {
   fields: {
     servicesLink: locate('[role="tablist"] a').withText('Services').withAttr({ 'aria-label': 'Tab Services' }),
     serviceRow: (serviceName) => locate('tr').withChild(locate('td').withAttr({ title: serviceName })),
-    showServiceDetails: (serviceName) => `${node(serviceName)}//ancestor::tr//button[@data-testid="show-row-details"]`,
-    showNodeDetails: (nodeName) => `${node(nodeName)}//ancestor::tr//button[@data-testid="show-row-details"]`,
+    showServiceDetails: (serviceName) => `${service(serviceName)}//ancestor::tr//button[@data-testid="show-row-details"]`,
     hideServiceDetails: (serviceName) => `${service(serviceName)}//ancestor::tr//button[@data-testid="hide-row-details"]`,
+    showNodeDetails: (nodeName) => `${node(nodeName)}//ancestor::tr//button[@data-testid="show-row-details"]`,
     showAgentDetails: (agentName) => `//td[contains(text(), '${agentName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
     showRowDetails: '//button[@data-testid="show-row-details"]',
     agentStatus: locate('$details-row-content').find('a'),
@@ -51,8 +51,8 @@ module.exports = {
     proceedButton: locate('span').withText('Proceed'),
     runningStatus: locate('span').withText('RUNNING'),
     rowsPerPage: locate('$pagination').find('div'),
-    serviceIdLocatorPrefix: '//table//tr[1]/td[4]/a[contains(text(),"',
-    // table//tr[1]/td[4]/a[contains(text(),"pmm-qa-rds-mysql-5-7-39")]
+    serviceIdLocatorPrefix: '//table//tr/td[4][contains(text(),"',
+    nodeIdLocatorPrefix: '//table//tr[1]/td[4]/a[contains(text(),"',
     tableCheckbox: locate('$select-row').find('span'),
     // cannot be changed to locate() because of method: getCellValue()
     tableRow: '//tr[@data-testid="table-tbody-tr"]',
@@ -224,7 +224,7 @@ module.exports = {
   },
 
   async getNodeLink(serviceName) {
-    const nodeIdLocator = `${this.fields.serviceIdLocatorPrefix + serviceName}")]`;
+    const nodeIdLocator = `${this.fields.nodeIdLocatorPrefix + serviceName}")]`;
 
     return await I.grabAttributeFrom(nodeIdLocator, 'href');
   },
