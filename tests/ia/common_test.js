@@ -52,7 +52,9 @@ Scenario(
     verifyTitle('Alert rule templates');
     await iaCommon.openAndVerifyTab(iaCommon.tabNames.alertRules, alertRulesPage.buttons.newAlertRule, alertRulesPage.url);
     verifyTitle('Alert rules');
-    await iaCommon.openAndVerifyTab(iaCommon.tabNames.contactPoints, contactPointsPage.buttons.newContactPoint, contactPointsPage.url);
+    const { newContactPoint } = contactPointsPage.buttons;
+
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.contactPoints, newContactPoint, contactPointsPage.url);
     verifyTitle('Contact points');
     await iaCommon.openAndVerifyTab(iaCommon.tabNames.notificationPolicies, nPoliciesPage.buttons.newPolicy, nPoliciesPage.url);
     verifyTitle('Notification policies');
@@ -63,7 +65,9 @@ Scenario(
 
     await iaCommon.openAndVerifyTab(iaCommon.tabNames.silences, silencesPage.buttons.newSilence, silencesPage.url);
     verifyTitle('Silences');
-    await iaCommon.openAndVerifyTab(iaCommon.tabNames.alertGroups, alertGroupsPage.elements.groupByContainer, alertGroupsPage.url);
+    const { groupByContainer } = alertGroupsPage.elements;
+
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.alertGroups, groupByContainer, alertGroupsPage.url);
     verifyTitle('Alert groups');
     await iaCommon.openAndVerifyTab(iaCommon.tabNames.admin, aiAdminPage.buttons.editConfig, aiAdminPage.url);
     verifyTitle('Settings');
