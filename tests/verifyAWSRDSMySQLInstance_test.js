@@ -43,7 +43,7 @@ Scenario(
     await remoteInstancesPage.fillRemoteRDSFields(instanceIdToMonitor, nodeName);
     remoteInstancesPage.createRemoteInstance(instanceIdToMonitor);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(instanceIdToMonitor);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(instanceIdToMonitor);
+    await pmmInventoryPage.verifyNodeAgentHasRDSExporter(instanceIdToMonitor);
 
     // Waiting for metrics to start hitting for remotely added services
     I.wait(60);

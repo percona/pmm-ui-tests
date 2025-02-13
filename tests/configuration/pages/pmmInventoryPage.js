@@ -5,13 +5,15 @@ const paginationPart = require('./paginationFragment');
 const servicesTab = require('./servicesTab');
 
 const service = (serviceName) => `//span[contains(text(),'${serviceName}')]`;
+const node = (nodeName) => `//td[@title='${nodeName}'][2]`;
 
 module.exports = {
   url: 'graph/inventory?orgId=1',
   fields: {
     servicesLink: locate('[role="tablist"] a').withText('Services').withAttr({ 'aria-label': 'Tab Services' }),
     serviceRow: (serviceName) => locate('tr').withChild(locate('td').withAttr({ title: serviceName })),
-    showServiceDetails: (serviceName) => `${service(serviceName)}//ancestor::tr//button[@data-testid="show-row-details"]`,
+    showServiceDetails: (serviceName) => `${node(serviceName)}//ancestor::tr//button[@data-testid="show-row-details"]`,
+    showNodeDetails: (nodeName) => `${node(nodeName)}//ancestor::tr//button[@data-testid="show-row-details"]`,
     hideServiceDetails: (serviceName) => `${service(serviceName)}//ancestor::tr//button[@data-testid="hide-row-details"]`,
     showAgentDetails: (agentName) => `//td[contains(text(), '${agentName}')]//ancestor::tr//button[@data-testid="show-row-details"]`,
     showRowDetails: '//button[@data-testid="show-row-details"]',
@@ -49,7 +51,8 @@ module.exports = {
     proceedButton: locate('span').withText('Proceed'),
     runningStatus: locate('span').withText('RUNNING'),
     rowsPerPage: locate('$pagination').find('div'),
-    serviceIdLocatorPrefix: '//table//tr/td[4][contains(text(),"',
+    serviceIdLocatorPrefix: '//table//tr[1]/td[4]/a[contains(text(),"',
+    // table//tr[1]/td[4]/a[contains(text(),"pmm-qa-rds-mysql-5-7-39")]
     tableCheckbox: locate('$select-row').find('span'),
     // cannot be changed to locate() because of method: getCellValue()
     tableRow: '//tr[@data-testid="table-tbody-tr"]',
@@ -136,6 +139,26 @@ module.exports = {
     await I.click(this.fields.backToServices);
   },
 
+  async verifyNodeAgentHasRDSExporter(serviceName) {
+    await this.changeRowsPerPage(100);
+    const nodeLink = await this.getNodeLink(serviceName);
+
+    I.amOnPage(nodeLink);
+    this.changeRowsPerPage(100);
+    await I.click(this.fields.showNodeDetails(serviceName));
+    await I.click(this.fields.agentsLinkNew);
+    const rows = await I.grabNumberOfVisibleElements(this.fields.showRowDetails);
+
+    if (rows === 1) {
+      const rdsAgentExporter = '//td[@title=\'rds_exporter\']';
+
+      I.waitForElement(rdsAgentExporter, 30);
+      I.seeElement(rdsAgentExporter);
+    } else if (rows > 1) {
+      I.fail('Test failed: rows should not be greater than 1');
+    }
+  },
+
   async getServiceIdWithStatus(status) {
     const serviceIds = [];
     const locator = locate('span')
@@ -200,10 +223,10 @@ module.exports = {
     I.seeElement(basicMetricsDisabled);
   },
 
-  async getNodeId(serviceName) {
-    const nodeIdLocator = `${this.fields.serviceIdLocatorPrefix + serviceName}")]/../td[5]`;
+  async getNodeLink(serviceName) {
+    const nodeIdLocator = `${this.fields.serviceIdLocatorPrefix + serviceName}")]`;
 
-    return await I.grabTextFrom(nodeIdLocator);
+    return await I.grabAttributeFrom(nodeIdLocator, 'href');
   },
 
   async getServiceId(serviceName) {
