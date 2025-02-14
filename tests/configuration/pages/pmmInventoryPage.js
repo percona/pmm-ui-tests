@@ -154,8 +154,8 @@ module.exports = {
 
       I.waitForElement(rdsAgentExporter, 30);
       I.seeElement(rdsAgentExporter);
-    } else if (rows > 1) {
-      I.fail('Test failed: rows should not be greater than 1');
+    } else {
+      I.fail('Test failed: agent rows must be only 1 for RDS Exporter');
     }
   },
 

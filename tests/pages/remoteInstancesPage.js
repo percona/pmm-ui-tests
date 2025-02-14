@@ -339,7 +339,7 @@ module.exports = {
         I.fillField(this.fields.userName, inputs.username);
         I.fillField(this.fields.password, inputs.password);
         adminPage.customClearField(this.fields.portNumber);
-        port = nodeName.startsWith('client_container') ? Number(inputs.port) + 3 : inputs.port;
+        port = nodeName.startsWith('client_container') ? inputs.host_server_port : inputs.server_port;
         I.fillField(this.fields.portNumber, port);
         srviceName = nodeName.startsWith('client_container') ? `${serviceName}_client` : serviceName;
         I.fillField(this.fields.serviceName, srviceName);
@@ -426,7 +426,7 @@ module.exports = {
         I.fillField(this.fields.userName, inputs.username);
         I.fillField(this.fields.password, inputs.password);
         adminPage.customClearField(this.fields.portNumber);
-        port = nodeName.startsWith('client_container') ? Number(remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port) + 1 : remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port;
+        port = nodeName.startsWith('client_container') ? inputs.host_server_port : inputs.server_port;
         I.fillField(this.fields.portNumber, port);
         srviceName = nodeName.startsWith('client_container') ? `${serviceName}_client` : serviceName;
         I.fillField(this.fields.serviceName, srviceName);
