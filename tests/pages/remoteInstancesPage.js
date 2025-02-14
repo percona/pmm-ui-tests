@@ -477,6 +477,7 @@ module.exports = {
       case externalServiceName:
         inputs = remoteInstancesHelper.remote_instance.external.redis;
         I.fillField(this.fields.serviceName, serviceName);
+        I.fillField(this.fields.hostName, inputs.host);
         I.fillField(this.fields.metricsPath, '/metrics');
         adminPage.customClearField(this.fields.portNumber);
         I.fillField(this.fields.portNumber, inputs.port);
