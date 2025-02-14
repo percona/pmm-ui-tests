@@ -96,7 +96,9 @@ let PMM_SERVER_OVF_AMI_SETUP = 'false';
 
 DB_CONFIG = {
   MYSQL_SERVER_PORT: '3306',
+  MYSQL_HOST_SERVER_PORT: '3309',
   POSTGRES_SERVER_PORT: '5432',
+  POSTGRES_HOST_SERVER_PORT: '5433',
   MONGODB_SERVER_PORT: '27017',
   PROXYSQL_SERVER_PORT: '6033',
 };
@@ -123,7 +125,8 @@ module.exports = {
     mysql: {
       ps_5_7: {
         host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'mysql'),
-        port: DB_CONFIG.MYSQL_SERVER_PORT,
+        server_port: DB_CONFIG.MYSQL_SERVER_PORT,
+        host_server_port: DB_CONFIG.MYSQL_HOST_SERVER_PORT,
         username: 'pmm-agent',
         password: 'pmm%*&agent-password',
         clusterName: 'mysql_clstr',
@@ -168,7 +171,8 @@ module.exports = {
     postgresql: {
       pdpgsql_13_3: {
         host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'postgres'),
-        port: DB_CONFIG.POSTGRES_SERVER_PORT,
+        server_port: DB_CONFIG.POSTGRES_SERVER_PORT,
+        host_server_port: DB_CONFIG.POSTGRES_HOST_SERVER_PORT,
         username: 'postgres',
         password: 'pmm-^*&@agent-password',
         clusterName: 'pgsql_clstr',
