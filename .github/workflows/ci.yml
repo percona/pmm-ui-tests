@@ -24,7 +24,7 @@ jobs:
 
   e2e_fb_tests:
     name: e2e FB tests
-    uses: percona/pmm-qa/.github/workflows/fb-e2e-suite.yml@PMM-13735-encryption-tests
+    uses: percona/pmm-qa/.github/workflows/fb-e2e-suite.yml@v3
     with:
       sha: 'null'
       pmm_ui_tests_branch: ${{ github.head_ref }}
