@@ -11,11 +11,8 @@ networks:
       config:
         - subnet: 192.168.0.0/24
           gateway: 192.168.0.1
-  pmm-qa:  # Ensure it's defined here
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 192.168.0.0/24
+  pmm-qa:
+    external: true
 
 services:
   pmm-server:
