@@ -152,7 +152,7 @@ module.exports = {
     if (rows === 1) {
       const rdsAgentExporter = '//td[@title=\'rds_exporter\']';
 
-      I.waitForElement(rdsAgentExporter, 30);
+      I.waitNumberOfVisibleElements(rdsAgentExporter, rows, 30);
       I.seeElement(rdsAgentExporter);
     } else {
       I.fail('Test failed: agent rows must be only 1 for RDS Exporter');

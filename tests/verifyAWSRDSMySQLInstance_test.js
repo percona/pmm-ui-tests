@@ -28,7 +28,9 @@ Scenario(
     I.wait(60);
   },
 );
-Scenario(
+
+// PMM-13750 Unable to add RDS instance on multiple nodes
+Scenario.skip(
   'PMM-13166, PMM-13548 Verify adding RDS instances (Verify Ability to monitor DBs from a different node) [critical] @instances',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     const instanceIdToMonitor = remoteInstancesPage.mysql57rds['Service Name'];
