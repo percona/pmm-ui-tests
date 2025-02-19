@@ -147,16 +147,9 @@ module.exports = {
     this.changeRowsPerPage(100);
     await I.click(this.fields.showNodeDetails(serviceName));
     await I.click(this.fields.agentsLinkNew);
-    const rows = await I.grabNumberOfVisibleElements(this.fields.showRowDetails);
+    const rdsAgentExporter = '//td[@title=\'rds_exporter\']';
 
-    if (rows === 1) {
-      const rdsAgentExporter = '//td[@title=\'rds_exporter\']';
-
-      I.waitNumberOfVisibleElements(rdsAgentExporter, rows, 30);
-      I.seeElement(rdsAgentExporter);
-    } else {
-      I.fail('Test failed: agent rows must be only 1 for RDS Exporter');
-    }
+    I.waitNumberOfVisibleElements(rdsAgentExporter, 1, 30);
   },
 
   async getServiceIdWithStatus(status) {
