@@ -74,6 +74,9 @@ Scenario(
 Scenario(
   'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ovf-upgrade @ami-upgrade  ',
   async ({ I, homePage }) => {
+    await I.usePlaywrightTo('Remove users/me mock, to be able to upgrade PMM', async ({ page }) => {
+      await page.route('**/v1/users/me', (route) => route.continue());
+    });
     I.amOnPage(homePage.url);
     await homePage.upgradePMM(versionMinor);
     I.saveScreenshot('@PMM-T3');
