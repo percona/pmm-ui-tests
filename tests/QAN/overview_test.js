@@ -299,6 +299,7 @@ Scenario(
     await adminPage.applyTimeRange('Last 3 hours');
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.searchByValue(query);
+    queryAnalyticsPage.waitForLoaded();
     await I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
     const firstQueryText = await I.grabTextFrom(queryAnalyticsPage.data.elements.queryRowValue(1));
 
