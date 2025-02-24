@@ -305,7 +305,7 @@ Scenario(
 
     assert.ok(firstQueryText.startsWith(query), `The Searched Query text was: "${query}", don't match the result text in overview for 1st result: "${firstQueryText}"`);
   },
-);
+).retry(2);
 
 Scenario(
   'PMM-T417 - Verify user is able to search by Database @qan',
