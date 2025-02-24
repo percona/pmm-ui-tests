@@ -119,7 +119,6 @@ Scenario(
 Scenario(
   'Verify Agents are Running and Metrics are being collected Post Upgrade (UI) [critical] @post-external-upgrade @post-client-upgrade',
   async ({ I, grafanaAPI, remoteInstancesHelper }) => {
-    console.log(await I.verifyCommand('docker ps -a'));
     const metrics = Object.keys(remoteInstancesHelper.upgradeServiceMetricNames);
 
     for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
