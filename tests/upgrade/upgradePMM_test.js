@@ -33,7 +33,8 @@ const iaReleased = versionMinor >= 13;
 
 Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(1);
 
-Before(async ({ I }) => {
+Before(async ({ I, settingsAPI }) => {
+  await settingsAPI.changeSettings({ updates: true });
   await I.Authorize();
   I.setRequestTimeout(60000);
 });
@@ -73,8 +74,8 @@ Scenario(
 
 Scenario(
   'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ovf-upgrade @ami-upgrade  ',
-  async ({ I, homePage, settingsAPI }) => {
-    await settingsAPI.changeSettings({ updates: true });
+  async ({ I, homePage }) => {
+    await I.stopMockingProductTourApi();
     I.amOnPage(homePage.url);
     await homePage.upgradePMM(versionMinor);
     I.saveScreenshot('@PMM-T3');
