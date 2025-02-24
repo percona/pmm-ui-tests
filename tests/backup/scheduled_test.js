@@ -89,7 +89,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T902 Verify user is not able to schedule a backup without storage location @backup @bm-mongo',
+  'PMM-T902 - Verify user is not able to schedule a backup without storage location @backup @bm-mongo',
   async ({
     I, scheduledPage,
   }) => {
@@ -110,7 +110,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T954 @PMM-T952 @PMM-T956 @PMM-T958 @PMM-T1500 Verify validation errors for retention and existing name @backup @bm-mongo',
+  'PMM-T954 + PMM-T952 + PMM-T956 + PMM-T958 + PMM-T1500 - Verify validation errors for retention and existing name @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -168,7 +168,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T909 @PMM-T952 @PMM-T956 @PMM-T1501 Verify user can update created scheduled backup @backup @bm-mongo',
+  'PMM-T909 + PMM-T952 + PMM-T956 + PMM-T1501 - Verify user can update created scheduled backup @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -237,7 +237,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T913, @PMM-T922, @PMM-T977 Verify user can schedule a backup for MongoDB with replica @backup @bm-mongo @bm-fb',
+  'PMM-T913 + PMM-T922 + PMM-T977 - Verify user can schedule a backup for MongoDB with replica @backup @bm-mongo @bm-fb',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, scheduledPage,
   }) => {
@@ -281,7 +281,7 @@ Scenario(
 );
 
 Data(schedules).Scenario(
-  '@PMM-T899 @PMM-T903 @PMM-T904 @PMM-T905 @PMM-T907 Verify user can create daily scheduled backup @backup @bm-mongo',
+  'PMM-T899 + PMM-T903 + PMM-T904 + PMM-T905 + PMM-T907 - Verify user can create daily scheduled backup @backup @bm-mongo',
   async ({
     scheduledPage, scheduledAPI, current,
   }) => {
@@ -312,7 +312,7 @@ Data(schedules).Scenario(
 );
 
 Scenario(
-  '@PMM-T900 Verify user can copy scheduled backup @backup @bm-mongo',
+  'PMM-T900 - Verify user can copy scheduled backup @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -357,7 +357,7 @@ Scenario(
 
 // TODO: unskip after https://perconadev.atlassian.net/browse/PMM-12988
 Scenario.skip(
-  '@PMM-T908 Verify user can enable/disable scheduled backup @backup @bm-mongo @bm-fb',
+  'PMM-T908 - Verify user can enable/disable scheduled backup @backup @bm-mongo @bm-fb',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -396,7 +396,7 @@ Scenario.skip(
 );
 
 Scenario(
-  '@PMM-T901 Verify user can delete scheduled backup @backup @bm-mongo',
+  'PMM-T901 - Verify user can delete scheduled backup @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI,
   }) => {
@@ -478,7 +478,7 @@ Scenario(
 );
 
 Data(scheduleErrors).Scenario(
-  '@PMM-T1031 @PMM-T1530 Verify that user can\'t enable PITR together with any another backup type'
+  'PMM-T1031 + PMM-T1530 - Verify that user can\'t enable PITR together with any another backup type'
   + ' @backup @bm-mongo',
   async ({
     I, scheduledPage, scheduledAPI, current,
@@ -522,7 +522,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1527 Verify BM Scheduler blocks mongo services that are not managed as cluster'
+  'PMM-T1527 - Verify BM Scheduler blocks mongo services that are not managed as cluster'
   + ' @backup @bm-mongo @bm-fb',
   async ({ I, scheduledPage }) => {
     const schedule = {

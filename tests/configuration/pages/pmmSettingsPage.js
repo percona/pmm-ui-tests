@@ -258,7 +258,7 @@ module.exports = {
     backupManagementSwitchInput: locate('$advanced-backup').find('input'),
     callHomeSwitch: '//button[@class="toggle-field ant-switch ant-switch-checked"]',
     checkForUpdatesLabel: locate('$advanced-updates').find('span'),
-    checkForUpdatesSwitch: '//div[@data-testid="advanced-updates"]//div[2]//input',
+    checkForUpdatesSwitch: locate('$advanced-updates').find('label'),
     dataRetentionInput: '$retention-number-input',
     dataRetentionLabel: locateLabel('form-field-data-retention'),
     errorPopUpElement: I.useDataQA('data-testid Alert error'),

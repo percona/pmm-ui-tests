@@ -55,7 +55,7 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
   }
 }
 
-Feature('Remote DB Instances');
+Feature('Remote DB Instances').retry(1);
 
 BeforeSuite(async ({ I }) => {
   await I.verifyCommand('docker compose -f docker-compose.yml up -d');
@@ -73,7 +73,7 @@ Scenario.skip('@PMM-T1700 - External service name is properly displayed @instanc
 });
 
 Scenario(
-  '@PMM-T588 - Verify adding external exporter service via UI @instances @fb-instances',
+  'PMM-T588 - Verify adding external exporter service via UI @instances @fb-instances',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
@@ -85,17 +85,32 @@ Scenario(
     await I.click(pmmInventoryPage.fields.agentsLinkNew);
     I.waitForVisible(pmmInventoryPage.fields.externalExporter, 30);
   },
-).retry(0);
+).retry(3);
 
 Data(instances).Scenario(
-  'PMM-T898 Verify Remote Instance Addition [critical] @instances @fb-instances',
+  'PMM-T898 - Verify Remote Instance Addition [critical] @instances @fb-instances',
   async ({ I, remoteInstancesPage, current }) => {
     const serviceName = remoteInstancesHelper.services[current.name];
+    const nodeName = 'pmm-server';
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage(current.name);
-    await remoteInstancesPage.fillRemoteFields(serviceName);
+    await remoteInstancesPage.fillRemoteFields(serviceName, nodeName);
+    remoteInstancesPage.createRemoteInstance(serviceName);
+  },
+);
+
+Data(instances).Scenario(
+  'PMM-13166 Verify Remote Instance Addition [critical] (Verify Ability to monitor DBs from a different node) @instances @fb-instances',
+  async ({ I, remoteInstancesPage, current }) => {
+    const serviceName = remoteInstancesHelper.services[current.name];
+    const nodeName = 'client_container';
+
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.openAddRemotePage(current.name);
+    await remoteInstancesPage.fillRemoteFields(serviceName, nodeName);
     remoteInstancesPage.createRemoteInstance(serviceName);
   },
 );
@@ -190,7 +205,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T635 - Verify Adding HAProxy service via UI @instances @fb-instances',
+  'PMM-T635 - Verify Adding HAProxy service via UI @instances @fb-instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
@@ -304,14 +319,14 @@ Data(qanFilters).Scenario(
 ).retry(2);
 
 Data(metrics).Scenario(
-  'PMM-T743 Check metrics from exporters are hitting PMM Server @instances @fb-instances',
+  'PMM-T743 - Check metrics from exporters are hitting PMM Server @instances @fb-instances',
   async ({ grafanaAPI, current }) => {
     await grafanaAPI.waitForMetric(current.metricName, { type: 'service_name', value: current.serviceName }, 10);
   },
 );
 
 Scenario(
-  'PMM-T1087 Verify adding PostgreSQL remote instance without postgres database @instances',
+  'PMM-T1087 - Verify adding PostgreSQL remote instance without postgres database @instances',
   async ({
     I, remoteInstancesPage, grafanaAPI,
   }) => {

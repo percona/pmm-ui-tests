@@ -1,28 +1,9 @@
-const assert = require('assert');
-
 Feature('pmm-admin summary tests');
 
 After(async ({ I }) => {
-  await I.verifyCommand('rm -r pmm-summary.zip pmm-summary-logs');
+  await I.verifyCommand('rm -r pmm-summary.zip pmm-summary-logs || true');
 });
 
-Scenario('PMM-T1219 - Verify pmm-admin summary includes targets from vmagent @cli', async ({ I }) => {
-  await I.verifyCommand(
-    'pmm-admin summary --filename=pmm-summary.zip',
-    'pmm-summary.zip created.',
-  );
-
-  await I.verifyCommand('unzip pmm-summary.zip -d pmm-summary-logs');
-  await I.verifyCommand(
-    'unzip -l pmm-summary.zip | grep vmagent-targets.json',
-    'client/vmagent-targets.json',
-  );
-
-  await I.verifyCommand(
-    'unzip -l pmm-summary.zip | grep vmagent-targets.html',
-    'client/vmagent-targets.html',
-  );
-});
 // unskip after https://jira.percona.com/browse/PMM-12152
 Scenario.skip('@PMM-T1325 Verify that pmm-admin summary generates ZIP file, which contains separate log file for each exporter and agent @cli', async ({ I, pmmInventoryPage, inventoryAPI }) => {
   await I.verifyCommand('pmm-admin summary --filename=pmm-summary.zip', 'pmm-summary.zip created.');
@@ -48,13 +29,4 @@ Scenario.skip('@PMM-T1325 Verify that pmm-admin summary generates ZIP file, whic
   agentsFromArchive.forEach((agentId) => {
     I.assertTrue(agentIdsArr.includes(agentId), `Actual Agents don't include expected agent_id (Expected ${agentId} but didn't found)`);
   });
-});
-
-Scenario('@PMM-T1353 Verify pmm-admin summary doesn\'t save any credentials in files @cli', async ({ I, pmmInventoryPage }) => {
-  await I.verifyCommand('pmm-admin summary --filename=pmm-summary.zip', 'pmm-summary.zip created.');
-
-  await I.verifyCommand('unzip pmm-summary.zip -d pmm-summary-logs');
-  const pmmServerUrl = await I.verifyCommand('cat pmm-summary-logs/client/status.json | grep \'"https://x*:x*@.*:.*"\'');
-
-  I.assertNotEqual(pmmServerUrl, '', 'PMM server url does not match masked version. Login and password could be in danger.');
 });

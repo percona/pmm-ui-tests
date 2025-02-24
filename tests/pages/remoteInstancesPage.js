@@ -309,15 +309,37 @@ module.exports = {
 
   selectNodeForRemoteInstance(nodeName = 'pmm-server') {
     I.waitForElement(this.fields.hostName, 30);
-    this.selectDropdownOption('$nodes-selectbox', 'pmm-server');
+    if (nodeName === 'pmm-server') {
+      this.selectDropdownOption('$nodes-selectbox', 'pmm-server');
+    } else {
+      this.selectDropdownOption('$nodes-selectbox', 'client_container');
+    }
   },
 
-  async fillRemoteFields(serviceName) {
+  async fillRemoteFields(serviceName, nodeName = 'pmm-server') {
     let inputs;
+    let port;
+    let host;
+    const isClientContainer = nodeName.startsWith('client_container');
     const externalServiceName = 'external_service_new';
+    const srviceName = nodeName.startsWith('client_container') ? `${serviceName}_client` : serviceName;
+    const getHostForNodeName = (nodeName, inputs) => {
+      if (isClientContainer) {
+        return '192.168.0.1';
+      }
+
+      return inputs.host;
+    };
+    const getPortForNodeName = (nodeName, inputs) => {
+      if (isClientContainer) {
+        return inputs.host_server_port;
+      }
+
+      return inputs.server_port;
+    };
 
     if (serviceName !== externalServiceName) {
-      this.selectNodeForRemoteInstance();
+      this.selectNodeForRemoteInstance(nodeName);
     }
 
     // eslint-disable-next-line default-case
@@ -327,12 +349,14 @@ module.exports = {
           ...remoteInstancesHelper.remote_instance.mysql.ps_5_7,
           ...this.mysqlSettings,
         };
-        I.fillField(this.fields.hostName, inputs.host);
+        port = getPortForNodeName(nodeName, inputs);
+        host = getHostForNodeName(nodeName, inputs);
+        I.fillField(this.fields.hostName, host);
         I.fillField(this.fields.userName, inputs.username);
         I.fillField(this.fields.password, inputs.password);
         adminPage.customClearField(this.fields.portNumber);
-        I.fillField(this.fields.portNumber, inputs.port);
-        I.fillField(this.fields.serviceName, serviceName);
+        I.fillField(this.fields.portNumber, port);
+        I.fillField(this.fields.serviceName, srviceName);
         I.fillField(this.fields.environment, inputs.environment);
         I.fillField(this.fields.cluster, inputs.cluster);
         break;
@@ -370,10 +394,11 @@ module.exports = {
           ...remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2,
           ...this.mongodbSettings,
         };
-        I.fillField(this.fields.hostName, inputs.host);
+        host = getHostForNodeName(nodeName, inputs);
+        I.fillField(this.fields.hostName, host);
         I.fillField(this.fields.userName, inputs.username);
         I.fillField(this.fields.password, inputs.password);
-        I.fillField(this.fields.serviceName, serviceName);
+        I.fillField(this.fields.serviceName, srviceName);
         I.fillField(this.fields.environment, inputs.environment);
         I.fillField(this.fields.cluster, inputs.cluster);
         break;
@@ -409,15 +434,14 @@ module.exports = {
           ...remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3,
           ...this.potgresqlSettings,
         };
-        I.fillField(this.fields.hostName, inputs.host);
+        port = getPortForNodeName(nodeName, inputs);
+        host = getHostForNodeName(nodeName, inputs);
+        I.fillField(this.fields.hostName, host);
         I.fillField(this.fields.userName, inputs.username);
         I.fillField(this.fields.password, inputs.password);
         adminPage.customClearField(this.fields.portNumber);
-        I.fillField(
-          this.fields.portNumber,
-          remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
-        );
-        I.fillField(this.fields.serviceName, serviceName);
+        I.fillField(this.fields.portNumber, port);
+        I.fillField(this.fields.serviceName, srviceName);
         I.fillField(this.fields.environment, inputs.environment);
         I.fillField(this.fields.cluster, inputs.cluster);
         break;
@@ -453,10 +477,11 @@ module.exports = {
         break;
       case remoteInstancesHelper.services.proxysql:
         inputs = remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1;
-        I.fillField(this.fields.hostName, inputs.host);
+        host = getHostForNodeName(nodeName, inputs);
+        I.fillField(this.fields.hostName, host);
         I.fillField(this.fields.userName, inputs.username);
         I.fillField(this.fields.password, inputs.password);
-        I.fillField(this.fields.serviceName, serviceName);
+        I.fillField(this.fields.serviceName, srviceName);
         I.fillField(this.fields.environment, inputs.environment);
         I.fillField(this.fields.cluster, inputs.clusterName);
         break;
@@ -619,14 +644,17 @@ module.exports = {
     I.fillField(this.fields.replicationSet, serviceParameters.replicationSet);
   },
 
-  async fillRemoteRDSFields(serviceName) {
+  async fillRemoteRDSFields(serviceName, nodeName) {
     let inputs;
+    const srviceName = nodeName.startsWith('client_container') ? `${serviceName}_client` : serviceName;
 
-    this.selectNodeForRemoteInstance();
+    this.selectNodeForRemoteInstance(nodeName);
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case 'rds-mysql56':
         inputs = this.mysqlInputs;
+        adminPage.customClearField(this.fields.serviceName);
+        I.fillField(this.fields.serviceName, srviceName);
         this.fillFields(inputs);
         break;
       case 'pmm-qa-mysql-8-0-30':
@@ -635,6 +663,8 @@ module.exports = {
         break;
       case 'pmm-qa-rds-mysql-5-7-39':
         inputs = this.mysql57rdsInput;
+        adminPage.customClearField(this.fields.serviceName);
+        I.fillField(this.fields.serviceName, srviceName);
         this.fillFields(inputs);
         break;
       case 'pmm-qa-pgsql-12':

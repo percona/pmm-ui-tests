@@ -8,7 +8,7 @@ Before(async ({ I, rulesAPI }) => {
 });
 
 Scenario(
-  'PMM-T643 Verify message about disabled IA @fb-alerting',
+  'PMM-T643 - Verify message about disabled IA @fb-alerting',
   async ({
     I, pmmSettingsPage, codeceptjsConfig,
   }) => {
@@ -24,9 +24,9 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T481 Verify IA tab bar, '
-  + 'PMM-T620 Verify after reloading the page user is on the same IA tab, '
-  + 'PMM-T776 Verify that user is able to see valid HTML Title on alerts page @fb-alerting',
+  'PMM-T481 + PMM-T620 + PMM-T776 - Verify IA tab bar, '
+  + 'Verify after reloading the page user is on the same IA tab, '
+  + 'Verify that user is able to see valid HTML Title on alerts page @fb-alerting',
   async ({
     I, alertRulesPage, ruleTemplatesPage, contactPointsPage, nPoliciesPage, silencesPage, alertGroupsPage, aiAdminPage,
   }) => {
@@ -52,7 +52,9 @@ Scenario(
     verifyTitle('Alert rule templates');
     await iaCommon.openAndVerifyTab(iaCommon.tabNames.alertRules, alertRulesPage.buttons.newAlertRule, alertRulesPage.url);
     verifyTitle('Alert rules');
-    await iaCommon.openAndVerifyTab(iaCommon.tabNames.contactPoints, contactPointsPage.buttons.newContactPoint, contactPointsPage.url);
+    const { newContactPoint } = contactPointsPage.buttons;
+
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.contactPoints, newContactPoint, contactPointsPage.url);
     verifyTitle('Contact points');
     await iaCommon.openAndVerifyTab(iaCommon.tabNames.notificationPolicies, nPoliciesPage.buttons.newPolicy, nPoliciesPage.url);
     verifyTitle('Notification policies');
@@ -63,7 +65,9 @@ Scenario(
 
     await iaCommon.openAndVerifyTab(iaCommon.tabNames.silences, silencesPage.buttons.newSilence, silencesPage.url);
     verifyTitle('Silences');
-    await iaCommon.openAndVerifyTab(iaCommon.tabNames.alertGroups, alertGroupsPage.elements.groupByContainer, alertGroupsPage.url);
+    const { groupByContainer } = alertGroupsPage.elements;
+
+    await iaCommon.openAndVerifyTab(iaCommon.tabNames.alertGroups, groupByContainer, alertGroupsPage.url);
     verifyTitle('Alert groups');
     await iaCommon.openAndVerifyTab(iaCommon.tabNames.admin, aiAdminPage.buttons.editConfig, aiAdminPage.url);
     verifyTitle('Settings');

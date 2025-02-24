@@ -193,7 +193,7 @@ Data(editorRole).Scenario(
 );
 
 Data(ptSummaryRoleCheck).Scenario(
-  'PMM-T334 PMM-T420 PMM-T1726 Verify Home dashboard and the pt-summary with viewer or editor role '
+  'PMM-T334 + PMM-T420 + PMM-T1726 - Verify Home dashboard and the pt-summary with viewer or editor role '
   + '@nightly @grafana-pr',
   async ({
     I, dashboardPage, current, adminPage, homePage,

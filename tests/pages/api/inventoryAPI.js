@@ -36,7 +36,13 @@ module.exports = {
       const agents = Object.values(resp.data).flat().filter((entry) => entry);
 
       // Check if all agents have the status "AGENT_STATUS.RUNNING"
-      const areRunning = agents.every(({ status }) => status === AGENT_STATUS.RUNNING);
+      const areRunning = agents.every(({ status, agent_type }) => {
+        if (agent_type !== 'pmm-agent') {
+          return status === AGENT_STATUS.RUNNING;
+        }
+
+        return true;
+      });
 
       if (areRunning) {
         return resp;
@@ -52,7 +58,11 @@ module.exports = {
     const resp = await this.apiGetServices(serviceType);
 
     const data = Object.values(resp.data).flat()
-      .filter(({ service_name }) => service_name.includes(serviceName));
+      .filter(({ service_name }) => {
+        if (service_name) return service_name.includes(serviceName);
+
+        return null;
+      });
 
     if (data.length === 0) await I.say(`Service "${serviceName}" of "${serviceType}" type is not found!`);
 

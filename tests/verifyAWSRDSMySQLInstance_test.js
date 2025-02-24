@@ -11,6 +11,7 @@ Scenario(
   'PMM-T138 Verify disabling enhanced metrics for RDS, PMM-T139 Verify disabling basic metrics for RDS, PMM-T9 Verify adding RDS instances [critical] @instances',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     const instanceIdToMonitor = remoteInstancesPage.mysql57rds['Service Name'];
+    const nodeName = 'pmm-server';
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
@@ -18,10 +19,33 @@ Scenario(
     remoteInstancesPage.verifyInstanceIsDiscovered(instanceIdToMonitor);
     remoteInstancesPage.startMonitoringOfInstance(instanceIdToMonitor);
     remoteInstancesPage.verifyAddInstancePageOpened();
-    await remoteInstancesPage.fillRemoteRDSFields(instanceIdToMonitor);
+    await remoteInstancesPage.fillRemoteRDSFields(instanceIdToMonitor, nodeName);
     remoteInstancesPage.createRemoteInstance(instanceIdToMonitor);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(instanceIdToMonitor);
     await pmmInventoryPage.verifyAgentHasStatusRunning(instanceIdToMonitor);
+
+    // Waiting for metrics to start hitting for remotely added services
+    I.wait(60);
+  },
+);
+
+// PMM-13750 Unable to add RDS instance on multiple nodes
+Scenario.skip(
+  'PMM-13166, PMM-13548 Verify adding RDS instances (Verify Ability to monitor DBs from a different node) [critical] @instances',
+  async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
+    const instanceIdToMonitor = remoteInstancesPage.mysql57rds['Service Name'];
+    const nodeName = 'client_container';
+
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
+    remoteInstancesPage.discoverRDS();
+    remoteInstancesPage.verifyInstanceIsDiscovered(instanceIdToMonitor);
+    remoteInstancesPage.startMonitoringOfInstance(instanceIdToMonitor);
+    remoteInstancesPage.verifyAddInstancePageOpened();
+    await remoteInstancesPage.fillRemoteRDSFields(instanceIdToMonitor, nodeName);
+    remoteInstancesPage.createRemoteInstance(instanceIdToMonitor);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(instanceIdToMonitor);
+    await pmmInventoryPage.verifyNodeAgentHasRDSExporter(instanceIdToMonitor);
 
     // Waiting for metrics to start hitting for remotely added services
     I.wait(60);
