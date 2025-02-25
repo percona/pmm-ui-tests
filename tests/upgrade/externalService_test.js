@@ -126,7 +126,7 @@ Scenario(
         if (metrics.includes(service)) {
           const metricName = remoteInstancesHelper.upgradeServiceMetricNames[service];
 
-          await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: service });
+          await grafanaAPI.waitForMetric(metricName, { type: 'node_name', value: service });
         }
       }
     }
