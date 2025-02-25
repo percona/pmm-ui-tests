@@ -299,12 +299,13 @@ Scenario(
     await adminPage.applyTimeRange('Last 3 hours');
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.searchByValue(query);
+    queryAnalyticsPage.waitForLoaded();
     await I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
     const firstQueryText = await I.grabTextFrom(queryAnalyticsPage.data.elements.queryRowValue(1));
 
     assert.ok(firstQueryText.startsWith(query), `The Searched Query text was: "${query}", don't match the result text in overview for 1st result: "${firstQueryText}"`);
   },
-);
+).retry(2);
 
 Scenario(
   'PMM-T417 - Verify user is able to search by Database @qan',
