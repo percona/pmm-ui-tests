@@ -53,8 +53,8 @@ Scenario(
   async ({
     I, dashboardPage, adminPage,
   }) => {
-    const masterServiceName = (await I.verifyCommand('pmm-admin list | grep MySQL | grep node_1 | awk -F" " \'{print $2}\'')).trim();
-    const slaveServiceName = (await I.verifyCommand('pmm-admin list | grep MySQL | grep node_2 | awk -F" " \'{print $2}\'')).trim();
+    const masterServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | grep node-1 | awk -F" " '{print $2}'`)).trim();
+    const slaveServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | grep node-2 | awk -F" " '{print $2}'`)).trim();
 
     const serviceList = [masterServiceName, slaveServiceName];
 
