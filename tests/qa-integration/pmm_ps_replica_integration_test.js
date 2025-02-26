@@ -18,7 +18,8 @@ const connection = {
   password: 'msandbox',
 };
 
-Scenario(
+// PMM-12153 Update mysqld_exporter to the latest stable
+Scenario.skip(
   'Verify metrics from PS Replica instance on PMM-Server @pmm-ps-replica-integration @not-ui-pipeline',
   async ({
     I, grafanaAPI,
@@ -48,7 +49,9 @@ Scenario(
   },
 ).retry(1);
 
-Scenario(
+// PMM-12153 Update mysqld_exporter to the latest stable
+// Also adjust Graphs without Data below
+Scenario.skip(
   'Verify dashboard for PS Replica Instance @pmm-ps-replica-integration @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage,
@@ -76,7 +79,8 @@ Scenario(
   },
 ).retry(2);
 
-Scenario(
+// PMM-12153 Update mysqld_exporter to the latest stable
+Scenario.skip(
   'Verify QAN for PS Replica Instance @pmm-ps-replica-integration @not-ui-pipeline',
   async ({
     I, queryAnalyticsPage,
