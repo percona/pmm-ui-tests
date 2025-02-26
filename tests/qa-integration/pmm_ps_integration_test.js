@@ -156,7 +156,7 @@ Scenario(
     // Add wait for Queries to appear in PMM
     await I.wait(70);
 
-    const psContainerName = await I.verifyCommand('docker ps --format "{{.Names}}" | grep ps_');
+    const psContainerName = await I.verifyCommand(`docker ps --format "{{.Names}}" | grep ${container_name}`);
 
     await I.verifyCommand(`docker exec ${psContainerName} mysql -h 127.0.0.1 --port 3307 -u ${credentials.perconaServer.root.username} -p${credentials.perconaServer.root.password} -e "CREATE USER IF NOT EXISTS sysbench@'%' IDENTIFIED WITH mysql_native_password BY 'test'; GRANT ALL ON *.* TO sysbench@'%'; DROP DATABASE IF EXISTS ${dbName};"`);
     await I.verifyCommand(`docker exec ${psContainerName} mysql -h 127.0.0.1 --port 3307 -u ${sbUser.name} -p${sbUser.password} -e "SET GLOBAL slow_query_log=ON;"`);
