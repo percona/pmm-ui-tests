@@ -10,7 +10,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 const version = process.env.PS_VERSION ? `${process.env.PS_VERSION}` : '8.4';
-const container_name = `ps_pmm_${version}`;
+const container_name = `ps_pmm_${version}_replica`;
 
 const connection = {
   host: container_name,
