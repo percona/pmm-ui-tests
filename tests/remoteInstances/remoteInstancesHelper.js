@@ -306,6 +306,16 @@ module.exports = {
         cluster: 'gc-mysql80',
         environment: 'gc-mysql80',
       },
+      gc_mysql84: {
+        type: 'mysql',
+        serviceName: 'gc-mysql84',
+        port: '3306',
+        host: secret(process.env.GCP_MYSQL84_HOST),
+        username: secret(process.env.GCP_MYSQL84_USER),
+        password: secret(process.env.GCP_MYSQL84_PASSWORD),
+        cluster: 'gc-mysql84',
+        environment: 'gc-mysql84',
+      },
       gc_pgsql_13: {
         type: 'postgresql',
         // using postgres in name makes sure both exporter and QAN agents are verified
@@ -353,6 +363,18 @@ module.exports = {
         password: secret(process.env.GCP_PGSQL16_PASSWORD),
         cluster: 'gc-pgsql16',
         environment: 'gc-pgsql16',
+      },
+      gc_pgsql_17: {
+        type: 'postgresql',
+        // using postgres in name makes sure both exporter and QAN agents are verified
+        serviceName: 'gc-postgres17',
+        port: '5432',
+        database: process.env.GCP_PGSQL17_USER,
+        host: secret(process.env.GCP_PGSQL17_HOST),
+        username: secret(process.env.GCP_PGSQL17_USER),
+        password: secret(process.env.GCP_PGSQL17_PASSWORD),
+        cluster: 'gc-pgsql17',
+        environment: 'gc-pgsql17',
       },
     },
   },
