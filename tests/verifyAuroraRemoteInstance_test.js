@@ -48,14 +48,14 @@ Data(instances).Scenario('@PMM-T1295 Verify adding Aurora remote instance @insta
 // FIXME: Can be removed once https://jira.percona.com/browse/PMM-10201 is fixed
 Data(instances)
   .Scenario('PMM-T1295 Verify Aurora instance metrics @instances', async ({ I, current, grafanaAPI }) => {
-    const { instance_id } = current;
+    const { instance_id } = remoteInstancesHelper.remote_instance.aws.aurora[current];
 
     // Waiting for metrics to start hitting for remotely added services
     I.wait(10);
 
     const response = await grafanaAPI.checkMetricExist(mysql_metric, {
       type: 'service_name',
-      value: instance_id,
+      value: remoteInstancesHelper.remote_instance.aws.aurora[current].instance_id,
     });
     const result = JSON.stringify(response.data.data.result);
 
@@ -99,12 +99,10 @@ Data(instances)
     async ({
       I, dashboardPage, adminPage, current,
     }) => {
-      const { instance_id } = current;
-
       I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
       dashboardPage.waitForDashboardOpened();
       await adminPage.applyTimeRange('Last 5 minutes');
-      await dashboardPage.applyFilter('Service Name', instance_id);
+      await dashboardPage.applyFilter('Service Name', remoteInstancesHelper.remote_instance.aws.aurora[current].instance_id);
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
@@ -120,7 +118,7 @@ Data(instances)
     async ({
       I, qanOverview, qanFilters, qanPage, current, adminPage,
     }) => {
-      const { instance_id } = current;
+      const { instance_id } = remoteInstancesHelper.remote_instance.aws.aurora[current];
 
       I.amOnPage(qanPage.url);
       qanOverview.waitForOverviewLoaded();
