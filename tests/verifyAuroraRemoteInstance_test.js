@@ -7,7 +7,7 @@ Feature('Monitoring Aurora instances');
 
 const instances = ['aurora2', 'aurora3'];
 const mysql_metric = 'mysql_global_status_max_used_connections';
-const aurora_metric = 'mysql_global_status_aurora_total_op_memory';
+const aurora_metric = 'mysql_global_status_auroradb_commit_latency';
 
 Before(async ({ I }) => {
   await I.Authorize();
