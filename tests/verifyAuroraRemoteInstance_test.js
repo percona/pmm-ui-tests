@@ -72,41 +72,32 @@ Scenario('PMM-T1295 - Verify MySQL Amazon Aurora Details @instances', async ({ I
   await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
 }).retry(1);
 
-Data(instances)
-  .Scenario(
-    'PMM-T1295 - Verify dashboard after Aurora instance is added @instances',
-    async ({
-      I, dashboardPage, adminPage, current,
-    }) => {
-      const { instance_id } = current;
+Data(instances).Scenario('PMM-T1295 - Verify dashboard after Aurora instance is added @instances', async ({
+  I, dashboardPage, adminPage, current,
+}) => {
+  I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
+  dashboardPage.waitForDashboardOpened();
+  await adminPage.applyTimeRange('Last 5 minutes');
+  await dashboardPage.applyFilter('Service Name', remoteInstancesHelper.remote_instance.aws.aurora[current].instance_id);
+  adminPage.performPageDown(5);
+  await dashboardPage.expandEachDashboardRow();
+  adminPage.performPageUp(5);
+  await dashboardPage.verifyThereAreNoGraphsWithoutData(8);
+}).retry(1);
 
-      I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
-      dashboardPage.waitForDashboardOpened();
-      await adminPage.applyTimeRange('Last 5 minutes');
-      await dashboardPage.applyFilter('Service Name', instance_id);
-      adminPage.performPageDown(5);
-      await dashboardPage.expandEachDashboardRow();
-      adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(8);
-    },
-  )
-  .retry(1);
+Data(instances).Scenario(
+  'PMM-T1295 - Verify QAN after Aurora instance is added @instances',
+  async ({
+    I, queryAnalyticsPage, current,
+  }) => {
+    const { instance_id } = remoteInstancesHelper.remote_instance.aws.aurora[current];
 
-Data(instances)
-  .Scenario(
-    'PMM-T1295 - Verify QAN after Aurora instance is added @instances',
-    async ({
-      I, queryAnalyticsPage, current, adminPage,
-    }) => {
-      const { instance_id } = current;
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.selectFilter(instance_id);
+    queryAnalyticsPage.waitForLoaded();
+    const count = await queryAnalyticsPage.data.getCountOfItems();
 
-      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
-      queryAnalyticsPage.waitForLoaded();
-      await queryAnalyticsPage.filters.selectFilter(instance_id);
-      queryAnalyticsPage.waitForLoaded();
-      const count = await queryAnalyticsPage.data.getCountOfItems();
-
-      assert.ok(count > 0, `The queries for service ${instance_id} instance do NOT exist, check QAN Data`);
-    },
-  )
-  .retry(1);
+    assert.ok(count > 0, `The queries for service ${instance_id} instance do NOT exist, check QAN Data`);
+  },
+).retry(1);
