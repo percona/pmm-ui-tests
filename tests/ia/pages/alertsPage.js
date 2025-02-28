@@ -2,7 +2,6 @@ const { I } = inject();
 const assert = require('assert');
 
 const alertRow = (alertName) => `//tr[td[contains(., "${alertName}")]]`;
-const details = '$alert-details-wrapper';
 
 module.exports = {
   url: 'graph/alerting/alerts',
@@ -26,7 +25,7 @@ module.exports = {
   },
   buttons: {
     // silenceActivate returns silence/activate button locator for a given alert name
-    silenceActivate: (alertName) => `${alertRow(alertName)}[1]/td//span[text()="Silence"]`,
+    silenceActivate: (alertName) => `${alertRow(alertName)}[1]/td//a[span[text()="Silence"]]`,
     submitSilence: 'button[type=\'submit\']',
     arrowIcon: (alertName) => locate(`${alertRow(alertName)}`).find('$show-details'),
   },

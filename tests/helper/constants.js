@@ -57,6 +57,21 @@ const AGENT_TYPE = {
   PMM_AGENT: 'pmm-agent',
 };
 
+const users = {
+  viewer: {
+    username: 'test_viewer',
+    password: 'password',
+  },
+  admin: {
+    username: 'test_admin',
+    password: 'password',
+  },
+  editor: {
+    username: 'test_editor',
+    password: 'password',
+  },
+};
+
 module.exports = {
   SERVICE_TYPE,
   NODE_STATUS,
@@ -65,4 +80,5 @@ module.exports = {
   NODE_TYPE,
   DISCOVER_RDS,
   AGENT_TYPE,
+  users,
 };

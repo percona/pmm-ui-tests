@@ -1,26 +1,11 @@
+const assert = require('assert');
+const { users } = require('../helper/constants');
+
 const {
-  pmmSettingsPage, pmmInventoryPage, dashboardPage, remoteInstancesPage,
+  pmmSettingsPage, dashboardPage, remoteInstancesPage,
 } = inject();
 
 Feature('PMM Permission restrictions').retry(1);
-
-let viewer; let admin; let
-  editor;
-
-const users = {
-  viewer: {
-    username: 'test_viewer',
-    password: 'password',
-  },
-  admin: {
-    username: 'test_admin',
-    password: 'password',
-  },
-  editor: {
-    username: 'test_editor',
-    password: 'password',
-  },
-};
 
 const viewerRole = new DataTable(['username', 'password', 'dashboard']);
 
@@ -41,6 +26,11 @@ const ptSummaryRoleCheck = new DataTable(['username', 'password', 'dashboard']);
 ptSummaryRoleCheck.add([users.editor.username, users.editor.password, dashboardPage.nodeSummaryDashboard.url]);
 ptSummaryRoleCheck.add([users.viewer.username, users.viewer.password, dashboardPage.nodeSummaryDashboard.url]);
 
+const settingsReadOnly = new DataTable(['username', 'password']);
+
+settingsReadOnly.add([users.viewer.username, users.viewer.password]);
+settingsReadOnly.add([users.editor.username, users.editor.password]);
+
 BeforeSuite(async ({ I }) => {
   I.say('Creating users for the permissions test suite');
   const viewerId = await I.createUser(users.viewer.username, users.viewer.password);
@@ -50,16 +40,6 @@ BeforeSuite(async ({ I }) => {
   await I.setRole(viewerId);
   await I.setRole(adminId, 'Admin');
   await I.setRole(editorId, 'Editor');
-  viewer = viewerId;
-  admin = adminId;
-  editor = editorId;
-});
-
-AfterSuite(async ({ I }) => {
-  I.say('Removing users');
-  await I.deleteUser(viewer);
-  await I.deleteUser(admin);
-  await I.deleteUser(editor);
 });
 
 Scenario.skip(
@@ -213,5 +193,42 @@ Data(ptSummaryRoleCheck).Scenario(
     adminPage.performPageUp(5);
     I.waitForElement(dashboardPage.nodeSummaryDashboard.ptSummaryDetail.reportContainer, 60);
     I.seeElement(dashboardPage.nodeSummaryDashboard.ptSummaryDetail.reportContainer);
+  },
+);
+
+Data(settingsReadOnly).Scenario(
+  'PMM-T1987 - Verify viewer/editor users can get settings/readonly @fb-settings',
+  async ({
+    I, current, loginPage, settingsAPI,
+  }) => {
+    const { username, password } = current;
+
+    await I.amOnPage(loginPage.url);
+    await loginPage.login(username, password);
+
+    const cookie = await I.grabCookie('pmm_session');
+
+    const { data: { settings } } = await I.sendGetRequest('v1/server/settings/readonly', {
+      Cookie: `pmm_session=${cookie.value}`,
+    });
+
+    const expectedSettings = await settingsAPI.getSettings();
+
+    assert.ok(settings.updates_enabled === expectedSettings.updates_enabled);
+    assert.ok(settings.telemetry_enabled === expectedSettings.telemetry_enabled);
+    assert.ok(settings.advisor_enabled === expectedSettings.advisor_enabled);
+    assert.ok(settings.pmm_public_address === expectedSettings.pmm_public_address);
+    assert.ok(settings.backup_management_enabled === expectedSettings.backup_management_enabled);
+    assert.ok(settings.azurediscover_enabled === expectedSettings.azurediscover_enabled);
+    assert.ok(settings.enable_access_control === expectedSettings.enable_access_control);
+  },
+);
+
+Scenario(
+  'PMM-T1991 - verify viewer is not able to access rule templates page @fb-alerting @grafana-pr',
+  async ({ I, ruleTemplatesPage }) => {
+    await I.Authorize(users.viewer.username, users.viewer.password);
+    I.amOnPage(ruleTemplatesPage.url);
+    I.waitForText('Insufficient access permissions.', 10, ruleTemplatesPage.elements.unathorizedMessage);
   },
 );

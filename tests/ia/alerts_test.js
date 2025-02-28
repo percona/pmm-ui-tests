@@ -1,4 +1,5 @@
 const contactPointsAPI = require('./pages/api/contactPointsAPI');
+const { users } = require('../helper/constants');
 
 const ruleName = 'PSQL immortal rule';
 const ruleFolder = 'PostgreSQL';
@@ -34,6 +35,12 @@ BeforeSuite(async ({ I, rulesAPI }) => {
 
   // Preparation steps for checking Alert via webhook server
   await I.verifyCommand('docker compose -f docker-compose-webhook.yml up -d');
+
+  const viewerId = await I.createUser(users.viewer.username, users.viewer.password);
+  const editorId = await I.createUser(users.editor.username, users.editor.password);
+
+  await I.setRole(viewerId);
+  await I.setRole(editorId, 'Editor');
 });
 
 AfterSuite(async ({ rulesAPI, I }) => {
@@ -60,8 +67,41 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T1997 - verify viewer can not silence alert @ia',
+  async ({ I, alertsPage, alertsAPI }) => {
+    await I.Authorize(users.viewer.username, users.viewer.password);
+
+    await alertsAPI.waitForAlerts(24, 1);
+    await I.amOnPage(alertsPage.url);
+    await I.seeNumberOfElements(alertsPage.elements.alertRow(ruleName), 1);
+    I.seeAttributesOnElements(alertsPage.buttons.silenceActivate(ruleName), { 'aria-disabled': 'true' });
+  },
+);
+
+Scenario(
+  'PMM-T1998 - verify editor is able to silence and unsilence alert @ia',
+  async ({
+    I, alertsPage, alertmanagerAPI, alertsAPI,
+  }) => {
+    await I.Authorize(users.editor.username, users.editor.password);
+
+    await alertsAPI.waitForAlerts(24, 1);
+    I.amOnPage(alertsPage.url);
+    await alertsPage.verifyAlert(ruleName);
+    await alertsPage.silenceAlert(ruleName);
+    I.amOnPage(alertsPage.url);
+    await alertsPage.verifyAlert(ruleName, true);
+    const silences = await alertmanagerAPI.getSilenced();
+
+    await alertmanagerAPI.deleteSilences(silences);
+    I.amOnPage(alertsPage.url);
+    await alertsPage.verifyAlert(ruleName, false);
+  },
+);
+
+Scenario(
   'PMM-T1494 + PMM-T1495 - Verify fired alert in Pager Duty and Webhook @ia',
-  async ({ I, alertsAPI, rulesAPI }) => {
+  async ({ I, rulesAPI }) => {
     const file = './testdata/ia/scripts/alert.txt';
     const alertUID = await rulesAPI.getAlertUID(ruleName, ruleFolder);
 

@@ -1,6 +1,7 @@
 const assert = require('assert');
 const page = require('./pages/alertRulesPage');
 const rulesAPI = require('./pages/api/rulesAPI');
+const { users } = require('../helper/constants');
 
 const rules = new DataTable(['template', 'templateType', 'ruleName', 'threshold', 'thresholdUnit', 'duration',
   'severity', 'filters', 'channels', 'activate']);
@@ -18,6 +19,14 @@ Object.values(page.templates).forEach((template) => {
 });
 
 Feature('Alerting: Alert rules');
+
+BeforeSuite(async ({ I }) => {
+  const viewerId = await I.createUser(users.viewer.username, users.viewer.password);
+  const editorId = await I.createUser(users.editor.username, users.editor.password);
+
+  await I.setRole(viewerId);
+  await I.setRole(editorId, 'Editor');
+});
 
 Before(async ({ I }) => {
   await I.Authorize();
@@ -69,6 +78,19 @@ Scenario(
 );
 
 Scenario(
+  'PMM-T1996 - verify viewer cannot create alert rules @fb-alerting @grafana-pr',
+  async ({ I, alertRulesPage }) => {
+    await I.Authorize(users.viewer.username, users.viewer.password);
+    I.amOnPage(alertRulesPage.url);
+    I.waitForElement(alertRulesPage.elements.noRules);
+    I.dontSeeElement(alertRulesPage.buttons.newAlertRule);
+
+    I.amOnPage(alertRulesPage.newRuleFromTemplateUrl);
+    I.waitForText('Insufficient access permissions.', 10, alertRulesPage.elements.unathorizedMessage);
+  },
+);
+
+Scenario(
   'PMM-T1392 - Verify fields dynamically change value when template is changed @fb-alerting @grafana-pr',
   async ({ I, alertRulesPage }) => {
     // TODO: https://jira.percona.com/browse/PMM-10860 name doesn't change
@@ -85,11 +107,22 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T1420 - Verify user can create Percona templated alert @fb-alerting',
-  async ({ I, alertRulesPage, rulesAPI }) => {
+const usersTable = new DataTable(['username', 'password']);
+
+usersTable.add(['admin', '']);
+usersTable.add([users.editor.username, users.editor.password]);
+
+Data(usersTable).Scenario(
+  'PMM-T1420 + PMM-T1992 - Verify user can create Percona templated alert @fb-alerting',
+  async ({
+    I, alertRulesPage, rulesAPI, current,
+  }) => {
+    if (current.username !== 'admin') await I.Authorize(current.username, current.password);
+
     const rule = page.rules[15];
     const newRule = page.rules[0];
+
+    newRule.ruleName = `${newRule.ruleName}_${current.username}`;
 
     alertRulesPage.openAlertRulesTab();
     I.waitForEnabled(alertRulesPage.buttons.newAlertRule, 10);
