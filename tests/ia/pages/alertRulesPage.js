@@ -1,11 +1,11 @@
 const { I } = inject();
-const Promise = require('mongodb/lib/core/topologies/read_preference');
 const { rules, templates, filterOperators } = require('./testData');
 
 const rowByAlertRuleName = (ruleName) => `//div[@data-testid="row"][div[@data-column="Name" and contains(text(), "${ruleName}")]]`;
 
 module.exports = {
   url: 'graph/alerting/list',
+  newRuleFromTemplateUrl: 'graph/alerting/new-from-template',
   columnHeaders: ['State', 'Name', 'Health', 'Summary'],
   filterOperators,
   rules,
@@ -30,6 +30,7 @@ module.exports = {
     detailsSeverityLabel: (value) => locate('span').withText(`severity=${value}`).inside('//ul[@aria-label="Tags"]').at(2),
     detailsFolderLabel: (value) => locate('span').withText(`grafana_folder=${value}`).inside('//ul[@aria-label="Tags"]'),
     ruleValidationError: (error) => locate('div').withText(error).inside('div').withAttr({ role: 'alert' }),
+    unathorizedMessage: '$unauthorized',
   },
   buttons: {
     newAlertRule: '//a[contains(.,\'New alert rule\')]',

@@ -1,28 +1,11 @@
 const assert = require('assert');
+const { users } = require('../helper/constants');
 
 const {
   pmmSettingsPage, dashboardPage, remoteInstancesPage,
 } = inject();
 
 Feature('PMM Permission restrictions').retry(1);
-
-let viewer; let admin; let
-  editor;
-
-const users = {
-  viewer: {
-    username: 'test_viewer',
-    password: 'password',
-  },
-  admin: {
-    username: 'test_admin',
-    password: 'password',
-  },
-  editor: {
-    username: 'test_editor',
-    password: 'password',
-  },
-};
 
 const viewerRole = new DataTable(['username', 'password', 'dashboard']);
 
@@ -57,16 +40,6 @@ BeforeSuite(async ({ I }) => {
   await I.setRole(viewerId);
   await I.setRole(adminId, 'Admin');
   await I.setRole(editorId, 'Editor');
-  viewer = viewerId;
-  admin = adminId;
-  editor = editorId;
-});
-
-AfterSuite(async ({ I }) => {
-  I.say('Removing users');
-  await I.deleteUser(viewer);
-  await I.deleteUser(admin);
-  await I.deleteUser(editor);
 });
 
 Scenario.skip(
@@ -248,5 +221,14 @@ Data(settingsReadOnly).Scenario(
     assert.ok(settings.backup_management_enabled === expectedSettings.backup_management_enabled);
     assert.ok(settings.azurediscover_enabled === expectedSettings.azurediscover_enabled);
     assert.ok(settings.enable_access_control === expectedSettings.enable_access_control);
+  },
+);
+
+Scenario(
+  'PMM-T1991 - verify viewer is not able to access rule templates page @fb-alerting @grafana-pr',
+  async ({ I, ruleTemplatesPage }) => {
+    await I.Authorize(users.viewer.username, users.viewer.password);
+    I.amOnPage(ruleTemplatesPage.url);
+    I.waitForText('Insufficient access permissions.', 10, ruleTemplatesPage.elements.unathorizedMessage);
   },
 );
