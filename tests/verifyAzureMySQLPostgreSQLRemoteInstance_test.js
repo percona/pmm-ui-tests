@@ -83,7 +83,7 @@ xScenario(
   },
 ).retry(2);
 
-Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure CHECK QAN @instances', async ({
+Data(filters).Scenario('PMM-T746 + PMM-T748 - Verify adding monitoring for Azure CHECK QAN @instances', async ({
   I, qanFilters, qanOverview, qanPage, current,
 }) => {
   I.amOnPage(qanPage.refreshRateFiveSecondsUrl);
