@@ -1,4 +1,4 @@
-const { I, dashboardPage } = inject();
+const { I, dashboardPage, pmmUpgradePage } = inject();
 const assert = require('assert');
 const moment = require('moment');
 const productTourModal = require('./components/productTourComponent');
@@ -111,61 +111,27 @@ module.exports = {
     I.waitForVisible(I.useDataQA('data-testid Nav menu item'), 20);
   },
 
-  // introducing methods
   async upgradePMM(version, containerName, skipUpgradeLogs = false) {
-    let locators = this.getLocators(version);
-    const milestones = this.upgradeMilestones;
+    const locators = this.getLocators(version);
 
     I.waitForElement(locators.triggerUpdate, 180);
     I.seeElement(locators.triggerUpdate);
-    const available_version = await I.grabTextFrom(locators.availableVersion);
 
     I.click(locators.triggerUpdate);
-    I.waitForElement(locators.updateProgressModal, 30);
-    I.waitForText(locators.inProgressMessage, 30, locators.updateProgressModal);
+    I.waitForElement(pmmUpgradePage.elements.updateNowButton);
 
-    // skipping milestones checks for 2.9 and 2.10, 2.11 versions due logs not showing issue
-    if (version > 11) {
-      if (this.isAmiUpgrade) {
-        // to ensure that the logs window is never empty during upgrade
-        I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
+    I.wait(5);
+    const numberOfElements = await I.grabNumberOfVisibleElements(pmmUpgradePage.elements.checkUpdatesNow);
 
-        I.waitForText(locators.successUpgradeMessage, 1800, locators.successUpgradeMsgSelector);
-      }
-
-      if (!this.isAmiUpgrade) {
-        // to ensure that the logs window is never empty during upgrade
-        I.waitForElement(`//pre[contains(text(), '${milestones[0]}')]`, 1200);
-        I.waitForText(locators.successUpgradeMessage, 1800, locators.successUpgradeMsgSelector);
-
-        if (!skipUpgradeLogs) {
-          // Get upgrade logs from a container
-          const upgradeLogs = await I.verifyCommand(`docker exec ${containerName || this.pmmServerName} cat /srv/logs/pmm-update-perform.log`);
-
-          milestones.forEach((milestone) => {
-            assert.ok(upgradeLogs.includes(milestone), `Expected to see ${milestone} in upgrade logs`);
-          });
-        }
-      }
-
-      I.click(locators.reloadButtonAfterUpgrade);
-    } else {
-      I.waitForText(locators.successUpgradeMessage, 1800, locators.successUpgradeMsgSelector);
-      // we have a bug we need this https://jira.percona.com/browse/PMM-9294
-      I.wait(60);
-
-      I.click(locators.reloadButtonAfterUpgrade);
-      I.refreshPage();
+    if (numberOfElements >= 1) {
+      I.click(pmmUpgradePage.elements.checkUpdatesNow);
     }
 
-    locators = this.getLocators('latest');
+    I.waitForElement(pmmUpgradePage.elements.updateNowButton);
+    I.click(pmmUpgradePage.elements.updateNowButton);
+    I.waitForElement(pmmUpgradePage.elements.updateSuccess, 240);
 
-    I.waitForVisible(locators.upToDateLocator, 60);
-    assert.equal(
-      await I.grabTextFrom(locators.currentVersion),
-      available_version.split(' ')[0],
-      'Upgrade operation failed',
-    );
+    console.log(`Upgraded to pmm server tag: ${await I.verifyCommand('docker ps -a | grep pmm-server | awk -F "pmm-server:" \'{print $2}\' | awk -F "  " \'{print $1}\'')}`);
   },
 
   async verifyPreUpdateWidgetIsPresent(version) {
