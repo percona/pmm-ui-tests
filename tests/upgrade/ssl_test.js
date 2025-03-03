@@ -16,11 +16,10 @@ Before(async ({ I }) => {
 });
 
 Data(sslinstances).Scenario(
-  'PMM-T948 PMM-T947 Verify Adding Postgresql, MySQL, MongoDB SSL services remotely via API before upgrade @pre-ssl-upgrade',
+  'PMM-T948 + PMM-T947 - Verify Adding Postgresql, MySQL, MongoDB SSL services remotely via API before upgrade @pre-ssl-upgrade',
   async ({
     I, remoteInstancesPage, current, addInstanceAPI, inventoryAPI,
   }) => {
-    console.log(await I.verifyCommand('docker ps -a'));
     const {
       serviceName, serviceType, version, container,
     } = current;
