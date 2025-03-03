@@ -224,6 +224,31 @@ Data(settingsReadOnly).Scenario(
   },
 );
 
+Data(settingsReadOnly).Scenario(
+  'verify viewer/editor users cannot update settings @fb-settings',
+  async ({
+    I, current, loginPage,
+  }) => {
+    const { username, password } = current;
+
+    await I.amOnPage(loginPage.url);
+    await loginPage.login(username, password);
+
+    const cookie = await I.grabCookie('pmm_session');
+
+    const r = await I.sendPutRequest('v1/server/settings', {
+      enable_alerting: false,
+      enable_telemetry: false,
+      enable_advisor: false,
+      updates_enabled: false,
+    }, {
+      Cookie: `pmm_session=${cookie.value}`,
+    });
+
+    assert.ok(r.status === 401);
+  },
+);
+
 Scenario(
   'PMM-T1991 - verify viewer is not able to access rule templates page @fb-alerting @grafana-pr',
   async ({ I, ruleTemplatesPage }) => {
