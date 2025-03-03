@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { users } = require('../helper/constants');
 
 Feature('PMM Settings Functionality').retry(1);
 
@@ -303,6 +304,11 @@ Scenario(
   async ({
     I, homePage, settingsAPI, pmmSettingsPage,
   }) => {
+    const adminId = await I.createUser(users.admin.username, users.admin.password);
+
+    await I.setRole(adminId, 'Admin');
+    await I.Authorize(users.admin.username, users.admin.password);
+
     await settingsAPI.changeSettings({ updates: true });
     await I.usePlaywrightTo('remove users/me mock', async ({ page }) => {
       await page.route('**/v1/users/me', (route) => route.continue());

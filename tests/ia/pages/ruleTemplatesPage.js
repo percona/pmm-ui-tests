@@ -17,6 +17,7 @@ module.exports = {
     templateRowByName: (name) => templateRow(name),
     templateRowBySource: (source) => `//tr[descendant::div[contains(text(), "${source}")]]`,
     columnHeaderLocator: (columnHeaderText) => `//th[text()="${columnHeaderText}"]`,
+    unathorizedMessage: '$unauthorized',
   },
   buttons: {
     openAddTemplateModal: '$alert-rule-template-add-modal-button',

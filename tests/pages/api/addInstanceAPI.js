@@ -1,4 +1,3 @@
-const assert = require('assert');
 const { NODE_TYPE, DISCOVER_RDS } = require('../../helper/constants');
 
 const {
@@ -49,7 +48,7 @@ module.exports = {
           node_name: serviceName,
           node_type: NODE_TYPE.REMOTE,
         },
-        port: port || remoteInstancesHelper.remote_instance.mysql.ps_5_7.port,
+        port: port || remoteInstancesHelper.remote_instance.mysql.ps_5_7.server_port,
         qan_mysql_perfschema: true,
         address: host || remoteInstancesHelper.remote_instance.mysql.ps_5_7.host,
         service_name: serviceName,
@@ -94,7 +93,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 
-    I.assertEqual(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
+    I.assertEqual(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring.  \n ${JSON.stringify(resp.data, null, 2)}`);
   },
 
   async addPostgresql(serviceName, creds = {}) {
@@ -107,7 +106,7 @@ module.exports = {
           node_name: serviceName,
           node_type: NODE_TYPE.REMOTE,
         },
-        port: port || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
+        port: port || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.server_port,
         address: host || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.host,
         service_name: serviceName,
         username: username || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.username,
@@ -121,7 +120,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 
-    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
+    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring.  \n ${JSON.stringify(resp.data, null, 2)}`);
   },
 
   async addPostgreSqlSSL(connection) {
@@ -149,7 +148,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 
-    I.assertEqual(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
+    I.assertEqual(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring.  \n ${JSON.stringify(resp.data, null, 2)}`);
   },
 
   async addPostgreSQLGC(serviceName) {
@@ -173,7 +172,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 
-    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
+    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring.  \n ${JSON.stringify(resp.data, null, 2)}`);
   },
 
   async addProxysql(serviceName) {
@@ -196,7 +195,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 
-    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
+    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring. \n ${JSON.stringify(resp.data, null, 2)}`);
   },
 
   async addMongodb(serviceName, creds = {}) {
@@ -209,7 +208,7 @@ module.exports = {
           node_name: serviceName,
           node_type: NODE_TYPE.REMOTE,
         },
-        port: port || remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.port,
+        port: port || remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.server_port,
         address: host || remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.host,
         service_name: serviceName,
         username: username || remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.username,
@@ -250,7 +249,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 
-    I.assertEqual(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring`);
+    I.assertEqual(resp.status, 200, `Instance ${connection.serviceName} was not added for monitoring. \n ${JSON.stringify(resp.data, null, 2)}`);
   },
 
   async addRDS(serviceName, connection = {}) {
@@ -288,7 +287,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 
-    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring`);
+    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring. \n ${JSON.stringify(resp.data, null, 2)}`);
 
     return resp.data;
   },

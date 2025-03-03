@@ -198,7 +198,9 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendGetRequest(endpoint, headers);
 
-    return resp.data.settings[property];
+    if (property) return resp.data.settings[property];
+
+    return resp.data.settings;
   },
 
   async setTourOptions(productTour = true, alertingTour = true, pmmVersion = '3.2.0') {

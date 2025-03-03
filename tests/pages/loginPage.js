@@ -19,7 +19,7 @@ module.exports = {
    * @param   {string} username   user name to log in; with default 'admin'
    * @param   {string} password   a password for specified user; with default for 'admin' user
    */
-  async login(username = 'admin', password = process.env.ADMIN_PASSWORD) {
+  async login(username = 'admin', password = process.env.ADMIN_PASSWORD || 'admin') {
     I.seeElement(this.fields.loginInput);
     I.fillField(this.fields.loginInput, username);
     I.seeElement(this.fields.passwordInput);
