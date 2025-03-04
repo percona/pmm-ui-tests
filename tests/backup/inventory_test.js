@@ -201,6 +201,13 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
     const isLogical = current.backupType === 'LOGICAL';
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
+
+    console.log(`Service ID is: ${service_id}`);
+    console.log('docker exec rs101 pmm-admin list');
+    console.log('docker exec rs102 pmm-admin list');
+    console.log('docker exec rs103 pmm-admin list');
+    console.log('pmm-admin list');
+
     const artifactId = await backupAPI.startBackup(backupName, service_id, currentLocationId, false, isLogical);
 
     await backupAPI.waitForBackupFinish(artifactId);
