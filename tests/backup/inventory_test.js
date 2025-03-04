@@ -78,9 +78,9 @@ Before(async ({
 
   await I.verifyCommand('docker exec rs101 systemctl start mongod');
 
-  const c = await I.mongoGetCollection('test', 'test');
+  // const c = await I.mongoGetCollection('test', 'test');
 
-  await c.deleteMany({ number: 2 });
+  // await c.deleteMany({ number: 2 });
 
   await I.Authorize();
   await settingsAPI.changeSettings({ backup: true });
