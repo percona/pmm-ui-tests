@@ -56,7 +56,7 @@ BeforeSuite(async ({
     location.description,
   );
 
-  await I.mongoConnect(mongoConnection);
+  // await I.mongoConnect(mongoConnection);
   if (!(await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName))) {
     I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
     I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
