@@ -35,6 +35,7 @@ Data(azureServices).Scenario(
     I, remoteInstancesPage, pmmInventoryPage, settingsAPI, current, inventoryAPI,
   }) => {
     const serviceName = current.name;
+    const nodeName = 'pmm-server';
 
     await settingsAPI.enableAzure();
     I.amOnPage(remoteInstancesPage.url);
@@ -42,7 +43,7 @@ Data(azureServices).Scenario(
     remoteInstancesPage.discoverAzure();
     remoteInstancesPage.startMonitoringOfInstance(current.instanceToMonitor);
     remoteInstancesPage.verifyAddInstancePageOpened();
-    await remoteInstancesPage.fillRemoteRDSFields(serviceName);
+    await remoteInstancesPage.fillRemoteRDSFields(serviceName, nodeName);
     await remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
 
