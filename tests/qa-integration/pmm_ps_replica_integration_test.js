@@ -12,12 +12,6 @@ Before(async ({ I, settingsAPI }) => {
 const version = process.env.PS_VERSION ? `${process.env.PS_VERSION}` : '8.4';
 const container_name = `ps_pmm_${version}_replica`;
 
-const connection = {
-  host: container_name,
-  username: 'msandbox',
-  password: 'msandbox',
-};
-
 // PMM-12153 Update mysqld_exporter to the latest stable
 Scenario.skip(
   'Verify metrics from PS Replica instance on PMM-Server @pmm-ps-replica-integration @not-ui-pipeline',

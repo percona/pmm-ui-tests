@@ -1,5 +1,6 @@
 const assert = require('assert');
 const { SERVICE_TYPE } = require('../helper/constants');
+const connection = require('../pages/credentials');
 
 const { adminPage } = inject();
 
@@ -13,12 +14,6 @@ const version = process.env.PS_VERSION ? `${process.env.PS_VERSION}` : '8.0';
 const container_name = `ps_pmm_${version}`;
 const remoteServiceName = 'remote_pmm-mysql-integration';
 
-const connection = {
-  host: container_name,
-  username: 'msandbox',
-  password: 'msandbox',
-};
-
 Scenario(
   'Verify Adding Mysql services remotely @pmm-ps-integration @not-ui-pipeline',
   async ({
@@ -29,8 +24,8 @@ Scenario(
       serviceName: remoteServiceName,
       serviceType: SERVICE_TYPE.MYSQL,
       port,
-      username: connection.username,
-      password: connection.password,
+      username: connection.perconaServer.msandbox.username,
+      password: connection.perconaServer.msandbox.password,
       host: container_name,
       cluster: 'ps_remote_cluster',
       environment: 'ps_remote_cluster',
