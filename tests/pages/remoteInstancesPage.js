@@ -321,6 +321,11 @@ module.exports = {
     let inputs;
     let port;
     let host;
+
+    // Handle undefined or null values
+    // eslint-disable-next-line no-param-reassign
+    nodeName = nodeName || 'pmm-server';
+
     const isClientContainer = nodeName.startsWith('client_container');
     const externalServiceName = 'external_service_new';
     const srviceName = nodeName.startsWith('client_container') ? `${serviceName}_client` : serviceName;
