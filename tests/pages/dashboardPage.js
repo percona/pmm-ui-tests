@@ -1,6 +1,7 @@
 const { I, adminPage } = inject();
 const assert = require('assert');
 const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu');
+const PmmHealthDashboard = require('../dashboards/pages/pmmHealthDashboard');
 
 const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 
@@ -1106,7 +1107,7 @@ module.exports = {
       'Steal Kswapd',
     ],
   },
-
+  pmmHealth: PmmHealthDashboard,
   osNodesOverview: {
     noDataElements: 3,
     clearUrl: 'graph/d/node-instance-overview/nodes-overview',

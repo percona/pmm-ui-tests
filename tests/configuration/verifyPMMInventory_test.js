@@ -249,7 +249,7 @@ Scenario(
     for (const sn of services) {
       await I.waitForVisible(pmmInventoryPage.fields.showServiceDetails(sn), 10);
       await I.click(pmmInventoryPage.fields.showServiceDetails(sn));
-      await I.waitForText('running', pmmInventoryPage.fields.agentStatus, 10);
+      await I.waitForText('running', 10, pmmInventoryPage.fields.agentStatus);
       await I.waitForVisible(pmmInventoryPage.fields.hideServiceDetails(sn), 10);
       await I.click(pmmInventoryPage.fields.hideServiceDetails(sn));
     }

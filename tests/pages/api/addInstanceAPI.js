@@ -114,7 +114,7 @@ module.exports = {
         password: password || remoteInstancesHelper.remote_instance.postgresql.pdpgsql_17.password,
         cluster: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_17.clusterName,
         pmm_agent_id: 'pmm-server',
-        qan_postgresql_pgstatements_agent: true,
+        qan_postgresql_pgstatmonitor_agent: true,
         tls_skip_verify: true,
       },
     };

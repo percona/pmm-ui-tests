@@ -64,14 +64,12 @@ Scenario(
   async ({
     I, grafanaAPI, remoteInstancesHelper,
   }) => {
-    // Make sure Metrics are hitting before Upgrade
     const metricName = 'redis_uptime_in_seconds';
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     await grafanaAPI.checkMetricExist(metricName);
     await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: serviceName });
-    // removing check for upgrade verification
-    // await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
+    await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
 
     const response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
     const targets = response.data.data.activeTargets.find(
