@@ -62,11 +62,12 @@ Scenario(
 Scenario(
   'Verify Redis as external Service Works After Upgrade @post-external-upgrade @post-client-upgrade',
   async ({
-    I, grafanaAPI, remoteInstancesHelper,
+    I, grafanaAPI, remoteInstancesHelper, inventoryAPI,
   }) => {
     const metricName = 'redis_uptime_in_seconds';
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
+    console.log(await inventoryAPI.apiGetServices());
     await grafanaAPI.checkMetricExist(metricName);
     await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: serviceName });
     await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: 'redis_external_2' });
