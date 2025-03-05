@@ -5,7 +5,7 @@ const assert = require('assert');
 
 const url = new URL(codeceptjsConfig.config.helpers.Playwright.url);
 
-let counter =1;
+let counter = 1;
 
 module.exports = {
   accessKey: remoteInstancesHelper.remote_instance.aws.aws_access_key,
@@ -164,7 +164,9 @@ module.exports = {
     pgStatStatementsRadio: locate('label').withAttr({ for: 'radio-btn-2' }).withText('PG Stat Statements'),
     pgStatMonitorRadio: locate('label').withAttr({ for: 'radio-btn-3' }).withText('PG Stat Monitor'),
     pgStatMonitorRadioInput: locate('#radio-btn-3'),
-    customAutoDiscoveryButton: locate('//div[input[@data-testid="autoDiscoveryOptions-radio-button"]]').find('label').withText('Custom'),
+    customAutoDiscoveryButton: locate('//div[input[@data-testid="autoDiscoveryOptions-radio-button"]]')
+      .find('label')
+      .withText('Custom'),
     customAutoDiscoveryfield: '$autoDiscoveryLimit-number-input',
     dropdownOption: (text) => locate('div[class$="-select-option-body"]').find('span').withText(text),
   },
@@ -185,9 +187,7 @@ module.exports = {
 
   async fillFileContent(field, file) {
     I.click(field);
-    I.type(await this.getFileContent(
-      file,
-    ));
+    I.type(await this.getFileContent(file));
   },
 
   tableStatsLimitRadioButtonLocator(limit) {
@@ -259,7 +259,7 @@ module.exports = {
     adminPage.customClearField(this.fields.portNumber);
     I.fillField(this.fields.portNumber, details.port);
 
-    I.fillField(this.fields.serviceName, `${details.serviceName}_counter++`);
+    I.fillField(this.fields.serviceName, `${details.serviceName}_${counter++}`);
     I.fillField(this.fields.environment, details.environment);
     I.fillField(this.fields.cluster, details.cluster);
 
@@ -379,18 +379,9 @@ module.exports = {
         I.click(this.fields.useTLS);
         I.waitForElement(this.fields.tlscaInput, 30);
 
-        await this.fillFileContent(
-          this.fields.tlscaInput,
-          inputs.tlsCAFile,
-        );
-        await this.fillFileContent(
-          this.fields.tlsCertificateInput,
-          inputs.tlsCertificateFile,
-        );
-        await this.fillFileContent(
-          this.fields.tlsCertificateKeyInput,
-          inputs.tlsCertificateKeyFile,
-        );
+        await this.fillFileContent(this.fields.tlscaInput, inputs.tlsCAFile);
+        await this.fillFileContent(this.fields.tlsCertificateInput, inputs.tlsCertificateFile);
+        await this.fillFileContent(this.fields.tlsCertificateKeyInput, inputs.tlsCertificateKeyFile);
         break;
       case remoteInstancesHelper.services.mongodb:
         inputs = {
@@ -419,18 +410,9 @@ module.exports = {
         I.click(this.fields.useTLS);
         I.waitForElement(this.fields.tlscaInput, 30);
 
-        await this.fillFileContent(
-          this.fields.tlscaInput,
-          inputs.tlsCAFile,
-        );
-        await this.fillFileContent(
-          this.fields.tlsCertificateFilePasswordInput,
-          inputs.tlsCertificateKeyFilePassword,
-        );
-        await this.fillFileContent(
-          this.fields.tlsCertificateKey,
-          inputs.tlsCertificateKeyFile,
-        );
+        await this.fillFileContent(this.fields.tlscaInput, inputs.tlsCAFile);
+        await this.fillFileContent(this.fields.tlsCertificateFilePasswordInput, inputs.tlsCertificateKeyFilePassword);
+        await this.fillFileContent(this.fields.tlsCertificateKey, inputs.tlsCertificateKeyFile);
         break;
       case remoteInstancesHelper.services.postgresql:
         inputs = {
@@ -465,18 +447,9 @@ module.exports = {
         I.click(this.fields.useTLS);
         I.waitForElement(this.fields.tlscaInput, 30);
 
-        await this.fillFileContent(
-          this.fields.tlscaInput,
-          inputs.tlsCAFile,
-        );
-        await this.fillFileContent(
-          this.fields.tlsCertificateInput,
-          inputs.tlsCertFile,
-        );
-        await this.fillFileContent(
-          this.fields.tlsCertificateKeyInput,
-          inputs.tlsKeyFile,
-        );
+        await this.fillFileContent(this.fields.tlscaInput, inputs.tlsCAFile);
+        await this.fillFileContent(this.fields.tlsCertificateInput, inputs.tlsCertFile);
+        await this.fillFileContent(this.fields.tlsCertificateKeyInput, inputs.tlsKeyFile);
         break;
       case remoteInstancesHelper.services.proxysql:
         inputs = remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1;
@@ -589,10 +562,7 @@ module.exports = {
     I.fillField(this.fields.clientID, remoteInstancesHelper.remote_instance.azure.azure_client_id);
     I.fillField(this.fields.clientSecret, remoteInstancesHelper.remote_instance.azure.azure_client_secret);
     I.fillField(this.fields.tenantID, remoteInstancesHelper.remote_instance.azure.azure_tenant_id);
-    I.fillField(
-      this.fields.subscriptionID,
-      remoteInstancesHelper.remote_instance.azure.azure_subscription_id,
-    );
+    I.fillField(this.fields.subscriptionID, remoteInstancesHelper.remote_instance.azure.azure_subscription_id);
     I.click(this.fields.discoverBtn);
     this.waitForDiscovery();
   },
