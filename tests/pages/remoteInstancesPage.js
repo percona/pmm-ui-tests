@@ -259,6 +259,7 @@ module.exports = {
     adminPage.customClearField(this.fields.portNumber);
     I.fillField(this.fields.portNumber, details.port);
 
+    // eslint-disable-next-line no-plusplus
     I.fillField(this.fields.serviceName, `${details.serviceName}_${counter++}`);
     I.fillField(this.fields.environment, details.environment);
     I.fillField(this.fields.cluster, details.cluster);

@@ -63,6 +63,7 @@ Data(instances).Scenario(
 
     const instanceDetails = getInstance(instance);
 
+    console.log(instanceDetails);
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage(instanceType);
