@@ -257,7 +257,6 @@ module.exports = {
     adminPage.customClearField(this.fields.portNumber);
     I.fillField(this.fields.portNumber, details.port);
 
-    // eslint-disable-next-line no-plusplus
     I.fillField(this.fields.serviceName, details.serviceName);
     I.fillField(this.fields.environment, details.environment);
     I.fillField(this.fields.cluster, details.cluster);
@@ -423,11 +422,11 @@ module.exports = {
           inputs.tlsCAFile,
         );
         await this.fillFileContent(
-          this.fields.tlsCertificateInput,
-          inputs.tlsCertificateFile,
+          this.fields.tlsCertificateFilePasswordInput,
+          inputs.tlsCertificateKeyFilePassword,
         );
         await this.fillFileContent(
-          this.fields.tlsCertificateKeyInput,
+          this.fields.tlsCertificateKey,
           inputs.tlsCertificateKeyFile,
         );
         break;
@@ -470,11 +469,11 @@ module.exports = {
         );
         await this.fillFileContent(
           this.fields.tlsCertificateInput,
-          inputs.tlsCertificateFile,
+          inputs.tlsCertFile,
         );
         await this.fillFileContent(
           this.fields.tlsCertificateKeyInput,
-          inputs.tlsCertificateKeyFile,
+          inputs.tlsKeyFile,
         );
         break;
       case remoteInstancesHelper.services.proxysql:
