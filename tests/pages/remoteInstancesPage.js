@@ -5,6 +5,8 @@ const assert = require('assert');
 
 const url = new URL(codeceptjsConfig.config.helpers.Playwright.url);
 
+let counter =1;
+
 module.exports = {
   accessKey: remoteInstancesHelper.remote_instance.aws.aws_access_key,
   secretKey: remoteInstancesHelper.remote_instance.aws.aws_secret_key,
@@ -257,7 +259,7 @@ module.exports = {
     adminPage.customClearField(this.fields.portNumber);
     I.fillField(this.fields.portNumber, details.port);
 
-    I.fillField(this.fields.serviceName, `${details.serviceName}_1`);
+    I.fillField(this.fields.serviceName, `${details.serviceName}_counter++`);
     I.fillField(this.fields.environment, details.environment);
     I.fillField(this.fields.cluster, details.cluster);
 
