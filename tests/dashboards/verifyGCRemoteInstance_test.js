@@ -55,7 +55,7 @@ Scenario(
 Data(instances).Scenario(
   'Verify adding Remote Google Cloud Instance @not-ui-pipeline @gcp',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current,
+    I, remoteInstancesPage, current,
   }) => {
     const {
       instance, instanceType,
@@ -77,7 +77,7 @@ Data(instances).Scenario(
     I, pmmInventoryPage, current,
   }) => {
     const {
-      instance, instanceType,
+      instance,
     } = current;
 
     const instanceDetails = getInstance(instance);

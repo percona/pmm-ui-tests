@@ -378,9 +378,18 @@ module.exports = {
         I.click(this.fields.useTLS);
         I.waitForElement(this.fields.tlscaInput, 30);
 
-        await this.fillFileContent(this.fields.tlscaInput, inputs.tlsCAFile);
-        await this.fillFileContent(this.fields.tlsCertificateInput, inputs.tlsCertificateFile);
-        await this.fillFileContent(this.fields.tlsCertificateKeyInput, inputs.tlsCertificateKeyFile);
+        await this.fillFileContent(
+          this.fields.tlscaInput,
+          inputs.tlsCAFile,
+        );
+        await this.fillFileContent(
+          this.fields.tlsCertificateInput,
+          inputs.tlsCertificateFile,
+        );
+        await this.fillFileContent(
+          this.fields.tlsCertificateKeyInput,
+          inputs.tlsCertificateKeyFile,
+        );
         break;
       case remoteInstancesHelper.services.mongodb:
         inputs = {
@@ -409,9 +418,18 @@ module.exports = {
         I.click(this.fields.useTLS);
         I.waitForElement(this.fields.tlscaInput, 30);
 
-        await this.fillFileContent(this.fields.tlscaInput, inputs.tlsCAFile);
-        await this.fillFileContent(this.fields.tlsCertificateFilePasswordInput, inputs.tlsCertificateKeyFilePassword);
-        await this.fillFileContent(this.fields.tlsCertificateKey, inputs.tlsCertificateKeyFile);
+        await this.fillFileContent(
+          this.fields.tlscaInput,
+          inputs.tlsCAFile,
+        );
+        await this.fillFileContent(
+          this.fields.tlsCertificateInput,
+          inputs.tlsCertificateFile,
+        );
+        await this.fillFileContent(
+          this.fields.tlsCertificateKeyInput,
+          inputs.tlsCertificateKeyFile,
+        );
         break;
       case remoteInstancesHelper.services.postgresql:
         inputs = {
@@ -446,9 +464,18 @@ module.exports = {
         I.click(this.fields.useTLS);
         I.waitForElement(this.fields.tlscaInput, 30);
 
-        await this.fillFileContent(this.fields.tlscaInput, inputs.tlsCAFile);
-        await this.fillFileContent(this.fields.tlsCertificateInput, inputs.tlsCertFile);
-        await this.fillFileContent(this.fields.tlsCertificateKeyInput, inputs.tlsKeyFile);
+        await this.fillFileContent(
+          this.fields.tlscaInput,
+          inputs.tlsCAFile,
+        );
+        await this.fillFileContent(
+          this.fields.tlsCertificateInput,
+          inputs.tlsCertificateFile,
+        );
+        await this.fillFileContent(
+          this.fields.tlsCertificateKeyInput,
+          inputs.tlsCertificateKeyFile,
+        );
         break;
       case remoteInstancesHelper.services.proxysql:
         inputs = remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1;
