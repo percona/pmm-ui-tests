@@ -5,8 +5,6 @@ const assert = require('assert');
 
 const url = new URL(codeceptjsConfig.config.helpers.Playwright.url);
 
-let counter = 1;
-
 module.exports = {
   accessKey: remoteInstancesHelper.remote_instance.aws.aws_access_key,
   secretKey: remoteInstancesHelper.remote_instance.aws.aws_secret_key,
@@ -260,7 +258,7 @@ module.exports = {
     I.fillField(this.fields.portNumber, details.port);
 
     // eslint-disable-next-line no-plusplus
-    I.fillField(this.fields.serviceName, `${details.serviceName}_${counter++}`);
+    I.fillField(this.fields.serviceName, details.serviceName);
     I.fillField(this.fields.environment, details.environment);
     I.fillField(this.fields.cluster, details.cluster);
 

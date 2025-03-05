@@ -63,18 +63,32 @@ Data(instances).Scenario(
 
     const instanceDetails = getInstance(instance);
 
-    console.log(instanceDetails);
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage(instanceType);
     await remoteInstancesPage.addRemoteDetails(instanceDetails);
     await remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
+  },
+);
+
+Data(instances).Scenario(
+  'Verify Remote Instance Google Cloud Instance has Status Running @not-ui-pipeline @gcp',
+  async ({
+    I, pmmInventoryPage, current,
+  }) => {
+    const {
+      instance, instanceType,
+    } = current;
+
+    const instanceDetails = getInstance(instance);
+
+    I.amOnPage(pmmInventoryPage.url);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(instanceDetails.serviceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(instanceDetails.serviceName);
     // Waiting for metrics to start hitting PMM-Server
     I.wait(20);
   },
-).retry(1);
+).retry(2);
 
 Data(instances).Scenario(
   'Verify dashboard after Remote GC Instances are added @not-ui-pipeline @gcp',
