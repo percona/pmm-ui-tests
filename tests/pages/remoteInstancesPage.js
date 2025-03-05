@@ -256,7 +256,8 @@ module.exports = {
 
     adminPage.customClearField(this.fields.portNumber);
     I.fillField(this.fields.portNumber, details.port);
-    I.fillField(this.fields.serviceName, details.serviceName);
+
+    I.fillField(this.fields.serviceName, `${details.serviceName}_1`);
     I.fillField(this.fields.environment, details.environment);
     I.fillField(this.fields.cluster, details.cluster);
 
