@@ -106,7 +106,7 @@ test.describe('-promscrape.maxScapeSize tests', async () => {
     });
   });
 
-  test('Verify pt summary for ps psmdb and pg', async ({}) => {
+  test('Verify pt summary for mysql mongodb and pgsql', async ({}) => {
     await test.step('Verify pt summary returns correct exit code', async () => {
       const ptMysqlSummary = await cli.exec('docker exec pmm-client-1 /usr/local/percona/pmm/tools/pt-mysql-summary --version');
       await ptMysqlSummary.assertSuccess();

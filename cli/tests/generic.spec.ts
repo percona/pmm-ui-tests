@@ -522,4 +522,20 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     // no information about failure reasons is shown
     await output.outContains('Failed to register pmm-agent on PMM Server: Node with name');
   });
+
+  test('Verify pt summary for mysql mongodb and pgsql', async ({}) => {
+    await test.step('Verify pt summary returns correct exit code', async () => {
+      const output = await cli.exec('pmm-admin list');
+      console.log(output.stdout);
+
+      const ptMysqlSummary = await cli.exec('/usr/local/percona/pmm/tools/pt-mysql-summary --version');
+      await ptMysqlSummary.assertSuccess();
+
+      const ptPgSummary = await cli.exec('/usr/local/percona/pmm/tools/pt-pg-summary --version');
+      await ptPgSummary.assertSuccess();
+
+      const ptMongoDbSummary = await cli.exec('/usr/local/percona/pmm/tools/pt-mongodb-summary --version');
+      await ptMongoDbSummary.assertSuccess();
+    });
+  });
 });
