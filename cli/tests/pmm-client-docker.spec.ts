@@ -105,4 +105,14 @@ test.describe('-promscrape.maxScapeSize tests', async () => {
       await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=${defaultScrapeSize}MiB`);
     });
   });
+
+  test('Verify pt summary for ps psmdb and pg', async ({}) => {
+    await test.step('Verify pt summary returns correct exit code', async () => {
+      const adminList = await cli.exec('docker exec pmm-client-1 pmm-admin list');
+      console.log(adminList.stdout);
+
+      const ptMysqlSummary = await cli.exec('docker exec pmm-client-1 /usr/local/percona/pmm/tools/pt-mysql-summary --version');
+      console.log(ptMysqlSummary.stdout);
+    });
+  });
 });
