@@ -108,11 +108,14 @@ test.describe('-promscrape.maxScapeSize tests', async () => {
 
   test('Verify pt summary for ps psmdb and pg', async ({}) => {
     await test.step('Verify pt summary returns correct exit code', async () => {
-      const adminList = await cli.exec('docker exec pmm-client-1 pmm-admin list');
-      console.log(adminList.stdout);
-
       const ptMysqlSummary = await cli.exec('docker exec pmm-client-1 /usr/local/percona/pmm/tools/pt-mysql-summary --version');
-      console.log(ptMysqlSummary.stdout);
+      await ptMysqlSummary.assertSuccess();
+
+      const ptPgSummary = await cli.exec('docker exec pmm-client-1 /usr/local/percona/pmm/tools/pt-pg-summary --version');
+      await ptPgSummary.assertSuccess();
+
+      const ptMongoDbSummary = await cli.exec('docker exec pmm-client-1 /usr/local/percona/pmm/tools/pt-mongodb-summary --version');
+      await ptMongoDbSummary.assertSuccess();
     });
   });
 });
