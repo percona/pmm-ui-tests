@@ -22,6 +22,22 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
       .stdout.trim();
   }
 
+  test('Verify pt summary for mysql mongodb and pgsql', async ({}) => {
+    await test.step('Verify pt summary returns correct exit code', async () => {
+      const output = await cli.exec('pmm-admin list');
+      console.log(output.stdout);
+
+      const ptMysqlSummary = await cli.exec('/usr/local/percona/pmm/tools/pt-mysql-summary --version');
+      await ptMysqlSummary.assertSuccess();
+
+      const ptPgSummary = await cli.exec('/usr/local/percona/pmm/tools/pt-pg-summary --version');
+      await ptPgSummary.assertSuccess();
+
+      const ptMongoDbSummary = await cli.exec('/usr/local/percona/pmm/tools/pt-mongodb-summary --version');
+      await ptMongoDbSummary.assertSuccess();
+    });
+  });
+
   test('PMM-T1258 Verify pmm-admin status shows node name', async ({}) => {
     const output = await cli.exec('sudo pmm-admin status');
     await output.assertSuccess();
@@ -523,19 +539,5 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     await output.outContains('Failed to register pmm-agent on PMM Server: Node with name');
   });
 
-  test('Verify pt summary for mysql mongodb and pgsql', async ({}) => {
-    await test.step('Verify pt summary returns correct exit code', async () => {
-      const output = await cli.exec('pmm-admin list');
-      console.log(output.stdout);
 
-      const ptMysqlSummary = await cli.exec('/usr/local/percona/pmm/tools/pt-mysql-summary --version');
-      await ptMysqlSummary.assertSuccess();
-
-      const ptPgSummary = await cli.exec('/usr/local/percona/pmm/tools/pt-pg-summary --version');
-      await ptPgSummary.assertSuccess();
-
-      const ptMongoDbSummary = await cli.exec('/usr/local/percona/pmm/tools/pt-mongodb-summary --version');
-      await ptMongoDbSummary.assertSuccess();
-    });
-  });
 });
