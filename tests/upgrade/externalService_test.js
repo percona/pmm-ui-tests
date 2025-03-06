@@ -67,7 +67,6 @@ Scenario(
     const metricName = 'redis_uptime_in_seconds';
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    console.log((await inventoryAPI.apiGetServices()).data.services);
     await grafanaAPI.checkMetricExist(metricName);
     await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: serviceName });
     await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: 'pmm-ui-tests-redis-external-remote-2' });

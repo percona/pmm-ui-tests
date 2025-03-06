@@ -18,7 +18,7 @@ Before(async ({ I }) => {
 Data(sslinstances).Scenario(
   'PMM-T948 + PMM-T947 - Verify Adding Postgresql, MySQL, MongoDB SSL services remotely via API before upgrade @pre-ssl-upgrade',
   async ({
-    I, remoteInstancesPage, current, addInstanceAPI, inventoryAPI,
+    I, remoteInstancesPage, current, addInstanceAPI, inventoryAPI, credentials,
   }) => {
     const {
       serviceName, serviceType, version, container,
@@ -30,11 +30,11 @@ Data(sslinstances).Scenario(
       details = {
         serviceName: remoteServiceName,
         serviceType,
-        port: '5432',
+        port: credentials.pdpgsql_ssl.port,
         database: 'postgres',
         address: container,
-        username: 'pmm',
-        password: 'pmm',
+        username: credentials.pdpgsql_ssl.username,
+        password: credentials.pdpgsql_ssl.password,
         cluster: 'pgsql_remote_cluster',
         environment: 'pgsql_remote_cluster',
         tlsCAFile: await remoteInstancesPage.getFileContent(`/srv/qa-integration/pmm_qa/tls-ssl-setup/postgres/${version}/ca.crt`),
