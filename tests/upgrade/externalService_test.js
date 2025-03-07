@@ -62,7 +62,7 @@ Scenario(
 Scenario(
   'Verify Redis as external Service Works After Upgrade @post-external-upgrade @post-client-upgrade',
   async ({
-    I, grafanaAPI, remoteInstancesHelper, inventoryAPI,
+    I, grafanaAPI, remoteInstancesHelper,
   }) => {
     const metricName = 'redis_uptime_in_seconds';
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
