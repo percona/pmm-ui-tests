@@ -1,6 +1,7 @@
 const assert = require('assert');
 const YAML = require('yaml');
 const page = require('./pages/ruleTemplatesPage');
+const { users } = require('../helper/constants');
 
 const templates = new DataTable(['path', 'error']);
 const units = new DataTable(['unit', 'range']);
@@ -23,16 +24,22 @@ templates.add(['tests/ia/templates/spaceInParam.yml',
 
 Feature('IA: Alert rule templates').retry(1);
 
+BeforeSuite(async ({ I }) => {
+  const viewerId = await I.createUser(users.viewer.username, users.viewer.password);
+  const adminId = await I.createUser(users.admin.username, users.admin.password);
+  const editorId = await I.createUser(users.editor.username, users.editor.password);
+
+  await I.setRole(viewerId);
+  await I.setRole(adminId, 'Admin');
+  await I.setRole(editorId, 'Editor');
+});
+
 Before(async ({
   I, settingsAPI, templatesAPI, rulesAPI,
 }) => {
   await I.Authorize();
   await settingsAPI.apiEnableIA();
   await rulesAPI.removeAllAlertRules();
-  await templatesAPI.clearAllTemplates();
-});
-
-Before(async ({ templatesAPI }) => {
   await templatesAPI.clearAllTemplates();
 });
 
@@ -88,6 +95,35 @@ Scenario(
     I.seeElement(ruleTemplatesPage.buttons.uploadFile);
     I.seeElement(ruleTemplatesPage.buttons.addTemplate);
     I.seeElement(ruleTemplatesPage.buttons.cancelAdding);
+  },
+);
+
+Scenario(
+  'PMM-T1993 - verify editor can create alert rule template @fb-alerting',
+  async ({
+    I, ruleTemplatesPage,
+  }) => {
+    await I.Authorize(users.editor.username, users.editor.password);
+    const templateName = 'E2E editor permissions input YML';
+
+    const [, fileContent] = await ruleTemplatesPage.ruleTemplate
+      .templateNameAndContent(ruleTemplatesPage.ruleTemplate.inputFilePath);
+    const editButton = ruleTemplatesPage.buttons
+      .editButtonByName(templateName);
+    const deleteButton = ruleTemplatesPage.buttons
+      .deleteButtonByName(templateName);
+
+    const newFileContent = fileContent
+      .replace('name: input_template_yml', 'name: input_template_yml_editor_permissions')
+      .replace('summary: E2E TemplateForAutomation input YML', `summary: ${templateName}`);
+
+    ruleTemplatesPage.openRuleTemplatesTab();
+
+    I.click(ruleTemplatesPage.buttons.openAddTemplateModal);
+    I.fillField(ruleTemplatesPage.fields.templateInput, newFileContent);
+    I.click(ruleTemplatesPage.buttons.addTemplate);
+    I.waitForEnabled(editButton);
+    I.waitForEnabled(deleteButton);
   },
 );
 
@@ -267,10 +303,18 @@ Scenario(
     I.verifyPopUpMessage(message);
   },
 );
+const usersTable = new DataTable(['username', 'password']);
 
-Scenario(
-  'PMM-T483 + PMM-T699 - Verify user can edit UI-created IA rule template @grafana-pr @fb-alerting',
-  async ({ I, ruleTemplatesPage, templatesAPI }) => {
+usersTable.add(['admin', '']);
+usersTable.add([users.editor.username, users.editor.password]);
+
+Data(usersTable).Scenario(
+  'PMM-T483 + PMM-T699 + PMM-T1994 - Verify user can edit UI-created IA rule template @grafana-pr @fb-alerting',
+  async ({
+    I, ruleTemplatesPage, templatesAPI, current,
+  }) => {
+    if (current.username !== 'admin') await I.Authorize(current.username, current.password);
+
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [templateName, fileContent, id] = await ruleTemplatesPage.ruleTemplate
       .templateNameAndContent(path);
@@ -299,9 +343,13 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T562 - Verify user can delete User-defined (UI) rule templates @grafana-pr @fb-alerting',
-  async ({ I, ruleTemplatesPage, templatesAPI }) => {
+Data(usersTable).Scenario(
+  'PMM-T562 + PMM-T1995 - Verify user can delete User-defined (UI) rule templates @grafana-pr @fb-alerting',
+  async ({
+    I, ruleTemplatesPage, templatesAPI, current,
+  }) => {
+    if (current.username !== 'admin') await I.Authorize(current.username, current.password);
+
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [templateName] = await ruleTemplatesPage.ruleTemplate
       .templateNameAndContent(path);

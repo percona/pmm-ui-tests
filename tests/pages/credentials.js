@@ -34,6 +34,11 @@ module.exports = {
     pmmServerUser: 'pmm-managed',
     pmmServerPassword: 'pmm-managed',
   },
+  pdpgsql_ssl: {
+    port: '5432',
+    username: 'pmm',
+    password: 'pmm',
+  },
 
   async detectPort(serviceName) {
     return await I.verifyCommand(`pmm-admin list | grep ${serviceName} | awk -F " " '{print $3}' | awk -F ":" '{print $2}'`);

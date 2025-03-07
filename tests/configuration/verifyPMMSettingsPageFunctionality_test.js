@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { users } = require('../helper/constants');
 
 Feature('PMM Settings Functionality').retry(1);
 
@@ -222,7 +223,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T254 ensure Advisors are on by default @instances',
+  'PMM-T254 - Ensure Advisors are on by default @instances',
   async ({ settingsAPI }) => {
     const resp = await settingsAPI.getSettings('advisor_enabled');
 
@@ -303,6 +304,11 @@ Scenario(
   async ({
     I, homePage, settingsAPI, pmmSettingsPage,
   }) => {
+    const adminId = await I.createUser(users.admin.username, users.admin.password);
+
+    await I.setRole(adminId, 'Admin');
+    await I.Authorize(users.admin.username, users.admin.password);
+
     await settingsAPI.changeSettings({ updates: true });
     await I.usePlaywrightTo('remove users/me mock', async ({ page }) => {
       await page.route('**/v1/users/me', (route) => route.continue());
@@ -325,5 +331,44 @@ Scenario(
     I.click(pmmSettingsPage.fields.applyButton);
     I.refreshPage();
     I.seeElement(homePage.updatesModal.root);
+  },
+);
+
+Scenario(
+  'PMM-T2004 - Verify Data Retention field in advanced settings @settings @nightly',
+  async ({
+    I, pmmSettingsPage,
+  }) => {
+    await pmmSettingsPage.openAdvancedSettings();
+    I.assertNotEqual(
+      await I.grabAttributeFrom(pmmSettingsPage.fields.advancedButton, 'disabled'),
+      null,
+      'Apply Changes button should be disabled when there are no changes.',
+    );
+
+    I.clearField(pmmSettingsPage.fields.dataRetentionInput);
+    I.fillField(pmmSettingsPage.fields.dataRetentionInput, 1);
+    I.assertEqual(
+      await I.grabAttributeFrom(pmmSettingsPage.fields.advancedButton, 'disabled'),
+      null,
+      'Apply Changes button should be enabled after value of data retention is changed to 1.',
+    );
+
+    I.clearField(pmmSettingsPage.fields.dataRetentionInput);
+    I.seeTextEquals(pmmSettingsPage.messages.requiredFieldMessage, pmmSettingsPage.fields.retentionValidation);
+    I.assertNotEqual(
+      await I.grabAttributeFrom(pmmSettingsPage.fields.advancedButton, 'disabled'),
+      null,
+      'Apply changes button should be disabled when validation error for empty data retention is present',
+    );
+
+    I.clearField(pmmSettingsPage.fields.dataRetentionInput);
+    I.fillField(pmmSettingsPage.fields.dataRetentionInput, 3651);
+    I.seeTextEquals(pmmSettingsPage.messages.invalidDataDurationMessage, pmmSettingsPage.fields.retentionValidation);
+    I.assertNotEqual(
+      await I.grabAttributeFrom(pmmSettingsPage.fields.advancedButton, 'disabled'),
+      null,
+      'Apply changes button should be disabled when validation error for data retention that is outside of the range is present',
+    );
   },
 );
