@@ -73,13 +73,13 @@ module.exports = {
     return data ? data[0] : null;
   },
 
-  async apiGetNodeInfoForAllNodesByServiceName(serviceType, serviceName) {
-    const service = await this.apiGetServices(serviceType);
+  async getServiceDetailsByPartialName(serviceName) {
+    const service = await this.apiGetServices();
 
-    const data = service.data.services
-      .filter(({ service_name }) => service_name.startsWith(serviceName));
-
-    return data;
+    return service
+      .data
+      .services
+      .find((service) => service.service_name.startsWith(serviceName));
   },
 
   async apiGetPMMAgentInfoByServiceId(serviceId, agentType = AGENT_TYPE.PMM_AGENT) {

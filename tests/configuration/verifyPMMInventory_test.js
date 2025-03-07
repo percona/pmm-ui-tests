@@ -249,7 +249,7 @@ Scenario(
     for (const sn of services) {
       await I.waitForVisible(pmmInventoryPage.fields.showServiceDetails(sn), 10);
       await I.click(pmmInventoryPage.fields.showServiceDetails(sn));
-      await I.waitForText('running', pmmInventoryPage.fields.agentStatus, 10);
+      await I.waitForText('running', 10, pmmInventoryPage.fields.agentStatus);
       await I.waitForVisible(pmmInventoryPage.fields.hideServiceDetails(sn), 10);
       await I.click(pmmInventoryPage.fields.hideServiceDetails(sn));
     }
@@ -366,6 +366,7 @@ Scenario(
   'PMM-T2340 - Verify adding and editing RDS instances [critical] @inventory @inventory-fb',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     const serviceName = remoteInstancesPage.mysql57rds['Service Name'];
+    const nodeName = 'pmm-server';
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
@@ -373,7 +374,7 @@ Scenario(
     remoteInstancesPage.verifyInstanceIsDiscovered(serviceName);
     remoteInstancesPage.startMonitoringOfInstance(serviceName);
     remoteInstancesPage.verifyAddInstancePageOpened();
-    const inputs = await remoteInstancesPage.fillRemoteRDSFields(serviceName);
+    const inputs = await remoteInstancesPage.fillRemoteRDSFields(serviceName, nodeName);
 
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
@@ -431,6 +432,7 @@ Scenario(
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
     const serviceName = 'pmm-qa-pgsql-12';
+    const nodeName = 'pmm-server';
 
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded().openAddAWSRDSMySQLPage();
@@ -442,7 +444,7 @@ Scenario(
 
     assert.ok(grabbedHostname.startsWith(serviceName), `Hostname is incorrect: ${grabbedHostname}`);
     I.seeInField(remoteInstancesPage.fields.serviceName, serviceName);
-    const inputs = await remoteInstancesPage.fillRemoteRDSFields(serviceName);
+    const inputs = await remoteInstancesPage.fillRemoteRDSFields(serviceName, nodeName);
 
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
@@ -465,6 +467,7 @@ Data(azureServices).Scenario(
     I, remoteInstancesPage, pmmInventoryPage, settingsAPI, current,
   }) => {
     const serviceName = current.name;
+    const nodeName = 'pmm-server';
 
     await settingsAPI.enableAzure();
     I.amOnPage(remoteInstancesPage.url);
@@ -472,7 +475,7 @@ Data(azureServices).Scenario(
     remoteInstancesPage.discoverAzure();
     remoteInstancesPage.startMonitoringOfInstance(current.instanceToMonitor);
     remoteInstancesPage.verifyAddInstancePageOpened();
-    const inputs = await remoteInstancesPage.fillRemoteRDSFields(serviceName);
+    const inputs = await remoteInstancesPage.fillRemoteRDSFields(serviceName, nodeName);
 
     await remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
@@ -495,7 +498,7 @@ Data(aws_instances).Scenario('PMM-T2340 Verify adding and editing Aurora remote 
   const {
     service_name, password, instance_id, cluster_name,
   } = current;
-
+  const nodeName = 'pmm-server';
   const details = {
     add_node: {
       node_name: service_name,

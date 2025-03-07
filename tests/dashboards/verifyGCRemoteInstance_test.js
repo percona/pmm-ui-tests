@@ -7,26 +7,24 @@ Feature('Monitoring Mysql and Postgresql DB running on Google Cloud');
 const instances = new DataTable(['instance', 'instanceType', 'metric']);
 
 instances.add(['pgsql13', 'postgresql', 'pg_stat_database_xact_rollback']);
-instances.add(['pgsql12', 'postgresql', 'pg_stat_database_xact_rollback']);
 instances.add(['pgsql14', 'postgresql', 'pg_stat_database_xact_rollback']);
-instances.add(['pgsql11', 'postgresql', 'pg_stat_database_xact_rollback']);
-instances.add(['pgsql10', 'postgresql', 'pg_stat_database_xact_rollback']);
-instances.add(['pgsql96', 'postgresql', 'pg_stat_database_xact_rollback']);
+instances.add(['pgsql15', 'postgresql', 'pg_stat_database_xact_rollback']);
+instances.add(['pgsql16', 'postgresql', 'pg_stat_database_xact_rollback']);
+instances.add(['pgsql17', 'postgresql', 'pg_stat_database_xact_rollback']);
 instances.add(['mysql57', 'mysql', 'mysql_global_status_max_used_connections']);
-instances.add(['mysql56', 'mysql', 'mysql_global_status_max_used_connections']);
 instances.add(['mysql80', 'mysql', 'mysql_global_status_max_used_connections']);
+instances.add(['mysql84', 'mysql', 'mysql_global_status_max_used_connections']);
 
 // Mapping here to avoid datatables to add those details to test names in allure report
 const remoteInstance = {
   pgsql13: remoteInstancesHelper.remote_instance.gc.gc_pgsql_13,
   pgsql14: remoteInstancesHelper.remote_instance.gc.gc_pgsql_14,
-  pgsql12: remoteInstancesHelper.remote_instance.gc.gc_pgsql_12,
-  pgsql11: remoteInstancesHelper.remote_instance.gc.gc_pgsql_11,
-  pgsql10: remoteInstancesHelper.remote_instance.gc.gc_pgsql_10,
-  pgsql96: remoteInstancesHelper.remote_instance.gc.gc_pgsql_96,
+  pgsql15: remoteInstancesHelper.remote_instance.gc.gc_pgsql_15,
+  pgsql16: remoteInstancesHelper.remote_instance.gc.gc_pgsql_16,
+  pgsql17: remoteInstancesHelper.remote_instance.gc.gc_pgsql_17,
   mysql57: remoteInstancesHelper.remote_instance.gc.gc_mysql57,
   mysql80: remoteInstancesHelper.remote_instance.gc.gc_mysql80,
-  mysql56: remoteInstancesHelper.remote_instance.gc.gc_mysql56,
+  mysql84: remoteInstancesHelper.remote_instance.gc.gc_mysql84,
 };
 
 function getInstance(key) {
@@ -57,7 +55,7 @@ Scenario(
 Data(instances).Scenario(
   'Verify adding Remote Google Cloud Instance @not-ui-pipeline @gcp',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current,
+    I, remoteInstancesPage, current,
   }) => {
     const {
       instance, instanceType,
@@ -70,12 +68,27 @@ Data(instances).Scenario(
     remoteInstancesPage.openAddRemotePage(instanceType);
     await remoteInstancesPage.addRemoteDetails(instanceDetails);
     await remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
+  },
+);
+
+Data(instances).Scenario(
+  'Verify Remote Instance Google Cloud Instance has Status Running @not-ui-pipeline @gcp',
+  async ({
+    I, pmmInventoryPage, current,
+  }) => {
+    const {
+      instance,
+    } = current;
+
+    const instanceDetails = getInstance(instance);
+
+    I.amOnPage(pmmInventoryPage.url);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(instanceDetails.serviceName);
     await pmmInventoryPage.verifyAgentHasStatusRunning(instanceDetails.serviceName);
     // Waiting for metrics to start hitting PMM-Server
     I.wait(20);
   },
-).retry(1);
+).retry(2);
 
 Data(instances).Scenario(
   'Verify dashboard after Remote GC Instances are added @not-ui-pipeline @gcp',
