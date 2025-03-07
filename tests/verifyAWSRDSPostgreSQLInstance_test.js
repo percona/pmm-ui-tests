@@ -27,6 +27,7 @@ Scenario(
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, agentsPage,
   }) => {
     const serviceName = 'pmm-qa-pgsql-12';
+    const nodeName = 'pmm-server';
 
     await inventoryAPI.deleteNodeByServiceName(SERVICE_TYPE.POSTGRESQL, serviceName);
 
@@ -36,7 +37,7 @@ Scenario(
     remoteInstancesPage.startMonitoringOfInstance(serviceName);
     remoteInstancesPage.verifyAddInstancePageOpened();
     I.seeInField(remoteInstancesPage.fields.serviceName, serviceName);
-    await remoteInstancesPage.fillRemoteRDSFields(serviceName);
+    await remoteInstancesPage.fillRemoteRDSFields(serviceName, nodeName);
     I.click(remoteInstancesPage.fields.customAutoDiscoveryButton);
     I.clearField(remoteInstancesPage.fields.customAutoDiscoveryfield);
     I.fillField(remoteInstancesPage.fields.customAutoDiscoveryfield, '1');
@@ -66,6 +67,7 @@ Scenario(
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI,
   }) => {
     const serviceName = 'pmm-qa-pgsql-12';
+    const nodeName = 'pmm-server';
 
     await inventoryAPI.deleteNodeByServiceName(SERVICE_TYPE.POSTGRESQL, serviceName);
 
@@ -79,7 +81,7 @@ Scenario(
 
     assert.ok(grabbedHostname.startsWith(serviceName), `Hostname is incorrect: ${grabbedHostname}`);
     I.seeInField(remoteInstancesPage.fields.serviceName, serviceName);
-    await remoteInstancesPage.fillRemoteRDSFields(serviceName);
+    await remoteInstancesPage.fillRemoteRDSFields(serviceName, nodeName);
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     // Skipping due to QAN Setup part on AWS

@@ -105,4 +105,17 @@ test.describe('-promscrape.maxScapeSize tests', async () => {
       await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=${defaultScrapeSize}MiB`);
     });
   });
+
+  test('Verify pt summary for mysql mongodb and pgsql', async ({}) => {
+    await test.step('Verify pt summary returns correct exit code', async () => {
+      const ptMysqlSummary = await cli.exec('docker exec pmm-client-1 /usr/local/percona/pmm/tools/pt-mysql-summary --version');
+      await ptMysqlSummary.assertSuccess();
+
+      const ptPgSummary = await cli.exec('docker exec pmm-client-1 /usr/local/percona/pmm/tools/pt-pg-summary --version');
+      await ptPgSummary.assertSuccess();
+
+      const ptMongoDbSummary = await cli.exec('docker exec pmm-client-1 /usr/local/percona/pmm/tools/pt-mongodb-summary --version');
+      await ptMongoDbSummary.assertSuccess();
+    });
+  });
 });

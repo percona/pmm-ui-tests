@@ -2,6 +2,7 @@ const Helper = codecept_helper;
 const assert = require('assert');
 const fs = require('fs');
 const shell = require('shelljs');
+const config = require('../../pr.codecept');
 
 class Grafana extends Helper {
   constructor(config) {
@@ -28,10 +29,23 @@ class Grafana extends Helper {
   }
 
   async Authorize(username = 'admin', password = process.env.ADMIN_PASSWORD) {
-    const { Playwright } = this.helpers;
+    const { Playwright, REST } = this.helpers;
     const basicAuthEncoded = await this.getAuth(username, password);
 
     Playwright.setPlaywrightRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
+    const resp = await REST.sendPostRequest('graph/login', { user: username, password });
+    const cookies = resp.headers['set-cookie'];
+
+    cookies.forEach((cookie) => {
+      const parsedCookie = {
+        name: cookie.split('=')[0],
+        value: cookie.split('=')[1].split(';')[0],
+        domain: config.config.helpers.Playwright.url.replace(/[^.\d]/g, ''),
+        path: '/',
+      };
+
+      Playwright.setCookie(parsedCookie);
+    });
   }
 
   async enableProductTour(snooze = false) {

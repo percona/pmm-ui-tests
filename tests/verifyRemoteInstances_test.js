@@ -102,7 +102,7 @@ Data(instances).Scenario(
 );
 
 Data(instances).Scenario(
-  'PMM-13166 Verify Remote Instance Addition [critical] (Verify Ability to monitor DBs from a different node) @instances @fb-instances',
+  'PMM-13166 - Verify Remote Instance Addition [critical] (Verify Ability to monitor DBs from a different node) @instances @fb-instances',
   async ({ I, remoteInstancesPage, current }) => {
     const serviceName = remoteInstancesHelper.services[current.name];
     const nodeName = 'client_container';

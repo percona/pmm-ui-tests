@@ -162,7 +162,9 @@ module.exports = {
     pgStatStatementsRadio: locate('label').withAttr({ for: 'radio-btn-2' }).withText('PG Stat Statements'),
     pgStatMonitorRadio: locate('label').withAttr({ for: 'radio-btn-3' }).withText('PG Stat Monitor'),
     pgStatMonitorRadioInput: locate('#radio-btn-3'),
-    customAutoDiscoveryButton: locate('//div[input[@data-testid="autoDiscoveryOptions-radio-button"]]').find('label').withText('Custom'),
+    customAutoDiscoveryButton: locate('//div[input[@data-testid="autoDiscoveryOptions-radio-button"]]')
+      .find('label')
+      .withText('Custom'),
     customAutoDiscoveryfield: '$autoDiscoveryLimit-number-input',
     dropdownOption: (text) => locate('div[class$="-select-option-body"]').find('span').withText(text),
   },
@@ -183,9 +185,7 @@ module.exports = {
 
   async fillFileContent(field, file) {
     I.click(field);
-    I.type(await this.getFileContent(
-      file,
-    ));
+    I.type(await this.getFileContent(file));
   },
 
   tableStatsLimitRadioButtonLocator(limit) {
@@ -256,6 +256,7 @@ module.exports = {
 
     adminPage.customClearField(this.fields.portNumber);
     I.fillField(this.fields.portNumber, details.port);
+
     I.fillField(this.fields.serviceName, details.serviceName);
     I.fillField(this.fields.environment, details.environment);
     I.fillField(this.fields.cluster, details.cluster);
@@ -320,6 +321,11 @@ module.exports = {
     let inputs;
     let port;
     let host;
+
+    // Handle undefined or null values
+    // eslint-disable-next-line no-param-reassign
+    nodeName = nodeName || 'pmm-server';
+
     const isClientContainer = nodeName.startsWith('client_container');
     const externalServiceName = 'external_service_new';
     const srviceName = nodeName.startsWith('client_container') ? `${serviceName}_client` : serviceName;
@@ -586,10 +592,7 @@ module.exports = {
     I.fillField(this.fields.clientID, remoteInstancesHelper.remote_instance.azure.azure_client_id);
     I.fillField(this.fields.clientSecret, remoteInstancesHelper.remote_instance.azure.azure_client_secret);
     I.fillField(this.fields.tenantID, remoteInstancesHelper.remote_instance.azure.azure_tenant_id);
-    I.fillField(
-      this.fields.subscriptionID,
-      remoteInstancesHelper.remote_instance.azure.azure_subscription_id,
-    );
+    I.fillField(this.fields.subscriptionID, remoteInstancesHelper.remote_instance.azure.azure_subscription_id);
     I.click(this.fields.discoverBtn);
     this.waitForDiscovery();
   },

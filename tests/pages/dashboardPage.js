@@ -1,6 +1,7 @@
 const { I, adminPage } = inject();
 const assert = require('assert');
 const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu');
+const PmmHealthDashboard = require('../dashboards/pages/pmmHealthDashboard');
 
 const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 
@@ -799,6 +800,25 @@ module.exports = {
       'MySQL Table Definition Cache',
     ],
   },
+  mysqlReplcationDashboard: {
+    url: '/graph/d/mysql-replicaset-summary/mysql-replication-summary?orgId=1&refresh=1m',
+    clearUrl: '/graph/d/mysql-replicaset-summary/mysql-replication-summary',
+    metrics: [
+      'Node',
+      'IO Thread Running',
+      'SQL Thread Running',
+      'Replication Error No',
+      'Read Only',
+      'Replication Delay',
+      'MySQL Replication Lag',
+      'Binlogs Size',
+      'Binlog Data Written Hourly',
+      'Binlogs Count',
+      'Binlogs Created Hourly',
+      'Relay Log Space',
+      'Relay Log Written Hourly',
+    ],
+  },
   groupReplicationDashboard: {
     url: 'graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary?orgId=1&refresh=1m',
     clearUrl: 'graph/d/mysql-group-replicaset-summary/mysql-group-replication-summary',
@@ -1106,7 +1126,7 @@ module.exports = {
       'Steal Kswapd',
     ],
   },
-
+  pmmHealth: PmmHealthDashboard,
   osNodesOverview: {
     noDataElements: 3,
     clearUrl: 'graph/d/node-instance-overview/nodes-overview',

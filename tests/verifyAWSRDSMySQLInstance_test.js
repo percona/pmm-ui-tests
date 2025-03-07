@@ -8,7 +8,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T138 Verify disabling enhanced metrics for RDS, PMM-T139 Verify disabling basic metrics for RDS, PMM-T9 Verify adding RDS instances [critical] @instances',
+  'PMM-T138 + PMM-T139 - Verify disabling enhanced metrics for RDS, Verify disabling basic metrics for RDS, PMM-T9 Verify adding RDS instances [critical] @instances',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     const instanceIdToMonitor = remoteInstancesPage.mysql57rds['Service Name'];
     const nodeName = 'pmm-server';
@@ -31,7 +31,7 @@ Scenario(
 
 // PMM-13750 Unable to add RDS instance on multiple nodes
 Scenario.skip(
-  'PMM-13166, PMM-13548 Verify adding RDS instances (Verify Ability to monitor DBs from a different node) [critical] @instances',
+  'PMM-13166 + PMM-13548 - Verify adding RDS instances (Verify Ability to monitor DBs from a different node) [critical] @instances',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     const instanceIdToMonitor = remoteInstancesPage.mysql57rds['Service Name'];
     const nodeName = 'client_container';
@@ -110,7 +110,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T603 Verify MySQL RDS exporter is running in pull mode @instances',
+  'PMM-T603 - Verify MySQL RDS exporter is running in pull mode @instances',
   async ({
     grafanaAPI, remoteInstancesPage, inventoryAPI,
   }) => {
