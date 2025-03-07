@@ -186,7 +186,8 @@ module.exports = {
       },
       pdpgsql_17: {
         host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'pdpgsql_pgsm_pmm_17'),
-        port: DB_CONFIG.POSTGRES_SERVER_PORT,
+        server_port: DB_CONFIG.POSTGRES_SERVER_PORT,
+        host_server_port: DB_CONFIG.POSTGRES_HOST_SERVER_PORT,
         username: 'pmm',
         password: 'pmm',
         clusterName: 'pgsql_clstr',

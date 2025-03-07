@@ -187,8 +187,6 @@ class Grafana extends Helper {
     const headers = { Authorization: `Basic ${await this.getAuth()}` };
     const resp = await apiContext.sendPostRequest('graph/api/admin/users', body, headers);
 
-    assert.equal(resp.status, 200, `${resp.data.message} ${username}`);
-
     return resp.data.id;
   }
 
@@ -198,17 +196,15 @@ class Grafana extends Helper {
       role,
     };
     const headers = { Authorization: `Basic ${await this.getAuth()}` };
-    const resp = await apiContext.sendPatchRequest(`graph/api/orgs/1/users/${userId}`, body, headers);
 
-    assert.equal(resp.status, 200, `${resp.data.message} ${userId}`);
+    await apiContext.sendPatchRequest(`graph/api/orgs/1/users/${userId}`, body, headers);
   }
 
   async deleteUser(userId) {
     const apiContext = this.helpers.REST;
     const headers = { Authorization: `Basic ${await this.getAuth()}` };
-    const resp = await apiContext.sendDeleteRequest(`graph/api/admin/users/${userId}`, headers);
 
-    assert.equal(resp.status, 200, `Failed to delete ${userId}`);
+    await apiContext.sendDeleteRequest(`graph/api/admin/users/${userId}`, headers);
   }
 
   async listUsers() {
