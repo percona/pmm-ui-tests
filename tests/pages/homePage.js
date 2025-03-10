@@ -21,13 +21,6 @@ module.exports = {
       locate('.panel-content span').inside('[aria-label="Monitored Nodes panel"]'),
     dbUnderMonitoringCount:
       locate('.panel-content span').inside('[aria-label="Monitored DB Services panel"]'),
-    monitoredServicesPanelLocator: '//*[@data-testid="data-testid Panel header Monitored DB Services"]',
-    monitoredServicesPanel: {
-      mysql: () => `(${this.fields.monitoredServicesPanelLocator}//span)[1]`,
-      mongodb: () => `(${this.fields.monitoredServicesPanelLocator}//span)[2]`,
-      pgsql: () => `(${this.fields.monitoredServicesPanelLocator}//span)[3]`,
-      proxysql: () => `(${this.fields.monitoredServicesPanelLocator}//span)[4]`,
-    },
     dashboardHeaderText: 'Percona Monitoring and Management',
     dashboardHeaderLocator: '//span[contains(text(),"Home Dashboard")]',
     oldLastCheckSelector: '#pmm-update-widget > .last-check-wrapper p',

@@ -64,19 +64,13 @@ Data(panels).Scenario(
 
 Scenario(
   'PMM-T9999 @nightly @dashboards',
-  async ({ I, homePage, inventoryAPI }) => {
-    console.log((await inventoryAPI.getServicesByType(SERVICE_TYPE.MYSQL)));
-    const countOfMysqlServices = (await inventoryAPI.getServicesByType(SERVICE_TYPE.MYSQL)).data.mysql.length;
-    const countOfMongoDbServices = (await inventoryAPI.getServicesByType(SERVICE_TYPE.MONGODB)).data.mongodb.length;
-    const countOfPostgresqlServices = (await inventoryAPI.getServicesByType(SERVICE_TYPE.MONGODB)).data.postgresql.length;
-    const countOfProxySqlServices = (await inventoryAPI.getServicesByType(SERVICE_TYPE.MONGODB)).data.proxysql.length;
+  async ({ I, inventoryAPI, dashboardPage }) => {
+    const mysql = (await inventoryAPI.getServicesByType(SERVICE_TYPE.MYSQL)).data.mysql.length;
+    const mongodb = (await inventoryAPI.getServicesByType(SERVICE_TYPE.MONGODB)).data.mongodb.length;
+    const pgsql = (await inventoryAPI.getServicesByType(SERVICE_TYPE.POSTGRESQL)).data.postgresql.length;
+    const proxysql = (await inventoryAPI.getServicesByType(SERVICE_TYPE.PROXYSQL)).data.proxysql.length;
 
-    console.log(`Count of mysql services: ${countOfMysqlServices}`);
-    console.log(`Count of mongodb services: ${countOfMongoDbServices}`);
-    console.log(`Count of postgresql services: ${countOfPostgresqlServices}`);
-    console.log(`Count of proxysql services: ${countOfProxySqlServices}`);
-    console.log(await inventoryAPI.apiGetServices());
-    I.amOnPage(homePage.url);
-    I.waitForVisible('//*[@data-testid="non-existing-element"]', 60);
+    I.amOnPage(dashboardPage.homeDashboard.url);
+    await dashboardPage.homeDashboard.verifyCountOfServices(mysql, mongodb, pgsql, proxysql);
   },
 );

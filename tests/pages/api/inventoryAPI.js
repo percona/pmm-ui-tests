@@ -123,8 +123,6 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const url = `v1/inventory/services?service_type=${serviceType}`;
 
-    console.log(url)
-
     return await I.sendGetRequest(url, headers);
   },
 
