@@ -1,4 +1,4 @@
-import { SERVICE_TYPE } from '../helper/constants.js';
+const { SERVICE_TYPE } = require('../helper/constants');
 
 Feature('Test Dashboards collection inside the Folders');
 
@@ -65,6 +65,7 @@ Data(panels).Scenario(
 Scenario(
   'PMM-T9999 @nightly @dashboards',
   async ({ I, homePage, inventoryAPI }) => {
+    console.log((await inventoryAPI.getServicesByType(SERVICE_TYPE.MYSQL)));
     const countOfMysqlServices = (await inventoryAPI.getServicesByType(SERVICE_TYPE.MYSQL)).data.mysql.length;
     const countOfMongoDbServices = (await inventoryAPI.getServicesByType(SERVICE_TYPE.MONGODB)).data.mongodb.length;
     const countOfPostgresqlServices = (await inventoryAPI.getServicesByType(SERVICE_TYPE.MONGODB)).data.postgresql.length;
@@ -74,6 +75,7 @@ Scenario(
     console.log(`Count of mongodb services: ${countOfMongoDbServices}`);
     console.log(`Count of postgresql services: ${countOfPostgresqlServices}`);
     console.log(`Count of proxysql services: ${countOfProxySqlServices}`);
+    console.log(await inventoryAPI.apiGetServices());
     I.amOnPage(homePage.url);
     I.waitForVisible('//*[@data-testid="non-existing-element"]', 60);
   },
