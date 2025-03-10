@@ -8,8 +8,7 @@ module.exports = {
   mongoDb: {
     user: 'pmm_mongodb',
     password: '5M](Q%q/U+YQ<^m',
-    // eslint-disable-next-line no-inline-comments
-    port: '27023', // This is the port used by --addclient=modb,1 and docker-compose setup on a CI/CD
+    port: '27027',
     adminUser: 'mongoadmin',
     adminPassword: 'GRgrO9301RuF',
   },

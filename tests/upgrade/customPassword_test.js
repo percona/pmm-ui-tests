@@ -39,7 +39,7 @@ Data(clientDbServices).Scenario(
       case SERVICE_TYPE.MONGODB:
         console.log(await I.verifyCommand('docker ps -a'));
         output = await I.verifyCommand(
-          `pmm-admin add mongodb --username=${credentials.mongoDb.user} --password="${credentials.mongoDb.password}" --port=27017 --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
+          `pmm-admin add mongodb --username=${credentials.mongoDb.user} --password="${credentials.mongoDb.password}" --port=${credentials.mongoDb.port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
         );
         break;
       default:
