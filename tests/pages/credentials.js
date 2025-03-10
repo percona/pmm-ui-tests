@@ -7,7 +7,7 @@ const { I } = inject();
 module.exports = {
   mongoDb: {
     user: 'pmm_mongodb',
-    password: 'GRgrO9301RuF',
+    password: '5M](Q%q/U+YQ<^m',
     // eslint-disable-next-line no-inline-comments
     port: '27023', // This is the port used by --addclient=modb,1 and docker-compose setup on a CI/CD
     adminUser: 'mongoadmin',
@@ -33,6 +33,11 @@ module.exports = {
     port: '5433',
     pmmServerUser: 'pmm-managed',
     pmmServerPassword: 'pmm-managed',
+  },
+  pdpgsql: {
+    port: '5432',
+    username: 'pmm',
+    password: 'pmm',
   },
   pdpgsql_ssl: {
     port: '5432',

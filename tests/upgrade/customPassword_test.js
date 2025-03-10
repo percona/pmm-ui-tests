@@ -8,12 +8,12 @@ const clientDbServices = new DataTable(['serviceType', 'name', 'metric', 'annota
 
 clientDbServices.add([SERVICE_TYPE.MYSQL, 'ps-single', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql']);
 clientDbServices.add([SERVICE_TYPE.POSTGRESQL, 'pgsql_pgss_pmm', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'postgresql']);
-// clientDbServices.add([SERVICE_TYPE.MONGODB, 'rs101', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongodb']);
+clientDbServices.add([SERVICE_TYPE.MONGODB, 'rs101', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongodb']);
 
 Data(clientDbServices).Scenario(
-  'Adding custom agent Password, Custom Label before upgrade At service Level @pre-custom-password-upgrade',
+  'Adding custom agent password, custom label before upgrade at service Level @pre-custom-password-upgrade',
   async ({
-    I, inventoryAPI, current,
+    I, inventoryAPI, current, credentials,
   }) => {
     const {
       serviceType, name, upgrade_service,
@@ -28,17 +28,18 @@ Data(clientDbServices).Scenario(
     switch (serviceType) {
       case SERVICE_TYPE.MYSQL:
         output = await I.verifyCommand(
-          `pmm-admin add mysql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --password=GRgrO9301RuF --host=${address} --query-source=perfschema --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
+          `pmm-admin add mysql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --password=${credentials.perconaServer.root.password} --host=${address} --query-source=perfschema --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
         );
         break;
       case SERVICE_TYPE.POSTGRESQL:
         output = await I.verifyCommand(
-          `pmm-admin add postgresql --username=pmm --password=pmm --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
+          `pmm-admin add postgresql --username=${credentials.pdpgsql.username} --password=${credentials.pdpgsql.password} --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
         );
         break;
       case SERVICE_TYPE.MONGODB:
+        console.log(await I.verifyCommand('docker ps -a'));
         output = await I.verifyCommand(
-          `pmm-admin add mongodb --username=pmm_mongodb --password="5M](Q%q/U+YQ<^m" --port=27017 --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
+          `pmm-admin add mongodb --username=${credentials.mongoDb.user} --password=${credentials.mongoDb.password} --port=27017 --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
         );
         break;
       default:
@@ -52,17 +53,17 @@ Data(clientDbServices).Scenario(
     current, inventoryAPI, grafanaAPI,
   }) => {
     const {
-      serviceType, metric, upgrade_service, name,
+      serviceType, metric, upgrade_service
     } = current;
 
     const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName(`upgrade-${upgrade_service}`);
     const { custom_labels } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, apiServiceDetails.service_name);
 
     await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: apiServiceDetails.service_name });
-    if (serviceType !== SERVICE_TYPE.MYSQL) {
+    // if (serviceType !== SERVICE_TYPE.MYSQL) {
       assert.ok(custom_labels, `Node Information for ${serviceType} added with ${upgrade_service} is empty, value returned are ${custom_labels}`);
       assert.ok(custom_labels.testing === 'upgrade', `Custom Labels for ${serviceType} added before upgrade with custom labels, doesn't have the same label post upgrade, value found ${custom_labels}`);
-    }
+    // }
   },
 );
 
