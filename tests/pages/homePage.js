@@ -21,6 +21,13 @@ module.exports = {
       locate('.panel-content span').inside('[aria-label="Monitored Nodes panel"]'),
     dbUnderMonitoringCount:
       locate('.panel-content span').inside('[aria-label="Monitored DB Services panel"]'),
+    monitoredServicesPanelLocator: '//*[@data-testid="data-testid Panel header Monitored DB Services"]',
+    monitoredServicesPanel: {
+      mysql: () => `(${this.fields.monitoredServicesPanelLocator}//span)[1]`,
+      mongodb: () => `(${this.fields.monitoredServicesPanelLocator}//span)[2]`,
+      pgsql: () => `(${this.fields.monitoredServicesPanelLocator}//span)[3]`,
+      proxysql: () => `(${this.fields.monitoredServicesPanelLocator}//span)[4]`,
+    },
     dashboardHeaderText: 'Percona Monitoring and Management',
     dashboardHeaderLocator: '//span[contains(text(),"Home Dashboard")]',
     oldLastCheckSelector: '#pmm-update-widget > .last-check-wrapper p',
@@ -217,5 +224,16 @@ module.exports = {
       current,
       versionMinor,
     };
+  },
+
+  async verifyMonitoredServicesPanel({
+    mysql, mongodb, pgsql, proxysql,
+  }) {
+    const countOfMysqlServcies = await I.grabTextFrom(this.fields.monitoredServicesPanel.mysql);
+    const countOfMongoDbServcies = await I.grabTextFrom(this.fields.monitoredServicesPanel.mongodb);
+    const countOfPgSqlServcies = await I.grabTextFrom(this.fields.monitoredServicesPanel.pgsql);
+    const countOfProxySqlServcies = await I.grabTextFrom(this.fields.monitoredServicesPanel.proxysql);
+
+    I.asertEqual(mysql, countOfMysqlServcies, 'MySQL services count is not equal to expected value');
   },
 };

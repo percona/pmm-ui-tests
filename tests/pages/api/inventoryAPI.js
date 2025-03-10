@@ -119,6 +119,15 @@ module.exports = {
     return await I.sendGetRequest(url, headers);
   },
 
+  async getServicesByType(serviceType) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const url = `v1/inventory/services?service_type=${serviceType}`;
+
+    console.log(url)
+
+    return await I.sendGetRequest(url, headers);
+  },
+
   async verifyServiceIdExists(serviceId) {
     const services = await this.apiGetServices(remoteInstancesHelper.serviceTypes.postgresql.serviceType);
 

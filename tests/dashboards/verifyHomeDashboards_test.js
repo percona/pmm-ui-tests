@@ -1,3 +1,5 @@
+import { SERVICE_TYPE } from '../helper/constants.js';
+
 Feature('Test Dashboards collection inside the Folders');
 
 const panels = new DataTable(['panelName', 'dashboardType', 'dashboardName', 'dashboard']);
@@ -57,5 +59,22 @@ Data(panels).Scenario(
 
     await dashboardPage.verifyMetricsExistence(expectedDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(expectedDashboard.noDataElements);
+  },
+);
+
+Scenario(
+  'PMM-T9999 @nightly @dashboards',
+  async ({ I, homePage, inventoryAPI }) => {
+    const countOfMysqlServices = (await inventoryAPI.getServicesByType(SERVICE_TYPE.MYSQL)).data.mysql.length;
+    const countOfMongoDbServices = (await inventoryAPI.getServicesByType(SERVICE_TYPE.MONGODB)).data.mongodb.length;
+    const countOfPostgresqlServices = (await inventoryAPI.getServicesByType(SERVICE_TYPE.MONGODB)).data.postgresql.length;
+    const countOfProxySqlServices = (await inventoryAPI.getServicesByType(SERVICE_TYPE.MONGODB)).data.proxysql.length;
+
+    console.log(`Count of mysql services: ${countOfMysqlServices}`);
+    console.log(`Count of mongodb services: ${countOfMongoDbServices}`);
+    console.log(`Count of postgresql services: ${countOfPostgresqlServices}`);
+    console.log(`Count of proxysql services: ${countOfProxySqlServices}`);
+    I.amOnPage(homePage.url);
+    I.waitForVisible('//*[@data-testid="non-existing-element"]', 60);
   },
 );
