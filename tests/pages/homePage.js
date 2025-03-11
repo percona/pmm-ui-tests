@@ -218,15 +218,4 @@ module.exports = {
       versionMinor,
     };
   },
-
-  async verifyMonitoredServicesPanel({
-    mysql, mongodb, pgsql, proxysql,
-  }) {
-    const countOfMysqlServcies = await I.grabTextFrom(this.fields.monitoredServicesPanel.mysql);
-    const countOfMongoDbServcies = await I.grabTextFrom(this.fields.monitoredServicesPanel.mongodb);
-    const countOfPgSqlServcies = await I.grabTextFrom(this.fields.monitoredServicesPanel.pgsql);
-    const countOfProxySqlServcies = await I.grabTextFrom(this.fields.monitoredServicesPanel.proxysql);
-
-    I.asertEqual(mysql, countOfMysqlServcies, 'MySQL services count is not equal to expected value');
-  },
 };
