@@ -737,7 +737,19 @@ module.exports = {
         this.fillFields(inputs);
         break;
       case 'pmm-qa-pgsql-12':
-        inputs = this.postgresqlInputs;
+        inputs = this.postgresql12Inputs;
+        this.fillFields(inputs);
+        break;
+      case 'pmm-qa-pgsql-13':
+        inputs = this.postgresql13Inputs;
+        this.fillFields(inputs);
+        break;
+      case 'pmm-qa-pgsql-15':
+        inputs = this.postgresql15Inputs;
+        this.fillFields(inputs);
+        break;
+      case 'pmm-qa-pgsql-17':
+        inputs = this.postgresql17Inputs;
         this.fillFields(inputs);
         break;
       case 'azure-MySQL':
