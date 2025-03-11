@@ -17,9 +17,9 @@ instances.add(['mysql84', 'mysql']);
 
 // Mapping here to avoid datatables to add those details to test names in allure report
 const remoteInstance = {
-  mysql57: remoteInstancesPage.mysql57rds['Service Name'],
-  mysql80: remoteInstancesPage.mysql80rds['Service Name'],
-  mysql84: remoteInstancesPage.mysql84rds['Service Name'],
+  mysql57: remoteInstancesPage.mysql57rds,
+  mysql80: remoteInstancesPage.mysql80rds,
+  mysql84: remoteInstancesPage.mysql84rds,
 };
 
 function getInstance(key) {
@@ -35,7 +35,7 @@ Data(instances).Scenario(
       instance, instanceType,
     } = current;
 
-    const instanceIdToMonitor = getInstance(instance);
+    const instanceIdToMonitor = getInstance(instance)['Service Name'];
     const nodeName = 'pmm-server';
 
     I.amOnPage(remoteInstancesPage.url);
@@ -61,7 +61,7 @@ Data(instances).Scenario(
       instance,
     } = current;
 
-    const instanceIdToMonitor = getInstance(instance);
+    const instanceIdToMonitor = getInstance(instance)['Service Name'];
 
     I.amOnPage(pmmInventoryPage.url);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(instanceIdToMonitor);
@@ -122,10 +122,16 @@ xScenario(
 );
 
 Data(instances).Scenario(
-  'Verify MySQL Instances Overview Dashboard for AWS RDS MySQL 5.7 data after it was added for monitoring @instances',
-  async ({ I, dashboardPage }) => {
+  'Verify MySQL Instances Overview Dashboard for AWS RDS MySQL data after it was added for monitoring @instances',
+  async ({ I, current, dashboardPage }) => {
+    const {
+      instance,
+    } = current;
+
+    const instanceIdToMonitor = getInstance(instance);
+
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, {
-      cluster: remoteInstancesPage.current.instance.Cluster,
+      cluster: instanceIdToMonitor.Cluster,
       from: 'now-5m',
     }));
     dashboardPage.waitForDashboardOpened();
@@ -135,14 +141,15 @@ Data(instances).Scenario(
 );
 
 Data(instances).Scenario(
-  'Verify MySQL Instances Overview Dashboard contains AWS RDS MySQL 5.7 filters @instances',
+  'Verify MySQL Instances Overview Dashboard contains AWS RDS MySQL filters @instances',
   async ({
-    I, current, dashboardPage, remoteInstancesPage }) => {
+    I, current, dashboardPage, remoteInstancesPage,
+  }) => {
     const {
       instance,
     } = current;
 
-    const filters = remoteInstancesPage.current.instance;
+    const filters = getInstance(instance);
 
     I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
     dashboardPage.waitForDashboardOpened();
@@ -159,14 +166,14 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'PMM-T603 - Verify MySQL RDS exporter is running in pull mode @instances',
   async ({
-    grafanaAPI, remoteInstancesPage, inventoryAPI, current,
+    grafanaAPI, inventoryAPI, current,
   }) => {
     const {
       instance,
     } = current;
 
     const metricNames = ['aws_rds_cpu_credit_usage_average', 'rdsosmetrics_memory_total', 'rdsosmetrics_cpuUtilization_total'];
-    const serviceName = getInstance(instance);
+    const serviceName = getInstance(instance)['Service Name'];
     const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, serviceName);
     const response = await inventoryAPI.apiGetAgentsViaNodeId(node_id);
     const result = response.data.rds_exporter[0];
