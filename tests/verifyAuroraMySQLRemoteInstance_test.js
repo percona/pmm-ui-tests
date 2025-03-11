@@ -3,7 +3,7 @@ const { NODE_TYPE, SERVICE_TYPE } = require('./helper/constants');
 
 const { remoteInstancesHelper, pmmInventoryPage } = inject();
 
-Feature('Monitoring Aurora instances');
+Feature('Monitoring Aurora MySQL instances');
 
 const instances = ['aurora2', 'aurora3'];
 const mysql_metric = 'mysql_global_status_max_used_connections';
@@ -13,7 +13,7 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Data(instances).Scenario('PMM-T1295 - Verify adding Aurora remote instance @instances', async ({
+Data(instances).Scenario('PMM-T1295 - Verify adding Aurora MySQL remote instance @instances', async ({
   I, addInstanceAPI, inventoryAPI, current,
 }) => {
   const details = {
@@ -49,7 +49,7 @@ Data(instances).Scenario('PMM-T1295 - Verify adding Aurora remote instance @inst
   // await pmmInventoryPage.verifyAgentHasStatusRunning(details.service_name);
 });
 
-Data(instances).Scenario('PMM-T1295 - Verify Aurora instance metrics @instances', async ({ I, current, grafanaAPI }) => {
+Data(instances).Scenario('PMM-T1295 - Verify Aurora MySQL instance metrics @instances', async ({ I, current, grafanaAPI }) => {
   I.wait(10);
 
   await grafanaAPI.checkMetricExist(mysql_metric, {
@@ -72,7 +72,7 @@ Scenario('PMM-T1295 - Verify MySQL Amazon Aurora Details @instances', async ({ I
   await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
 }).retry(1);
 
-Data(instances).Scenario('PMM-T1295 - Verify dashboard after Aurora instance is added @instances', async ({
+Data(instances).Scenario('PMM-T1295 - Verify dashboard after Aurora MySQL instance is added @instances', async ({
   I, dashboardPage, adminPage, current,
 }) => {
   I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
@@ -86,7 +86,7 @@ Data(instances).Scenario('PMM-T1295 - Verify dashboard after Aurora instance is 
 }).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T1295 - Verify QAN after Aurora instance is added @instances',
+  'PMM-T1295 - Verify QAN after Aurora MySQL instance is added @instances',
   async ({
     I, queryAnalyticsPage, current,
   }) => {
