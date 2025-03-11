@@ -37,7 +37,6 @@ Data(clientDbServices).Scenario(
         );
         break;
       case SERVICE_TYPE.MONGODB:
-        console.log(await I.verifyCommand('docker ps -a'));
         output = await I.verifyCommand(
           `pmm-admin add mongodb --username=${credentials.mongoReplicaPrimaryForBackups.username} --password="${credentials.mongoReplicaPrimaryForBackups.password}" --port=${credentials.mongoReplicaPrimaryForBackups.port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
         );
@@ -60,10 +59,8 @@ Data(clientDbServices).Scenario(
     const { custom_labels } = await inventoryAPI.apiGetNodeInfoByServiceName(serviceType, apiServiceDetails.service_name);
 
     await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: apiServiceDetails.service_name });
-    // if (serviceType !== SERVICE_TYPE.MYSQL) {
-      assert.ok(custom_labels, `Node Information for ${serviceType} added with ${upgrade_service} is empty, value returned are ${custom_labels}`);
-      assert.ok(custom_labels.testing === 'upgrade', `Custom Labels for ${serviceType} added before upgrade with custom labels, doesn't have the same label post upgrade, value found ${custom_labels}`);
-    // }
+    assert.ok(custom_labels, `Node Information for ${serviceType} added with ${upgrade_service} is empty, value returned are ${custom_labels}`);
+    assert.ok(custom_labels.testing === 'upgrade', `Custom Labels for ${serviceType} added before upgrade with custom labels, doesn't have the same label post upgrade, value found ${custom_labels}`);
   },
 );
 
