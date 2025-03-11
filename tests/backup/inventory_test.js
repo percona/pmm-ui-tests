@@ -57,7 +57,7 @@ BeforeSuite(async ({
   );
 
   await I.mongoConnect(mongoConnection);
-  if (!(await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName))) {
+  // if (!(await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName))) {
     I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
     I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
     I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName3} --replication-set=rs --cluster=rs`));
@@ -66,7 +66,7 @@ BeforeSuite(async ({
     I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName} --replication-set=rs1 --cluster=rs1`));
     I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName2} --replication-set=rs1 --cluster=rs1`));
     I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName3} --replication-set=rs1 --cluster=rs1`));
-  }
+  // }
 });
 
 Before(async ({
@@ -201,12 +201,6 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
     const isLogical = current.backupType === 'LOGICAL';
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
-
-    console.log(`Service ID is: ${service_id}`);
-    console.log(await I.verifyCommand('docker exec rs101 pmm-admin list'));
-    console.log(await I.verifyCommand('docker exec rs102 pmm-admin list'));
-    console.log(await I.verifyCommand('docker exec rs103 pmm-admin list'));
-    console.log(await I.verifyCommand('pmm-admin list'));
 
     const artifactId = await backupAPI.startBackup(backupName, service_id, currentLocationId, false, isLogical);
 
