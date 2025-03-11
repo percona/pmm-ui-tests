@@ -63,6 +63,13 @@ module.exports = {
     cluster: 'rds80-cluster',
     replicationSet: 'rds80-replication',
   },
+  mysql84rdsInput: {
+    userName: remoteInstancesHelper.remote_instance.aws.aws_rds_8_4.username,
+    password: remoteInstancesHelper.remote_instance.aws.aws_rds_8_4.password,
+    environment: 'RDS MySQL 8.4',
+    cluster: 'rds84-cluster',
+    replicationSet: 'rds84-replication',
+  },
   postgresqlInputs: {
     userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.userName,
     password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.password,
@@ -72,7 +79,13 @@ module.exports = {
   },
   url: 'graph/add-instance?orgId=1',
   addMySQLRemoteURL: 'graph/add-instance?instance_type=mysql',
-  mysql8rds: {
+  mysql84rds: {
+    'Service Name': 'pmm-qa-rds-mysql-8-4',
+    Environment: 'RDS MySQL 8.4',
+    'Replication Set': 'rds84-replication',
+    Cluster: 'rds84-cluster',
+  },
+  mysql80rds: {
     'Service Name': 'pmm-qa-mysql-8-0-30',
     Environment: 'RDS MySQL 8.0',
     'Replication Set': 'rds80-replication',
@@ -662,6 +675,14 @@ module.exports = {
         break;
       case 'pmm-qa-mysql-8-0-30':
         inputs = this.mysql80rdsInput;
+        adminPage.customClearField(this.fields.serviceName);
+        I.fillField(this.fields.serviceName, srviceName);
+        this.fillFields(inputs);
+        break;
+      case 'pmm-qa-rds-mysql-8-4':
+        inputs = this.mysql84rdsInput;
+        adminPage.customClearField(this.fields.serviceName);
+        I.fillField(this.fields.serviceName, srviceName);
         this.fillFields(inputs);
         break;
       case 'pmm-qa-rds-mysql-5-7-39':

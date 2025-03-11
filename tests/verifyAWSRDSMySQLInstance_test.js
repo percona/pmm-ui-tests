@@ -1,16 +1,41 @@
 const assert = require('assert');
 const { SERVICE_TYPE } = require('./helper/constants');
 
+const { remoteInstancesPage } = inject();
+
 Feature('Monitoring AWS RDS MySQL DB');
 
 Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario(
+const instances = new DataTable(['instance', 'instanceType']);
+
+instances.add(['mysql57', 'mysql']);
+instances.add(['mysql80', 'mysql']);
+instances.add(['mysql84', 'mysql']);
+
+// Mapping here to avoid datatables to add those details to test names in allure report
+const remoteInstance = {
+  mysql57: remoteInstancesPage.mysql57rds['Service Name'],
+  mysql80: remoteInstancesPage.mysql80rds['Service Name'],
+  mysql84: remoteInstancesPage.mysql84rds['Service Name'],
+};
+
+function getInstance(key) {
+  return remoteInstance[key];
+}
+
+Data(instances).Scenario(
   'PMM-T138 + PMM-T139 - Verify disabling enhanced metrics for RDS, Verify disabling basic metrics for RDS, PMM-T9 Verify adding RDS instances [critical] @instances',
-  async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
-    const instanceIdToMonitor = remoteInstancesPage.mysql57rds['Service Name'];
+  async ({
+    I, current, remoteInstancesPage,
+  }) => {
+    const {
+      instance, instanceType,
+    } = current;
+
+    const instanceIdToMonitor = getInstance(instance);
     const nodeName = 'pmm-server';
 
     I.amOnPage(remoteInstancesPage.url);
@@ -21,13 +46,30 @@ Scenario(
     remoteInstancesPage.verifyAddInstancePageOpened();
     await remoteInstancesPage.fillRemoteRDSFields(instanceIdToMonitor, nodeName);
     remoteInstancesPage.createRemoteInstance(instanceIdToMonitor);
-    pmmInventoryPage.verifyRemoteServiceIsDisplayed(instanceIdToMonitor);
-    await pmmInventoryPage.verifyAgentHasStatusRunning(instanceIdToMonitor);
 
     // Waiting for metrics to start hitting for remotely added services
     I.wait(60);
   },
 );
+
+Data(instances).Scenario(
+  'PMM-T138 + PMM-T139 - Verify disabling enhanced metrics for RDS, Verify disabling basic metrics for RDS, PMM-T9 Verify adding RDS instances has Status Running [critical] @instances',
+  async ({
+    I, pmmInventoryPage, current,
+  }) => {
+    const {
+      instance,
+    } = current;
+
+    const instanceIdToMonitor = getInstance(instance);
+
+    I.amOnPage(pmmInventoryPage.url);
+    pmmInventoryPage.verifyRemoteServiceIsDisplayed(instanceIdToMonitor);
+    await pmmInventoryPage.verifyAgentHasStatusRunning(instanceIdToMonitor);
+    // Waiting for metrics to start hitting PMM-Server
+    I.wait(20);
+  },
+).retry(2);
 
 // PMM-13750 Unable to add RDS instance on multiple nodes
 Scenario.skip(
@@ -79,11 +121,11 @@ xScenario(
   },
 );
 
-Scenario(
+Data(instances).Scenario(
   'Verify MySQL Instances Overview Dashboard for AWS RDS MySQL 5.7 data after it was added for monitoring @instances',
   async ({ I, dashboardPage }) => {
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, {
-      cluster: 'rds57-cluster',
+      cluster: remoteInstancesPage.current.instance.Cluster,
       from: 'now-5m',
     }));
     dashboardPage.waitForDashboardOpened();
@@ -92,10 +134,15 @@ Scenario(
   },
 );
 
-Scenario(
+Data(instances).Scenario(
   'Verify MySQL Instances Overview Dashboard contains AWS RDS MySQL 5.7 filters @instances',
-  async ({ I, dashboardPage, remoteInstancesPage }) => {
-    const filters = remoteInstancesPage.mysql57rds;
+  async ({
+    I, current, dashboardPage, remoteInstancesPage }) => {
+    const {
+      instance,
+    } = current;
+
+    const filters = remoteInstancesPage.current.instance;
 
     I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
     dashboardPage.waitForDashboardOpened();
@@ -109,13 +156,17 @@ Scenario(
   },
 );
 
-Scenario(
+Data(instances).Scenario(
   'PMM-T603 - Verify MySQL RDS exporter is running in pull mode @instances',
   async ({
-    grafanaAPI, remoteInstancesPage, inventoryAPI,
+    grafanaAPI, remoteInstancesPage, inventoryAPI, current,
   }) => {
+    const {
+      instance,
+    } = current;
+
     const metricNames = ['aws_rds_cpu_credit_usage_average', 'rdsosmetrics_memory_total', 'rdsosmetrics_cpuUtilization_total'];
-    const serviceName = remoteInstancesPage.mysql57rds['Service Name'];
+    const serviceName = getInstance(instance);
     const { node_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, serviceName);
     const response = await inventoryAPI.apiGetAgentsViaNodeId(node_id);
     const result = response.data.rds_exporter[0];
