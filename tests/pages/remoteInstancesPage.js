@@ -70,19 +70,19 @@ module.exports = {
     cluster: 'rds84-cluster',
     replicationSet: 'rds84-replication',
   },
-  postgresql12Inputs: {
-    userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.userName,
-    password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.password,
-    environment: 'RDS Postgres12',
-    cluster: 'rdsPostgres12-cluster',
-    replicationSet: 'rdsPostgres12-replication',
-  },
   postgresql13Inputs: {
     userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_13.userName,
     password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_13.password,
     environment: 'RDS Postgres13',
     cluster: 'rdsPostgres13-cluster',
     replicationSet: 'rdsPostgres13-replication',
+  },
+  postgresql14Inputs: {
+    userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_14.userName,
+    password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_14.password,
+    environment: 'RDS Postgres12',
+    cluster: 'rdsPostgres12-cluster',
+    replicationSet: 'rdsPostgres12-replication',
   },
   postgresql15Inputs: {
     userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_15.userName,
@@ -132,17 +132,17 @@ module.exports = {
     'Replication Set': 'rds57-replication',
     Cluster: 'rds57-cluster',
   },
-  postgresql12rds: {
-    'Service Name': 'pmm-qa-pgsql-12',
-    Environment: 'RDS PGSQL 12',
-    'Replication Set': 'pgsqlrds12-replication',
-    Cluster: 'pgsqlrds12-cluster',
-  },
   postgresql13rds: {
     'Service Name': 'pmmqa-rds-pgsql13-4',
     Environment: 'RDS PGSQL 13',
     'Replication Set': 'pgsqlrds13-replication',
     Cluster: 'pgsqlrds13-cluster',
+  },
+  postgresql14rds: {
+    'Service Name': 'pmm-qa-pgsql-14',
+    Environment: 'RDS PGSQL 14',
+    'Replication Set': 'pgsqlrds14-replication',
+    Cluster: 'pgsqlrds14-cluster',
   },
   postgresql15rds: {
     'Service Name': 'pmm-qa-pgsql-15',
@@ -764,6 +764,8 @@ module.exports = {
         break;
       case 'pmm-qa-pgsql-17':
         inputs = this.postgresql17Inputs;
+        I.click(this.fields.useTLS);
+        I.click(this.fields.skipTLSL);
         this.fillFields(inputs);
         break;
       case 'pmm-qa-rds-aurora-15-instance-1':

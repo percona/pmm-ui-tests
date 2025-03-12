@@ -11,15 +11,15 @@ Before(async ({ I }) => {
 
 const instances = new DataTable(['instance', 'instanceType']);
 
-instances.add(['postgresql12', 'postgres']);
 instances.add(['postgresql13', 'postgres']);
+instances.add(['postgresql14', 'postgres']);
 instances.add(['postgresql15', 'postgres']);
 instances.add(['postgresql17', 'postgres']);
 
 // Mapping here to avoid datatables to add those details to test names in allure report
 const remoteInstance = {
-  postgresql12: remoteInstancesPage.postgresql12rds,
   postgresql13: remoteInstancesPage.postgresql13rds,
+  postgresql14: remoteInstancesPage.postgresql14rds,
   postgresql15: remoteInstancesPage.postgresql15rds,
   postgresql17: remoteInstancesPage.postgresql17rds,
 };

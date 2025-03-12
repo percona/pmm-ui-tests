@@ -268,20 +268,20 @@ module.exports = {
         clusterName: 'aws_rds_mysql_5_6',
         port: 3306,
       },
-      aws_postgresql_12: {
-        address: process.env.PMM_QA_PGSQL_RDS_12_1_HOST,
-        userName: process.env.REMOTE_AWS_POSTGRES12_USER,
-        password: process.env.REMOTE_AWS_POSTGRES12_PASSWORD,
-        clusterName: 'aws_postgresql_12',
-        database: process.env.PMM_QA_PGSQL_RDS_12_1_DATABASE,
-        port: 42001,
-      },
       aws_postgresql_13: {
         address: process.env.PMM_QA_RDS_PGSQL13_HOST,
         userName: process.env.PMM_QA_RDS_PGSQL13_USER,
         password: process.env.PMM_QA_RDS_PGSQL13_PASSWORD,
         clusterName: 'aws_postgresql_13',
         database: process.env.PMM_QA_PGSQL_RDS_13_DATABASE,
+        port: 42001,
+      },
+      aws_postgresql_14: {
+        address: process.env.PMM_QA_PGSQL_RDS_14_HOST,
+        userName: process.env.PMM_QA_RDS_PGSQL14_USER,
+        password: process.env.PMM_QA_RDS_PGSQL14_PASSWORD,
+        clusterName: 'aws_postgresql_12',
+        database: process.env.PMM_QA_RDS_PGSQL14_DATABASE,
         port: 42001,
       },
       aws_postgresql_15: {
