@@ -12,8 +12,7 @@ Before(async ({ I, settingsAPI }) => {
 const version = process.env.PS_VERSION ? `${process.env.PS_VERSION}` : '8.4';
 const container_name = `ps_pmm_${version}_replica`;
 
-// PMM-12153 Update mysqld_exporter to the latest stable
-Scenario.skip(
+Scenario(
   'Verify metrics from PS Replica instance on PMM-Server @pmm-ps-replica-integration @not-ui-pipeline',
   async ({
     I, grafanaAPI,
