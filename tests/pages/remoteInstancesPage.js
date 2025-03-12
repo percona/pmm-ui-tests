@@ -91,6 +91,13 @@ module.exports = {
     cluster: 'rdsPostgres15-cluster',
     replicationSet: 'rdsPostgres15-replication',
   },
+  postgresql16Inputs: {
+    userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_16.userName,
+    password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_16.password,
+    environment: 'RDS Postgres16',
+    cluster: 'rdsPostgres16-cluster',
+    replicationSet: 'rdsPostgres16-replication',
+  },
   postgresql17Inputs: {
     userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_17.userName,
     password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_17.password,
@@ -149,6 +156,12 @@ module.exports = {
     Environment: 'RDS PGSQL 15',
     'Replication Set': 'pgsqlrds15-replication',
     Cluster: 'pgsqlrds15-cluster',
+  },
+  postgresql16rds: {
+    'Service Name': 'pmm-qa-pgsql-16',
+    Environment: 'RDS PGSQL 16',
+    'Replication Set': 'pgsqlrds16-replication',
+    Cluster: 'pgsqlrds16-cluster',
   },
   postgresql17rds: {
     'Service Name': 'pmm-qa-pgsql-17',
@@ -760,6 +773,12 @@ module.exports = {
         break;
       case 'pmm-qa-pgsql-15':
         inputs = this.postgresql15Inputs;
+        this.fillFields(inputs);
+        break;
+      case 'pmm-qa-pgsql-16':
+        inputs = this.postgresql16Inputs;
+        I.click(this.fields.useTLS);
+        I.click(this.fields.skipTLSL);
         this.fillFields(inputs);
         break;
       case 'pmm-qa-pgsql-17':

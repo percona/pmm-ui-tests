@@ -292,6 +292,14 @@ module.exports = {
         database: process.env.PMM_QA_PGSQL_RDS_15_DATABASE,
         port: 42001,
       },
+      aws_postgresql_16: {
+        address: process.env.PMM_QA_RDS_PGSQL16_HOST,
+        userName: process.env.PMM_QA_RDS_PGSQL16_USER,
+        password: process.env.PMM_QA_RDS_PGSQL16_PASSWORD,
+        clusterName: 'aws_postgresql_15',
+        database: process.env.PMM_QA_PGSQL_RDS_16_DATABASE,
+        port: 42001,
+      },
       aws_postgresql_17: {
         address: process.env.PMM_QA_RDS_PGSQL17_HOST,
         userName: process.env.PMM_QA_RDS_PGSQL17_USER,
