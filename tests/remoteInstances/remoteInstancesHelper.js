@@ -273,7 +273,7 @@ module.exports = {
         userName: process.env.PMM_QA_RDS_PGSQL13_USER,
         password: process.env.PMM_QA_RDS_PGSQL13_PASSWORD,
         clusterName: 'aws_postgresql_13',
-        database: process.env.PMM_QA_PGSQL_RDS_13_DATABASE,
+        database: process.env.PMM_QA_RDS_PGSQL_13_DATABASE,
         port: 42001,
       },
       aws_postgresql_14: {
@@ -289,7 +289,7 @@ module.exports = {
         userName: process.env.PMM_QA_RDS_PGSQL15_USER,
         password: process.env.PMM_QA_RDS_PGSQL15_PASSWORD,
         clusterName: 'aws_postgresql_15',
-        database: process.env.PMM_QA_PGSQL_RDS_15_DATABASE,
+        database: process.env.PMM_QA_RDS_PGSQL_15_DATABASE,
         port: 42001,
       },
       aws_postgresql_16: {
@@ -297,7 +297,7 @@ module.exports = {
         userName: process.env.PMM_QA_RDS_PGSQL16_USER,
         password: process.env.PMM_QA_RDS_PGSQL16_PASSWORD,
         clusterName: 'aws_postgresql_15',
-        database: process.env.PMM_QA_PGSQL_RDS_16_DATABASE,
+        database: process.env.PMM_QA_RDS_PGSQL_16_DATABASE,
         port: 42001,
       },
       aws_postgresql_17: {
@@ -305,7 +305,7 @@ module.exports = {
         userName: process.env.PMM_QA_RDS_PGSQL17_USER,
         password: process.env.PMM_QA_RDS_PGSQL17_PASSWORD,
         clusterName: 'aws_postgresql_13',
-        database: process.env.PMM_QA_PGSQL_RDS_17_DATABASE,
+        database: process.env.PMM_QA_RDS_PGSQL_17_DATABASE,
         port: 42001,
       },
       aurora: {
