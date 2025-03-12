@@ -3,9 +3,13 @@ const { NODE_TYPE, SERVICE_TYPE } = require('./helper/constants');
 
 const { remoteInstancesHelper, pmmInventoryPage } = inject();
 
-Feature('Monitoring Aurora MySQL instances');
+Feature('Monitoring Aurora PostgreSQL instances');
 
-const instances = ['aurora2', 'aurora3'];
+Before(async ({ I }) => {
+  await I.Authorize();
+});
+
+const instances = ['mysqlaurora2', 'mysqlaurora3'];
 const mysql_metric = 'mysql_global_status_max_used_connections';
 const aurora_metric = 'mysql_global_status_auroradb_commit_latency';
 

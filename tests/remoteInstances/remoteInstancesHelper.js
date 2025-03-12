@@ -305,17 +305,31 @@ module.exports = {
         aws_secret_key: process.env.PMM_QA_AWS_ACCESS_KEY,
         port: '42001',
         username: 'pmm',
-        aurora2: {
+        mysqlaurora2: {
           address: process.env.PMM_QA_AURORA2_MYSQL_HOST,
           password: process.env.PMM_QA_AURORA2_MYSQL_PASSWORD,
           instance_id: 'pmm-qa-aurora2-mysql-instance-1',
-          cluster_name: 'aws_aurora2',
+          cluster_name: 'mysqlaws_aurora2',
         },
-        aurora3: {
+        mysqlaurora3: {
           address: process.env.PMM_QA_AURORA3_MYSQL_HOST,
           password: process.env.PMM_QA_AURORA3_MYSQL_PASSWORD,
           instance_id: 'pmm-qa-aurora3-mysql-instance-1',
-          cluster_name: 'aws_aurora3',
+          cluster_name: 'mysqlaws_aurora3',
+        },
+        postgres15aurora: {
+          address: process.env.PMM_QA_RDS_AURORA_PGSQL15_HOST,
+          username: process.env.PMM_QA_RDS_PGSQL15_USER,
+          password: process.env.PMM_QA_RDS_AURORA_PGSQL15_PASSWORD,
+          instance_id: 'pmm-qa-rds-aurora-15-instance-1',
+          cluster_name: 'postgres15aws_aurora2',
+        },
+        postgres16aurora: {
+          address: process.env.PMM_QA_RDS_AURORA_PGSQL16_HOST,
+          username: process.env.PMM_QA_RDS_PGSQL16_USER,
+          password: process.env.PMM_QA_RDS_AURORA_PGSQL16_PASSWORD,
+          instance_id: 'pmm-qa-aurora-postgres-16-4-instance-1',
+          cluster_name: 'postgres16aws_aurora3',
         },
       },
     },

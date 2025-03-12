@@ -98,6 +98,20 @@ module.exports = {
     cluster: 'rdsPostgres17-cluster',
     replicationSet: 'rdsPostgres17-replication',
   },
+  postgres15auroraInputs: {
+    userName: remoteInstancesHelper.remote_instance.aws.aurora.postgres15aurora.username,
+    password: remoteInstancesHelper.remote_instance.aws.aurora.postgres15aurora.password,
+    environment: 'RDS Postgres17',
+    cluster: 'rdsPostgres17-cluster',
+    replicationSet: 'rdsPostgres17-replication',
+  },
+  postgres16auroraInputs: {
+    userName: remoteInstancesHelper.remote_instance.aws.aurora.postgres16aurora.userName,
+    password: remoteInstancesHelper.remote_instance.aws.aurora.postgres16aurora.password,
+    environment: 'RDS Postgres17',
+    cluster: 'rdsPostgres17-cluster',
+    replicationSet: 'rdsPostgres17-replication',
+  },
   url: 'graph/add-instance?orgId=1',
   addMySQLRemoteURL: 'graph/add-instance?instance_type=mysql',
   mysql84rds: {
@@ -750,6 +764,14 @@ module.exports = {
         break;
       case 'pmm-qa-pgsql-17':
         inputs = this.postgresql17Inputs;
+        this.fillFields(inputs);
+        break;
+      case 'pmm-qa-rds-aurora-15-instance-1':
+        inputs = this.postgres15auroraInputs;
+        this.fillFields(inputs);
+        break;
+      case 'pmm-qa-aurora-postgres-16-4-instance-1':
+        inputs = this.postgres16auroraInputs;
         this.fillFields(inputs);
         break;
       case 'azure-MySQL':
