@@ -3,7 +3,7 @@ const { NODE_TYPE, SERVICE_TYPE } = require('./helper/constants');
 
 const { remoteInstancesHelper, pmmInventoryPage } = inject();
 
-Feature('Monitoring Aurora PostgreSQL instances');
+Feature('Monitoring Aurora MySQL instances');
 
 Before(async ({ I }) => {
   await I.Authorize();

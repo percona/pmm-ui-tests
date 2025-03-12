@@ -80,9 +80,9 @@ module.exports = {
   postgresql14Inputs: {
     userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_14.userName,
     password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_14.password,
-    environment: 'RDS Postgres12',
-    cluster: 'rdsPostgres12-cluster',
-    replicationSet: 'rdsPostgres12-replication',
+    environment: 'RDS Postgres14',
+    cluster: 'rdsPostgres14-cluster',
+    replicationSet: 'rdsPostgres14-replication',
   },
   postgresql15Inputs: {
     userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_15.userName,
@@ -751,7 +751,7 @@ module.exports = {
         this.fillFields(inputs);
         break;
       case 'pmm-qa-pgsql-12':
-        inputs = this.postgresql12Inputs;
+        inputs = this.postgresql14Inputs;
         this.fillFields(inputs);
         break;
       case 'pmm-qa-pgsql-13':

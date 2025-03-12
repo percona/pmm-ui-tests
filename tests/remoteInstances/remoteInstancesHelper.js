@@ -280,7 +280,7 @@ module.exports = {
         address: process.env.PMM_QA_PGSQL_RDS_14_HOST,
         userName: process.env.PMM_QA_RDS_PGSQL14_USER,
         password: process.env.PMM_QA_RDS_PGSQL14_PASSWORD,
-        clusterName: 'aws_postgresql_12',
+        clusterName: 'aws_postgresql_14',
         database: process.env.PMM_QA_RDS_PGSQL14_DATABASE,
         port: 42001,
       },
