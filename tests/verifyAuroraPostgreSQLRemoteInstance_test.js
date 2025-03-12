@@ -12,7 +12,7 @@ Before(async ({ I }) => {
 });
 
 Data(instances).Scenario(
-  'PMM-T1831 - Verify adding Aurora PostgreSQL RDS with specified Auto-discovery limit @aws @instances',
+  'Verify adding Aurora PostgreSQL RDS with specified Auto-discovery limit @aws @instances',
   async ({
     I, current, remoteInstancesPage, pmmInventoryPage, inventoryAPI, agentsPage,
   }) => {
@@ -51,7 +51,7 @@ Data(instances).Scenario(
 );
 
 Data(instances).Scenario(
-  'PMM-T716 - Verify Dashboard for Aurora Postgres RDS added via UI @aws @instances',
+  'Verify Dashboard for Aurora Postgres RDS added via UI @aws @instances',
   async ({
     I, current, dashboardPage, settingsAPI,
   }) => {

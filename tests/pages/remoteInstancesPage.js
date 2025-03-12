@@ -146,13 +146,13 @@ module.exports = {
     Cluster: 'pgsqlrds13-cluster',
   },
   postgresql14rds: {
-    'Service Name': 'pmm-qa-pgsql-14',
+    'Service Name': 'pmm-qa-rds-pgsql-14',
     Environment: 'RDS PGSQL 14',
     'Replication Set': 'pgsqlrds14-replication',
     Cluster: 'pgsqlrds14-cluster',
   },
   postgresql15rds: {
-    'Service Name': 'pmm-qa-pgsql-15',
+    'Service Name': 'pmm-qa-postgres-15-10',
     Environment: 'RDS PGSQL 15',
     'Replication Set': 'pgsqlrds15-replication',
     Cluster: 'pgsqlrds15-cluster',
@@ -164,7 +164,7 @@ module.exports = {
     Cluster: 'pgsqlrds16-cluster',
   },
   postgresql17rds: {
-    'Service Name': 'pmm-qa-pgsql-17',
+    'Service Name': 'pmm-qa-rds-pgsql-17-1',
     Environment: 'RDS PGSQL 17',
     'Replication Set': 'pgsqlrds17-replication',
     Cluster: 'pgsqlrds17-cluster',
@@ -763,15 +763,15 @@ module.exports = {
         I.fillField(this.fields.serviceName, srviceName);
         this.fillFields(inputs);
         break;
-      case 'pmm-qa-pgsql-12':
-        inputs = this.postgresql14Inputs;
-        this.fillFields(inputs);
-        break;
-      case 'pmm-qa-pgsql-13':
+      case 'pmmqa-rds-pgsql13-4':
         inputs = this.postgresql13Inputs;
         this.fillFields(inputs);
         break;
-      case 'pmm-qa-pgsql-15':
+      case 'pmm-qa-rds-pgsql-14':
+        inputs = this.postgresql14Inputs;
+        this.fillFields(inputs);
+        break;
+      case 'pmm-qa-postgres-15-10':
         inputs = this.postgresql15Inputs;
         this.fillFields(inputs);
         break;
@@ -781,7 +781,7 @@ module.exports = {
         I.click(this.fields.skipTLSL);
         this.fillFields(inputs);
         break;
-      case 'pmm-qa-pgsql-17':
+      case 'pmm-qa-rds-pgsql-17-1':
         inputs = this.postgresql17Inputs;
         I.click(this.fields.useTLS);
         I.click(this.fields.skipTLSL);
