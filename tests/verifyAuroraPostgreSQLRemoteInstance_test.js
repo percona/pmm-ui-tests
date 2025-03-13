@@ -34,7 +34,15 @@ Data(instances).Scenario(
 
     remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
+  },
+).retry(1);
 
+Data(instances).Scenario(
+  'Verify Aurora PostgreSQL RDS with specified Auto-discovery limit @aws @instances',
+  async ({
+    I, current, remoteInstancesPage, pmmInventoryPage, inventoryAPI, agentsPage,
+  }) => {
+    const serviceName = remoteInstancesHelper.remote_instance.aws.aurora[current].instance_id;
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, serviceName);
 
     await agentsPage.open(service_id);
@@ -48,7 +56,6 @@ Data(instances).Scenario(
 
     assert(!out.includes('--auto-discover-databases'), 'postgres-exporter should not have flag "auto-discover-databases"');
   },
-);
 
 Data(instances).Scenario(
   'Verify Dashboard for Aurora Postgres RDS added via UI @aws @instances',
