@@ -2,6 +2,7 @@ const { I, adminPage } = inject();
 const assert = require('assert');
 const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu');
 const PmmHealthDashboard = require('../dashboards/pages/pmmHealthDashboard');
+const HomeDashboard = require('../dashboards/pages/homeDashboard');
 
 const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 
@@ -666,21 +667,6 @@ module.exports = {
       'Assert Warning Events',
     ],
   },
-  homeDashboard: {
-    metrics: [
-      'CPU Busy',
-      'Mem Avail',
-      'Disk Reads',
-      'Disk Writes',
-      'Network IO',
-      'DB Conns',
-      'DB QPS',
-      'Virtual CPUs',
-      'RAM',
-      'Host uptime',
-      'DB uptime',
-    ],
-  },
   mySQLInstanceOverview: {
     url: 'graph/d/mysql-instance-overview/mysql-instances-overview?orgId=1&from=now-2m&to=now&refresh=1m',
     clearUrl: 'graph/d/mysql-instance-overview/mysql-instances-overview',
@@ -1127,6 +1113,7 @@ module.exports = {
     ],
   },
   pmmHealth: PmmHealthDashboard,
+  homeDashboard: HomeDashboard,
   osNodesOverview: {
     noDataElements: 3,
     clearUrl: 'graph/d/node-instance-overview/nodes-overview',
