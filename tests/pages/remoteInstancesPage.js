@@ -725,6 +725,7 @@ module.exports = {
 
   fillFields(serviceParameters) {
     adminPage.customClearField(this.fields.userName);
+    I.waitForVisible(this.fields.userName, 30);
     I.fillField(this.fields.userName, serviceParameters.userName);
     I.fillField(this.fields.password, serviceParameters.password);
     I.fillField(this.fields.environment, serviceParameters.environment);

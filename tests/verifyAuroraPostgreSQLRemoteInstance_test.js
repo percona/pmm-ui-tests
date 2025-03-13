@@ -40,7 +40,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'Verify Aurora PostgreSQL RDS with specified Auto-discovery limit @aws @instances',
   async ({
-    I, current, remoteInstancesPage, pmmInventoryPage, inventoryAPI, agentsPage,
+    I, current, inventoryAPI, agentsPage,
   }) => {
     const serviceName = remoteInstancesHelper.remote_instance.aws.aurora[current].instance_id;
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, serviceName);
