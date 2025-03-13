@@ -36,22 +36,16 @@ class Grafana extends Helper {
     let resp;
 
     if (baseUrl) {
-      console.log(`Auth Url is: ${baseUrl}graph/login`);
       resp = await REST.sendPostRequest(`${baseUrl}graph/login`, { user: username, password });
     } else {
       resp = await REST.sendPostRequest('graph/login', { user: username, password });
     }
-
-    console.log(resp.data);
 
     const cookies = resp.headers['set-cookie'];
 
     if (!cookies) {
       throw new Error('Authentication was not successful, verify base url and credentials.');
     }
-
-    console.log(`Response cookies are: ${cookies}`);
-    console.log(`Count of response cookies are: ${cookies.length}`);
 
     cookies.forEach((cookie) => {
       const parsedCookie = {
