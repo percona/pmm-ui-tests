@@ -11,6 +11,8 @@ class HomeDashboard {
         pgsql: () => `(${this.panels.monitoredServicesPanelLocator}//span)[3]`,
         proxysql: () => `(${this.panels.monitoredServicesPanelLocator}//span)[4]`,
       },
+      failedAdvisorsPanel: '//section[@data-testid="data-testid Panel header Failed advisors"]',
+      failedAdvisorsValue: () => `${this.panels.failedAdvisorsPanel}//div[@data-testid="data-testid panel content"]//span`,
     };
     this.metrics = [
       'CPU Busy',
