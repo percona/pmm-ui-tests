@@ -46,6 +46,10 @@ class Grafana extends Helper {
 
     const cookies = resp.headers['set-cookie'];
 
+    if (!cookies) {
+      throw new Error('Authentication was not successful, verify base url and credentials.');
+    }
+
     console.log(`Response cookies are: ${cookies}`);
     console.log(`Count of response cookies are: ${cookies.length}`);
 
