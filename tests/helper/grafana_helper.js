@@ -34,6 +34,9 @@ class Grafana extends Helper {
 
     Playwright.setPlaywrightRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
     const resp = await REST.sendPostRequest('graph/login', { user: username, password });
+
+    console.log(resp.data);
+
     const cookies = resp.headers['set-cookie'];
 
     console.log(`Response cookies are: ${cookies}`);
