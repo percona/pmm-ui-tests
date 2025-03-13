@@ -36,6 +36,8 @@ class Grafana extends Helper {
     const resp = await REST.sendPostRequest('graph/login', { user: username, password });
     const cookies = resp.headers['set-cookie'];
 
+    console.log(`Response cookies are: ${JSON.stringify(cookies)}`);
+
     cookies.forEach((cookie) => {
       const parsedCookie = {
         name: cookie.split('=')[0],
