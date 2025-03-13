@@ -259,7 +259,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T9999 - Verify taht editor user can see failed @fb-alerting @grafana-pr',
+  'PMM-T2009 - Verify that editor user can see failed advisors data on home dashboard @fb-alerting @grafana-pr',
   async ({ I, dashboardPage }) => {
     await I.Authorize(users.editor.username, users.editor.password);
     I.amOnPage(dashboardPage.homeDashboard.url);
