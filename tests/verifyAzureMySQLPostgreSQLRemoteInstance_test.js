@@ -30,11 +30,12 @@ Before(async ({ I }) => {
 });
 
 Data(azureServices).Scenario(
-  '@PMM-T744, PMM-T746, PMM-T748 - Verify adding monitoring for Azure @instances',
+  'PMM-T744 + PMM-T746 + PMM-T748 - Verify adding monitoring for Azure @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, settingsAPI, current, inventoryAPI,
   }) => {
     const serviceName = current.name;
+    const nodeName = 'pmm-server';
 
     await settingsAPI.enableAzure();
     I.amOnPage(remoteInstancesPage.url);
@@ -42,7 +43,7 @@ Data(azureServices).Scenario(
     remoteInstancesPage.discoverAzure();
     remoteInstancesPage.startMonitoringOfInstance(current.instanceToMonitor);
     remoteInstancesPage.verifyAddInstancePageOpened();
-    await remoteInstancesPage.fillRemoteRDSFields(serviceName);
+    await remoteInstancesPage.fillRemoteRDSFields(serviceName, nodeName);
     await remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
 

@@ -261,6 +261,7 @@ module.exports = {
     checkForUpdatesSwitch: locate('$advanced-updates').find('label'),
     dataRetentionInput: '$retention-number-input',
     dataRetentionLabel: locateLabel('form-field-data-retention'),
+    retentionValidation: '$retention-field-error-message',
     errorPopUpElement: I.useDataQA('data-testid Alert error'),
     iframe: '//div[@class="panel-content"]//iframe',
     metricsResolutionButton: '$metrics-resolution-button',

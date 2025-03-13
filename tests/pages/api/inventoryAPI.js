@@ -73,13 +73,13 @@ module.exports = {
     return data ? data[0] : null;
   },
 
-  async apiGetNodeInfoForAllNodesByServiceName(serviceType, serviceName) {
-    const service = await this.apiGetServices(serviceType);
+  async getServiceDetailsByPartialName(serviceName) {
+    const service = await this.apiGetServices();
 
-    const data = service.data.services
-      .filter(({ service_name }) => service_name.startsWith(serviceName));
-
-    return data;
+    return service
+      .data
+      .services
+      .find((service) => service.service_name.startsWith(serviceName));
   },
 
   async apiGetPMMAgentInfoByServiceId(serviceId, agentType = AGENT_TYPE.PMM_AGENT) {
@@ -115,6 +115,13 @@ module.exports = {
   async apiGetServices() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const url = 'v1/management/services';
+
+    return await I.sendGetRequest(url, headers);
+  },
+
+  async getServicesByType(serviceType) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const url = `v1/inventory/services?service_type=${serviceType}`;
 
     return await I.sendGetRequest(url, headers);
   },
