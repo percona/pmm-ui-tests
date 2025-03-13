@@ -336,7 +336,7 @@ Scenario(
     const details = {
       serviceName: remoteServiceName,
       serviceType: 'postgresql',
-      port: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
+      port: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.server_port,
       database: 'postgres',
       host: 'postgresnodb',
       username: 'test',

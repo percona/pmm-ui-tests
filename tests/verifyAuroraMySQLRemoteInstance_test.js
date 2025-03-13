@@ -67,18 +67,21 @@ Data(instances).Scenario('PMM-T1295 - Verify Aurora MySQL instance metrics @inst
   });
 }).retry(1);
 
-// FIXME: Add also check for Aurora3 once https://jira.percona.com/browse/PMM-10201 is fixed
-Scenario('PMM-T1295 - Verify MySQL Amazon Aurora Details @instances', async ({ I, dashboardPage, adminPage }) => {
+Data(instances).Scenario('PMM-T1295 - Verify MySQL Amazon Aurora Details @instances', async ({ I, dashboardPage, adminPage }) => {
+  // Waiting for metrics to start hitting for remotely added services
+  I.wait(60);
   I.amOnPage(dashboardPage.mysqlAmazonAuroraDetails.url);
   dashboardPage.waitForDashboardOpened();
   await adminPage.applyTimeRange('Last 5 minutes');
   await dashboardPage.applyFilter('Service Name', 'pmm-qa-aurora2-mysql-instance-1');
   await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
-}).retry(1);
+}).retry(3);
 
 Data(instances).Scenario('PMM-T1295 - Verify dashboard after Aurora MySQL instance is added @instances', async ({
   I, dashboardPage, adminPage, current,
 }) => {
+  // Waiting for metrics to start hitting for remotely added services
+  I.wait(60);
   I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
   dashboardPage.waitForDashboardOpened();
   await adminPage.applyTimeRange('Last 5 minutes');
@@ -87,7 +90,7 @@ Data(instances).Scenario('PMM-T1295 - Verify dashboard after Aurora MySQL instan
   await dashboardPage.expandEachDashboardRow();
   adminPage.performPageUp(5);
   await dashboardPage.verifyThereAreNoGraphsWithoutData(8);
-}).retry(1);
+}).retry(3);
 
 Data(instances).Scenario(
   'PMM-T1295 - Verify QAN after Aurora MySQL instance is added @instances',
