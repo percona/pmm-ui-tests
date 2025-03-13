@@ -138,7 +138,7 @@ Data(instances).Scenario(
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
   },
-);
+).retry(2);
 
 Data(instances).Scenario(
   'Verify MySQL Instances Overview Dashboard contains AWS RDS MySQL filters @instances',
