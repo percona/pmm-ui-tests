@@ -113,7 +113,7 @@ module.exports = {
     replicationSet: 'rdsPostgres17-replication',
   },
   postgres16auroraInputs: {
-    userName: remoteInstancesHelper.remote_instance.aws.aurora.postgres16aurora.userName,
+    userName: remoteInstancesHelper.remote_instance.aws.aurora.postgres16aurora.username,
     password: remoteInstancesHelper.remote_instance.aws.aurora.postgres16aurora.password,
     environment: 'RDS Postgres17',
     cluster: 'rdsPostgres17-cluster',
@@ -794,6 +794,7 @@ module.exports = {
         break;
       case 'pmm-qa-aurora-postgres-16-4-instance-1':
         inputs = this.postgres16auroraInputs;
+        console.log(inputs);
         this.fillFields(inputs);
         break;
       case 'azure-MySQL':
