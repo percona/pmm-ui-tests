@@ -263,7 +263,7 @@ Scenario(
   async ({ I, dashboardPage }) => {
     await I.Authorize(users.editor.username, users.editor.password);
     I.amOnPage(dashboardPage.homeDashboard.url);
-    await I.vaitForVisible(dashboardPage.homeDashboard.panels.failedAdvisorsValue());
+    await I.waitForVisible(dashboardPage.homeDashboard.panels.failedAdvisorsValue());
     const failedAdvisorsCount = await I.grabTextFrom(dashboardPage.homeDashboard.panels.failedAdvisorsValue());
 
     I.assertEqual(failedAdvisorsCount, '0', 'Failed Advisors count should be visible and should be 0');
