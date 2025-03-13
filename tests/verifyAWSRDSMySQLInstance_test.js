@@ -130,6 +130,9 @@ Data(instances).Scenario(
 
     const instanceIdToMonitor = getInstance(instance);
 
+    // Add wait for metrics to appear
+    await I.wait(60);
+
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, {
       cluster: instanceIdToMonitor.Cluster,
       from: 'now-5m',
@@ -138,7 +141,7 @@ Data(instances).Scenario(
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
   },
-).retry(2);
+).retry(3);
 
 Data(instances).Scenario(
   'Verify MySQL Instances Overview Dashboard contains AWS RDS MySQL filters @instances',

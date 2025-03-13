@@ -794,7 +794,6 @@ module.exports = {
         break;
       case 'pmm-qa-aurora-postgres-16-4-instance-1':
         inputs = this.postgres16auroraInputs;
-        console.log(inputs);
         this.fillFields(inputs);
         break;
       case 'azure-MySQL':
