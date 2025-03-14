@@ -30,7 +30,7 @@ Scenario(
 
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
-    // dashboardPage.verifyMetricsExistence(['Custom Panel']);
+    dashboardPage.verifyMetricsExistence(['Custom Panel']);
     I.seeInCurrentUrl(grafanaAPI.customDashboardName);
   },
 );
