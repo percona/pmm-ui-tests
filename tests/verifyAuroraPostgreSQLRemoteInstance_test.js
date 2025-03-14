@@ -12,7 +12,7 @@ Before(async ({ I }) => {
 });
 
 Data(instances).Scenario(
-  'Verify adding Aurora PostgreSQL RDS with specified Auto-discovery limit @aws @instances',
+  'PMM-T2010 - Verify adding Aurora PostgreSQL RDS with specified Auto-discovery limit @aws @instances',
   async ({
     I, current, remoteInstancesPage, pmmInventoryPage, inventoryAPI, agentsPage,
   }) => {
@@ -38,7 +38,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'Verify Aurora PostgreSQL RDS with specified Auto-discovery limit @aws @instances',
+  'PMM-T2010 - Verify Aurora PostgreSQL RDS with specified Auto-discovery limit @aws @instances',
   async ({
     I, current, inventoryAPI, agentsPage,
   }) => {
@@ -59,7 +59,7 @@ Data(instances).Scenario(
 ).retry(2);
 
 Data(instances).Scenario(
-  'Verify Dashboard for Aurora Postgres RDS added via UI @aws @instances',
+  'PMM-T2010 - Verify Dashboard for Aurora Postgres RDS added via UI @aws @instances',
   async ({
     I, current, dashboardPage, settingsAPI,
   }) => {
