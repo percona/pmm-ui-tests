@@ -263,8 +263,7 @@ Scenario('PMM-T1401 - Verify Percona Alerting wording in Settings @max-length @s
   await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.perconaAlerting);
 });
 
-// unskip after SAAS-1437 is done and 500 error is fixed
-Scenario.skip(
+Scenario(
   'PMM-T1328 Verify public address is set automatically on Percona Platform page once connected to Portal @nightly',
   async ({
     I, pmmSettingsPage, portalAPI, perconaPlatformPage, settingsAPI,
