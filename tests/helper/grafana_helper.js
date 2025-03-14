@@ -28,18 +28,12 @@ class Grafana extends Helper {
     await page.click(this.ssoLoginSubmit);
   }
 
-  async Authorize(username = 'admin', password = process.env.ADMIN_PASSWORD, baseUrl = undefined) {
+  async Authorize(username = 'admin', password = process.env.ADMIN_PASSWORD, baseUrl = '') {
     const { Playwright, REST } = this.helpers;
     const basicAuthEncoded = await this.getAuth(username, password);
 
     Playwright.setPlaywrightRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
-    let resp;
-
-    if (baseUrl) {
-      resp = await REST.sendPostRequest(`${baseUrl}graph/login`, { user: username, password });
-    } else {
-      resp = await REST.sendPostRequest('graph/login', { user: username, password });
-    }
+    const resp = await REST.sendPostRequest(`${baseUrl}graph/login`, { user: username, password });
 
     const cookies = resp.headers['set-cookie'];
 
