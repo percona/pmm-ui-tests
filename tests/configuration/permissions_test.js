@@ -260,12 +260,24 @@ Scenario(
 
 Scenario(
   'PMM-T2009 - Verify that editor user can see failed advisors data on home dashboard @nightly @grafana-pr',
-  async ({ I, dashboardPage }) => {
-    await I.Authorize(users.editor.username, users.editor.password);
-    I.amOnPage(dashboardPage.homeDashboard.url);
-    await I.waitForVisible(dashboardPage.homeDashboard.panels.failedAdvisorsValue());
-    const failedAdvisorsCount = await I.grabTextFrom(dashboardPage.homeDashboard.panels.failedAdvisorsValue());
+  async ({ I, dashboardPage, advisorsAPI }) => {
+    const advisors = await advisorsAPI.getAdvisorsNames();
 
-    I.assertEqual(failedAdvisorsCount, '0', 'Failed Advisors count should be visible and should be 0');
+    await advisorsAPI.startSecurityChecks(advisors);
+    await I.Authorize();
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.homeDashboard.url, { refresh: '5s' }));
+    I.waitForVisible(dashboardPage.homeDashboard.panelData.failedAdvisors.criticalFailedAdvisors, 240);
+
+    const criticalAdvisors = await I.grabTextFrom(dashboardPage.homeDashboard.panelData.failedAdvisors.criticalFailedAdvisors);
+    const errorAdvisors = await I.grabTextFrom(dashboardPage.homeDashboard.panelData.failedAdvisors.errorFailedAdvisors);
+    const warningAdvisors = await I.grabTextFrom(dashboardPage.homeDashboard.panelData.failedAdvisors.warningFailedAdvisors);
+    const noticeAdvisors = await I.grabTextFrom(dashboardPage.homeDashboard.panelData.failedAdvisors.noticeFailedAdvisors);
+
+    I.assertTrue(!Number.isNaN(criticalAdvisors), `Expect critical advisors value to be a number, but value was ${criticalAdvisors}`);
+    I.assertTrue(!Number.isNaN(errorAdvisors), `Expect error advisors value to be a number, but value was ${errorAdvisors}`);
+    I.assertTrue(!Number.isNaN(warningAdvisors), `Expect warning advisors value to be a number, but value was ${warningAdvisors}`);
+    I.assertTrue(!Number.isNaN(noticeAdvisors), `Expect notice advisors value to be a number, but value was ${noticeAdvisors}`);
+
+    await I.dontSee(dashboardPage.homeDashboard.panelData.failedAdvisors.insufficientPrivilege);
   },
 );

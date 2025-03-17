@@ -11,8 +11,17 @@ class HomeDashboard {
         pgsql: () => `(${this.panels.monitoredServicesPanelLocator}//span)[3]`,
         proxysql: () => `(${this.panels.monitoredServicesPanelLocator}//span)[4]`,
       },
-      failedAdvisorsPanel: '//section[@data-testid="data-testid Panel header Failed advisors"]',
-      failedAdvisorsValue: () => `${this.panels.failedAdvisorsPanel}//div[@data-testid="data-testid panel content"]//span`,
+      failedAdvisors: '//section[@data-testid="data-testid Panel header Failed advisors"]',
+
+    };
+    this.panelData = {
+      failedAdvisors: {
+        insufficientPrivilege: `${this.panels.failedAdvisors}//[@data-testid="unauthorized"]`,
+        criticalFailedAdvisors: `${this.panels.failedAdvisors}//span[@data-testid="db-check-panel-critical"]`,
+        errorFailedAdvisors: `${this.panels.failedAdvisors}//span[@data-testid="db-check-panel-error"]`,
+        warningFailedAdvisors: `${this.panels.failedAdvisors}//span[@data-testid="db-check-panel-warning"]`,
+        noticeFailedAdvisors: `${this.panels.failedAdvisors}//span[@data-testid="db-check-panel-notice"]`,
+      },
     };
     this.metrics = [
       'CPU Busy',
