@@ -1,7 +1,7 @@
 const { I } = inject();
 const assert = require('assert');
 
-const alertRow = (alertName) => `//tr[td[contains(., "${alertName}")]]`;
+const alertRow = (alertName) => `//tr[td/a[contains(text(), "${alertName}")]]`;
 const details = '$alert-details-wrapper';
 
 module.exports = {
