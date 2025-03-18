@@ -264,7 +264,7 @@ Scenario(
     const advisors = await advisorsAPI.getAdvisorsNames();
 
     await advisorsAPI.startSecurityChecks(advisors);
-    await I.Authorize();
+    await I.Authorize(users.editor.username, users.editor.password);
     I.amOnPage(I.buildUrlWithParams(dashboardPage.homeDashboard.url, { refresh: '5s' }));
     I.waitForVisible(dashboardPage.homeDashboard.panelData.failedAdvisors.criticalFailedAdvisors, 480);
 
