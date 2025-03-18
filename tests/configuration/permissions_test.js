@@ -259,7 +259,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T2009 - Verify that editor user can see failed advisors data on home dashboard @nightly @grafana-pr',
+  'PMM-T2009 - Verify that editor user can see failed advisors data on home dashboard @nightly',
   async ({ I, dashboardPage, advisorsAPI }) => {
     const advisors = await advisorsAPI.getAdvisorsNames();
 
