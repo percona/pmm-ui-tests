@@ -104,8 +104,6 @@ class Grafana extends Helper {
   }
 
   async getAuth(username = 'admin', password = process.env.ADMIN_PASSWORD) {
-    console.log(`Username is: ${username} and password is: ${password}`);
-
     return Buffer.from(`${this.config.username || username}:${this.config.password || password}`).toString(
       'base64',
     );
