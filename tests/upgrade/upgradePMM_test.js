@@ -78,6 +78,8 @@ Scenario(
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.updatesModal.root);
     I.click(homePage.updatesModal.closeIcon);
+    I.click(homePage.productTour.productTourModal);
+    I.click(homePage.productTour.skipButton);
     await homePage.upgradePMM(versionMinor);
   },
 ).retry(0);
