@@ -208,7 +208,7 @@ module.exports = {
           node_name: serviceName,
           node_type: NODE_TYPE.REMOTE,
         },
-        port: port || remoteInstancesHelper.remote_instance.mongodb.psmdb_7.server_port,
+        port: port || remoteInstancesHelper.remote_instance.mongodb.psmdb_7.port,
         address: host || remoteInstancesHelper.remote_instance.mongodb.psmdb_7.host,
         service_name: serviceName,
         username: username || remoteInstancesHelper.remote_instance.mongodb.psmdb_7.username,
