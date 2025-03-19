@@ -76,6 +76,8 @@ module.exports = {
   async getServiceDetailsByPartialName(serviceName) {
     const service = await this.apiGetServices();
 
+    console.log(`Response status is: ${service.status} Data is: ${JSON.stringify(service.data)}`);
+
     return service
       .data
       .services
