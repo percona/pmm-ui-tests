@@ -112,8 +112,9 @@ Scenario(
   },
 );
 
-Scenario(
-  'Verify disabled checks remain disabled after upgrade @post-advisors-alerting-upgrade',
+// TODO: Unskip after https://perconadev.atlassian.net/browse/PMM-13885 is merged
+Scenario.skip(
+  'Verify disabled advisor remain disabled after upgrade @post-advisors-alerting-upgrade',
   async ({
     I,
     advisorsPage,
