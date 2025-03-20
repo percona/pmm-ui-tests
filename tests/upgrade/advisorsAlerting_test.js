@@ -141,6 +141,28 @@ Scenario(
   },
 );
 
+const rareInterval = '48';
+const standardInterval = '12';
+const frequentInterval = '2';
+
+Scenario(
+  'Set settings for intervals before the upgrade @pre-advisors-alerting-upgrade',
+  async ({
+    I,
+    pmmSettingsPage,
+  }) => {
+    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+    I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 30);
+    I.fillField(pmmSettingsPage.fields.rareIntervalInput, rareInterval);
+    I.fillField(pmmSettingsPage.fields.standartIntervalInput, standardInterval);
+    I.fillField(pmmSettingsPage.fields.frequentIntervalInput, frequentInterval);
+    I.click(pmmSettingsPage.fields.advancedButton);
+    I.waitForValue(pmmSettingsPage.fields.rareIntervalInput, rareInterval, 5);
+    I.waitForValue(pmmSettingsPage.fields.standartIntervalInput, standardInterval, 5);
+    I.waitForValue(pmmSettingsPage.fields.frequentIntervalInput, frequentInterval, 5);
+  },
+);
+
 Scenario(
   'Verify settings for intervals remain the same after upgrade @post-advisors-alerting-upgrade',
   async ({
@@ -150,9 +172,9 @@ Scenario(
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     I.waitForVisible(pmmSettingsPage.fields.rareIntervalInput, 30);
 
-    I.seeInField(pmmSettingsPage.fields.rareIntervalInput, '78');
-    I.seeInField(pmmSettingsPage.fields.standartIntervalInput, '1');
-    I.seeInField(pmmSettingsPage.fields.frequentIntervalInput, '4');
+    I.seeInField(pmmSettingsPage.fields.rareIntervalInput, rareInterval);
+    I.seeInField(pmmSettingsPage.fields.standartIntervalInput, standardInterval);
+    I.seeInField(pmmSettingsPage.fields.frequentIntervalInput, frequentInterval);
   },
 );
 
@@ -163,11 +185,10 @@ Scenario(
   }) => {
     const alertName = 'PostgreSQL too many connections (pmm-server-postgresql)';
 
-    // Verify Alert is present
     await alertsAPI.waitForAlerts(60, 1);
     const alerts = await alertsAPI.getAlertsList();
 
-    assert.ok(alerts[0].summary === alertName, `Didn't find alert with name ${alertName}`);
+    assert.ok(alerts[0].annotations.summary === alertName, `Didn't find alert with name ${alertName}`);
 
     I.amOnPage(alertsPage.url);
     I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
