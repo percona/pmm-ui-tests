@@ -142,7 +142,11 @@ Scenario(
     // Checking that Cluster filters are still in QAN after Upgrade
     for (const name of Object.keys(remoteInstancesHelper.upgradeServiceNames)) {
       if (remoteInstancesHelper.qanFilters.includes(name)) {
+        console.log(`Verifying QAN for name: ${name}`);
         queryAnalyticsPage.waitForLoaded();
+        const filters = await I.grabTextFromAll(queryAnalyticsPage.filters.fields.filterByName(''));
+
+        console.log(`Available filters are: ${filters}`);
         I.waitForVisible(queryAnalyticsPage.filters.fields.filterByName(name), 30);
         I.seeElement(queryAnalyticsPage.filters.fields.filterByName(name));
       }
