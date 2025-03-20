@@ -5,10 +5,16 @@ Feature('PMM upgrade tests for advisors and alerting');
 
 const { psMySql } = inject();
 
+const advisorName = 'Check for unsupported PostgreSQL';
+const groupName = 'Version Configuration';
 const ruleName = 'Alert Rule for upgrade';
 const psServiceName = 'upgrade-stt-ps-5.7.30';
 const connection = psMySql.defaultConnection;
 const failedCheckMessage = 'Newer version of Percona Server for MySQL is available';
+
+Before(async ({ I }) => {
+  I.Authorize();
+});
 
 Scenario.skip(
   'Verify user has failed checks before upgrade @pre-advisors-alerting-upgrade',
@@ -61,29 +67,48 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-advisors-alerting-upgrade',
+  'PMM-T577 - Verify user is able to see IA alerts before upgrade @pre-advisors-alerting-upgrade',
   async ({
     settingsAPI, rulesAPI, alertsAPI,
   }) => {
     await settingsAPI.changeSettings({ alerting: true });
     await rulesAPI.removeAllAlertRules(true);
-    await rulesAPI.createAlertRule({ ruleName });
+    const ruleFolder = 'PostgreSQL';
+
+    await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
     // Wait for alert to appear
     await alertsAPI.waitForAlerts(60, 1);
   },
 );
 
 Scenario(
-  'Verify check intervals remain the same after upgrade @post-advisors-alerting-upgrade',
+  'Change advisors intervals before the upgrade @pre-advisors-alerting-upgrade',
   async ({
     I,
     advisorsPage,
   }) => {
-    const checkName = 'PostgreSQL Version';
+    I.amOnPage(advisorsPage.urlConfiguration);
+    I.waitForVisible(advisorsPage.elements.advisorsGroupHeader(groupName));
+    I.click(advisorsPage.elements.advisorsGroupHeader(groupName));
+    I.click(advisorsPage.buttons.openChangeInterval(advisorName));
+    I.click(advisorsPage.buttons.intervalValue('Frequent'));
+    I.click(advisorsPage.buttons.applyIntervalChange);
+    I.waitForText('Frequent', 5, advisorsPage.elements.intervalCellByName(advisorName));
+  },
+);
 
-    I.amOnPage(advisorsPage.url);
-    I.waitForVisible(advisorsPage.buttons.disableEnableCheck(checkName));
-    I.seeTextEquals('Frequent', advisorsPage.elements.intervalCellByName(checkName));
+Scenario(
+  'Verify advisors intervals remain the same after upgrade @post-advisors-alerting-upgrade',
+  async ({
+    I,
+    advisorsPage,
+  }) => {
+    I.amOnPage(advisorsPage.urlConfiguration);
+    I.waitForVisible(advisorsPage.elements.advisorsGroupHeader(groupName));
+    I.click(advisorsPage.elements.advisorsGroupHeader(groupName));
+    const advisorInterval = await I.grabTextFrom(advisorsPage.elements.intervalCellByName(advisorName));
+
+    I.assertTrue(advisorInterval === 'Frequent', `Expected advisor interval to be: "Frequent", but actual advisor interval is: ${advisorInterval}`);
   },
 );
 
@@ -103,7 +128,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T577 Verify user is able to see IA alerts before upgrade @post-advisors-alerting-upgrade',
+  'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-advisors-alerting-upgrade',
   async ({
     settingsAPI, rulesAPI, alertsAPI,
   }) => {
