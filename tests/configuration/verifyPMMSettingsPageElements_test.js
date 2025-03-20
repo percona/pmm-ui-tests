@@ -80,7 +80,7 @@ Scenario('Verify Advanced Section Elements @settings @grafana-pr', async ({ I, p
 
 // To be removed from Skip after https://jira.percona.com/browse/PMM-5791
 xScenario(
-  'PMM-T227 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days @settings',
+  'PMM-T227 - Open PMM Settings page and verify DATA_RETENTION value is set to 2 days @settings',
   async ({ I, pmmSettingsPage }) => {
     const dataRetention = '2';
 
@@ -90,7 +90,7 @@ xScenario(
   },
 );
 
-Scenario('@PMM-T1866 - Verify if public address has an port assigned and following UI/API requests dont error @settings', async ({ I, pmmSettingsPage, adminPage }) => {
+Scenario('PMM-T1866 - Verify if public address has an port assigned and following UI/API requests dont error @settings', async ({ I, pmmSettingsPage, adminPage }) => {
   I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
 
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();

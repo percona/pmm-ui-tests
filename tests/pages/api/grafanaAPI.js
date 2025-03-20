@@ -1,6 +1,5 @@
 const { I } = inject();
 const assert = require('assert');
-const FormData = require('form-data');
 
 module.exports = {
   customDashboardName: 'auto-test-dashboard',
@@ -361,6 +360,7 @@ module.exports = {
   async getMetric(metricName, refineBy, lastMinutes = 5) {
     const uid = await this.getDataSourceUidByName();
     const currentTime = Date.now();
+    const fromTime = currentTime - lastMinutes * 60 * 1000;
     let refineByString = '';
 
     if (Array.isArray(refineBy)) {
@@ -421,7 +421,7 @@ module.exports = {
           maxDataPoints: 757,
         },
       ],
-      from: (currentTime - lastMinutes * 60 * 1000).toString(),
+      from: fromTime.toString(),
       to: currentTime.toString(),
     };
 
@@ -508,11 +508,11 @@ module.exports = {
     }
   },
 
-  async checkMetricExist(metricName, refineBy) {
+  async checkMetricExist(metricName, refineBy, lastMinutes = 5) {
     let response;
 
     await I.asyncWaitFor(async () => {
-      response = await this.getMetric(metricName, refineBy);
+      response = await this.getMetric(metricName, refineBy, lastMinutes);
 
       return response.data.results.A.frames[0].data.values.length !== 0;
     }, 60);

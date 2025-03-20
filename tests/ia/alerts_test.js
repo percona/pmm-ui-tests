@@ -1,4 +1,5 @@
 const contactPointsAPI = require('./pages/api/contactPointsAPI');
+const { users } = require('../helper/constants');
 
 const ruleName = 'PSQL immortal rule';
 const ruleFolder = 'PostgreSQL';
@@ -34,6 +35,12 @@ BeforeSuite(async ({ I, rulesAPI }) => {
 
   // Preparation steps for checking Alert via webhook server
   await I.verifyCommand('docker compose -f docker-compose-webhook.yml up -d');
+
+  const viewerId = await I.createUser(users.viewer.username, users.viewer.password);
+  const editorId = await I.createUser(users.editor.username, users.editor.password);
+
+  await I.setRole(viewerId);
+  await I.setRole(editorId, 'Editor');
 });
 
 AfterSuite(async ({ rulesAPI, I }) => {
@@ -42,7 +49,7 @@ AfterSuite(async ({ rulesAPI, I }) => {
 });
 
 Scenario(
-  'PMM-T1482 Verify fired alert @ia',
+  'PMM-T1482 - Verify fired alert @ia',
   async ({ I, alertsPage, alertsAPI }) => {
     await alertsAPI.waitForAlerts(24, 1);
     await I.amOnPage(alertsPage.url);
@@ -60,8 +67,41 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1494 PMM-T1495 Verify fired alert in Pager Duty and Webhook @ia',
-  async ({ I, alertsAPI, rulesAPI }) => {
+  'PMM-T1997 - verify viewer can not silence alert @ia',
+  async ({ I, alertsPage, alertsAPI }) => {
+    await I.Authorize(users.viewer.username, users.viewer.password);
+
+    await alertsAPI.waitForAlerts(24, 1);
+    await I.amOnPage(alertsPage.url);
+    await I.seeNumberOfElements(alertsPage.elements.alertRow(ruleName), 1);
+    I.seeAttributesOnElements(alertsPage.buttons.silenceActivate(ruleName), { 'aria-disabled': 'true' });
+  },
+);
+
+Scenario(
+  'PMM-T1998 - verify editor is able to silence and unsilence alert @ia',
+  async ({
+    I, alertsPage, alertmanagerAPI, alertsAPI,
+  }) => {
+    await I.Authorize(users.editor.username, users.editor.password);
+
+    await alertsAPI.waitForAlerts(24, 1);
+    I.amOnPage(alertsPage.url);
+    await alertsPage.verifyAlert(ruleName);
+    await alertsPage.silenceAlert(ruleName);
+    I.amOnPage(alertsPage.url);
+    await alertsPage.verifyAlert(ruleName, true);
+    const silences = await alertmanagerAPI.getSilenced();
+
+    await alertmanagerAPI.deleteSilences(silences);
+    I.amOnPage(alertsPage.url);
+    await alertsPage.verifyAlert(ruleName, false);
+  },
+);
+
+Scenario(
+  'PMM-T1494 + PMM-T1495 - Verify fired alert in Pager Duty and Webhook @ia',
+  async ({ I, rulesAPI }) => {
     const file = './testdata/ia/scripts/alert.txt';
     const alertUID = await rulesAPI.getAlertUID(ruleName, ruleFolder);
 
@@ -76,7 +116,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1496 PMM-T1497 Verify it is possible to silence and unsilence alert @ia',
+  'PMM-T1496 + PMM-T1497 - Verify it is possible to silence and unsilence alert @ia',
   async ({
     I, alertsPage, alertmanagerAPI,
   }) => {
@@ -94,7 +134,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1498 Verify firing alerts dissappear when the condition is fixed @ia',
+  'PMM-T1498 - Verify firing alerts dissappear when the condition is fixed @ia',
   async ({
     I, alertsPage, alertRulesPage,
   }) => {
@@ -113,7 +153,7 @@ Scenario(
 
 // FIXME: Skip until https://jira.percona.com/browse/PMM-11130 is fixed
 Scenario(
-  'PMM-T659 Verify alerts are deleted after deleting rules @ia',
+  'PMM-T659 - Verify alerts are deleted after deleting rules @ia',
   async ({ I, alertsPage, rulesAPI }) => {
     // Deleting rules
     await rulesAPI.removeAllAlertRules();
@@ -124,7 +164,7 @@ Scenario(
 );
 
 Scenario.skip(
-  'PMM-T1499 Verify an alert with non-existing filter (label) does not show up in list @fb-alerting',
+  'PMM-T1499 - Verify an alert with non-existing filter (label) does not show up in list @fb-alerting',
   async ({ I, alertsPage, rulesAPI }) => {
     await rulesAPI.removeAllAlertRules();
     const wrongFilterRule = {
@@ -146,7 +186,7 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T564 Verify fired alert severity colors @ia',
+  'PMM-T564 - Verify fired alert severity colors @ia',
   async ({
     I, alertsPage, rulesAPI, alertsAPI,
   }) => {
@@ -172,7 +212,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1467 Verify empty Fired alerts list @fb-alerting',
+  'PMM-T1467 - Verify empty Fired alerts list @fb-alerting',
   async ({ I, alertsPage, rulesAPI }) => {
     await rulesAPI.removeAllAlertRules();
     I.amOnPage(alertsPage.url);

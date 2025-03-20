@@ -1,3 +1,5 @@
+const { SERVICE_TYPE } = require('../helper/constants');
+
 Feature('Test Dashboards collection inside the Folders');
 
 const panels = new DataTable(['panelName', 'dashboardType', 'dashboardName', 'dashboard']);
@@ -15,7 +17,7 @@ Before(async ({ I }) => {
 });
 
 Data(panels).Scenario(
-  '@PMM-T1565 Verify ability to access OS dashboards with correct filter setup from Home Dashboard @nightly @dashboards',
+  'PMM-T1565 - Verify ability to access OS dashboards with correct filter setup from Home Dashboard @nightly @dashboards',
   async ({
     I, current, dashboardPage, homePage,
   }) => {
@@ -57,5 +59,18 @@ Data(panels).Scenario(
 
     await dashboardPage.verifyMetricsExistence(expectedDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(expectedDashboard.noDataElements);
+  },
+);
+
+Scenario(
+  'PMM-T2007 - Verify Monitored DB Services panel on home dashboard @nightly @dashboards',
+  async ({ I, inventoryAPI, dashboardPage }) => {
+    const mysql = (await inventoryAPI.getServicesByType(SERVICE_TYPE.MYSQL)).data.mysql.length;
+    const mongodb = (await inventoryAPI.getServicesByType(SERVICE_TYPE.MONGODB)).data.mongodb.length;
+    const pgsql = (await inventoryAPI.getServicesByType(SERVICE_TYPE.POSTGRESQL)).data.postgresql.length;
+    const proxysql = (await inventoryAPI.getServicesByType(SERVICE_TYPE.PROXYSQL)).data.proxysql.length;
+
+    I.amOnPage(dashboardPage.homeDashboard.url);
+    await dashboardPage.homeDashboard.verifyCountOfServices(mysql, mongodb, pgsql, proxysql);
   },
 );

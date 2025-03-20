@@ -7,7 +7,7 @@ const {
 const { adminPage } = inject();
 const connection = {
   host: '127.0.0.1',
-  port: 5438,
+  port: 5448,
   user: 'postgres',
   password: 'pass+this',
   database: 'postgres',
@@ -75,7 +75,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1312 Adding Load to Postgres test database and verifying PMM-Agent and PG_STATEMENTS QAN agent is in running status @not-ui-pipeline @pgss-pmm-integration',
+  'PMM-T1312 - Adding Load to Postgres test database and verifying PMM-Agent and PG_STATEMENTS QAN agent is in running status @not-ui-pipeline @pgss-pmm-integration',
   async ({ I }) => {
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
 
@@ -99,7 +99,7 @@ Scenario(
 );
 
 Scenario.skip(
-  'PMM-T1313 Verifying data in Clickhouse and comparing with pgss output @not-ui-pipeline @pgss-pmm-integration',
+  'PMM-T1313 - Verifying data in Clickhouse and comparing with pgss output @not-ui-pipeline @pgss-pmm-integration',
   async ({ I, qanAPI }) => {
     // Clear metrics in clickhouse
     await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --query "TRUNCATE TABLE metrics"');
@@ -166,7 +166,7 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T1301 PMM-T1300 Verify that pmm-admin inventory add agent qan-postgresql-pgstatements-agent with --log-level flag adds QAN PostgreSQL PgStatements Agent with corresponding log-level @not-ui-pipeline @pgss-pmm-integration',
+  'PMM-T1301 + PMM-T1300 - Verify that pmm-admin inventory add agent qan-postgresql-pgstatements-agent with --log-level flag adds QAN PostgreSQL PgStatements Agent with corresponding log-level @not-ui-pipeline @pgss-pmm-integration',
   async ({
     I, inventoryAPI, agentCli, dashboardPage,
   }) => {

@@ -36,7 +36,13 @@ module.exports = {
       const agents = Object.values(resp.data).flat().filter((entry) => entry);
 
       // Check if all agents have the status "AGENT_STATUS.RUNNING"
-      const areRunning = agents.every(({ status }) => status === AGENT_STATUS.RUNNING);
+      const areRunning = agents.every(({ status, agent_type }) => {
+        if (agent_type !== 'pmm-agent') {
+          return status === AGENT_STATUS.RUNNING;
+        }
+
+        return true;
+      });
 
       if (areRunning) {
         return resp;
@@ -52,7 +58,11 @@ module.exports = {
     const resp = await this.apiGetServices(serviceType);
 
     const data = Object.values(resp.data).flat()
-      .filter(({ service_name }) => service_name.includes(serviceName));
+      .filter(({ service_name }) => {
+        if (service_name) return service_name.includes(serviceName);
+
+        return null;
+      });
 
     if (data.length === 0) await I.say(`Service "${serviceName}" of "${serviceType}" type is not found!`);
 
@@ -63,13 +73,13 @@ module.exports = {
     return data ? data[0] : null;
   },
 
-  async apiGetNodeInfoForAllNodesByServiceName(serviceType, serviceName) {
-    const service = await this.apiGetServices(serviceType);
+  async getServiceDetailsByPartialName(serviceName) {
+    const service = await this.apiGetServices();
 
-    const data = service.data.services
-      .filter(({ service_name }) => service_name.startsWith(serviceName));
-
-    return data;
+    return service
+      .data
+      .services
+      .find((service) => service.service_name.startsWith(serviceName));
   },
 
   async apiGetPMMAgentInfoByServiceId(serviceId, agentType = AGENT_TYPE.PMM_AGENT) {
@@ -105,6 +115,13 @@ module.exports = {
   async apiGetServices() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const url = 'v1/management/services';
+
+    return await I.sendGetRequest(url, headers);
+  },
+
+  async getServicesByType(serviceType) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const url = `v1/inventory/services?service_type=${serviceType}`;
 
     return await I.sendGetRequest(url, headers);
   },

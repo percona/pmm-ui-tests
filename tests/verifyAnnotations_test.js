@@ -1,5 +1,4 @@
-const { pmmInventoryPage, dashboardPage } = inject();
-const assert = require('assert');
+const { dashboardPage } = inject();
 const { SERVICE_TYPE } = require('./helper/constants');
 
 const annotation = new DataTable(['annotationName', 'service', 'dashboard', 'service_type']);
@@ -73,12 +72,12 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T165: Verify Annotation with Default Options @instances',
+  'PMM-T165 - Verify Annotation with Default Options @instances',
   async ({ I, dashboardPage }) => {
     const annotationTitle = 'pmm-annotate-without-tags';
 
     await I.verifyCommand(
-      `pmm-admin annotate "${annotationTitle}"`,
+      `docker exec haproxy_pmm pmm-admin annotate "${annotationTitle}"`,
     );
 
     I.amOnPage(`${dashboardPage.processDetailsDashboard.url}`);
@@ -89,7 +88,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T166: Verify adding annotation with specified tags @instances',
+  'PMM-T166 - Verify adding annotation with specified tags @instances',
   async ({ I, dashboardPage }) => {
     const annotationTitle2 = 'pmm-annotate-tags';
     const annotationTag1 = 'pmm-testing-tag1';
@@ -97,7 +96,7 @@ Scenario(
     const defaultAnnotation = 'pmm_annotation';
 
     await I.verifyCommand(
-      `pmm-admin annotate "${annotationTitle2}" --tags="${annotationTag1},${annotationTag2}"`,
+      `docker exec haproxy_pmm pmm-admin annotate "${annotationTitle2}" --tags="${annotationTag1},${annotationTag2}"`,
     );
     I.amOnPage(`${dashboardPage.processDetailsDashboard.url}`);
     dashboardPage.waitForDashboardOpened();

@@ -27,7 +27,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1835 Create Dump Archive and Verify its successful in UI @dump',
+  'PMM-T1835 - Create Dump Archive and Verify its successful in UI @dump',
   async ({ dumpAPI, dumpPage }) => {
     const resp = await dumpAPI.createDump([]);
     const uid = JSON.parse(JSON.stringify(resp));
@@ -42,7 +42,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1835 Verify Edit Buttons are Enabled for Dump @dump',
+  'PMM-T1835 - Verify Edit Buttons are Enabled for Dump @dump',
   async ({ dumpAPI, dumpPage }) => {
     const resp = await dumpAPI.createDump([]);
     const uid = JSON.parse(JSON.stringify(resp));
@@ -61,7 +61,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1835 Download and Verify Dump Archive with QAN enabled @dump',
+  'PMM-T1835 - Download and Verify Dump Archive with QAN enabled @dump',
   async ({ dumpAPI, dumpPage, I }) => {
     const resp = await dumpAPI.createDump([], true);
     const uid = JSON.parse(JSON.stringify(resp));
@@ -90,7 +90,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1835 Download and Verify Dump Archive with QAN disabled @dump',
+  'PMM-T1835 - Download and Verify Dump Archive with QAN disabled @dump',
   async ({ dumpAPI, dumpPage, I }) => {
     const resp = await dumpAPI.createDump([], false);
     const uid = JSON.parse(JSON.stringify(resp));
@@ -119,7 +119,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1835 Check Dump Archives can be sent to Support in UI @dump',
+  'PMM-T1835 - Check Dump Archives can be sent to Support in UI @dump',
   async ({ dumpAPI, dumpPage }) => {
     const resp = await dumpAPI.createDump([]);
     const uid = JSON.parse(JSON.stringify(resp));
@@ -157,7 +157,7 @@ Scenario(
   },
 );
 Scenario(
-  'PMM-T1835 Verify Dump extraction logs are visible @dump',
+  'PMM-T1835 - Verify Dump extraction logs are visible @dump',
   async ({ dumpAPI, dumpPage }) => {
     const resp = await dumpAPI.createDump([]);
     const uid = JSON.parse(JSON.stringify(resp));
@@ -173,7 +173,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1835 Verify details of Dump based on Service Name @dump',
+  'PMM-T1835 - Verify details of Dump based on Service Name @dump',
   async ({ dumpAPI, dumpPage }) => {
     const resp = await dumpAPI.createDump(['pmm-server-postgresql']);
     const uid = JSON.parse(JSON.stringify(resp));

@@ -63,16 +63,71 @@ module.exports = {
     cluster: 'rds80-cluster',
     replicationSet: 'rds80-replication',
   },
-  postgresqlInputs: {
-    userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.userName,
-    password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.password,
-    environment: 'RDS Postgres',
-    cluster: 'rdsPostgres-cluster',
-    replicationSet: 'rdsPostgres-replication',
+  mysql84rdsInput: {
+    userName: remoteInstancesHelper.remote_instance.aws.aws_rds_8_4.username,
+    password: remoteInstancesHelper.remote_instance.aws.aws_rds_8_4.password,
+    environment: 'RDS MySQL 8.4',
+    cluster: 'rds84-cluster',
+    replicationSet: 'rds84-replication',
+  },
+  postgresql13Inputs: {
+    userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_13.userName,
+    password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_13.password,
+    environment: 'RDS Postgres13',
+    cluster: 'rdsPostgres13-cluster',
+    replicationSet: 'rdsPostgres13-replication',
+  },
+  postgresql14Inputs: {
+    userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_14.userName,
+    password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_14.password,
+    environment: 'RDS Postgres14',
+    cluster: 'rdsPostgres14-cluster',
+    replicationSet: 'rdsPostgres14-replication',
+  },
+  postgresql15Inputs: {
+    userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_15.userName,
+    password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_15.password,
+    environment: 'RDS Postgres15',
+    cluster: 'rdsPostgres15-cluster',
+    replicationSet: 'rdsPostgres15-replication',
+  },
+  postgresql16Inputs: {
+    userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_16.userName,
+    password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_16.password,
+    environment: 'RDS Postgres16',
+    cluster: 'rdsPostgres16-cluster',
+    replicationSet: 'rdsPostgres16-replication',
+  },
+  postgresql17Inputs: {
+    userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_17.userName,
+    password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_17.password,
+    environment: 'RDS Postgres17',
+    cluster: 'rdsPostgres17-cluster',
+    replicationSet: 'rdsPostgres17-replication',
+  },
+  postgres15auroraInputs: {
+    userName: remoteInstancesHelper.remote_instance.aws.aurora.postgres15aurora.username,
+    password: remoteInstancesHelper.remote_instance.aws.aurora.postgres15aurora.password,
+    environment: 'RDS Postgres17',
+    cluster: 'rdsPostgres17-cluster',
+    replicationSet: 'rdsPostgres17-replication',
+  },
+  postgres16auroraInputs: {
+    userName: remoteInstancesHelper.remote_instance.aws.aurora.postgres16aurora.username,
+    password: remoteInstancesHelper.remote_instance.aws.aurora.postgres16aurora.password,
+    environment: 'RDS Postgres17',
+    cluster: 'rdsPostgres17-cluster',
+    replicationSet: 'rdsPostgres17-replication',
   },
   url: 'graph/add-instance?orgId=1',
   addMySQLRemoteURL: 'graph/add-instance?instance_type=mysql',
-  mysql8rds: {
+  mysql84rds: {
+    'Service Name': 'pmm-qa-rds-mysql-8-4',
+    Environment: 'RDS MySQL 8.4',
+    'Replication Set': 'rds84-replication',
+    Cluster: 'rds84-cluster',
+  },
+  mysql80rds: {
     'Service Name': 'pmm-qa-mysql-8-0-30',
     Environment: 'RDS MySQL 8.0',
     'Replication Set': 'rds80-replication',
@@ -83,6 +138,36 @@ module.exports = {
     Environment: 'RDS MySQL 5.7',
     'Replication Set': 'rds57-replication',
     Cluster: 'rds57-cluster',
+  },
+  postgresql13rds: {
+    'Service Name': 'pmmqa-rds-pgsql13-4',
+    Environment: 'RDS PGSQL 13',
+    'Replication Set': 'pgsqlrds13-replication',
+    Cluster: 'pgsqlrds13-cluster',
+  },
+  postgresql14rds: {
+    'Service Name': 'pmm-qa-rds-pgsql-14',
+    Environment: 'RDS PGSQL 14',
+    'Replication Set': 'pgsqlrds14-replication',
+    Cluster: 'pgsqlrds14-cluster',
+  },
+  postgresql15rds: {
+    'Service Name': 'pmm-qa-postgres-15-10',
+    Environment: 'RDS PGSQL 15',
+    'Replication Set': 'pgsqlrds15-replication',
+    Cluster: 'pgsqlrds15-cluster',
+  },
+  postgresql16rds: {
+    'Service Name': 'pmm-qa-pgsql-16',
+    Environment: 'RDS PGSQL 16',
+    'Replication Set': 'pgsqlrds16-replication',
+    Cluster: 'pgsqlrds16-cluster',
+  },
+  postgresql17rds: {
+    'Service Name': 'pmm-qa-rds-pgsql-17-1',
+    Environment: 'RDS PGSQL 17',
+    'Replication Set': 'pgsqlrds17-replication',
+    Cluster: 'pgsqlrds17-cluster',
   },
   rds: {
     'Service Name': 'rds-mysql56',
@@ -162,7 +247,9 @@ module.exports = {
     pgStatStatementsRadio: locate('label').withAttr({ for: 'radio-btn-2' }).withText('PG Stat Statements'),
     pgStatMonitorRadio: locate('label').withAttr({ for: 'radio-btn-3' }).withText('PG Stat Monitor'),
     pgStatMonitorRadioInput: locate('#radio-btn-3'),
-    customAutoDiscoveryButton: locate('//div[input[@data-testid="autoDiscoveryOptions-radio-button"]]').find('label').withText('Custom'),
+    customAutoDiscoveryButton: locate('//div[input[@data-testid="autoDiscoveryOptions-radio-button"]]')
+      .find('label')
+      .withText('Custom'),
     customAutoDiscoveryfield: '$autoDiscoveryLimit-number-input',
     dropdownOption: (text) => locate('div[class$="-select-option-body"]').find('span').withText(text),
   },
@@ -183,9 +270,7 @@ module.exports = {
 
   async fillFileContent(field, file) {
     I.click(field);
-    I.type(await this.getFileContent(
-      file,
-    ));
+    I.type(await this.getFileContent(file));
   },
 
   tableStatsLimitRadioButtonLocator(limit) {
@@ -256,6 +341,7 @@ module.exports = {
 
     adminPage.customClearField(this.fields.portNumber);
     I.fillField(this.fields.portNumber, details.port);
+
     I.fillField(this.fields.serviceName, details.serviceName);
     I.fillField(this.fields.environment, details.environment);
     I.fillField(this.fields.cluster, details.cluster);
@@ -309,15 +395,42 @@ module.exports = {
 
   selectNodeForRemoteInstance(nodeName = 'pmm-server') {
     I.waitForElement(this.fields.hostName, 30);
-    this.selectDropdownOption('$nodes-selectbox', 'pmm-server');
+    if (nodeName === 'pmm-server') {
+      this.selectDropdownOption('$nodes-selectbox', 'pmm-server');
+    } else {
+      this.selectDropdownOption('$nodes-selectbox', 'client_container');
+    }
   },
 
-  async fillRemoteFields(serviceName) {
+  async fillRemoteFields(serviceName, nodeName = 'pmm-server') {
     let inputs;
+    let port;
+    let host;
+
+    // Handle undefined or null values
+    // eslint-disable-next-line no-param-reassign
+    nodeName = nodeName || 'pmm-server';
+
+    const isClientContainer = nodeName.startsWith('client_container');
     const externalServiceName = 'external_service_new';
+    const srviceName = nodeName.startsWith('client_container') ? `${serviceName}_client` : serviceName;
+    const getHostForNodeName = (nodeName, inputs) => {
+      if (isClientContainer) {
+        return '192.168.0.1';
+      }
+
+      return inputs.host;
+    };
+    const getPortForNodeName = (nodeName, inputs) => {
+      if (isClientContainer) {
+        return inputs.host_server_port;
+      }
+
+      return inputs.server_port;
+    };
 
     if (serviceName !== externalServiceName) {
-      this.selectNodeForRemoteInstance();
+      this.selectNodeForRemoteInstance(nodeName);
     }
 
     // eslint-disable-next-line default-case
@@ -327,12 +440,14 @@ module.exports = {
           ...remoteInstancesHelper.remote_instance.mysql.ps_5_7,
           ...this.mysqlSettings,
         };
-        I.fillField(this.fields.hostName, inputs.host);
+        port = getPortForNodeName(nodeName, inputs);
+        host = getHostForNodeName(nodeName, inputs);
+        I.fillField(this.fields.hostName, host);
         I.fillField(this.fields.userName, inputs.username);
         I.fillField(this.fields.password, inputs.password);
         adminPage.customClearField(this.fields.portNumber);
-        I.fillField(this.fields.portNumber, inputs.port);
-        I.fillField(this.fields.serviceName, serviceName);
+        I.fillField(this.fields.portNumber, port);
+        I.fillField(this.fields.serviceName, srviceName);
         I.fillField(this.fields.environment, inputs.environment);
         I.fillField(this.fields.cluster, inputs.cluster);
         break;
@@ -370,10 +485,11 @@ module.exports = {
           ...remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2,
           ...this.mongodbSettings,
         };
-        I.fillField(this.fields.hostName, inputs.host);
+        host = getHostForNodeName(nodeName, inputs);
+        I.fillField(this.fields.hostName, host);
         I.fillField(this.fields.userName, inputs.username);
         I.fillField(this.fields.password, inputs.password);
-        I.fillField(this.fields.serviceName, serviceName);
+        I.fillField(this.fields.serviceName, srviceName);
         I.fillField(this.fields.environment, inputs.environment);
         I.fillField(this.fields.cluster, inputs.cluster);
         break;
@@ -409,15 +525,14 @@ module.exports = {
           ...remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3,
           ...this.potgresqlSettings,
         };
-        I.fillField(this.fields.hostName, inputs.host);
+        port = getPortForNodeName(nodeName, inputs);
+        host = getHostForNodeName(nodeName, inputs);
+        I.fillField(this.fields.hostName, host);
         I.fillField(this.fields.userName, inputs.username);
         I.fillField(this.fields.password, inputs.password);
         adminPage.customClearField(this.fields.portNumber);
-        I.fillField(
-          this.fields.portNumber,
-          remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
-        );
-        I.fillField(this.fields.serviceName, serviceName);
+        I.fillField(this.fields.portNumber, port);
+        I.fillField(this.fields.serviceName, srviceName);
         I.fillField(this.fields.environment, inputs.environment);
         I.fillField(this.fields.cluster, inputs.cluster);
         break;
@@ -453,10 +568,11 @@ module.exports = {
         break;
       case remoteInstancesHelper.services.proxysql:
         inputs = remoteInstancesHelper.remote_instance.proxysql.proxysql_2_1_1;
-        I.fillField(this.fields.hostName, inputs.host);
+        host = getHostForNodeName(nodeName, inputs);
+        I.fillField(this.fields.hostName, host);
         I.fillField(this.fields.userName, inputs.username);
         I.fillField(this.fields.password, inputs.password);
-        I.fillField(this.fields.serviceName, serviceName);
+        I.fillField(this.fields.serviceName, srviceName);
         I.fillField(this.fields.environment, inputs.environment);
         I.fillField(this.fields.cluster, inputs.clusterName);
         break;
@@ -561,10 +677,7 @@ module.exports = {
     I.fillField(this.fields.clientID, remoteInstancesHelper.remote_instance.azure.azure_client_id);
     I.fillField(this.fields.clientSecret, remoteInstancesHelper.remote_instance.azure.azure_client_secret);
     I.fillField(this.fields.tenantID, remoteInstancesHelper.remote_instance.azure.azure_tenant_id);
-    I.fillField(
-      this.fields.subscriptionID,
-      remoteInstancesHelper.remote_instance.azure.azure_subscription_id,
-    );
+    I.fillField(this.fields.subscriptionID, remoteInstancesHelper.remote_instance.azure.azure_subscription_id);
     I.click(this.fields.discoverBtn);
     this.waitForDiscovery();
   },
@@ -612,6 +725,7 @@ module.exports = {
 
   fillFields(serviceParameters) {
     adminPage.customClearField(this.fields.userName);
+    I.waitForVisible(this.fields.userName, 30);
     I.fillField(this.fields.userName, serviceParameters.userName);
     I.fillField(this.fields.password, serviceParameters.password);
     I.fillField(this.fields.environment, serviceParameters.environment);
@@ -619,26 +733,67 @@ module.exports = {
     I.fillField(this.fields.replicationSet, serviceParameters.replicationSet);
   },
 
-  async fillRemoteRDSFields(serviceName) {
+  async fillRemoteRDSFields(serviceName, nodeName) {
     let inputs;
+    const srviceName = nodeName.startsWith('client_container') ? `${serviceName}_client` : serviceName;
 
-    this.selectNodeForRemoteInstance();
+    this.selectNodeForRemoteInstance(nodeName);
     // eslint-disable-next-line default-case
     switch (serviceName) {
       case 'rds-mysql56':
         inputs = this.mysqlInputs;
+        adminPage.customClearField(this.fields.serviceName);
+        I.fillField(this.fields.serviceName, srviceName);
         this.fillFields(inputs);
         break;
       case 'pmm-qa-mysql-8-0-30':
         inputs = this.mysql80rdsInput;
+        adminPage.customClearField(this.fields.serviceName);
+        I.fillField(this.fields.serviceName, srviceName);
+        this.fillFields(inputs);
+        break;
+      case 'pmm-qa-rds-mysql-8-4':
+        inputs = this.mysql84rdsInput;
+        adminPage.customClearField(this.fields.serviceName);
+        I.fillField(this.fields.serviceName, srviceName);
         this.fillFields(inputs);
         break;
       case 'pmm-qa-rds-mysql-5-7-39':
         inputs = this.mysql57rdsInput;
+        adminPage.customClearField(this.fields.serviceName);
+        I.fillField(this.fields.serviceName, srviceName);
         this.fillFields(inputs);
         break;
-      case 'pmm-qa-pgsql-12':
-        inputs = this.postgresqlInputs;
+      case 'pmmqa-rds-pgsql13-4':
+        inputs = this.postgresql13Inputs;
+        this.fillFields(inputs);
+        break;
+      case 'pmm-qa-rds-pgsql-14':
+        inputs = this.postgresql14Inputs;
+        this.fillFields(inputs);
+        break;
+      case 'pmm-qa-postgres-15-10':
+        inputs = this.postgresql15Inputs;
+        this.fillFields(inputs);
+        break;
+      case 'pmm-qa-pgsql-16':
+        inputs = this.postgresql16Inputs;
+        I.click(this.fields.useTLS);
+        I.click(this.fields.skipTLSL);
+        this.fillFields(inputs);
+        break;
+      case 'pmm-qa-rds-pgsql-17-1':
+        inputs = this.postgresql17Inputs;
+        I.click(this.fields.useTLS);
+        I.click(this.fields.skipTLSL);
+        this.fillFields(inputs);
+        break;
+      case 'pmm-qa-rds-aurora-15-instance-1':
+        inputs = this.postgres15auroraInputs;
+        this.fillFields(inputs);
+        break;
+      case 'pmm-qa-aurora-postgres-16-4-instance-1':
+        inputs = this.postgres16auroraInputs;
         this.fillFields(inputs);
         break;
       case 'azure-MySQL':

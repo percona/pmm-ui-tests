@@ -1,6 +1,8 @@
 const { I, adminPage } = inject();
 const assert = require('assert');
 const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu');
+const PmmHealthDashboard = require('../dashboards/pages/pmmHealthDashboard');
+const HomeDashboard = require('../dashboards/pages/homeDashboard');
 
 const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 
@@ -665,21 +667,6 @@ module.exports = {
       'Assert Warning Events',
     ],
   },
-  homeDashboard: {
-    metrics: [
-      'CPU Busy',
-      'Mem Avail',
-      'Disk Reads',
-      'Disk Writes',
-      'Network IO',
-      'DB Conns',
-      'DB QPS',
-      'Virtual CPUs',
-      'RAM',
-      'Host uptime',
-      'DB uptime',
-    ],
-  },
   mySQLInstanceOverview: {
     url: 'graph/d/mysql-instance-overview/mysql-instances-overview?orgId=1&from=now-2m&to=now&refresh=1m',
     clearUrl: 'graph/d/mysql-instance-overview/mysql-instances-overview',
@@ -797,6 +784,25 @@ module.exports = {
       'MySQL Table Open Cache Status',
       'MySQL Open Tables',
       'MySQL Table Definition Cache',
+    ],
+  },
+  mysqlReplcationDashboard: {
+    url: '/graph/d/mysql-replicaset-summary/mysql-replication-summary?orgId=1&refresh=1m',
+    clearUrl: '/graph/d/mysql-replicaset-summary/mysql-replication-summary',
+    metrics: [
+      'Node',
+      'IO Thread Running',
+      'SQL Thread Running',
+      'Replication Error No',
+      'Read Only',
+      'Replication Delay',
+      'MySQL Replication Lag',
+      'Binlogs Size',
+      'Binlog Data Written Hourly',
+      'Binlogs Count',
+      'Binlogs Created Hourly',
+      'Relay Log Space',
+      'Relay Log Written Hourly',
     ],
   },
   groupReplicationDashboard: {
@@ -1062,7 +1068,7 @@ module.exports = {
   },
 
   osMemoryDetails: {
-    noDataElements: 5,
+    noDataElements: 6,
     naElements: 0,
     clearUrl: 'graph/d/node-memory/memory-details',
     metrics: [
@@ -1106,7 +1112,8 @@ module.exports = {
       'Steal Kswapd',
     ],
   },
-
+  pmmHealth: PmmHealthDashboard,
+  homeDashboard: HomeDashboard,
   osNodesOverview: {
     noDataElements: 3,
     clearUrl: 'graph/d/node-instance-overview/nodes-overview',

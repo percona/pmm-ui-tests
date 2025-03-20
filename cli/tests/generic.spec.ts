@@ -22,10 +22,30 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
       .stdout.trim();
   }
 
+  test('Verify pt summary for mysql mongodb and pgsql', async ({}) => {
+    await test.step('Verify pt summary returns correct exit code', async () => {
+      const ptMysqlSummary = await cli.exec('sudo /usr/local/percona/pmm/tools/pt-mysql-summary --version');
+      await ptMysqlSummary.assertSuccess();
+
+      const ptPgSummary = await cli.exec('sudo /usr/local/percona/pmm/tools/pt-pg-summary --version');
+      await ptPgSummary.assertSuccess();
+
+      const ptMongoDbSummary = await cli.exec('sudo /usr/local/percona/pmm/tools/pt-mongodb-summary --version');
+      await ptMongoDbSummary.assertSuccess();
+    });
+  });
+
   test('PMM-T1258 Verify pmm-admin status shows node name', async ({}) => {
     const output = await cli.exec('sudo pmm-admin status');
     await output.assertSuccess();
     await output.outContains('Node name: ');
+  });
+
+  test('Verify pmm-server container image size in not more than 2.8GB', async ({}) => {
+    const output = await cli.exec('docker image ls | grep pmm-server | awk \'{print $7}\'');
+    const size = parseFloat(output.stdout.trim().split('GB')[0]);
+
+    expect(size).toBeLessThanOrEqual(2.8);
   });
 
   /**
@@ -109,6 +129,25 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     const output = await cli.exec('sudo pmm-admin summary --version');
     await output.assertSuccess();
     await output.outContains(`Version: ${PMM_VERSION}`);
+  });
+
+  test('PMM-T1219 - verify pmm-admin summary includes targets from vmagent', async ({}) => {
+    let output = await cli.exec('sudo pmm-admin summary --filename=pmm-summary.zip');
+    await output.assertSuccess();
+    await output.outContains('pmm-summary.zip created.');
+
+    output = await cli.exec('unzip pmm-summary.zip -d pmm-summary-logs');
+    await output.assertSuccess();
+
+    await test.step('@PMM-T1353 Verify pmm-admin summary doesn\'t save any credentials in files', async () => {
+      output = await cli.exec('cat pmm-summary-logs/client/status.json | grep \'"https://x*:x*@.*:.*"\'');
+      await output.assertSuccess();
+      expect(output.getStdOutLines().length).toBeGreaterThan(0);
+    });
+
+    output = await cli.exec('unzip -l pmm-summary.zip | grep vmagent-targets');
+    await output.assertSuccess();
+    await output.outContainsMany(['client/vmagent-targets.json', 'client/vmagent-targets.html']);
   });
 
   /**
@@ -496,4 +535,6 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     // no information about failure reasons is shown
     await output.outContains('Failed to register pmm-agent on PMM Server: Node with name');
   });
+
+
 });

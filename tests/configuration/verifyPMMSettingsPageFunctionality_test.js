@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { users } = require('../helper/constants');
 
 Feature('PMM Settings Functionality').retry(1);
 
@@ -43,7 +44,7 @@ Scenario('PMM-T94 - Open PMM Settings page and verify changing Data Retention [c
 });
 
 Scenario.skip(
-  'PMM-T253 Verify user can see correct tooltip for STT [trivial] @settings @stt @grafana-pr',
+  'PMM-T253 - Verify user can see correct tooltip for STT [trivial] @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
     const sectionNameToExpand = pmmSettingsPage.sectionTabsList.advanced;
 
@@ -57,7 +58,7 @@ Scenario.skip(
 );
 
 Scenario.skip(
-  'PMM-T254 PMM-T253 Verify disable telemetry while Advisors enabled @settings @stt @grafana-pr',
+  'PMM-T254 + PMM-T253 - Verify disable telemetry while Advisors enabled @settings @stt @grafana-pr',
   async ({ I, pmmSettingsPage }) => {
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
@@ -74,7 +75,7 @@ Scenario.skip(
 ).retry(2);
 
 Scenario(
-  'PMM-T532 PMM-T533 PMM-T536 - Verify user can disable/enable IA in Settings @fb-alerting @settings',
+  'PMM-T532 + PMM-T533 + PMM-T536 - Verify user can disable/enable IA in Settings @fb-alerting @settings',
   async ({
     I, pmmSettingsPage, settingsAPI, adminPage,
   }) => {
@@ -191,19 +192,24 @@ Scenario(
 
 Scenario(
   'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
-  async ({ I, pmmSettingsPage, settingsAPI }) => {
+  async ({
+    I, pmmSettingsPage, settingsAPI,
+  }) => {
     await settingsAPI.changeSettings({ publicAddress: '' });
-    I.wait(3);
+    I.wait(10);
     await pmmSettingsPage.openAdvancedSettings();
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.publicAddress);
 
     await I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
+
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
     I.click(pmmSettingsPage.fields.publicAddressButton);
+    pmmSettingsPage.applyChanges();
+    I.wait(5);
     const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
     I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
-    pmmSettingsPage.applyChanges();
+    I.wait(5);
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     const publicAddressAfterRefresh = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
@@ -217,7 +223,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T254 ensure Advisors are on by default @instances',
+  'PMM-T254 - Ensure Advisors are on by default @instances',
   async ({ settingsAPI }) => {
     const resp = await settingsAPI.getSettings('advisor_enabled');
 
@@ -226,7 +232,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1227 @PMM-T1338 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
+  'PMM-T1227 + PMM-T1338 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
   + 'Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
@@ -247,7 +253,7 @@ Scenario(
   },
 );
 
-Scenario('PMM-T1401 Verify Percona Alerting wording in Settings @max-length @settings', async ({
+Scenario('PMM-T1401 - Verify Percona Alerting wording in Settings @max-length @settings', async ({
   I,
   pmmSettingsPage,
 }) => {
@@ -257,8 +263,7 @@ Scenario('PMM-T1401 Verify Percona Alerting wording in Settings @max-length @set
   await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.perconaAlerting);
 });
 
-// unskip after SAAS-1437 is done and 500 error is fixed
-Scenario.skip(
+Scenario(
   'PMM-T1328 Verify public address is set automatically on Percona Platform page once connected to Portal @nightly',
   async ({
     I, pmmSettingsPage, portalAPI, perconaPlatformPage, settingsAPI,
@@ -292,3 +297,77 @@ Scenario.skip(
     );
   },
 ).retry(1);
+
+Scenario(
+  'PMM-T1967 - Verify Update modal respects update settings @fb-settings',
+  async ({
+    I, homePage, settingsAPI, pmmSettingsPage,
+  }) => {
+    const adminId = await I.createUser(users.admin.username, users.admin.password);
+
+    await I.setRole(adminId, 'Admin');
+    await I.Authorize(users.admin.username, users.admin.password);
+
+    await settingsAPI.changeSettings({ updates: true });
+    await I.usePlaywrightTo('remove users/me mock', async ({ page }) => {
+      await page.route('**/v1/users/me', (route) => route.continue());
+    });
+
+    I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
+    I.waitForVisible(homePage.updatesModal.root, 30);
+    I.click(homePage.updatesModal.closeIcon);
+    // eslint-disable-next-line no-undef
+    await tryTo(() => {
+      I.waitForVisible(homePage.productTour.skipButton, 5);
+      I.click(homePage.productTour.skipButton);
+    });
+    I.click(pmmSettingsPage.fields.checkForUpdatesSwitch);
+    I.click(pmmSettingsPage.fields.applyButton);
+    I.refreshPage();
+    I.waitForVisible(pmmSettingsPage.fields.checkForUpdatesSwitch, 30);
+    I.dontSeeElement(homePage.updatesModal.root);
+    I.click(pmmSettingsPage.fields.checkForUpdatesSwitch);
+    I.click(pmmSettingsPage.fields.applyButton);
+    I.refreshPage();
+    I.seeElement(homePage.updatesModal.root);
+  },
+);
+
+Scenario(
+  'PMM-T2004 - Verify Data Retention field in advanced settings @settings @nightly',
+  async ({
+    I, pmmSettingsPage,
+  }) => {
+    await pmmSettingsPage.openAdvancedSettings();
+    I.assertNotEqual(
+      await I.grabAttributeFrom(pmmSettingsPage.fields.advancedButton, 'disabled'),
+      null,
+      'Apply Changes button should be disabled when there are no changes.',
+    );
+
+    I.clearField(pmmSettingsPage.fields.dataRetentionInput);
+    I.fillField(pmmSettingsPage.fields.dataRetentionInput, 1);
+    I.assertEqual(
+      await I.grabAttributeFrom(pmmSettingsPage.fields.advancedButton, 'disabled'),
+      null,
+      'Apply Changes button should be enabled after value of data retention is changed to 1.',
+    );
+
+    I.clearField(pmmSettingsPage.fields.dataRetentionInput);
+    I.seeTextEquals(pmmSettingsPage.messages.requiredFieldMessage, pmmSettingsPage.fields.retentionValidation);
+    I.assertNotEqual(
+      await I.grabAttributeFrom(pmmSettingsPage.fields.advancedButton, 'disabled'),
+      null,
+      'Apply changes button should be disabled when validation error for empty data retention is present',
+    );
+
+    I.clearField(pmmSettingsPage.fields.dataRetentionInput);
+    I.fillField(pmmSettingsPage.fields.dataRetentionInput, 3651);
+    I.seeTextEquals(pmmSettingsPage.messages.invalidDataDurationMessage, pmmSettingsPage.fields.retentionValidation);
+    I.assertNotEqual(
+      await I.grabAttributeFrom(pmmSettingsPage.fields.advancedButton, 'disabled'),
+      null,
+      'Apply changes button should be disabled when validation error for data retention that is outside of the range is present',
+    );
+  },
+);

@@ -25,7 +25,7 @@ Before(async ({ I, inventoryAPI }) => {
 });
 
 Data(instances).Scenario(
-  'PMM-T888 PMM-T919 Verify Adding SSL services remotely @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
+  'PMM-T888 + PMM-T919 - Verify Adding SSL services remotely @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI, inventoryAPI,
   }) => {
@@ -95,7 +95,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T926 PMM-T927 Verify there is no possibility to add MongoDB Service with only CA file specified,'
+  'PMM-T926 + PMM-T927 Verify there is no possibility to add MongoDB Service with only CA file specified,'
     + 'Verify there is no possibility to add MongoDB Service with only certificate file specified @ssl @ssl-mongo @ssl-remote @not-ui-pipeline',
   async ({
     I, current, dashboardPage,
@@ -171,7 +171,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T1276 (1.0) Verify tlsCa, tlsCert, tlsKey are generated on every MongoDB exporter (added with TLS flags) restart @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
+  'PMM-T1276 - Verify tlsCa, tlsCert, tlsKey are generated on every MongoDB exporter (added with TLS flags) restart @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
     I, current, dashboardPage,
   }) => {
@@ -195,7 +195,7 @@ Data(instances).Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  ' PMM-T1431 Verify adding MongoDB instance via UI with specified Max Query Length option @max-length @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
+  'PMM-T1431 - Verify adding MongoDB instance via UI with specified Max Query Length option @max-length @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, current,
   }) => {

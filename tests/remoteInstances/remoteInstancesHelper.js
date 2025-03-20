@@ -96,7 +96,9 @@ let PMM_SERVER_OVF_AMI_SETUP = 'false';
 
 DB_CONFIG = {
   MYSQL_SERVER_PORT: '3306',
+  MYSQL_HOST_SERVER_PORT: '3309',
   POSTGRES_SERVER_PORT: '5432',
+  POSTGRES_HOST_SERVER_PORT: '5433',
   MONGODB_SERVER_PORT: '27017',
   PROXYSQL_SERVER_PORT: '6033',
 };
@@ -123,16 +125,17 @@ module.exports = {
     mysql: {
       ps_5_7: {
         host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'mysql'),
-        port: DB_CONFIG.MYSQL_SERVER_PORT,
+        server_port: DB_CONFIG.MYSQL_SERVER_PORT,
+        host_server_port: DB_CONFIG.MYSQL_HOST_SERVER_PORT,
         username: 'pmm-agent',
         password: 'pmm%*&agent-password',
         clusterName: 'mysql_clstr',
       },
       ps_8_0: {
-        host: 'mysql8',
-        port: DB_CONFIG.MYSQL_SERVER_PORT,
-        username: 'pmm-agent',
-        password: 'pmm%*&agent-password',
+        host: 'ps_pmm_8.0',
+        port: '3307',
+        username: 'msandbox',
+        password: 'msandbox',
         clusterName: 'mysql_clstr',
       },
       ms_8_0_ssl: {
@@ -155,6 +158,13 @@ module.exports = {
         password: 'root-!@#%^password',
         clusterName: 'mongo_clstr',
       },
+      psmdb_7: {
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'rs101'),
+        port: DB_CONFIG.MONGODB_SERVER_PORT,
+        username: 'pbm',
+        password: 'pbmpass',
+        clusterName: 'mongo_clstr',
+      },
       mongodb_4_4_ssl: {
         host: '192.168.0.1',
         port: '27018',
@@ -168,9 +178,18 @@ module.exports = {
     postgresql: {
       pdpgsql_13_3: {
         host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'postgres'),
-        port: DB_CONFIG.POSTGRES_SERVER_PORT,
+        server_port: DB_CONFIG.POSTGRES_SERVER_PORT,
+        host_server_port: DB_CONFIG.POSTGRES_HOST_SERVER_PORT,
         username: 'postgres',
         password: 'pmm-^*&@agent-password',
+        clusterName: 'pgsql_clstr',
+      },
+      pdpgsql_17: {
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'pdpgsql_pgsm_pmm_17'),
+        server_port: DB_CONFIG.POSTGRES_SERVER_PORT,
+        host_server_port: DB_CONFIG.POSTGRES_HOST_SERVER_PORT,
+        username: 'pmm',
+        password: 'pmm',
         clusterName: 'pgsql_clstr',
       },
       postgres_13_3_ssl: {
@@ -189,6 +208,14 @@ module.exports = {
         port: DB_CONFIG.PROXYSQL_SERVER_PORT,
         username: 'proxyadmin',
         password: 'yxZq!4SGv0A1',
+        environment: 'proxy_env',
+        clusterName: 'proxy_clstr',
+      },
+      pxc_proxysql_8: {
+        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'pxc_proxysql_pmm_8.0'),
+        port: DB_CONFIG.PROXYSQL_SERVER_PORT,
+        username: 'proxysql_user',
+        password: 'passw0rd',
         environment: 'proxy_env',
         clusterName: 'proxy_clstr',
       },
@@ -228,6 +255,13 @@ module.exports = {
         clusterName: 'aws_rds_mysql_8_0',
         port: 42001,
       },
+      aws_rds_8_4: {
+        address: secret(process.env.PMM_QA_MYSQL_RDS_8_4_HOST),
+        username: secret(process.env.PMM_QA_MYSQL_RDS_8_4_USER),
+        password: secret(process.env.PMM_QA_MYSQL_RDS_8_4_PASSWORD),
+        clusterName: 'aws_rds_mysql_8_4',
+        port: 42001,
+      },
       aws_rds_5_6: {
         address: secret(process.env.REMOTE_AWS_MYSQL57_HOST),
         username: secret(process.env.REMOTE_AWS_MYSQL_USER),
@@ -235,12 +269,39 @@ module.exports = {
         clusterName: 'aws_rds_mysql_5_6',
         port: 3306,
       },
-      aws_postgresql_12: {
-        address: process.env.PMM_QA_PGSQL_RDS_12_1_HOST,
-        userName: process.env.REMOTE_AWS_POSTGRES12_USER,
-        password: process.env.REMOTE_AWS_POSTGRES12_PASSWORD,
-        clusterName: 'aws_postgresql_12',
-        database: process.env.PMM_QA_PGSQL_RDS_12_1_DATABASE,
+      aws_postgresql_13: {
+        address: process.env.PMM_QA_RDS_PGSQL13_HOST,
+        userName: process.env.PMM_QA_RDS_PGSQL13_USER,
+        password: process.env.PMM_QA_RDS_PGSQL13_PASSWORD,
+        clusterName: 'aws_postgresql_13',
+        port: 42001,
+      },
+      aws_postgresql_14: {
+        address: process.env.PMM_QA_PGSQL_RDS_14_HOST,
+        userName: process.env.PMM_QA_RDS_PGSQL14_USER,
+        password: process.env.PMM_QA_RDS_PGSQL14_PASSWORD,
+        clusterName: 'aws_postgresql_14',
+        port: 42001,
+      },
+      aws_postgresql_15: {
+        address: process.env.PMM_QA_RDS_PGSQL15_HOST,
+        userName: process.env.PMM_QA_RDS_PGSQL15_USER,
+        password: process.env.PMM_QA_RDS_PGSQL15_PASSWORD,
+        clusterName: 'aws_postgresql_15',
+        port: 42001,
+      },
+      aws_postgresql_16: {
+        address: process.env.PMM_QA_RDS_PGSQL16_HOST,
+        userName: process.env.PMM_QA_RDS_PGSQL16_USER,
+        password: process.env.PMM_QA_RDS_PGSQL16_PASSWORD,
+        clusterName: 'aws_postgresql_15',
+        port: 42001,
+      },
+      aws_postgresql_17: {
+        address: process.env.PMM_QA_RDS_PGSQL17_HOST,
+        userName: process.env.PMM_QA_RDS_PGSQL17_USER,
+        password: process.env.PMM_QA_RDS_PGSQL17_PASSWORD,
+        clusterName: 'aws_postgresql_13',
         port: 42001,
       },
       aurora: {
@@ -248,17 +309,31 @@ module.exports = {
         aws_secret_key: process.env.PMM_QA_AWS_ACCESS_KEY,
         port: '42001',
         username: 'pmm',
-        aurora2: {
+        mysqlaurora2: {
           address: process.env.PMM_QA_AURORA2_MYSQL_HOST,
           password: process.env.PMM_QA_AURORA2_MYSQL_PASSWORD,
           instance_id: 'pmm-qa-aurora2-mysql-instance-1',
-          cluster_name: 'aws_aurora2',
+          cluster_name: 'mysqlaws_aurora2',
         },
-        aurora3: {
+        mysqlaurora3: {
           address: process.env.PMM_QA_AURORA3_MYSQL_HOST,
           password: process.env.PMM_QA_AURORA3_MYSQL_PASSWORD,
           instance_id: 'pmm-qa-aurora3-mysql-instance-1',
-          cluster_name: 'aws_aurora3',
+          cluster_name: 'mysqlaws_aurora3',
+        },
+        postgres15aurora: {
+          address: process.env.PMM_QA_RDS_AURORA_PGSQL15_HOST,
+          username: process.env.PMM_QA_RDS_AURORA_PGSQL15_USER,
+          password: process.env.PMM_QA_RDS_AURORA_PGSQL15_PASSWORD,
+          instance_id: 'pmm-qa-rds-aurora-15-instance-1',
+          cluster_name: 'postgres15aws_aurora',
+        },
+        postgres16aurora: {
+          address: process.env.PMM_QA_RDS_AURORA_PGSQL16_HOST,
+          username: process.env.PMM_QA_RDS_AURORA_PGSQL16_USER,
+          password: process.env.PMM_QA_RDS_AURORA_PGSQL16_PASSWORD,
+          instance_id: 'pmm-qa-aurora-postgres-16-4-instance-1',
+          cluster_name: 'postgres16aws_aurora',
         },
       },
     },
@@ -302,16 +377,15 @@ module.exports = {
         cluster: 'gc-mysql80',
         environment: 'gc-mysql80',
       },
-      gc_mysql56: {
+      gc_mysql84: {
         type: 'mysql',
-        // service name used here intentionally include mysql because we are checking QAN and exporter agent status both
-        serviceName: 'gc-mysql56',
+        serviceName: 'gc-mysql84',
         port: '3306',
-        host: secret(process.env.GCP_MYSQL56_HOST),
-        username: secret(process.env.GCP_MYSQL56_USER),
-        password: secret(process.env.GCP_MYSQL56_PASSWORD),
-        cluster: 'gc-mysql56',
-        environment: 'gc-mysql56',
+        host: secret(process.env.GCP_MYSQL84_HOST),
+        username: secret(process.env.GCP_MYSQL84_USER),
+        password: secret(process.env.GCP_MYSQL84_PASSWORD),
+        cluster: 'gc-mysql84',
+        environment: 'gc-mysql84',
       },
       gc_pgsql_13: {
         type: 'postgresql',
@@ -325,18 +399,6 @@ module.exports = {
         cluster: 'gc-pgsql13',
         environment: 'gc-pgsql13',
       },
-      gc_pgsql_12: {
-        type: 'postgresql',
-        // using postgres in name makes sure both exporter and QAN agents are verified
-        serviceName: 'gc-postgres12',
-        port: '5432',
-        database: process.env.GCP_PGSQL12_USER,
-        host: secret(process.env.GCP_PGSQL12_HOST),
-        username: secret(process.env.GCP_PGSQL12_USER),
-        password: secret(process.env.GCP_PGSQL12_PASSWORD),
-        cluster: 'gc-pgsql12',
-        environment: 'gc-pgsql12',
-      },
       gc_pgsql_14: {
         type: 'postgresql',
         // using postgres in name makes sure both exporter and QAN agents are verified
@@ -349,48 +411,48 @@ module.exports = {
         cluster: 'gc-pgsql14',
         environment: 'gc-pgsql14',
       },
-      gc_pgsql_11: {
+      gc_pgsql_15: {
         type: 'postgresql',
         // using postgres in name makes sure both exporter and QAN agents are verified
-        serviceName: 'gc-postgres11',
+        serviceName: 'gc-postgres15',
         port: '5432',
-        database: process.env.GCP_PGSQL11_USER,
-        host: secret(process.env.GCP_PGSQL11_HOST),
-        username: secret(process.env.GCP_PGSQL11_USER),
-        password: secret(process.env.GCP_PGSQL11_PASSWORD),
-        cluster: 'gc-pgsql11',
-        environment: 'gc-pgsql11',
+        database: process.env.GCP_PGSQL15_USER,
+        host: secret(process.env.GCP_PGSQL15_HOST),
+        username: secret(process.env.GCP_PGSQL15_USER),
+        password: secret(process.env.GCP_PGSQL15_PASSWORD),
+        cluster: 'gc-pgsql15',
+        environment: 'gc-pgsql15',
       },
-      gc_pgsql_10: {
+      gc_pgsql_16: {
         type: 'postgresql',
         // using postgres in name makes sure both exporter and QAN agents are verified
-        serviceName: 'gc-postgres10',
+        serviceName: 'gc-postgres16',
         port: '5432',
-        database: process.env.GCP_PGSQL10_USER,
-        host: secret(process.env.GCP_PGSQL10_HOST),
-        username: secret(process.env.GCP_PGSQL10_USER),
-        password: secret(process.env.GCP_PGSQL10_PASSWORD),
-        cluster: 'gc-pgsql10',
-        environment: 'gc-pgsql10',
+        database: process.env.GCP_PGSQL16_USER,
+        host: secret(process.env.GCP_PGSQL16_HOST),
+        username: secret(process.env.GCP_PGSQL16_USER),
+        password: secret(process.env.GCP_PGSQL16_PASSWORD),
+        cluster: 'gc-pgsql16',
+        environment: 'gc-pgsql16',
       },
-      gc_pgsql_96: {
+      gc_pgsql_17: {
         type: 'postgresql',
         // using postgres in name makes sure both exporter and QAN agents are verified
-        serviceName: 'gc-postgres96',
+        serviceName: 'gc-postgres17',
         port: '5432',
-        database: process.env.GCP_PGSQL96_USER,
-        host: secret(process.env.GCP_PGSQL96_HOST),
-        username: secret(process.env.GCP_PGSQL96_USER),
-        password: secret(process.env.GCP_PGSQL96_PASSWORD),
-        cluster: 'gc-pgsql96',
-        environment: 'gc-pgsql96',
+        database: process.env.GCP_PGSQL17_USER,
+        host: secret(process.env.GCP_PGSQL17_HOST),
+        username: secret(process.env.GCP_PGSQL17_USER),
+        password: secret(process.env.GCP_PGSQL17_PASSWORD),
+        cluster: 'gc-pgsql17',
+        environment: 'gc-pgsql17',
       },
     },
   },
 
   // Used for Adding Remote Instance during Upgrade Tests runs for AMI and Docker via API
   instanceTypes: {
-    mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'MySQL' : undefined),
+    mysql: (remoteInstanceStatus.mysql.ps_8_0.enabled ? 'MySQL' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'PostgreSQL' : undefined),
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'MongoDB' : undefined),
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'ProxySQL' : undefined),

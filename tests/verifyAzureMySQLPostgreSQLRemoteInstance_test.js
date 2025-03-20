@@ -30,11 +30,12 @@ Before(async ({ I }) => {
 });
 
 Data(azureServices).Scenario(
-  '@PMM-T744, PMM-T746, PMM-T748 - Verify adding monitoring for Azure @instances',
+  'PMM-T744 + PMM-T746 + PMM-T748 - Verify adding monitoring for Azure @instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, settingsAPI, current, inventoryAPI,
   }) => {
     const serviceName = current.name;
+    const nodeName = 'pmm-server';
 
     await settingsAPI.enableAzure();
     I.amOnPage(remoteInstancesPage.url);
@@ -42,7 +43,7 @@ Data(azureServices).Scenario(
     remoteInstancesPage.discoverAzure();
     remoteInstancesPage.startMonitoringOfInstance(current.instanceToMonitor);
     remoteInstancesPage.verifyAddInstancePageOpened();
-    await remoteInstancesPage.fillRemoteRDSFields(serviceName);
+    await remoteInstancesPage.fillRemoteRDSFields(serviceName, nodeName);
     await remoteInstancesPage.clickAddInstanceAndWaitForSuccess();
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
 
@@ -95,7 +96,7 @@ Data(filters).Scenario('PMM-T746, PMM-T748 - Verify adding monitoring for Azure 
 }).retry(1);
 
 Data(metrics).Scenario(
-  'PMM-T743 Check metrics from exporters are hitting PMM Server @instances',
+  'PMM-T743 - Check metrics from exporters are hitting PMM Server @instances',
   async ({ grafanaAPI, current }) => {
     await grafanaAPI.waitForMetric(current.metricName, null, 10);
   },

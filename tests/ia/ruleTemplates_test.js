@@ -1,6 +1,7 @@
 const assert = require('assert');
 const YAML = require('yaml');
 const page = require('./pages/ruleTemplatesPage');
+const { users } = require('../helper/constants');
 
 const templates = new DataTable(['path', 'error']);
 const units = new DataTable(['unit', 'range']);
@@ -23,6 +24,16 @@ templates.add(['tests/ia/templates/spaceInParam.yml',
 
 Feature('IA: Alert rule templates').retry(1);
 
+BeforeSuite(async ({ I }) => {
+  const viewerId = await I.createUser(users.viewer.username, users.viewer.password);
+  const adminId = await I.createUser(users.admin.username, users.admin.password);
+  const editorId = await I.createUser(users.editor.username, users.editor.password);
+
+  await I.setRole(viewerId);
+  await I.setRole(adminId, 'Admin');
+  await I.setRole(editorId, 'Editor');
+});
+
 Before(async ({
   I, settingsAPI, templatesAPI, rulesAPI,
 }) => {
@@ -32,13 +43,9 @@ Before(async ({
   await templatesAPI.clearAllTemplates();
 });
 
-Before(async ({ templatesAPI }) => {
-  await templatesAPI.clearAllTemplates();
-});
-
 // TODO: Unskip after we bring back built-in templates
 Scenario.skip(
-  'PMM-T510 Verify built-in rule templates are non-editable @fb-alerting @grafana-pr',
+  'PMM-T510 - Verify built-in rule templates are non-editable @fb-alerting @grafana-pr',
   async ({ I, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
       .editButtonBySource(ruleTemplatesPage.templateSources.builtin);
@@ -91,10 +98,39 @@ Scenario(
   },
 );
 
+Scenario(
+  'PMM-T1993 - verify editor can create alert rule template @fb-alerting',
+  async ({
+    I, ruleTemplatesPage,
+  }) => {
+    await I.Authorize(users.editor.username, users.editor.password);
+    const templateName = 'E2E editor permissions input YML';
+
+    const [, fileContent] = await ruleTemplatesPage.ruleTemplate
+      .templateNameAndContent(ruleTemplatesPage.ruleTemplate.inputFilePath);
+    const editButton = ruleTemplatesPage.buttons
+      .editButtonByName(templateName);
+    const deleteButton = ruleTemplatesPage.buttons
+      .deleteButtonByName(templateName);
+
+    const newFileContent = fileContent
+      .replace('name: input_template_yml', 'name: input_template_yml_editor_permissions')
+      .replace('summary: E2E TemplateForAutomation input YML', `summary: ${templateName}`);
+
+    ruleTemplatesPage.openRuleTemplatesTab();
+
+    I.click(ruleTemplatesPage.buttons.openAddTemplateModal);
+    I.fillField(ruleTemplatesPage.fields.templateInput, newFileContent);
+    I.click(ruleTemplatesPage.buttons.addTemplate);
+    I.waitForEnabled(editButton);
+    I.waitForEnabled(deleteButton);
+  },
+);
+
 // nightly candidate
 Data(units)
   .Scenario(
-    'PMM-T500 PMM-T595 PMM-T596 Add rule templates with different units, empty range @fb-alerting',
+    'PMM-T500 + PMM-T595 + PMM-T596 - Add rule templates with different units, empty range @fb-alerting',
     async ({
       I, ruleTemplatesPage, templatesAPI, current,
     }) => {
@@ -130,7 +166,7 @@ Data(units)
 
 Data(templates)
   .Scenario(
-    'PMM-T482 PMM-T499 PMM-T766 PMM-T758 PMM-T766 PMM-T767 PMM-T931 Upload rule templates @fb-alerting',
+    'PMM-T482 + PMM-T499 + PMM-T766 + PMM-T758 + PMM-T766 + PMM-T767 + PMM-T931 - Upload rule templates @fb-alerting',
     async ({ I, ruleTemplatesPage, current }) => {
       const { path } = current;
       const validFile = !current.error;
@@ -157,7 +193,7 @@ Data(templates)
   );
 
 Scenario(
-  '@PMM-T1785 Bulk rule templates upload @fb-alerting',
+  'PMM-T1785 - Bulk rule templates upload @fb-alerting',
   async ({ I, ruleTemplatesPage }) => {
     const path = 'tests/ia/templates/multiple-templates.yml';
     const templates = await ruleTemplatesPage.ruleTemplate.parseTemplates(path);
@@ -182,7 +218,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1786 Edit bulk uploaded rule template @fb-alerting',
+  'PMM-T1786 - Edit bulk uploaded rule template @fb-alerting',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = 'tests/ia/templates/multiple-templates.yml';
     const templates = await ruleTemplatesPage.ruleTemplate.parseTemplates(path);
@@ -219,7 +255,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1787 Delete bulk uploaded rule template @fb-alerting',
+  'PMM-T1787 - Delete bulk uploaded rule template @fb-alerting',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = 'tests/ia/templates/multiple-templates.yml';
     const templates = await ruleTemplatesPage.ruleTemplate.parseTemplates(path);
@@ -251,7 +287,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T501 Upload duplicate rule template @fb-alerting @grafana-pr',
+  'PMM-T501 - Upload duplicate rule template @fb-alerting @grafana-pr',
   async ({ I, ruleTemplatesPage, templatesAPI }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [, , id] = await ruleTemplatesPage.ruleTemplate.templateNameAndContent(path);
@@ -267,10 +303,18 @@ Scenario(
     I.verifyPopUpMessage(message);
   },
 );
+const usersTable = new DataTable(['username', 'password']);
 
-Scenario(
-  'PMM-T483 PMM-T699 Verify user can edit UI-created IA rule template @grafana-pr @fb-alerting',
-  async ({ I, ruleTemplatesPage, templatesAPI }) => {
+usersTable.add(['admin', '']);
+usersTable.add([users.editor.username, users.editor.password]);
+
+Data(usersTable).Scenario(
+  'PMM-T483 + PMM-T699 + PMM-T1994 - Verify user can edit UI-created IA rule template @grafana-pr @fb-alerting',
+  async ({
+    I, ruleTemplatesPage, templatesAPI, current,
+  }) => {
+    if (current.username !== 'admin') await I.Authorize(current.username, current.password);
+
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [templateName, fileContent, id] = await ruleTemplatesPage.ruleTemplate
       .templateNameAndContent(path);
@@ -299,9 +343,13 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T562 Verify user can delete User-defined (UI) rule templates @grafana-pr @fb-alerting',
-  async ({ I, ruleTemplatesPage, templatesAPI }) => {
+Data(usersTable).Scenario(
+  'PMM-T562 + PMM-T1995 - Verify user can delete User-defined (UI) rule templates @grafana-pr @fb-alerting',
+  async ({
+    I, ruleTemplatesPage, templatesAPI, current,
+  }) => {
+    if (current.username !== 'admin') await I.Authorize(current.username, current.password);
+
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
     const [templateName] = await ruleTemplatesPage.ruleTemplate
       .templateNameAndContent(path);
@@ -329,7 +377,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T884 Verify templates from Percona (SAAS) cannot be deleted or edited @fb-alerting',
+  'PMM-T884 - Verify templates from Percona (SAAS) cannot be deleted or edited @fb-alerting',
   async ({ I, ruleTemplatesPage }) => {
     const saasDeleteButton = ruleTemplatesPage.buttons
       .deleteButtonBySource(ruleTemplatesPage.templateSources.saas);
@@ -344,12 +392,12 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T553 Verify rule template can be deleted if there is a rule based on it @fb-alerting',
+  'PMM-T553 - Verify rule template can be deleted if there is a rule based on it @fb-alerting',
   async ({
     I, ruleTemplatesPage, templatesAPI, rulesAPI,
   }) => {
     const path = ruleTemplatesPage.ruleTemplate.paths.yaml;
-    const [templateName, , id] = await ruleTemplatesPage.ruleTemplate
+    const [templateName] = await ruleTemplatesPage.ruleTemplate
       .templateNameAndContent(path);
     const deleteButton = ruleTemplatesPage.buttons
       .deleteButtonByName(templateName);
@@ -365,9 +413,8 @@ Scenario(
   },
 );
 
-// TODO: unskip after https://perconadev.atlassian.net/browse/PMM-13542 is fixed
-Scenario.skip(
-  'PMM-T825 PMM-T821 Verify User can add Alert rule template in the file system @not-ovf @fb-alerting',
+Scenario(
+  'PMM-T825 + PMM-T821 - Verify User can add Alert rule template in the file system @not-ovf @fb-alerting',
   async ({ I, ruleTemplatesPage }) => {
     const editButton = ruleTemplatesPage.buttons
       .editButtonBySource(ruleTemplatesPage.templateSources.file);
@@ -379,12 +426,11 @@ Scenario.skip(
     await I.verifyCommand('docker cp tests/ia/templates/template.txt pmm-server:/srv/alerting/templates');
 
     ruleTemplatesPage.openRuleTemplatesTab();
-    I.seeElement(editButton);
-    I.seeElement(ruleTemplatesPage.buttons.editButtonByName('Custom parameter template'));
-    I.dontSeeElement(ruleTemplatesPage.buttons.editButtonByName('Space in parameter'));
+    I.seeElement(ruleTemplatesPage.buttons.addRuleButtonByName('Custom parameter template'));
+    I.dontSeeElement(ruleTemplatesPage.buttons.addRuleButtonByName('Space in parameter'));
 
-    I.seeElementsDisabled(editButton);
-    I.seeElementsDisabled(deleteButton);
+    I.dontSeeElement(editButton);
+    I.dontSeeElement(deleteButton);
   },
 );
 
@@ -409,7 +455,7 @@ Scenario(
 );
 
 Scenario(
-  '@PMM-T1514 Verify that alert rule templates has only 1 exit button @fb-alerting',
+  'PMM-T1514 - Verify that alert rule templates has only 1 exit button @fb-alerting',
   async ({ I, ruleTemplatesPage, alertRulesPage }) => {
     ruleTemplatesPage.openRuleTemplatesTab();
     ruleTemplatesPage.openAddDialog(await I.grabTextFrom(ruleTemplatesPage.elements.templateName));

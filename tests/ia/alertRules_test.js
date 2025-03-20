@@ -1,6 +1,7 @@
 const assert = require('assert');
 const page = require('./pages/alertRulesPage');
 const rulesAPI = require('./pages/api/rulesAPI');
+const { users } = require('../helper/constants');
 
 const rules = new DataTable(['template', 'templateType', 'ruleName', 'threshold', 'thresholdUnit', 'duration',
   'severity', 'filters', 'channels', 'activate']);
@@ -19,6 +20,14 @@ Object.values(page.templates).forEach((template) => {
 
 Feature('Alerting: Alert rules');
 
+BeforeSuite(async ({ I }) => {
+  const viewerId = await I.createUser(users.viewer.username, users.viewer.password);
+  const editorId = await I.createUser(users.editor.username, users.editor.password);
+
+  await I.setRole(viewerId);
+  await I.setRole(editorId, 'Editor');
+});
+
 Before(async ({ I }) => {
   await I.Authorize();
   await rulesAPI.removeAllAlertRules();
@@ -29,7 +38,7 @@ After(async () => {
 });
 
 Scenario(
-  'PMM-T1384 Verify empty alert rules list @fb-alerting @grafana-pr',
+  'PMM-T1384 - Verify empty alert rules list @fb-alerting @grafana-pr',
   async ({ I, alertRulesPage }) => {
     alertRulesPage.openAlertRulesTab();
     I.waitForText(alertRulesPage.messages.noRulesFound, 10, alertRulesPage.elements.noRules);
@@ -42,7 +51,7 @@ Scenario(
 ).retry(0);
 
 Scenario(
-  'PMM-T1385 Verify alert rules elements @fb-alerting @grafana-pr',
+  'PMM-T1385 - Verify alert rules elements @fb-alerting @grafana-pr',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const ruleName = 'testRule';
     const ruleFolder = 'PostgreSQL';
@@ -69,7 +78,20 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1392 Verify fields dynamically change value when template is changed @fb-alerting @grafana-pr',
+  'PMM-T1996 - verify viewer cannot create alert rules @fb-alerting @grafana-pr',
+  async ({ I, alertRulesPage }) => {
+    await I.Authorize(users.viewer.username, users.viewer.password);
+    I.amOnPage(alertRulesPage.url);
+    I.waitForElement(alertRulesPage.elements.noRules);
+    I.dontSeeElement(alertRulesPage.buttons.newAlertRule);
+
+    I.amOnPage(alertRulesPage.newRuleFromTemplateUrl);
+    I.waitForText('Insufficient access permissions.', 10, alertRulesPage.elements.unathorizedMessage);
+  },
+);
+
+Scenario(
+  'PMM-T1392 - Verify fields dynamically change value when template is changed @fb-alerting @grafana-pr',
   async ({ I, alertRulesPage }) => {
     // TODO: https://jira.percona.com/browse/PMM-10860 name doesn't change
     alertRulesPage.openAlertRulesTab();
@@ -85,11 +107,22 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T1420 Verify user can create Percona templated alert @fb-alerting',
-  async ({ I, alertRulesPage, rulesAPI }) => {
+const usersTable = new DataTable(['username', 'password']);
+
+usersTable.add(['admin', '']);
+usersTable.add([users.editor.username, users.editor.password]);
+
+Data(usersTable).Scenario(
+  'PMM-T1420 + PMM-T1992 - Verify user can create Percona templated alert @fb-alerting',
+  async ({
+    I, alertRulesPage, rulesAPI, current,
+  }) => {
+    if (current.username !== 'admin') await I.Authorize(current.username, current.password);
+
     const rule = page.rules[15];
     const newRule = page.rules[0];
+
+    newRule.ruleName = `${newRule.ruleName}_${current.username}`;
 
     alertRulesPage.openAlertRulesTab();
     I.waitForEnabled(alertRulesPage.buttons.newAlertRule, 10);
@@ -107,7 +140,7 @@ Scenario(
 
 // TODO: unskip in scope of https://perconadev.atlassian.net/browse/PMM-12938
 Scenario.skip(
-  'PMM-T2282 Verfied Alerting is able to monitor for "PMM Agent Down" @fb-alerting',
+  'PMM-T2282 - Verify Alerting is able to monitor for "PMM Agent Down" @fb-alerting',
   async ({ I, alertRulesPage, rulesAPI }) => {
     const rule = page.rules[29];
     const newRule = page.rules[30];
@@ -135,7 +168,7 @@ Scenario.skip(
 
 // TODO: check ovf failure
 Scenario(
-  'PMM-T1430 Verify user can edit Percona templated alert @fb-alerting @not-ovf',
+  'PMM-T1430 - Verify user can edit Percona templated alert @fb-alerting @not-ovf',
   async ({
     I, alertRulesPage, rulesAPI,
   }) => {
@@ -160,7 +193,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1433 Verify user can delete Percona templated alert @fb-alerting',
+  'PMM-T1433 - Verify user can delete Percona templated alert @fb-alerting',
   async ({
     I, alertRulesPage, rulesAPI, iaCommon,
   }) => {
@@ -189,7 +222,7 @@ Scenario(
 // nightly candidate
 // FIXME: flaky test fix and unskip
 Scenario.skip(
-  'PMM-T1434 Verify validation errors when creating new alert rule @fb-alerting @grafana-pr',
+  'PMM-T1434 - Verify validation errors when creating new alert rule @fb-alerting @grafana-pr',
   async ({
     I, alertRulesPage,
   }) => {

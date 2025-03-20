@@ -21,7 +21,7 @@
   -v pmm-data:/srv \
   --name pmm-server \
   -e ENABLE_RBAC=1 \
-  -e PERCONA_PORTAL_URL=https://portal-dev.percona.com \
+  -e PMM_DEV_PORTAL_URL=https://portal-dev.percona.com \
   -e PERCONA_TEST_PLATFORM_ADDRESS=https://check-dev.percona.com:443 \
   -e PERCONA_TEST_PLATFORM_PUBLIC_KEY=RWTg+ZmCCjt7O8eWeAmTLAqW+1ozUbpRSKSwNTmO+exlS5KEIPYWuYdX \
   -e PERCONA_TEST_CHECKS_PUBLIC_KEY=RWTg+ZmCCjt7O8eWeAmTLAqW+1ozUbpRSKSwNTmO+exlS5KEIPYWuYdX \
