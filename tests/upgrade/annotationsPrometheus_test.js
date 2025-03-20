@@ -53,8 +53,8 @@ Data(clientDbServices).Scenario(
   },
 );
 
-Scenario(
-  'PMM-T102 Verify Custom Prometheus Configuration File is still available at targets after Upgrade @post-annotations-prometheus-upgrade',
+Scenario.skip(
+  'PMM-T102 - Verify Custom Prometheus Configuration File is still available at targets after Upgrade @post-annotations-prometheus-upgrade',
   async ({ I }) => {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 

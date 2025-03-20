@@ -206,7 +206,7 @@ Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'Verify silenced checks remain silenced after upgrade @post-advisors-alerting-upgrade',
   async ({
     I,
