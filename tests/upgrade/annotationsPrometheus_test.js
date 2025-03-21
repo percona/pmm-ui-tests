@@ -52,22 +52,3 @@ Data(clientDbServices).Scenario(
     I.seeElement(dashboardPage.annotationText(annotationName), 10);
   },
 );
-
-Scenario.skip(
-  'PMM-T102 - Verify Custom Prometheus Configuration File is still available at targets after Upgrade @post-annotations-prometheus-upgrade',
-  async ({ I }) => {
-    const headers = { Authorization: `Basic ${await I.getAuth()}` };
-
-    const response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
-
-    response.data.data.activeTargets.every((target) => console.log(target));
-
-    const targets = response.data.data.activeTargets.find(
-      (o) => o.labels.job === 'blackbox80',
-    );
-
-    console.log(targets);
-
-    assert.ok(targets.labels.job === 'blackbox80', 'Active Target from Custom Prometheus Config After Upgrade is not Available');
-  },
-);
