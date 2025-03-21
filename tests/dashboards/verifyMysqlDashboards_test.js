@@ -149,10 +149,12 @@ Scenario(
     const url = I.buildUrlWithParams(dashboardPage.mysqlUserDetailsDashboard.clearUrl, { service_name: serviceName, from: 'now-5m' });
 
     I.amOnPage(url);
-    dashboardPage.waitForDashboardOpened();
-    await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyMetricsExistence(dashboardPage.mysqlUserDetailsDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.mysqlUserDetailsDashboardTest.verifyDashboardMetricsHaveData();
+
+    // dashboardPage.waitForDashboardOpened();
+    // await dashboardPage.expandEachDashboardRow();
+    // await dashboardPage.verifyMetricsExistence(dashboardPage.mysqlUserDetailsDashboard.metrics);
+    // await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
 );
 
