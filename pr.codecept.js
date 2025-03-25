@@ -3,7 +3,7 @@ const { pageObjects, getChunks } = require('./codeceptConfigHelper');
 
 require('dotenv').config();
 
-const pmmUrl = process.env.PMM_UI_URL ? process.env.PMM_UI_URL : 'http://localhost/';
+const pmmUrl = process.env.PMM_UI_URL ? process.env.PMM_UI_URL : 'http://159.69.120.147/';
 
 process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -12,8 +12,7 @@ exports.config = {
   output: 'tests/output',
   helpers: {
     Playwright: {
-      // Replaces last forward slash in url due to bug of duplicate slashes
-      url: pmmUrl.replace(/\/(?!.*\/)$/gm, ''),
+      url: pmmUrl,
       restart: true,
       show: false,
       browser: 'chromium',
@@ -113,9 +112,9 @@ exports.config = {
       attribute: 'data-testid',
       showActual: false,
     },
-    tryTo: {
-      enabled: true,
-    },
+    // tryTo: {
+    //   enabled: true,
+    // },
   },
   mocha: {
     reporterOptions: {
