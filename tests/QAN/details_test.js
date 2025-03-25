@@ -7,8 +7,6 @@ const querySources = new DataTable(['querySource']);
 querySources.add(['slowlog']);
 // querySources.add(['perfschema']);
 
-
-
 Before(async ({ I, queryAnalyticsPage }) => {
   await I.Authorize();
   I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-1h' }));
@@ -166,3 +164,32 @@ Scenario(
 //     I.assertEqual(await I.grabNumberOfVisibleElements(locate('$query-analytics-details').find('$table-row')), 1, 'Explain is expected to have one row in a table, but found more');
 //   },
 // );
+
+Scenario(
+  'PMM-T9999 - Verify explain tab for explain query @fb-pmm-ps-integration',
+  async ({
+    I, queryAnalyticsPage,
+  }) => {
+    const query = `mysql -h 127.0.0.1 -u msandbox -pmsandbox --port 3317 << EOF
+      USE test;
+      CREATE TABLE t1 (
+          c1 INT NOT NULL,
+          c2 VARCHAR(100) NOT NULL,
+          PRIMARY KEY (c1)
+      );
+      insert into t1 values(1,1),(2,2),(3,3),(4,5);
+
+      explain select * from t1 where c1=1;
+      explain select * from t1 where c2=1;
+      explain select * from t1 where c2>1 and c2<=3;
+      EOF
+    `;
+
+    await I.verifyCommand(query);
+    I.wait(30);
+    I.refreshPage();
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.searchByValue('explain select * from t1 where c2>? and c2<=?');
+    queryAnalyticsPage.data.selectRow(3);
+  },
+);
