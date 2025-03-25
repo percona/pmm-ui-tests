@@ -178,7 +178,9 @@ Scenario(
     I.wait(60);
     I.refreshPage();
     queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.data.searchByValue('explain');
+    queryAnalyticsPage.data.searchByValue('explain select * from t1 where c2>? and c2<=?;');
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.selectRow(2);
     queryAnalyticsPage.data.selectRow(10);
   },
 );
