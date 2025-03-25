@@ -260,7 +260,7 @@ Scenario(
   'PMM-T1226 - Verify Agents has process_exec_path option on Inventory page @inventory @nightly @exporters',
   async ({ I, pmmInventoryPage, inventoryAPI, codeceptjsConfig }) => {
     console.log(`Url is: ${codeceptjsConfig.config.helpers.Playwright.url}`);
-    console.log(codeceptjsConfig);
+    console.log(codeceptjsConfig.config.helpers.Playwright);
     console.log(`Url is: ${codeceptjsConfig.config.helpers.Playwright.url}${pmmInventoryPage.url}`);
     I.amOnPage(pmmInventoryPage.url);
     I.wait(10);
