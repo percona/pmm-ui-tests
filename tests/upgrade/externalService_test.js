@@ -26,18 +26,18 @@ Scenario(
   async ({ I, addInstanceAPI, remoteInstancesHelper }) => {
     const aurora_details = {
       add_node: {
-        node_name: 'pmm-qa-aurora2-mysql-instance-1',
+        node_name: remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.instance_id,
         node_type: NODE_TYPE.REMOTE,
       },
       aws_access_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_access_key,
       aws_secret_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_secret_key,
-      address: remoteInstancesHelper.remote_instance.aws.aurora.aurora2.address,
-      service_name: 'pmm-qa-aurora2-mysql-instance-1',
-      port: remoteInstancesHelper.remote_instance.aws.aurora.port,
-      username: remoteInstancesHelper.remote_instance.aws.aurora.username,
-      password: remoteInstancesHelper.remote_instance.aws.aurora.aurora2.password,
-      instance_id: 'pmm-qa-aurora2-mysql-instance-1',
-      cluster: 'rdsaurora',
+      address: remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.address,
+      service_name: remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.instance_id,
+      port: remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.port,
+      username: remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.username,
+      password: remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.password,
+      instance_id: remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.instance_id,
+      cluster: remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.cluster_name,
     };
 
     for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
