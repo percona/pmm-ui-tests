@@ -89,6 +89,11 @@ class QueryAnalyticsQueryDetails {
     if (isNoExamplesVisible) { I.seeElement(this.elements.noExamples); } else { I.dontSeeElement(this.elements.noExamples); }
   }
 
+  openExplainTab() {
+    I.waitForVisible(this.buttons.tab('Explain'), 30);
+    I.click(this.buttons.tab('Explain'));
+  }
+
   checkTab(tabName) {
     I.waitForVisible(this.buttons.tab(tabName), 30);
     I.click(this.buttons.tab(tabName));
