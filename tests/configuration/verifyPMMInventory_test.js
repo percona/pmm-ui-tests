@@ -262,7 +262,7 @@ Scenario(
     console.log(`Url is: ${codeceptjsConfig.config.helpers.Playwright.url}`);
     console.log(codeceptjsConfig.config.helpers.Playwright);
     console.log(`Url is: ${codeceptjsConfig.config.helpers.Playwright.url}${pmmInventoryPage.url}`);
-    I.amOnPage(pmmInventoryPage.url);
+    I.amOnPage(`${codeceptjsConfig.config.helpers.Playwright.url}${pmmInventoryPage.url}`);
     I.wait(10);
     console.log(`Browser url is: ${await I.grabCurrentUrl()}`);
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pmm-server-postgresql');
