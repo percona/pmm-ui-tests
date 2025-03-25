@@ -181,7 +181,7 @@ Scenario(
     queryAnalyticsPage.data.searchByValue('explain select * from t1');
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.selectRow(2);
-    queryAnalyticsPage.data.openExplainTab();
+    queryAnalyticsPage.queryDetails.openExplainTab();
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.selectRow(10);
   },
