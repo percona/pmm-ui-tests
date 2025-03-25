@@ -258,7 +258,9 @@ Scenario(
 
 Scenario(
   'PMM-T1226 - Verify Agents has process_exec_path option on Inventory page @inventory @nightly @exporters',
-  async ({ I, pmmInventoryPage, inventoryAPI }) => {
+  async ({ I, pmmInventoryPage, inventoryAPI, codeceptjsConfig }) => {
+    console.log(`Url is: ${codeceptjsConfig.config.helpers.Playwright.url}`);
+    console.log(`Url is: ${codeceptjsConfig.config.helpers.Playwright.url}${pmmInventoryPage.url}`);
     I.amOnPage(pmmInventoryPage.url);
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pmm-server-postgresql');
 
