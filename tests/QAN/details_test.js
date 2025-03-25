@@ -179,6 +179,6 @@ Scenario(
     I.refreshPage();
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.searchByValue('explain');
-    queryAnalyticsPage.data.selectRow(3);
+    queryAnalyticsPage.data.selectRow(10);
   },
 );
