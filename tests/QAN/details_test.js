@@ -188,7 +188,5 @@ Scenario(
       classicError: expectedError,
       jsonError: expectedError,
     });
-    queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.data.selectRow(10);
   },
 );
