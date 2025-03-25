@@ -14,8 +14,7 @@ exports.config = {
   output: 'tests/output',
   helpers: {
     Playwright: {
-      // Replaces last forward slash in url due to bug of duplicate slashes
-      url: pmmUrl.replace(/\/(?!.*\/)$/gm, ''),
+      url: pmmUrl,
       restart: true,
       show: false,
       browser: 'chromium',
