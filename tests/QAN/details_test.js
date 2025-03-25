@@ -168,9 +168,26 @@ Scenario(
 Scenario(
   'PMM-T9999 - Verify explain tab for explain query @fb-pmm-ps-integration',
   async ({
-    I, queryAnalyticsPage,
+    I, queryAnalyticsPage, credentials,
   }) => {
-    const query = `mysql -h 127.0.0.1 -u msandbox -pmsandbox --port 3317 << EOF
+    const { username, password } = credentials.perconaServer.msandbox;
+
+    await I.verifyCommand(`cat > mysql_queries.sql << EOF
+      USE test;
+      CREATE TABLE t1 (
+          c1 INT NOT NULL,
+          c2 VARCHAR(100) NOT NULL,
+          PRIMARY KEY (c1)
+      );
+      insert into t1 values(1,1),(2,2),(3,3),(4,5);
+
+      explain select * from t1 where c1=1;
+      explain select * from t1 where c2=1;
+      explain select * from t1 where c2>1 and c2<=3;
+      EOF
+    `);
+
+    const query = `mysql -h 127.0.0.1 -u ${username} -p${password} --port 3317 << EOF
       USE test;
       CREATE TABLE t1 (
           c1 INT NOT NULL,
