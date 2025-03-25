@@ -25,7 +25,7 @@ const config: PlaywrightTestConfig = {
 
   use: {
     navigationTimeout: Wait.PageLoad,
-    baseURL: process.env.PMM_UI_URL || 'https://localhost',
+    baseURL: process.env.PMM_UI_URL || 'https://localhost-wrong-address',
     ignoreHTTPSErrors: true,
     screenshot: 'only-on-failure',
     actionTimeout: Wait.FifteenSeconds,
