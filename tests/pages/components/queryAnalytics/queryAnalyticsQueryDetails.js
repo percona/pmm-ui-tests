@@ -11,6 +11,7 @@ class QueryAnalyticsQueryDetails {
       noClassic: locate('pre').withText('No classic explain found'),
       noJSON: locate('pre').withText('No JSON explain found'),
       explainError: locate('$json-explain-error'),
+      classicExplainError: locate('//*[@data-testid="classic-explain-error"]'),
       histogramContainer: locate('$histogram-collapse-container'),
       topQuery: locate('$top-query').find('div'),
       emptyPlanText: locate('pre').withText('No plan found'),
@@ -21,6 +22,9 @@ class QueryAnalyticsQueryDetails {
     this.buttons = {
       tab: (tabName) => locate('button').withText(tabName),
       close: locate('button').find('span').withText('Close'),
+    };
+    this.messages = {
+      notSupportedExplain: 'Failed to create action: EXPLAIN functionality is supported only for DML queries - SELECT, INSERT, UPDATE, DELETE and REPLACE.',
     };
   }
 
@@ -92,6 +96,26 @@ class QueryAnalyticsQueryDetails {
   openExplainTab() {
     I.waitForVisible(this.buttons.tab('Explain'), 30);
     I.click(this.buttons.tab('Explain'));
+  }
+
+  async verifyExplainError({ classicError, jsonError }) {
+    if (classicError) {
+      I.waitForVisible(this.elements.classicExplainError);
+      I.assertEqual(
+        await I.grabTextFrom(this.elements.classicExplainError),
+        classicError,
+        `Expected the actual classic error: "${await I.grabTextFrom(this.elements.classicExplainError)}" to match expected one ${classicError}`,
+      );
+    }
+
+    if (jsonError) {
+      I.waitForVisible(this.elements.explainError);
+      I.assertEqual(
+        await I.grabTextFrom(this.elements.explainError),
+        classicError,
+        `Expected the actual classic error: "${await I.grabTextFrom(this.elements.explainError)}" to match expected one ${jsonError}`,
+      );
+    }
   }
 
   checkTab(tabName) {

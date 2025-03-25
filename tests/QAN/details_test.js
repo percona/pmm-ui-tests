@@ -180,8 +180,14 @@ Scenario(
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.searchByValue('explain select * from t1');
     queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.data.selectRow(2);
+    queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.queryDetails.openExplainTab();
+    const expectedError = queryAnalyticsPage.queryDetails.messages.notSupportedExplain;
+
+    await queryAnalyticsPage.queryDetails.verifyExplainError({
+      classicError: expectedError,
+      jsonError: expectedError,
+    });
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.selectRow(10);
   },
