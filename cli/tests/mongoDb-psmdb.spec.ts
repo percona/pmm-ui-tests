@@ -280,11 +280,8 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   });
 
   test('PMM-T2005 verify PBM Agent health status result is incorrect', async ({}) => {
-    const [serviceName] = (await cli.exec('docker exec rs103 pmm-admin list | grep "MongoDB" | grep "rs103" | awk -F" " \'{print $2}\''))
-      .getStdOutLines();
-
     await expect(async () => {
-      const metrics = await cli.getMetrics(serviceName, 'pmm', 'mypass');
+      const metrics = await cli.getMetrics('rs103', 'pmm', 'mypass', 'rs103');
 
       expect(metrics).toContain('mongodb_pbm_agent_status{host="rs103:27017",replica_set="rs",role="S",self="0"} 1');
     }).toPass({ intervals: [2_000], timeout: 120_000 });
@@ -292,7 +289,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     await cli.exec('docker exec rs103 pkill -f pbm-agent');
 
     await expect(async () => {
-      const metrics = await cli.getMetrics(serviceName, 'pmm', 'mypass');
+      const metrics = await cli.getMetrics('rs103', 'pmm', 'mypass', 'rs103');
 
       expect(metrics).toContain('mongodb_pbm_agent_status{host="rs103:27017",replica_set="rs",role="S",self="0"} 2');
     }).toPass({ intervals: [2_000], timeout: 120_000 });
