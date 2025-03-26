@@ -166,7 +166,7 @@ Scenario(
 // );
 
 Scenario(
-  'PMM-T9999 - Verify explain tab for explain query @fb-pmm-ps-integration',
+  'PMM-T2014 - Verify explain tab in query analytics for query with explain in the name @fb-pmm-ps-integration',
   async ({
     I, queryAnalyticsPage, credentials,
   }) => {
@@ -175,8 +175,6 @@ Scenario(
     await I.verifyCommand(`mysql -h 127.0.0.1 -u ${username} -p${password} --port 3317 -e "USE test; CREATE TABLE t1 (c1 INT NOT NULL, c2 VARCHAR(100) NOT NULL, PRIMARY KEY (c1)); insert into t1 values(1,1),(2,2),(3,3),(4,5); explain select * from t1 where c1=1; explain select * from t1 where c2=1; explain select * from t1 where c2>1 and c2<=3;"`);
 
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-15m', refresh: '5s' }));
-    // I.wait(60);
-    // I.refreshPage();
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.searchByValue('explain select * from t1');
     I.waitForInvisible(queryAnalyticsPage.data.elements.noResultTableText, 240);
