@@ -9,7 +9,6 @@ let mongoShardHosts: string[];
 const replIpPort = '127.0.0.1:27027';
 // const mongosIpPort = '127.0.0.1:27017';
 
-// eslint-disable-next-line playwright/valid-describe-callback
 test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   test.beforeAll(async ({}) => {
     const result = await cli.exec('docker ps | grep rs101 | awk \'{print $NF}\'');
@@ -278,5 +277,24 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
       await results.assertSuccess();
       await results.outContains('Service removed.');
     }
+  });
+
+  test('PMM-T2005 verify PBM Agent health status result is incorrect', async ({}) => {
+    const [serviceName] = (await cli.exec('docker exec rs103 pmm-admin list | grep "MongoDB" | grep "rs103" | awk -F" " \'{print $2}\''))
+      .getStdOutLines();
+
+    await expect(async () => {
+      const metrics = await cli.getMetrics(serviceName, 'pmm', 'mypass');
+
+      expect(metrics).toContain('mongodb_pbm_agent_status{host="rs103:27017",replica_set="rs",role="S",self="0"} 1');
+    }).toPass({ intervals: [2_000], timeout: 120_000 });
+
+    await cli.exec('docker exec rs103 pkill -f pbm-agent');
+
+    await expect(async () => {
+      const metrics = await cli.getMetrics(serviceName, 'pmm', 'mypass');
+
+      expect(metrics).toContain('mongodb_pbm_agent_status{host="rs103:27017",replica_set="rs",role="S",self="0"} 2');
+    }).toPass({ intervals: [2_000], timeout: 120_000 });
   });
 });
