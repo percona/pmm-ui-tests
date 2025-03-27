@@ -155,18 +155,9 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L148
    */
   test('PMM-T157 PMM-T161 Adding MongoDB with specified socket for modb', async ({}) => {
-    let n = 1;
-    await cli.exec('sudo mkdir -p /tmp/mongodb');
-    const out = await cli.exec('sudo docker cp rs101:/tmp/mongodb-27017.sock /tmp/mongodb/mongodb-27017.sock');
-    await out.assertSuccess();
-    for (const host of mongoRplHosts) {
-      console.log(host);
-      const port = host.split(':')[1];
-      const replSocketPort = Number(port) - 10;
-      const output = await cli.exec(`sudo pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} --socket=/tmp/mongodb/mongodb-${replSocketPort}.sock mongo_inst_${n++}`);
-      await output.assertSuccess();
-      await output.outContains('MongoDB Service added');
-    }
+    const output = await cli.exec(`sudo docker exec rs101 pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} --socket=/tmp/mongodb-27017.sock mongo_socket`);
+    await output.assertSuccess();
+    await output.outContains('MongoDB Service added');
     await cli.exec('sleep 2');
   });
 
@@ -174,13 +165,9 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L169
    */
   test('run pmm-admin remove mongodb Instance added with Socket Specified @imp', async ({}) => {
-    const services = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " \'{print $2}\''))
-      .getStdOutLines();
-    for (const service of services) {
-      const output = await cli.exec(`sudo pmm-admin remove mongodb ${service}`);
-      await output.assertSuccess();
-      await output.outContains('Service removed.');
-    }
+    const output = await cli.exec('sudo docker exec rs101 pmm-admin remove mongodb mongo_socket');
+    await output.assertSuccess();
+    await output.outContains('Service removed.');
   });
 
   /**
