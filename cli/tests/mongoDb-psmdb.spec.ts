@@ -156,6 +156,8 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
    */
   test('PMM-T157 PMM-T161 Adding MongoDB with specified socket for modb', async ({}) => {
     let n = 1;
+    await cli.exec('sudo mkdir -p /tmp/mongodb');
+    await cli.exec('sudo docker cp rs101:/tmp/mongodb/mongodb-27017.sock /tmp/mongodb/mongodb-27017.sock');
     for (const host of mongoRplHosts) {
       console.log(host);
       const port = host.split(':')[1];
