@@ -269,7 +269,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     }
   });
 
-  test('PMM-T2005 verify PBM Agent health status result is incorrect', async ({}) => {
+  test('PMM-T2005 verify PBM Agent health status metric is correct', async ({}) => {
     await cli.exec('docker exec rs103 systemctl start pbm-agent');
     await expect(async () => {
       const metrics = await cli.getMetrics('rs103', 'pmm', 'mypass', 'rs103');
