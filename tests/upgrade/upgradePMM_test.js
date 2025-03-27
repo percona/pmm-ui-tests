@@ -66,6 +66,7 @@ Scenario(
 Scenario(
   'PMM-T288 - Verify user can see Update widget before upgrade [critical] @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
+    await I.stopMockingProductTourApi();
     I.amOnPage(homePage.url);
     await homePage.verifyPreUpdateWidgetIsPresent(versionMinor);
   },
