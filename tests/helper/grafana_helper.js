@@ -77,6 +77,7 @@ class Grafana extends Helper {
     const { Playwright } = this.helpers;
 
     await Playwright.page.unroute('**/v1/users/me');
+    await Playwright.page.unroute('**/v1/server/updates?force=true');
   }
 
   async unAuthorize() {

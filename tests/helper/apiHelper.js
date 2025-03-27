@@ -13,6 +13,15 @@ class ApiHelper extends Helper {
         snoozed_pmm_version: '3.1.0',
       }),
     }));
+
+    await page.route('**/v1/server/updates?force=true', (route) => route.fulfill({
+      status: 200,
+      body: JSON.stringify({
+        installed: {},
+        latest: {},
+        update_available: false,
+      }),
+    }));
   }
 }
 
