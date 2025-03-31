@@ -7,8 +7,6 @@ const querySources = new DataTable(['querySource']);
 querySources.add(['slowlog']);
 // querySources.add(['perfschema']);
 
-
-
 Before(async ({ I, queryAnalyticsPage }) => {
   await I.Authorize();
   I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-1h' }));
@@ -166,3 +164,27 @@ Scenario(
 //     I.assertEqual(await I.grabNumberOfVisibleElements(locate('$query-analytics-details').find('$table-row')), 1, 'Explain is expected to have one row in a table, but found more');
 //   },
 // );
+
+Scenario(
+  'PMM-T2014 - Verify explain tab in query analytics for query with explain in the name @fb-pmm-ps-integration',
+  async ({
+    I, queryAnalyticsPage, credentials,
+  }) => {
+    const { username, password } = credentials.perconaServer.msandbox;
+
+    await I.verifyCommand(`mysql -h 127.0.0.1 -u ${username} -p${password} --port 3317 -e "USE test; CREATE TABLE t1 (c1 INT NOT NULL, c2 VARCHAR(100) NOT NULL, PRIMARY KEY (c1)); insert into t1 values(1,1),(2,2),(3,3),(4,5); explain select * from t1 where c1=1; explain select * from t1 where c2=1; explain select * from t1 where c2>1 and c2<=3;"`);
+
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-15m', refresh: '5s' }));
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.searchByValue('explain select * from t1');
+    I.waitForInvisible(queryAnalyticsPage.data.elements.noResultTableText, 240);
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.queryDetails.openExplainTab();
+    const expectedError = queryAnalyticsPage.queryDetails.messages.notSupportedExplain;
+
+    await queryAnalyticsPage.queryDetails.verifyExplainError({
+      classicError: expectedError,
+      jsonError: expectedError,
+    });
+  },
+);
