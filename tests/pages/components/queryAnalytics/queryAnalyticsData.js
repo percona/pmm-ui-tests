@@ -79,8 +79,8 @@ class QueryAnalyticsData {
     I.waitForVisible(this.elements.selectedRow, 10);
   }
 
-  async getQueryRowQueryText(rowNumber) {
-    I.waitForElement(this.elements.queryRowQueryText(rowNumber), 60);
+  async getQueryRowQueryText(rowNumber, timeout = 60) {
+    I.waitForElement(this.elements.queryRowQueryText(rowNumber), timeout);
 
     return await I.grabTextFrom(this.elements.queryRowQueryText(rowNumber));
   }

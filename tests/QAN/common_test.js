@@ -154,7 +154,7 @@ Scenario(
     queryAnalyticsPage.data.searchByValue('SET `MAX_EXECUTION_TIME`');
     queryAnalyticsPage.waitForLoaded();
     I.waitForInvisible(queryAnalyticsPage.data.elements.noResultTableText, 240);
-    const query = await queryAnalyticsPage.data.getQueryRowQueryText(1);
+    const query = await queryAnalyticsPage.data.getQueryRowQueryText(1, 240);
 
     I.assertFalse(/\d/.test(query), `Query "${query}" should not contain number.`);
     I.assertTrue(query.indexOf('?') !== -1, `Query "${query}" should contain question mark that replaces number value.`);
