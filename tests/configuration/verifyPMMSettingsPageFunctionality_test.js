@@ -309,7 +309,7 @@ Scenario(
     await I.Authorize(users.admin.username, users.admin.password);
 
     await settingsAPI.changeSettings({ updates: true });
-    await I.stopMockingProductTourApi();
+    await I.stopMockingUpgrade();
 
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     I.waitForVisible(homePage.updatesModal.root, 30);

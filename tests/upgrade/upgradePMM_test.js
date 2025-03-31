@@ -66,7 +66,7 @@ Scenario(
 Scenario(
   'PMM-T288 - Verify user can see Update widget before upgrade [critical] @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
-    await I.stopMockingProductTourApi();
+    await I.stopMockingUpgrade();
     I.amOnPage(homePage.url);
     await homePage.verifyPreUpdateWidgetIsPresent(versionMinor);
   },
@@ -75,10 +75,8 @@ Scenario(
 Scenario(
   'PMM-T3 - Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ovf-upgrade @ami-upgrade  ',
   async ({ I, homePage }) => {
-    await I.stopMockingProductTourApi();
+    await I.stopMockingUpgrade();
     I.amOnPage(homePage.url);
-    I.waitForVisible(homePage.updatesModal.root);
-    I.click(homePage.updatesModal.closeIcon);
     I.click(homePage.productTour.productTourModal);
     I.click(homePage.productTour.skipButton);
     await homePage.upgradePMM(versionMinor);
