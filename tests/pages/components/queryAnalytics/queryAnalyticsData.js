@@ -8,6 +8,7 @@ class QueryAnalyticsData {
     this.elements = {
       queryRow: (rowNumber) => locate(`//div[@role="row" and contains(@class, "tr-${rowNumber}")]`),
       queryRows: locate('//div[@role="row" and contains(@class, "tr-")]'),
+      queryRowQueryText: (rowNumber) => locate(`//div[@role="row" and contains(@class, "tr-${rowNumber}")]//div[@role="cell" and position() = 2]`),
       queryRowCells: (rowNumber) => locate(`[class="tr tr-${rowNumber}"]`).find('[role="cell"]'),
       queryRowValue: (rowNumber) => this.elements.queryRowCells(rowNumber).at(2),
       queryRowIcon: (rowNumber) => this.elements.queryRowCells(rowNumber).at(2).find('//*[local-name()="path"]'),
@@ -76,6 +77,12 @@ class QueryAnalyticsData {
     I.forceClick(this.elements.queryRow(rowNumber));
     queryAnalyticsPage.waitForLoaded();
     I.waitForVisible(this.elements.selectedRow, 10);
+  }
+
+  async getQueryRowQueryText(rowNumber) {
+    I.waitForElement(this.elements.queryRowQueryText(rowNumber), 60);
+
+    return await I.grabTextFrom(this.elements.queryRowQueryText(rowNumber));
   }
 
   async verifyRowCount(expectedRowCount) {

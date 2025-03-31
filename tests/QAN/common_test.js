@@ -138,3 +138,24 @@ Scenario(
     queryAnalyticsPage.waitForLoaded();
   },
 );
+
+Scenario(
+  'PMM-T9999 - @fb-pmm-ps-integration',
+  async ({
+    I, queryAnalyticsPage, credentials,
+  }) => {
+    const { username, password } = credentials.perconaServer.msandbox;
+
+    await I.verifyCommand(`mysql -h 127.0.0.1 -u ${username} -p${password} --port 3317 -e "SET MAX_EXECUTION_TIME = 1000;"`);
+
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-30m', refresh: '5s' }));
+    queryAnalyticsPage.waitForLoaded();
+
+    queryAnalyticsPage.data.searchByValue('SET `MAX_EXECUTION_TIME`');
+    I.waitForInvisible(queryAnalyticsPage.data.elements.noResultTableText, 240);
+    const query = await queryAnalyticsPage.data.getQueryRowQueryText(1);
+
+    I.assertFalse(/\d/.test(query), `Query "${query}" should not contain number.`);
+    I.assertTrue(query.indexOf('?') !== -1, `Query "${query}" should contain question mark that replaces number value.`);
+  },
+);
