@@ -15,6 +15,7 @@ module.exports = {
     statusCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(3),
     technologyCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(4),
     intervalCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(5),
+    advisorsGroupHeader: (name) => locate('span').withText(name),
     tableBody: '$table-tbody',
     noChecksFound: '$table-no-data',
     modalContent: '$modal-content',

@@ -57,7 +57,7 @@ BeforeSuite(async ({
   );
 
   await I.mongoConnect(mongoConnection);
-  const mongoNodeExists = !!(await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName))
+  const mongoNodeExists = !!(await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName));
 
   if (mongoNodeExists) {
     return;
@@ -229,6 +229,7 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
     backupInventoryPage.startRestore(artifactName);
 
     // PMM-T1520 PMM-T1508
+    I.amOnPage(restorePage.url);
     I.waitForVisible(restorePage.elements.targetServiceByName(artifactName), 10);
     I.seeTextEquals(mongoServiceName, restorePage.elements.targetServiceByName(artifactName));
     await restorePage.waitForRestoreSuccess(artifactName);
