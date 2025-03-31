@@ -14,7 +14,7 @@ class ApiHelper extends Helper {
       }),
     }));
 
-    await page.route('**/v1/server/updates?force=true', (route) => route.fulfill({
+    await page.route('**/v1/server/updates?force=**', (route) => route.fulfill({
       status: 200,
       body: JSON.stringify({
         installed: {},

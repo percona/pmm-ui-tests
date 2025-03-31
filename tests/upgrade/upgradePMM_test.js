@@ -77,8 +77,8 @@ Scenario(
   async ({ I, homePage }) => {
     await I.stopMockingUpgrade();
     I.amOnPage(homePage.url);
-    I.waitForVisible(homePage.updatesModal.root);
-    I.click(homePage.updatesModal.closeIcon);
+
+    I.clickIfVisible(homePage.updatesModal.closeIcon);
     await homePage.upgradePMM(versionMinor);
   },
 ).retry(0);

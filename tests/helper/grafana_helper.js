@@ -82,7 +82,7 @@ class Grafana extends Helper {
   async stopMockingUpgrade() {
     const { Playwright } = this.helpers;
 
-    await Playwright.page.unroute('**/v1/server/updates?force=true');
+    await Playwright.page.unroute('**/v1/server/updates?force=**');
   }
 
   async unAuthorize() {
@@ -250,6 +250,24 @@ class Grafana extends Helper {
     if (returnErrorPipe) return stderr.trim();
 
     return stdout.trim();
+  }
+
+  async clickIfVisible(element) {
+    const { Playwright } = this.helpers;
+
+    for (let i = 0; i < 10; i++) {
+      const numVisible = await Playwright.grabNumberOfVisibleElements(element);
+
+      if (numVisible) {
+        await Playwright.click(element);
+
+        return element;
+      }
+
+      Playwright.wait(10);
+    }
+
+    return element;
   }
 }
 
