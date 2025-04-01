@@ -140,7 +140,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T9999 - @fb-pmm-ps-integration',
+  'PMM-T2016 - Verify QAN query: MAX_EXECUTION_TIME does replace numbers values @fb-pmm-ps-integration',
   async ({
     I, queryAnalyticsPage, credentials,
   }) => {
@@ -154,7 +154,7 @@ Scenario(
     queryAnalyticsPage.data.searchByValue('MAX_EXECUTION_TIME');
     queryAnalyticsPage.waitForLoaded();
     I.waitForInvisible(queryAnalyticsPage.data.elements.noResultTableText, 240);
-    const query = await queryAnalyticsPage.data.getQueryRowQueryText(1, 240);
+    const query = await queryAnalyticsPage.data.getQueryRowQueryText(1);
 
     I.assertFalse(/\d/.test(query), `Query "${query}" should not contain number.`);
     I.assertTrue(query.indexOf('?') !== -1, `Query "${query}" should contain question mark that replaces number value.`);
