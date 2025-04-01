@@ -60,8 +60,8 @@ Scenario('PMM-T9999 - Verify external clickhouse as datasource on explore page @
   I.dontSee(explorePage.messages.authError);
 });
 
-Scenario('PMM-T9999 - Verify external clickhouse as datasource on explore page @docker-configuration @cli', async ({ I, explorePage }) => {
-  const response = await I.verifyCommand('docker exec pmm-server-external-clickhouse supervisorctl status');
+Scenario('PMM-T9999 - Verify internal clickhouse is not running @docker-configuration @cli', async ({ I, explorePage }) => {
+  const response = await I.verifyCommand('docker exec pmm-server-external-clickhouse supervisorctl status', null, 'fail');
 
   I.assertFalse(response.includes('clickhouse'), 'Clickhouse should not run on pmm server!');
 });
