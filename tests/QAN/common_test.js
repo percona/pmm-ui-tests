@@ -151,7 +151,7 @@ Scenario(
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-30m', refresh: '5s' }));
     queryAnalyticsPage.waitForLoaded();
 
-    queryAnalyticsPage.data.searchByValue('SET `MAX_EXECUTION_TIME`');
+    queryAnalyticsPage.data.searchByValue('MAX_EXECUTION_TIME');
     queryAnalyticsPage.waitForLoaded();
     I.waitForInvisible(queryAnalyticsPage.data.elements.noResultTableText, 240);
     const query = await queryAnalyticsPage.data.getQueryRowQueryText(1, 240);
