@@ -15,7 +15,7 @@ BeforeSuite(async ({ I }) => {
 });
 
 Before(async ({ I }) => {
-  await I.Authorize('admin', 'admin', `http://127.0.0.1:${pmmServerPort}/`);
+  await I.Authorize('admin', 'admin', basePmmUrl);
 });
 
 AfterSuite(async ({ I }) => {
@@ -48,3 +48,20 @@ Scenario(
     assert.ok(mysqlRows > 0, 'Query Analytics are empty for mysql database');
   },
 );
+
+Scenario('PMM-T9999 - Verify external clickhouse as datasource on explore page @docker-configuration @cli', async ({ I, explorePage }) => {
+  explorePage.open();
+  explorePage.selectDataSource('ClickHouse');
+  I.click(explorePage.elements.sqlEditorButton);
+  I.clearField(explorePage.elements.sqlBuilder);
+  I.fillField(explorePage.elements.sqlBuilder, 'SELECT * FROM pmm.metrics LIMIT 10;');
+  I.click(explorePage.elements.runQueryButton);
+  I.waitForVisible(explorePage.elements.resultRow, 10);
+  I.dontSee(explorePage.messages.authError);
+});
+
+Scenario('PMM-T9999 - Verify external clickhouse as datasource on explore page @docker-configuration @cli', async ({ I, explorePage }) => {
+  const response = await I.verifyCommand('docker exec pmm-server-external-clickhouse supervisorctl status');
+
+  I.assertFalse(response.includes('clickhouse'), 'Clickhouse should not run on pmm server!');
+});

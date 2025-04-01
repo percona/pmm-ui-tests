@@ -3,10 +3,11 @@ version: '3.7'
 
 services:
   pmm-server-external-clickhouse:
-    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:3-dev-latest}
+    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server-fb:PR-3847-f05e17e}
     container_name: pmm-server-external-clickhouse
     depends_on:
-      - external-clickhouse
+      external-clickhouse:
+        condition: service_healthy
     ports:
       - '8081:8080'
       - '8444:8443'
@@ -20,6 +21,12 @@ services:
       - PMM_CLICKHOUSE_ADDR=external-clickhouse:9000
       - PMM_CLICKHOUSE_DATASOURCE=external-clickhouse:8123
       - PMM_CLICKHOUSE_DATABASE=pmm
+      - PMM_DISABLE_BUILTIN_CLICKHOUSE=1
+      - PMM_ENABLE_TELEMETRY=0
+      - PMM_CLICKHOUSE_PASSWORD=pmm_password
+      - PMM_CLICKHOUSE_USER=pmm
+      - PMM_CLICKHOUSE_DATABASE=pmm
+      - PMM_CLICKHOUSE_ADDR=external-clickhouse:9000
 
   pmm-client:
     image: perconalab/pmm-client:3-dev-latest
@@ -50,7 +57,12 @@ services:
       MYSQL_ROOT_PASSWORD: 7B*53@lCdflR
 
   external-clickhouse:
-    image: clickhouse/clickhouse-server:22.5.2
+    image: clickhouse/clickhouse-server:latest
     container_name: external-clickhouse
+    environment:
+      - CLICKHOUSE_DB=pmm
+      - CLICKHOUSE_USER=pmm
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+      - CLICKHOUSE_PASSWORD=pmm_password
     healthcheck:
       test: ['CMD', 'wget', '--spider', '-q', 'localhost:8123/ping']
