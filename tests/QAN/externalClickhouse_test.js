@@ -69,7 +69,8 @@ Scenario('PMM-T9999 - Verify internal clickhouse is not running @docker-configur
 Scenario('PMM-T9999 - Verify pmm managed logs do not contain errors about clickhouse @docker-configuration @cli', async ({ I, explorePage }) => {
   const response = await I.verifyCommand('docker exec pmm-server-external-clickhouse cat /srv/logs/pmm-managed.log | grep "clickhouse"');
 
-  console.log(response);
+  I.assertFalse(response.includes('ClickHouse DB is not reachable'), 'Response should not contain error about clickhouse.');
+  I.assertFalse(response.includes('Failed to parse ClickHouse DSN'), 'Response should not contain error about clickhouse.');
 });
 
 Scenario('PMM-T9999 - Verify dashboard has data with external clickhouse @docker-configuration @cli', async ({ I, dashboardPage }) => {
