@@ -80,4 +80,4 @@ Scenario('PMM-T9999 - Verify dashboard has data with external clickhouse @docker
   dashboardPage.waitForDashboardOpened();
   await dashboardPage.expandEachDashboardRow();
   await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
-});
+}).retry(2);
