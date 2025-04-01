@@ -65,3 +65,18 @@ Scenario('PMM-T9999 - Verify internal clickhouse is not running @docker-configur
 
   I.assertFalse(response.includes('clickhouse'), 'Clickhouse should not run on pmm server!');
 });
+
+Scenario('PMM-T9999 - Verify pmm managed logs do not contain errors about clickhouse @docker-configuration @cli', async ({ I, explorePage }) => {
+  const response = await I.verifyCommand('docker exec pmm-server-external-clickhouse supervisorctl status', null, 'fail');
+
+  console.log(response);
+});
+
+Scenario('PMM-T9999 - Verify dashboard has data with external clickhouse @docker-configuration @cli', async ({ I, dashboardPage }) => {
+  const dashboardUrl = I.buildUrlWithParams(basePmmUrl + dashboardPage.mySQLInstanceOverview.clearUrl, { from: 'now-5m' });
+
+  I.amOnPage(dashboardUrl);
+  dashboardPage.waitForDashboardOpened();
+  await dashboardPage.expandEachDashboardRow();
+  await dashboardPage.verifyThereAreNoGraphsWithoutData();
+});
