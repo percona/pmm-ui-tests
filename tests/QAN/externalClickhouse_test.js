@@ -50,7 +50,7 @@ Scenario(
 );
 
 Scenario('PMM-T9999 - Verify external clickhouse as datasource on explore page @docker-configuration @cli', async ({ I, explorePage }) => {
-  explorePage.open();
+  I.amOnPage(basePmmUrl + explorePage.url);
   explorePage.selectDataSource('ClickHouse');
   I.click(explorePage.elements.sqlEditorButton);
   I.clearField(explorePage.elements.sqlBuilder);

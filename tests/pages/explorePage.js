@@ -7,7 +7,6 @@ class ExplorePage {
       rawQueryToggleLabel: '$QueryEditorModeToggle',
       dataSourcePicker: locate('//input[@id="data-source-picker"]'),
       sqlEditorButton: locate('//label[text()="SQL Editor"]//parent::*[@data-testid="data-testid radio-button"]'),
-      // sqlBuilder: locate('//div[contains(@class, "monaco-editor-background")]//div[contains(@class, "monaco-mouse-cursor-text") and @role="presentation"]'),
       sqlBuilder: locate('//textarea'),
       runQueryButton: locate('//span[text()="Run Query"]//parent::button'),
       resultRow: locate('//div[@role="row"]'),
