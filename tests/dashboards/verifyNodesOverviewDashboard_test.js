@@ -26,9 +26,9 @@ Scenario(
         --env PMM_AGENT_SETUP_REGION=EU \
         ${dockerVersion}`);
 
-    await I.wait(45);
+    await I.wait(60);
     await I.amOnPage(I.buildUrlWithParams(dashboardPage.osNodesOverview.clearUrl, {
-      from: 'now-15m',
+      from: 'now-5m',
       environment: expectedEnvName,
     }));
     await dashboardPage.waitForDashboardOpened();
