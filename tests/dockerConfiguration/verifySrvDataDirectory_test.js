@@ -15,7 +15,7 @@ const runContainerWithPasswordVariable = async (I) => {
 };
 
 const runContainerWithPasswordVariableUpgrade = async (I) => {
-  await I.verifyCommand('docker run -v $HOME/srvPasswordUpgrade:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8084:80 --name pmm-server-password-upgrade percona/pmm-server:latest');
+  await I.verifyCommand('docker run -v $HOME/srvPasswordUpgrade:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8089:80 --name pmm-server-password-upgrade percona/pmm-server:latest');
   await I.verifyCommand('docker exec pmm-server-password-upgrade yum update -y percona-release');
   await I.verifyCommand('docker exec pmm-server-password-upgrade sed -i\'\' -e \'s^/release/^/experimental/^\' /etc/yum.repos.d/pmm2-server.repo');
   await I.verifyCommand('docker exec pmm-server-password-upgrade percona-release enable percona experimental');
@@ -105,8 +105,8 @@ Scenario(
 
     await I.verifyCommand('docker volume create srvFolder');
     await runContainerWithDataContainer(I);
-    await I.Authorize('admin', 'admin', basePmmUrl);
     await I.wait(120);
+    await I.Authorize('admin', 'admin', basePmmUrl);
     testCaseName = 'PMM-T1244';
     await I.amOnPage(basePmmUrl + queryAnalyticsPage.url);
     I.dontSeeElement(queryAnalyticsPage.data.elements.noResultTableText);
@@ -182,12 +182,12 @@ Scenario(
   async ({
     I, homePage,
   }) => {
-    const basePmmUrl = 'http://127.0.0.1:8084/';
+    const basePmmUrl = 'http://127.0.0.1:8089/';
 
     await runContainerWithPasswordVariableUpgrade(I);
     await I.wait(30);
     testCaseName = 'PMM-T1256';
-    await I.Authorize('admin', 'newpass');
+    await I.Authorize('admin', 'newpass', basePmmUrl);
     await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
     const { versionMinor } = await homePage.getVersions();
