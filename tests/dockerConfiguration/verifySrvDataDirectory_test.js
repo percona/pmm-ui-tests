@@ -122,7 +122,7 @@ Scenario(
     await stopAndRemoveContainerWithDataContainer(I);
     await runContainerWithDataContainer(I);
     await I.wait(60);
-    const logs = await I.verifyCommand('docker logs pmm-server-srv');
+    const logs = await I.verifyCommand('docker logs pmm-server-empty-data-container');
 
     assert.ok(!logs.includes('Error: The directory named as part of the path /srv/logs/supervisord.log does not exist'));
     await I.amOnPage(basePmmUrl + queryAnalyticsPage.url);

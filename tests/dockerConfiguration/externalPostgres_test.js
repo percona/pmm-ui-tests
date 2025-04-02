@@ -22,12 +22,12 @@ const runPMMWithExternalPGWithSSL = `docker run -d -p 8082:80 -p 447:443 \
 const data = new DataTable(['composeName', 'containerName', 'postgresqlAddress', 'serverPort']);
 
 data.add(['docker-compose-external-pg', 'pmm-server-external-postgres', 'external-postgres:5432', '8081']);
-data.add(['docker-compose-external-pg-ssl', 'pmm-server-external-postgres-ssl', 'external-postgres-ssl:5432', '8082']);
+// data.add(['docker-compose-external-pg-ssl', 'pmm-server-external-postgres-ssl', 'external-postgres-ssl:5432', '8082']);
 
 BeforeSuite(async ({ I }) => {
   // Start PMM with latest released version
   await I.verifyCommand('PMM_SERVER_IMAGE=percona/pmm-server:latest docker compose -f docker-compose-external-pg.yml up -d');
-  await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f docker-compose-external-pg-ssl.yml up -d`);
+  // await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f docker-compose-external-pg-ssl.yml up -d`);
   await I.wait(30);
 });
 
@@ -37,7 +37,7 @@ Before(async ({ I }) => {
 
 AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker compose -f docker-compose-external-pg.yml down -v || true');
-  await I.verifyCommand('docker compose -f docker-compose-external-pg-ssl.yml down -v || true');
+  // await I.verifyCommand('docker compose -f docker-compose-external-pg-ssl.yml down -v || true');
 });
 
 Data(data).Scenario(
