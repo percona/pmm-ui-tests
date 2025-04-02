@@ -26,8 +26,8 @@ data.add(['docker-compose-external-pg-ssl', 'pmm-server-external-postgres-ssl', 
 
 BeforeSuite(async ({ I }) => {
   // Start PMM with latest released version
-  await I.verifyCommand('PMM_SERVER_IMAGE=percona/pmm-server:latest docker-compose -f docker-compose-external-pg.yml up -d');
-  await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker-compose -f docker-compose-external-pg-ssl.yml up -d`);
+  await I.verifyCommand('PMM_SERVER_IMAGE=percona/pmm-server:latest docker compose -f docker-compose-external-pg.yml up -d');
+  await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f docker-compose-external-pg-ssl.yml up -d`);
   await I.wait(30);
 });
 
@@ -36,12 +36,12 @@ Before(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-  await I.verifyCommand('docker-compose -f docker-compose-external-pg.yml down -v || true');
-  await I.verifyCommand('docker-compose -f docker-compose-external-pg-ssl.yml down -v || true');
+  await I.verifyCommand('docker compose -f docker-compose-external-pg.yml down -v || true');
+  await I.verifyCommand('docker compose -f docker-compose-external-pg-ssl.yml down -v || true');
 });
 
 Data(data).Scenario(
-  'PMM-T1678 - Verify PMM with external PostgreSQL including upgrade @docker-configuration1',
+  'PMM-T1678 - Verify PMM with external PostgreSQL including upgrade @docker-configuration',
   async ({
     I, dashboardPage, pmmInventoryPage, current, queryAnalyticsPage,
   }) => {
@@ -57,7 +57,7 @@ Data(data).Scenario(
       I.waitForVisible(postgresDataSourceLocator, 30);
 
       // Docker way upgrade
-      await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker-compose -f ${composeName}.yml up -d ${containerName}`);
+      await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f ${composeName}.yml up -d ${containerName}`);
       await I.wait(120);
     }
 
