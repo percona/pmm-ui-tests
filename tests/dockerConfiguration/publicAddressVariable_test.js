@@ -27,10 +27,6 @@ const runContainerWithPublicAddressVariableUpgrade = async (I, publicAddress) =>
   await I.wait(30);
 };
 
-Before(async ({ I }) => {
-  await I.Authorize('admin', 'admin', basePmmUrl);
-});
-
 After(async ({ I, portalAPI }) => {
   await I.verifyCommand('docker stop pmm-server-public-address');
   await I.verifyCommand('docker rm pmm-server-public-address');
@@ -44,6 +40,8 @@ Data(publicIPs).Scenario(
     const { publicAddress } = current;
 
     await runContainerWithPublicAddressVariable(I, publicAddress);
+    await I.Authorize('admin', 'admin', basePmmUrl);
+
     await I.amOnPage(basePmmUrl + pmmSettingsPage.advancedSettingsUrl);
     await I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
     const setPublicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
