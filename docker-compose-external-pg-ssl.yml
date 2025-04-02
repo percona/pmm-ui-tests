@@ -1,6 +1,3 @@
----
-version: '3.8'
-
 volumes:
   pmm-server-external-pg-ssl:
 
