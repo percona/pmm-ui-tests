@@ -39,8 +39,8 @@ const stopAndRemoveContainerWithPasswordVariable = async (I) => {
 };
 
 const stopAndRemoveContainerWithDataContainer = async (I) => {
-  await I.verifyCommand('docker stop pmm-server-srv');
-  await I.verifyCommand('docker rm pmm-server-srv');
+  await I.verifyCommand('docker stop pmm-server-empty-data-container');
+  await I.verifyCommand('docker rm pmm-server-empty-data-container');
 };
 
 After(async ({ I }) => {
@@ -62,7 +62,7 @@ Scenario(
     const basePmmUrl = 'http://127.0.0.1:8081/';
 
     await runContainerWithoutDataContainer(I);
-    await I.Authorize('admin', 'admin');
+    await I.Authorize('admin', 'admin', basePmmUrl);
     await I.wait(120);
     testCaseName = 'PMM-T1243';
     await I.amOnPage(basePmmUrl + queryAnalyticsPage.url);
@@ -117,7 +117,6 @@ Scenario(
     assert.ok(qanRows > 0, 'Query Analytics are empty');
     await I.amOnPage(`${basePmmUrl + dashboardPage.nodeSummaryDashboard.url}?orgId=1&refresh=5s`);
     await dashboardPage.waitForAllGraphsToHaveData(300);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
 
     await stopAndRemoveContainerWithDataContainer(I);

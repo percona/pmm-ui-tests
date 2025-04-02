@@ -82,6 +82,7 @@ Scenario(
     const basePmmUrl = `http://${serverIP}:8085/`;
 
     await runContainerWithPublicAddressVariable(I, '127.0.0.5');
+    await I.wait(30);
     await I.Authorize('admin', 'admin', basePmmUrl);
     await I.amOnPage(basePmmUrl + pmmSettingsPage.advancedSettingsUrl);
     await I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
