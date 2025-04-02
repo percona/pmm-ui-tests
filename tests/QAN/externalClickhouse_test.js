@@ -73,11 +73,18 @@ Scenario('PMM-T9999 - Verify pmm managed logs do not contain errors about clickh
   I.assertFalse(response.includes('Failed to parse ClickHouse DSN'), 'Response should not contain error about clickhouse.');
 });
 
-Scenario('PMM-T9999 - Verify dashboard has data with external clickhouse @docker-configuration @cli', async ({ I, dashboardPage }) => {
+Scenario('PMM-T9999 - Verify dashboard and QAN has data with external clickhouse @docker-configuration @cli', async ({ I, dashboardPage, queryAnalyticsPage }) => {
   const dashboardUrl = I.buildUrlWithParams(basePmmUrl + dashboardPage.mySQLInstanceOverview.clearUrl, { from: 'now-5m' });
 
   I.amOnPage(dashboardUrl);
   dashboardPage.waitForDashboardOpened();
   await dashboardPage.expandEachDashboardRow();
   await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
+
+  I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${queryAnalyticsPage.url}`, { from: 'now-5m' }));
+  queryAnalyticsPage.waitForLoaded();
+  await I.waitForVisible(queryAnalyticsPage.data.elements.queryRows);
+  const qanRows = await I.grabNumberOfVisibleElements(queryAnalyticsPage.data.elements.queryRows);
+
+  I.assertTrue(qanRows > 0, 'Query Analytics is empty');
 }).retry(2);
