@@ -14,8 +14,8 @@ const runContainerWithPasswordVariable = async (I) => {
   await I.verifyCommand(`docker run -v $HOME/srvPassword:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8082:80 --name pmm-server-password ${dockerVersion}`);
 };
 
-const runContainerWithPasswordVariableUpgrade = async (I, dockerTag) => {
-  await I.verifyCommand(`docker run -v $HOME/srvPasswordUpgrade:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8089:80 --name pmm-server-password-upgrade ${dockerTag}`);
+const runContainerWithPasswordVariableUpgrade = async (I) => {
+  await I.verifyCommand(`docker run -v $HOME/srvPasswordUpgrade:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8089:80 --name pmm-server-password-upgrade ${dockerVersion}`);
   I.wait(30);
   await I.verifyCommand('docker exec pmm-server-password-upgrade yum update -y percona-release');
   await I.verifyCommand('docker exec pmm-server-password-upgrade sed -i\'\' -e \'s^/release/^/experimental/^\' /etc/yum.repos.d/pmm2-server.repo');
@@ -142,8 +142,8 @@ Scenario(
     I.say(await I.verifyCommand('docker logs pmm-server-srv'));
   },
 );
-// Skipped due to bug: https://jira.percona.com/browse/PMM-10325
-Scenario.skip(
+
+Scenario(
   'PMM-T1255 Verify GF_SECURITY_ADMIN_PASSWORD environment variable @docker-configuration',
   async ({
     I, homePage, loginPage,
@@ -158,20 +158,20 @@ Scenario.skip(
 
     assert.ok(!logs.includes('Configuration warning: unknown environment variable "GF_SECURITY_ADMIN_PASSWORD=newpass".'));
 
-    await I.Authorize();
+    await I.Authorize('admin', 'admin', basePmmUrl);
     await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForVisible('//*[contains(text(), "invalid username or password")]');
     await I.unAuthorize();
     await I.refreshPage();
     await I.waitInUrl(loginPage.url);
-    await I.Authorize('admin', 'newpass');
+    await I.Authorize('admin', 'newpass', basePmmUrl);
     await I.wait(1);
     await I.refreshPage();
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
     await I.verifyCommand('docker exec -t pmm-server-password change-admin-password anotherpass');
     await I.unAuthorize();
     await I.waitInUrl(loginPage.url);
-    await I.Authorize('admin', 'anotherpass');
+    await I.Authorize('admin', 'anotherpass', basePmmUrl);
     await I.wait(5);
     await I.refreshPage();
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
@@ -179,13 +179,13 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T1256 Verify GF_SECURITY_ADMIN_PASSWORD environment variable after upgrade @docker-configuration',
+  'PMM-T1256 Verify GF_SECURITY_ADMIN_PASSWORD environment variable after upgrade',
   async ({
     I, homePage,
   }) => {
     const basePmmUrl = 'http://127.0.0.1:8089/';
 
-    await runContainerWithPasswordVariableUpgrade(I, dockerVersion);
+    await runContainerWithPasswordVariableUpgrade(I);
     await I.wait(30);
     testCaseName = 'PMM-T1256';
     await I.Authorize('admin', 'newpass', basePmmUrl);
@@ -196,7 +196,7 @@ Scenario(
     await homePage.upgradePMM(versionMinor, 'pmm-server-password-upgrade');
     await I.unAuthorize();
     await I.wait(5);
-    await I.Authorize('admin', 'newpass');
+    await I.Authorize('admin', 'newpass', basePmmUrl);
     await I.refreshPage();
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
   },
