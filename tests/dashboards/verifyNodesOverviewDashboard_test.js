@@ -1,6 +1,6 @@
 Feature('Tests for Operation System Dashboards');
 
-const dockerVersion = 'perconalab/pmm-client:dev-latest';
+const dockerVersion = 'perconalab/pmm-client:3-dev-latest';
 const adminPassword = process.env.ADMIN_PASSWORD || 'admin';
 
 Before(async ({ I }) => {
@@ -8,7 +8,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  '@PMM-T1642 - Verify that filtering by Environment works OS dashboards @docker-configuration',
+  'PMM-T1642 - Verify that filtering by Environment works OS dashboards @docker-configuration',
   async ({ I, dashboardPage }) => {
     const expectedEnvName = 'dev';
 

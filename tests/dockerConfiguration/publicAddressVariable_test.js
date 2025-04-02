@@ -2,9 +2,10 @@ const assert = require('assert');
 
 Feature('Tests for PMM_PUBLIC_ADDRESS environment variable');
 
-const dockerVersion = process.env.DOCKER_VERSION || 'perconalab/pmm-server:dev-latest';
+const dockerVersion = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-latest';
 const contanerName = 'pmm-server-public-address';
 const publicIPs = new DataTable(['testCase', 'publicAddress']);
+const basePmmUrl = 'http://127.0.0.1:8085/';
 
 publicIPs.add(['PMM-T1173', '127.0.0.1']);
 publicIPs.add(['PMM-T1173', '127.0.0.1:8443']);
@@ -26,8 +27,8 @@ const runContainerWithPublicAddressVariableUpgrade = async (I, publicAddress) =>
   await I.wait(30);
 };
 
-Before(async ({ I, portalAPI }) => {
-  await I.Authorize('admin', 'admin');
+Before(async ({ I }) => {
+  await I.Authorize('admin', 'admin', basePmmUrl);
 });
 
 After(async ({ I, portalAPI }) => {
@@ -36,11 +37,10 @@ After(async ({ I, portalAPI }) => {
 });
 
 Data(publicIPs).Scenario(
-  'PMM-T1173 PMM-T1174 Verify PMM_PUBLIC_ADDRESS env variable with IP @docker-configuration',
+  'PMM-T1173 + PMM-T1174 - Verify PMM_PUBLIC_ADDRESS env variable with IP @docker-configuration',
   async ({
     I, pmmSettingsPage, current,
   }) => {
-    const basePmmUrl = 'http://127.0.0.1:8085/';
     const { publicAddress } = current;
 
     await runContainerWithPublicAddressVariable(I, publicAddress);

@@ -24,7 +24,7 @@ const runContainerWithPasswordVariableUpgrade = async (I) => {
 };
 
 const runContainerWithDataContainer = async (I) => {
-  await I.verifyCommand(`docker run -v srvFolder:/srv -d --restart always --publish 8083:80 --name pmm-server-srv ${dockerVersion}`);
+  await I.verifyCommand(`docker run -v srvFolder:/srv -d --restart always --publish 8083:80 --name pmm-server-empty-data-container ${dockerVersion}`);
 };
 
 const stopAndRemoveContainerWithoutDataContainer = async (I) => {
@@ -97,7 +97,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1244 Verify PMM Server with empty data container @docker-configuration',
+  'PMM-T1244 - Verify PMM Server with empty data container @docker-configuration',
   async ({
     I, adminPage, dashboardPage, queryAnalyticsPage,
   }) => {
@@ -105,7 +105,7 @@ Scenario(
 
     await I.verifyCommand('docker volume create srvFolder');
     await runContainerWithDataContainer(I);
-    await I.Authorize('admin', 'admin');
+    await I.Authorize('admin', 'admin', basePmmUrl);
     await I.wait(120);
     testCaseName = 'PMM-T1244';
     await I.amOnPage(basePmmUrl + queryAnalyticsPage.url);

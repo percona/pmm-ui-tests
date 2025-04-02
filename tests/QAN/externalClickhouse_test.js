@@ -49,7 +49,7 @@ Scenario(
   },
 );
 
-Scenario('PMM-T9999 - Verify external clickhouse as datasource on explore page @docker-configuration @cli', async ({ I, explorePage }) => {
+Scenario('PMM-T9999 - Verify external clickhouse as datasource on explore page @docker-configuration', async ({ I, explorePage }) => {
   I.amOnPage(basePmmUrl + explorePage.url);
   explorePage.selectDataSource('ClickHouse');
   I.click(explorePage.elements.sqlEditorButton);
@@ -60,26 +60,29 @@ Scenario('PMM-T9999 - Verify external clickhouse as datasource on explore page @
   I.dontSee(explorePage.messages.authError);
 });
 
-Scenario('PMM-T9999 - Verify internal clickhouse is not running @docker-configuration @cli', async ({ I, explorePage }) => {
+Scenario('PMM-T9999 - Verify internal clickhouse is not running @docker-configuration', async ({ I, explorePage }) => {
   const response = await I.verifyCommand('docker exec pmm-server-external-clickhouse supervisorctl status', null, 'fail');
 
   I.assertFalse(response.includes('clickhouse'), 'Clickhouse should not run on pmm server!');
 });
 
-Scenario('PMM-T9999 - Verify pmm managed logs do not contain errors about clickhouse @docker-configuration @cli', async ({ I, explorePage }) => {
-  const response = await I.verifyCommand('docker exec pmm-server-external-clickhouse cat /srv/logs/pmm-managed.log | grep "clickhouse"');
+Scenario('PMM-T9999 - Verify pmm managed logs do not contain errors about clickhouse @docker-configuration', async ({ I, explorePage }) => {
+  const pmmManagedLogs = await I.verifyCommand('docker exec pmm-server-external-clickhouse cat /srv/logs/pmm-managed.log | grep "clickhouse"');
+  const qanLogs = await I.verifyCommand('docker exec pmm-server-external-clickhouse cat /srv/logs/qan-api2.log | grep "clickhouse"');
 
-  I.assertFalse(response.includes('ClickHouse DB is not reachable'), 'Response should not contain error about clickhouse.');
-  I.assertFalse(response.includes('Failed to parse ClickHouse DSN'), 'Response should not contain error about clickhouse.');
+  I.assertFalse(pmmManagedLogs.includes('ClickHouse DB is not reachable'), 'PMM managed logs should not contain error about clickhouse.');
+  I.assertFalse(pmmManagedLogs.includes('Failed to parse ClickHouse DSN'), 'PMM managed logs should not contain error about clickhouse.');
+  I.assertFalse(pmmManagedLogs.includes('pmm_pass'), 'PMM managed logs should not contain clickhouse password in plain text');
+  I.assertFalse(qanLogs.includes('pmm_pass'), 'QAN logs should not contain clickhouse password in plain text');
 });
 
-Scenario('PMM-T9999 - Verify dashboard and QAN has data with external clickhouse @docker-configuration @cli', async ({ I, dashboardPage, queryAnalyticsPage }) => {
+Scenario('PMM-T9999 - Verify dashboard and QAN has data with external clickhouse @docker-configuration', async ({ I, dashboardPage, queryAnalyticsPage }) => {
   const dashboardUrl = I.buildUrlWithParams(basePmmUrl + dashboardPage.mySQLInstanceOverview.clearUrl, { from: 'now-5m' });
 
   I.amOnPage(dashboardUrl);
   dashboardPage.waitForDashboardOpened();
   await dashboardPage.expandEachDashboardRow();
-  await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
+  await dashboardPage.verifyThereAreNoGraphsWithoutData(11);
 
   I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${queryAnalyticsPage.url}`, { from: 'now-5m' }));
   queryAnalyticsPage.waitForLoaded();
