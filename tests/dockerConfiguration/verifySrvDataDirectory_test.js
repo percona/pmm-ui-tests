@@ -7,15 +7,15 @@ let testCaseName = '';
 const dockerVersion = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-latest';
 
 const runContainerWithoutDataContainer = async (I) => {
-  await I.verifyCommand(`docker run -v $HOME/srvNoData:/srv -d --restart always --publish 8081:80 --name pmm-server-srv ${dockerVersion}`);
+  await I.verifyCommand(`docker run -v $HOME/srvNoData:/srv -d --restart always --publish 8081:8080 --name pmm-server-srv ${dockerVersion}`);
 };
 
 const runContainerWithPasswordVariable = async (I) => {
-  await I.verifyCommand(`docker run -v $HOME/srvPassword:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8082:80 --name pmm-server-password ${dockerVersion}`);
+  await I.verifyCommand(`docker run -v $HOME/srvPassword:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8082:8080 --name pmm-server-password ${dockerVersion}`);
 };
 
 const runContainerWithPasswordVariableUpgrade = async (I) => {
-  await I.verifyCommand(`docker run -v $HOME/srvPasswordUpgrade:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8089:80 --name pmm-server-password-upgrade ${dockerVersion}`);
+  await I.verifyCommand(`docker run -v $HOME/srvPasswordUpgrade:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8089:8080 --name pmm-server-password-upgrade ${dockerVersion}`);
   I.wait(30);
   await I.verifyCommand('docker exec pmm-server-password-upgrade yum update -y percona-release');
   await I.verifyCommand('docker exec pmm-server-password-upgrade sed -i\'\' -e \'s^/release/^/experimental/^\' /etc/yum.repos.d/pmm2-server.repo');
@@ -25,7 +25,7 @@ const runContainerWithPasswordVariableUpgrade = async (I) => {
 };
 
 const runContainerWithDataContainer = async (I) => {
-  await I.verifyCommand(`docker run -v srvFolder:/srv -d --restart always --publish 8083:80 --name pmm-server-empty-data-container ${dockerVersion}`);
+  await I.verifyCommand(`docker run -v srvFolder:/srv -d --restart always --publish 8083:8080 --name pmm-server-empty-data-container ${dockerVersion}`);
 };
 
 const stopAndRemoveContainerWithoutDataContainer = async (I) => {
