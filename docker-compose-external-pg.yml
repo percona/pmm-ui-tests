@@ -1,6 +1,3 @@
----
-version: '3.7'
-
 volumes:
   pmm-server-external-pg:
 
@@ -23,7 +20,7 @@ services:
       - PERCONA_TEST_POSTGRES_DBPASSWORD=externalPG^*&@
 
   external-postgres:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:14}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:17}
     container_name: external-postgres
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
