@@ -3,7 +3,7 @@ const { adminPage } = inject();
 Feature('Test PMM server with external PostgreSQL').retry(1);
 
 const pathToPMMFramework = adminPage.pathToPMMTests;
-const DOCKER_IMAGE = process.env.DOCKER_VERSION || 'perconalab/pmm-server:dev-latest';
+const DOCKER_IMAGE = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-latest';
 
 const runPMMWithExternalPGWithSSL = `docker run -d -p 8082:80 -p 447:443 \ 
     --name PMM-T1678 \
@@ -26,7 +26,7 @@ data.add(['docker-compose-external-pg', 'pmm-server-external-postgres', 'externa
 
 BeforeSuite(async ({ I }) => {
   // Start PMM with latest released version
-  await I.verifyCommand('PMM_SERVER_IMAGE=percona/pmm-server:latest docker compose -f docker-compose-external-pg.yml up -d');
+  await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f docker-compose-external-pg.yml up -d`);
   // await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f docker-compose-external-pg-ssl.yml up -d`);
   await I.wait(30);
 });
