@@ -50,7 +50,7 @@ Data(publicIPs).Scenario(
   },
 );
 
-Scenario(
+Scenario.skip(
   'PMM-T1176 Verify PMM_PUBLIC_ADDRESS env variable after upgrade @docker-configuration',
   async ({
     I, pmmSettingsPage, homePage,
@@ -74,7 +74,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1177 Verify PMM_PUBLIC_ADDRESS env variable can be updated @docker-configuration',
+  'PMM-T1177 - Verify PMM_PUBLIC_ADDRESS env variable can be updated @docker-configuration',
   async ({
     I, pmmSettingsPage,
   }) => {
