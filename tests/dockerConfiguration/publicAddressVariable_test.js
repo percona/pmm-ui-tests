@@ -13,12 +13,12 @@ publicIPs.add(['PMM-T1174', 'ec2-18-188-74-98.us-east-2.compute.amazonaws.com'])
 publicIPs.add(['PMM-T1174', 'ec2-18-188-74-98.us-east-2.compute.amazonaws.com:8443']);
 
 const runContainerWithPublicAddressVariable = async (I, publicAddress) => {
-  await I.verifyCommand(`docker run -d --restart always -e PERCONA_TEST_PLATFORM_ADDRESS=https://check-dev.percona.com:443 -e PMM_PUBLIC_ADDRESS=${publicAddress} --publish 8085:80 --publish 8443:443 --name ${contanerName} ${dockerVersion}`);
+  await I.verifyCommand(`docker run -d --restart always -e PERCONA_TEST_PLATFORM_ADDRESS=https://check-dev.percona.com:443 -e PMM_PUBLIC_ADDRESS=${publicAddress} --publish 8085:8080 --publish 8443:443 --name ${contanerName} ${dockerVersion}`);
   await I.wait(30);
 };
 
 const runContainerWithPublicAddressVariableUpgrade = async (I, publicAddress) => {
-  await I.verifyCommand(`docker run -d --restart always -e PERCONA_TEST_PLATFORM_ADDRESS=https://check-dev.percona.com:443 -e PMM_PUBLIC_ADDRESS=${publicAddress} --publish 8085:80 --publish 8443:443 --name ${contanerName} percona/pmm-server:latest`);
+  await I.verifyCommand(`docker run -d --restart always -e PERCONA_TEST_PLATFORM_ADDRESS=https://check-dev.percona.com:443 -e PMM_PUBLIC_ADDRESS=${publicAddress} --publish 8085:8080 --publish 8443:443 --name ${contanerName} percona/pmm-server:latest`);
   await I.verifyCommand(`docker exec ${contanerName} sudo yum update -y percona-release`);
   await I.verifyCommand(`docker exec ${contanerName} sed -i'' -e 's^/release/^/experimental/^' /etc/yum.repos.d/pmm2-server.repo`);
   await I.verifyCommand(`docker exec ${contanerName} percona-release enable percona experimental`);

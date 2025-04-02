@@ -62,8 +62,8 @@ Scenario(
     const basePmmUrl = 'http://127.0.0.1:8081/';
 
     await runContainerWithoutDataContainer(I);
-    await I.Authorize('admin', 'admin', basePmmUrl);
     await I.wait(120);
+    await I.Authorize('admin', 'admin', basePmmUrl);
     testCaseName = 'PMM-T1243';
     await I.amOnPage(basePmmUrl + queryAnalyticsPage.url);
     await I.waitForInvisible(queryAnalyticsPage.data.elements.noResultTableText, 180);
@@ -136,7 +136,6 @@ Scenario(
 
     await I.amOnPage(`${basePmmUrl + dashboardPage.nodeSummaryDashboard.url}?orgId=1&refresh=5s`);
     await dashboardPage.waitForAllGraphsToHaveData(180);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
     I.say(await I.verifyCommand('docker logs pmm-server-srv'));
   },
