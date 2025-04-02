@@ -38,7 +38,10 @@ class Grafana extends Helper {
     const cookies = resp.headers['set-cookie'];
 
     if (!cookies) {
-      throw new Error('Authentication was not successful, verify base url and credentials.');
+      // eslint-disable-next-line no-console
+      console.warn('Authentication was not successful, verify base url and credentials.');
+
+      return;
     }
 
     cookies.forEach((cookie) => {
