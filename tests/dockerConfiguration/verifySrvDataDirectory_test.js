@@ -137,7 +137,7 @@ Scenario(
     await I.amOnPage(`${basePmmUrl + dashboardPage.nodeSummaryDashboard.url}?orgId=1&refresh=5s`);
     await dashboardPage.waitForAllGraphsToHaveData(180);
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
-    I.say(await I.verifyCommand('docker logs pmm-server-srv'));
+    I.say(await I.verifyCommand('docker logs pmm-server-empty-data-container'));
   },
 );
 
