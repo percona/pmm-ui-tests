@@ -18,6 +18,7 @@ services:
       - PMM_POSTGRES_ADDR=external-postgres:5432
       - PMM_POSTGRES_USERNAME=postgres
       - PMM_POSTGRES_DBPASSWORD=externalPG^*&@
+      - PMM_DISABLE_BUILTIN_POSTGRES=1
 
   external-postgres:
     image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:14}
