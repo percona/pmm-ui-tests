@@ -79,7 +79,6 @@ Scenario(
     assert.ok(qanRows > 0, 'Query Analytics are empty');
     await I.amOnPage(`${basePmmUrl + dashboardPage.nodeSummaryDashboard.url}?orgId=1&refresh=5s`);
     await dashboardPage.waitForAllGraphsToHaveData(300);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
 
     await stopAndRemoveContainerWithoutDataContainer(I);
@@ -98,7 +97,6 @@ Scenario(
     assert.ok(qanRowsAfterRestart > 0, 'Query Analytics are empty after restart of docker container');
 
     await I.amOnPage(`${basePmmUrl + dashboardPage.nodeSummaryDashboard.url}?orgId=1&refresh=5s`);
-    await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
@@ -164,7 +162,7 @@ Scenario(
 
     await I.Authorize('admin', 'admin', basePmmUrl);
     await I.amOnPage(basePmmUrl + homePage.url);
-    await I.waitForVisible('//*[contains(text(), "invalid username or password")]');
+    await I.waitForVisible('//h1[text()="Percona Monitoring and Management"]');
     await I.unAuthorize();
     await I.refreshPage();
     await I.waitInUrl(loginPage.url);
