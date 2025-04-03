@@ -36,7 +36,10 @@ Before(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-  await I.verifyCommand('docker compose -f docker-compose-external-pg.yml down -v || true');
+  try {
+    await I.verifyCommand('docker compose -f docker-compose-external-pg.yml down -v || true');
+    // eslint-disable-next-line no-inline-comments
+  } catch (e) { /* empty */ }
   // await I.verifyCommand('docker compose -f docker-compose-external-pg-ssl.yml down -v || true');
 });
 
