@@ -14,15 +14,15 @@ services:
       - pmm-server-external-pg:/srv
     environment:
       - PMM_DEBUG=1
-      - PMM_POSTGRES_DBNAME=postgres
+      - PMM_POSTGRES_DBNAME=grafana
       - PMM_POSTGRES_ADDR=external-postgres:5432
       - PMM_POSTGRES_USERNAME=postgres
-      - PMM_POSTGRES_DBPASSWORD=externalPG^*&@
+      - PMM_POSTGRES_DBPASSWORD=pmm_password
       - PMM_DISABLE_BUILTIN_POSTGRES=1
-      - GF_DATABASE_URL=postgres://postgres:externalPG^*&@external-postgres:5432/postgres \
+      - GF_DATABASE_URL=postgres://postgres:pmm_password@external-postgres:5432/grafana \
 
   external-postgres:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:14}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:17}
     container_name: external-postgres
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
@@ -34,10 +34,11 @@ services:
       -c pg_stat_statements.track=all 
       -c max_connections=200
     environment:
-      - POSTGRES_PASSWORD=externalPG^*&@
+      - POSTGRES_PASSWORD=pmm_password
+      - POSTGRES_DB=grafana
 
   create_extention:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:14}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:17}
     container_name: create_extention
     command: >
       psql -Upostgres -hexternal-postgres -dpostgres -c 'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;'
