@@ -7,17 +7,19 @@ let testCaseName = '';
 const dockerVersion = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-latest';
 
 const runContainerWithoutDataContainer = async (I) => {
+  await I.verifyCommand('mkdir $HOME/srvPassword/ || true');
   await I.verifyCommand('chmod -R 777 $HOME/srvNoData/');
   await I.verifyCommand(`docker run -v $HOME/srvNoData:/srv -d --restart always --publish 8081:8080 --name pmm-server-srv ${dockerVersion}`);
 };
 
 const runContainerWithPasswordVariable = async (I) => {
+  await I.verifyCommand('mkdir $HOME/srvPassword/ || true');
   await I.verifyCommand('chmod -R 777 $HOME/srvPassword/');
   await I.verifyCommand(`docker run -v $HOME/srvPassword:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8082:8080 --name pmm-server-password ${dockerVersion}`);
 };
 
 const runContainerWithPasswordVariableUpgrade = async (I) => {
-  await I.verifyCommand('mkdir $HOME/srvPasswordUpgrade');
+  await I.verifyCommand('mkdir $HOME/srvPasswordUpgrade || true');
   await I.verifyCommand('chmod -R 777 $HOME/srvPasswordUpgrade/');
   await I.verifyCommand(`docker run -v $HOME/srvPasswordUpgrade:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8089:8080 --name pmm-server-password-upgrade ${dockerVersion}`);
   I.wait(30);
@@ -52,7 +54,7 @@ After(async ({ I }) => {
     await stopAndRemoveContainerWithoutDataContainer(I);
   } else if (testCaseName === 'PMM-T1244') {
     await stopAndRemoveContainerWithDataContainer(I);
-    await I.verifyCommand('docker volume rm srvFolder');
+    await I.verifyCommand('docker volume rm srvFolder || true');
   } else if (testCaseName === 'PMM-T1255') {
     await stopAndRemoveContainerWithPasswordVariable(I);
   }
