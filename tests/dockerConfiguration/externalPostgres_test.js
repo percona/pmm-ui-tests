@@ -61,7 +61,7 @@ Data(data).Scenario(
       await I.wait(120);
     }
 
-    await I.Authorize('admin', 'admin');
+    await I.Authorize('admin', 'admin', basePmmUrl);
     I.amOnPage(`${basePmmUrl}graph/datasources`);
     I.waitForVisible(postgresDataSourceLocator, 30);
     I.seeTextEquals(`${'PostgreSQL\n'
@@ -70,6 +70,7 @@ Data(data).Scenario(
 
     I.amOnPage(`${basePmmUrl}${pmmInventoryPage.url}`);
     await I.waitForVisible(pmmInventoryPage.fields.serviceRow(serviceName), 30);
+
     I.assertEqual(
       await pmmInventoryPage.servicesTab.getServiceMonitoringStatus(serviceName),
       'OK',
