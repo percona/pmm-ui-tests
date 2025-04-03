@@ -20,7 +20,7 @@ services:
       - PMM_POSTGRES_USERNAME=postgres
       - PMM_POSTGRES_DBPASSWORD=pmm_password
       - PMM_DISABLE_BUILTIN_POSTGRES=1
-      - GF_DATABASE_URL=postgres://postgres:pmm_password@external-postgres:5432/grafana \
+      - GF_DATABASE_URL=postgres://postgres:pmm_password@external-postgres:5432/grafana
 
   external-postgres:
     image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:17}
