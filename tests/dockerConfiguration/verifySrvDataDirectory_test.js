@@ -7,13 +7,11 @@ let testCaseName = '';
 const dockerVersion = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-latest';
 
 const runContainerWithoutDataContainer = async (I) => {
-  await I.verifyCommand('mkdir $HOME/srvNoData');
   await I.verifyCommand('chmod -R 777 $HOME/srvNoData/');
   await I.verifyCommand(`docker run -v $HOME/srvNoData:/srv -d --restart always --publish 8081:8080 --name pmm-server-srv ${dockerVersion}`);
 };
 
 const runContainerWithPasswordVariable = async (I) => {
-  await I.verifyCommand('mkdir $HOME/srvPassword');
   await I.verifyCommand('chmod -R 777 $HOME/srvPassword/');
   await I.verifyCommand(`docker run -v $HOME/srvPassword:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8082:8080 --name pmm-server-password ${dockerVersion}`);
 };
@@ -35,18 +33,18 @@ const runContainerWithDataContainer = async (I) => {
 };
 
 const stopAndRemoveContainerWithoutDataContainer = async (I) => {
-  await I.verifyCommand('docker stop pmm-server-srv');
-  await I.verifyCommand('docker rm pmm-server-srv');
+  await I.verifyCommand('docker stop pmm-server-srv || true');
+  await I.verifyCommand('docker rm pmm-server-srv || true');
 };
 
 const stopAndRemoveContainerWithPasswordVariable = async (I) => {
-  await I.verifyCommand('docker stop pmm-server-password');
-  await I.verifyCommand('docker rm pmm-server-password');
+  await I.verifyCommand('docker stop pmm-server-password || true');
+  await I.verifyCommand('docker rm pmm-server-password || true');
 };
 
 const stopAndRemoveContainerWithDataContainer = async (I) => {
-  await I.verifyCommand('docker stop pmm-server-empty-data-container');
-  await I.verifyCommand('docker rm pmm-server-empty-data-container');
+  await I.verifyCommand('docker stop pmm-server-empty-data-container || true');
+  await I.verifyCommand('docker rm pmm-server-empty-data-container || true');
 };
 
 After(async ({ I }) => {

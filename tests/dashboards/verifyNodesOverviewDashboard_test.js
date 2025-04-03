@@ -12,7 +12,7 @@ Scenario(
   async ({ I, dashboardPage }) => {
     const expectedEnvName = 'dev';
 
-    await I.verifyCommand(`pmm-admin config --custom-labels=environment=${expectedEnvName}`);
+    await I.verifyCommand(`sudo pmm-admin config --custom-labels=environment=${expectedEnvName}`);
     await I.wait(60);
     await I.amOnPage(I.buildUrlWithParams(dashboardPage.osNodesOverview.clearUrl, {
       from: 'now-5m',
