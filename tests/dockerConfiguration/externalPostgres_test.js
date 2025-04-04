@@ -26,11 +26,11 @@ data.add(['docker-compose-external-pg', 'pmm-server-external-postgres', 'externa
 
 BeforeSuite(async ({ I }) => {
   // Start PMM with latest released version
-  // await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f docker-compose-external-pg.yml up -d`);
+  await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f docker-compose-external-pg.yml up -d`);
   // await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f docker-compose-external-pg-ssl.yml up -d`);
-  // await I.wait(30);
-  // await I.verifyCommand('docker exec external-postgres psql "postgresql://postgres:pmm_password@localhost/grafana" -c \'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;\'');
-  // await I.verifyCommand('docker container restart pmm-server-external-postgres');
+  await I.wait(30);
+  await I.verifyCommand('docker exec external-postgres psql "postgresql://postgres:pmm_password@localhost/grafana" -c \'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;\'');
+  await I.verifyCommand('docker container restart pmm-server-external-postgres');
 });
 
 Before(async ({ I }) => {
