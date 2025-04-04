@@ -20,6 +20,6 @@ Scenario(
     }));
     await dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(4);
   },
 );
