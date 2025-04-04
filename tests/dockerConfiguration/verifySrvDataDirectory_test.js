@@ -7,7 +7,7 @@ let testCaseName = '';
 const dockerVersion = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-latest';
 
 const runContainerWithoutDataContainer = async (I) => {
-  await I.verifyCommand('mkdir $HOME/srvPassword/ || true');
+  await I.verifyCommand('mkdir $HOME/srvNoData/ || true');
   await I.verifyCommand('chmod -R 777 $HOME/srvNoData/');
   await I.verifyCommand(`docker run -v $HOME/srvNoData:/srv -d --restart always --publish 8081:8080 --name pmm-server-srv ${dockerVersion}`);
 };
