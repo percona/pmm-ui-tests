@@ -36,7 +36,7 @@ services:
       -c shared_preload_libraries=pg_stat_statements
       -c pg_stat_statements.track=all 
       -c max_connections=200
-      -c psql "postgresql://postgres:pmm_password@localhost/grafana" -c 'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;'
+#      -c psql "postgresql://postgres:pmm_password@localhost/grafana" -c 'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;'
     environment:
       - POSTGRES_PASSWORD=pmm_password
       - POSTGRES_DB=grafana
