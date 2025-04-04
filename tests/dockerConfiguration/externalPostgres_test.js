@@ -28,10 +28,6 @@ BeforeSuite(async ({ I }) => {
   // await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f docker-compose-external-pg-ssl.yml up -d`);
 });
 
-Before(async ({ I }) => {
-  await I.Authorize('admin', 'admin');
-});
-
 AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker compose -f docker-compose-external-pg.yml down -v || true');
   await I.verifyCommand('docker compose -f docker-compose-external-pg-ssl.yml down -v || true');
@@ -49,18 +45,8 @@ Data(data).Scenario(
 
     await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f ${composeName}.yml up -d`);
     await I.verifyCommand('docker exec external-postgres psql "postgresql://postgres:pmm_password@localhost/grafana" -c \'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;\'');
-    await I.verifyCommand('docker container restart pmm-server-external-postgres');
+    await I.verifyCommand(`docker container restart ${containerName}`);
     await I.wait(30);
-
-    // if (composeName === 'docker-compose-external-pg') {
-    //   // Verify the env variable works on released version
-    //   I.amOnPage(`${basePmmUrl}graph/datasources`);
-    //   I.waitForVisible(postgresDataSourceLocator, 30);
-    //
-    //   // Docker way upgrade
-    //   await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f ${composeName}.yml up -d ${containerName}`);
-    //   await I.wait(120);
-    // }
 
     await I.Authorize('admin', 'admin', basePmmUrl);
     I.amOnPage(`${basePmmUrl}graph/datasources`);
@@ -82,7 +68,6 @@ Data(data).Scenario(
     dashboardPage.waitForDashboardOpened();
     I.waitForText('YES', 20, locate('//section[@data-testid="data-testid Panel header Connected"]//div[@data-testid="data-testid panel content"]//span'));
 
-    I.wait(30);
     I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${queryAnalyticsPage.url}`, { service_name: serviceName, node_name: 'pmm-server-db' }));
     queryAnalyticsPage.waitForLoaded();
     I.assertTrue((await queryAnalyticsPage.data.getRowCount()) > 0, 'QAN does not have data!');
