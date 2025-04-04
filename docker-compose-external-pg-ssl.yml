@@ -26,7 +26,7 @@ services:
 
 
   external-postgres-ssl:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:17}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:14}
     container_name: external-postgres-ssl
     restart: always
     healthcheck:
