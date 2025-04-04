@@ -6,7 +6,7 @@ services:
     image: phusion/baseimage:focal-1.2.0
     volumes:
       - ./ssl:/certs
-    entrypoint: sh -c "apt install openssl && openssl genrsa -out /certs/ca.key 2048 && openssl req -x509 -new -nodes -key /certs/ca.key -sha256 -days 3650 -subj '/CN=CA' -out /certs/ca.crt && chmod -R 777 /certs"
+    entrypoint: sh -c "apt install openssl && openssl genrsa -out /certs/ca.key 2048 && openssl req -x509 -new -nodes -key /certs/ca.key -sha256 -days 3650 -subj '/CN=CA' -out /certs/ca.crt"
 
   cert-generator:
     image: phusion/baseimage:focal-1.2.0
@@ -14,7 +14,7 @@ services:
       - ca-generator
     volumes:
       - ./ssl:/certs
-    entrypoint: sh -c "apt install openssl && openssl genrsa -out /certs/server.key 2048 && openssl req -new -key /certs/server.key -subj '/CN=localhost' -out /certs/server.csr && openssl x509 -req -in /certs/server.csr -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial -out /certs/server.crt -days 365 -sha256 && chmod -R 777 /certs"
+    entrypoint: sh -c "apt install openssl && openssl genrsa -out /certs/server.key 2048 && openssl req -new -key /certs/server.key -subj '/CN=localhost' -out /certs/server.csr && openssl x509 -req -in /certs/server.csr -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial -out /certs/server.crt -days 365 -sha256"
 
   client-cert-generator:
     image: phusion/baseimage:focal-1.2.0
@@ -22,7 +22,7 @@ services:
       - ca-generator
     volumes:
       - ./ssl:/certs
-    entrypoint: sh -c "apt install openssl && openssl genrsa -out /certs/client.key 2048 && openssl req -new -key /certs/client.key -subj '/CN=client' -out /certs/client.csr && openssl x509 -req -in /certs/client.csr -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial -out /certs/client.crt -days 365 -sha256 && chmod -R 777 /certs"
+    entrypoint: sh -c "apt install openssl && openssl genrsa -out /certs/client.key 2048 && openssl req -new -key /certs/client.key -subj '/CN=client' -out /certs/client.csr && openssl x509 -req -in /certs/client.csr -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial -out /certs/client.crt -days 365 -sha256"
 
 
   external-postgres-ssl:
@@ -42,7 +42,7 @@ services:
     volumes:
       - ./data:/var/lib/postgresql/data
       - ./ssl:/var/lib/postgresql/ssl
-    command: sh -c "sudo chown -R 1000:1000 /var/lib/postgresql/ssl && sudo chmod -R 600 /var/lib/postgresql/ssl && postgres -c ssl=on -c ssl_cert_file=/var/lib/postgresql/ssl/server.crt -c ssl_key_file=/var/lib/postgresql/ssl/server.key -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all -c max_connections=1000"
+    command: postgres -c ssl=on -c ssl_cert_file=/var/lib/postgresql/ssl/server.crt -c ssl_key_file=/var/lib/postgresql/ssl/server.key -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all -c max_connections=1000
 
   pmm-server-external-postgres-ssl:
     image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:3-dev-latest}
