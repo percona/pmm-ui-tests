@@ -26,7 +26,7 @@ services:
 
 
   external-postgres-ssl:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:14}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:17}
     container_name: external-postgres-ssl
     restart: always
     healthcheck:
@@ -37,37 +37,29 @@ services:
     depends_on:
       - cert-generator
     environment:
-      - POSTGRES_PASSWORD=externalPG^*&@
+      - POSTGRES_PASSWORD=pmm_password
+      - POSTGRES_DB=grafana
     volumes:
       - ./data:/var/lib/postgresql/data
       - ./ssl:/var/lib/postgresql/ssl
     command: postgres -c ssl=on -c ssl_cert_file=/var/lib/postgresql/ssl/server.crt -c ssl_key_file=/var/lib/postgresql/ssl/server.key -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all -c max_connections=1000
 
-  create_extention_ssl:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:14}
-    container_name: create_extention_ssl
-    command: >
-      psql -Upostgres -hexternal-postgres-ssl -dpostgres -c 'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;'
-    depends_on:
-      external-postgres-ssl:
-        condition: service_healthy
-    environment:
-      - PGPASSWORD=externalPG^*&@
-
   pmm-server-external-postgres-ssl:
-    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:dev-latest}
+    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:3-dev-latest}
     container_name: pmm-server-external-postgres-ssl
     depends_on:
       - create_extention_ssl
     restart: always
     ports:
-      - '8082:80'
-      - '447:443'
+      - '8082:8080'
+      - '8447:8443'
     environment:
-      - PERCONA_TEST_POSTGRES_DBNAME=postgres
-      - PERCONA_TEST_POSTGRES_ADDR=external-postgres-ssl:5432
-      - PERCONA_TEST_POSTGRES_USERNAME=postgres
-      - PERCONA_TEST_POSTGRES_DBPASSWORD=externalPG^*&@
+      - PMM_POSTGRES_DBNAME=grafana
+      - PMM_POSTGRES_ADDR=external-postgres:5432
+      - PMM_POSTGRES_USERNAME=postgres
+      - PMM_POSTGRES_DBPASSWORD=pmm_password
+      - PMM_DISABLE_BUILTIN_POSTGRES=1
+      - GF_DATABASE_URL=postgres://postgres:pmm_password@external-postgres:5432/grafana
       - PERCONA_TEST_POSTGRES_SSL_MODE=verify-ca
       - PERCONA_TEST_POSTGRES_SSL_CA_PATH=/etc/ssl/postgresql/ca.crt
       - PERCONA_TEST_POSTGRES_SSL_KEY_PATH=/etc/ssl/postgresql/client.key
