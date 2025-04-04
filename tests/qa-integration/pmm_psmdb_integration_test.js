@@ -232,7 +232,7 @@ Scenario('PMM-T2003 - Verify that MongoDB Compare dashboard has Cluster, Replica
   const newClusterName = 'new_replicaset_cluster';
   const newEnvironmentName = 'new_env';
 
-  await I.verifyCommand(`pmm-admin add mongodb --enable-all-collectors --cluster=${newClusterName} --username=${username} --password=${password} --environment=${newEnvironmentName} ${newServiceName} 127.0.0.1:27027`);
+  await I.verifyCommand(`sudo pmm-admin add mongodb --enable-all-collectors --cluster=${newClusterName} --username=${username} --password=${password} --environment=${newEnvironmentName} ${newServiceName} 127.0.0.1:27027`);
 
   I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbInstancesCompareDashboard.url, { from: 'now-5m' }));
   const expectedMetrics = dashboardPage.mongodbInstancesCompareDashboard.metrics([newServiceName]);
