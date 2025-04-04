@@ -26,11 +26,11 @@ data.add(['docker-compose-external-pg', 'pmm-server-external-postgres', 'externa
 
 BeforeSuite(async ({ I }) => {
   // Start PMM with latest released version
-  await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f docker-compose-external-pg.yml up -d`);
+  // await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f docker-compose-external-pg.yml up -d`);
   // await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f docker-compose-external-pg-ssl.yml up -d`);
-  await I.wait(30);
-  await I.verifyCommand('docker exec external-postgres psql "postgresql://postgres:pmm_password@localhost/grafana" -c \'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;\'');
-  await I.verifyCommand('docker container restart pmm-server-external-postgres');
+  // await I.wait(30);
+  // await I.verifyCommand('docker exec external-postgres psql "postgresql://postgres:pmm_password@localhost/grafana" -c \'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;\'');
+  // await I.verifyCommand('docker container restart pmm-server-external-postgres');
 });
 
 Before(async ({ I }) => {
@@ -84,10 +84,11 @@ Data(data).Scenario(
 
     I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl}`, { service_name: serviceName, node_name: 'pmm-server-db' }));
     dashboardPage.waitForDashboardOpened();
-    I.waitForText('YES', 20, locate('[aria-label="Connected panel"]'));
+    I.waitForText('YES', 20, locate('//section[@data-testid="data-testid Panel header Connected"]//div[@data-testid="data-testid panel content"]//span'));
 
     I.wait(30);
     I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${queryAnalyticsPage.url}`, { service_name: serviceName, node_name: 'pmm-server-db' }));
     queryAnalyticsPage.waitForLoaded();
+    I.assertTrue((await queryAnalyticsPage.data.getRowCount()) > 0, 'QAN does not have data!');
   },
 );
