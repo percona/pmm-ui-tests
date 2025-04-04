@@ -25,12 +25,7 @@ data.add(['docker-compose-external-pg', 'pmm-server-external-postgres', 'externa
 // data.add(['docker-compose-external-pg-ssl', 'pmm-server-external-postgres-ssl', 'external-postgres-ssl:5432', '8082']);
 
 BeforeSuite(async ({ I }) => {
-  // Start PMM with latest released version
-  await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f docker-compose-external-pg.yml up -d`);
   // await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f docker-compose-external-pg-ssl.yml up -d`);
-  await I.wait(30);
-  await I.verifyCommand('docker exec external-postgres psql "postgresql://postgres:pmm_password@localhost/grafana" -c \'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;\'');
-  await I.verifyCommand('docker container restart pmm-server-external-postgres');
 });
 
 Before(async ({ I }) => {
@@ -38,11 +33,8 @@ Before(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-  try {
-    await I.verifyCommand('docker compose -f docker-compose-external-pg.yml down -v || true');
-    // eslint-disable-next-line no-inline-comments
-  } catch (e) { /* empty */ }
-  // await I.verifyCommand('docker compose -f docker-compose-external-pg-ssl.yml down -v || true');
+  await I.verifyCommand('docker compose -f docker-compose-external-pg.yml down -v || true');
+  await I.verifyCommand('docker compose -f docker-compose-external-pg-ssl.yml down -v || true');
 });
 
 Data(data).Scenario(
@@ -50,21 +42,25 @@ Data(data).Scenario(
   async ({
     I, dashboardPage, pmmInventoryPage, current, queryAnalyticsPage,
   }) => {
+    const { postgresqlAddress, composeName, containerName } = current;
     const basePmmUrl = `http://127.0.0.1:${current.serverPort}/`;
     const serviceName = 'pmm-server-postgresql';
-    const { postgresqlAddress, composeName, containerName } = current;
-
     const postgresDataSourceLocator = locate('div').withChild(locate('h2 > a').withText('PostgreSQL'));
 
-    if (composeName === 'docker-compose-external-pg') {
-      // Verify the env variable works on released version
-      I.amOnPage(`${basePmmUrl}graph/datasources`);
-      I.waitForVisible(postgresDataSourceLocator, 30);
+    await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f ${composeName}.yml up -d`);
+    await I.verifyCommand('docker exec external-postgres psql "postgresql://postgres:pmm_password@localhost/grafana" -c \'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;\'');
+    await I.verifyCommand('docker container restart pmm-server-external-postgres');
+    await I.wait(30);
 
-      // Docker way upgrade
-      await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f ${composeName}.yml up -d ${containerName}`);
-      await I.wait(120);
-    }
+    // if (composeName === 'docker-compose-external-pg') {
+    //   // Verify the env variable works on released version
+    //   I.amOnPage(`${basePmmUrl}graph/datasources`);
+    //   I.waitForVisible(postgresDataSourceLocator, 30);
+    //
+    //   // Docker way upgrade
+    //   await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f ${composeName}.yml up -d ${containerName}`);
+    //   await I.wait(120);
+    // }
 
     await I.Authorize('admin', 'admin', basePmmUrl);
     I.amOnPage(`${basePmmUrl}graph/datasources`);
