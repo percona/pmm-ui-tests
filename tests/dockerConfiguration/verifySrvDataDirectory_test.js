@@ -60,7 +60,7 @@ After(async ({ I }) => {
   }
 });
 
-Scenario.skip(
+Scenario(
   'PMM-T1243 Verify PMM Server without data container @docker-configuration',
   async ({
     I, adminPage, queryAnalyticsPage, dashboardPage,
