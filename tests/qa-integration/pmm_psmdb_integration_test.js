@@ -225,3 +225,32 @@ Scenario('PMM-T1889 - Verify Mongo replication lag graph shows correct info @pmm
 
   I.assertFalse(/min|hour|day|week|month|year/.test(maxValue), `Max replication value should be in seconds. Value is: ${maxValue}`);
 });
+
+Scenario('PMM-T2003 - Verify that MongoDB Compare dashboard has Cluster, Replication, Node filters @pmm-psmdb-replica-integration', async ({ I, dashboardPage, credentials }) => {
+  const { username, password } = credentials.mongoReplicaPrimaryForBackups;
+  const newServiceName = 'new_replicaset_101';
+  const newClusterName = 'new_replicaset_cluster';
+  const newEnvironmentName = 'new_env';
+
+  await I.verifyCommand(`pmm-admin add mongodb --enable-all-collectors --cluster=${newClusterName} --username=${username} --password=${password} --environment=${newEnvironmentName} ${newServiceName} 127.0.0.1:27027`);
+
+  I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbInstancesCompareDashboard.url, { from: 'now-5m' }));
+  const expectedMetrics = dashboardPage.mongodbInstancesCompareDashboard.metrics([newServiceName]);
+  const expectedFailingMetrics = dashboardPage.mongodbInstancesCompareDashboard.failingMetrics([newServiceName]);
+
+  dashboardPage.mongodbInstancesCompareDashboard.selectEnvironment(newEnvironmentName);
+  await dashboardPage.mongodbInstancesCompareDashboard.verifyDashboardHaveData(expectedMetrics);
+  dashboardPage.mongodbInstancesCompareDashboard.selectCluster('');
+
+  dashboardPage.mongodbInstancesCompareDashboard.selectCluster(newClusterName);
+  await dashboardPage.mongodbInstancesCompareDashboard.verifyDashboardHaveData(expectedMetrics, expectedFailingMetrics);
+  dashboardPage.mongodbInstancesCompareDashboard.selectCluster('');
+
+  dashboardPage.mongodbInstancesCompareDashboard.selectReplicationSet('rs');
+  I.waitInUrl('&var-replication_set=rs', 2);
+  dashboardPage.mongodbInstancesCompareDashboard.selectReplicationSet('');
+
+  dashboardPage.mongodbInstancesCompareDashboard.selectServiceName(newServiceName);
+  await dashboardPage.mongodbInstancesCompareDashboard.verifyDashboardHaveData(expectedMetrics);
+  dashboardPage.mongodbInstancesCompareDashboard.selectServiceName('');
+});
