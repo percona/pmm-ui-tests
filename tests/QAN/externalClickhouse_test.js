@@ -49,7 +49,7 @@ Scenario(
   },
 );
 
-Scenario('PMM-T9999 - Verify external clickhouse as datasource on explore page @docker-configuration', async ({ I, explorePage }) => {
+Scenario('PMM-T2020 - Verify external clickhouse as datasource on explore page @docker-configuration', async ({ I, explorePage }) => {
   I.amOnPage(basePmmUrl + explorePage.url);
   explorePage.selectDataSource('ClickHouse');
   I.click(explorePage.elements.sqlEditorButton);
@@ -60,13 +60,13 @@ Scenario('PMM-T9999 - Verify external clickhouse as datasource on explore page @
   I.dontSee(explorePage.messages.authError);
 });
 
-Scenario('PMM-T9999 - Verify internal clickhouse is not running @docker-configuration', async ({ I, explorePage }) => {
+Scenario('PMM-T2018 - Verify internal clickhouse is not running when using external clickhouse @docker-configuration', async ({ I, explorePage }) => {
   const response = await I.verifyCommand('docker exec pmm-server-external-clickhouse supervisorctl status', null, 'fail');
 
   I.assertFalse(response.includes('clickhouse'), 'Clickhouse should not run on pmm server!');
 });
 
-Scenario('PMM-T9999 - Verify pmm managed logs do not contain errors about clickhouse @docker-configuration', async ({ I, explorePage }) => {
+Scenario('PMM-T2019 - Verify pmm managed logs do not contain errors about clickhouse @docker-configuration', async ({ I, explorePage }) => {
   const pmmManagedLogs = await I.verifyCommand('docker exec pmm-server-external-clickhouse cat /srv/logs/pmm-managed.log | grep "clickhouse"');
   const qanLogs = await I.verifyCommand('docker exec pmm-server-external-clickhouse cat /srv/logs/qan-api2.log | grep "clickhouse"');
 
@@ -76,7 +76,7 @@ Scenario('PMM-T9999 - Verify pmm managed logs do not contain errors about clickh
   I.assertFalse(qanLogs.includes('pmm_pass'), 'QAN logs should not contain clickhouse password in plain text');
 });
 
-Scenario('PMM-T9999 - Verify dashboard and QAN has data with external clickhouse @docker-configuration', async ({ I, dashboardPage, queryAnalyticsPage }) => {
+Scenario('PMM-T2006 - Verify using ClickHouse Username and password variables for external databases @docker-configuration', async ({ I, dashboardPage, queryAnalyticsPage }) => {
   const dashboardUrl = I.buildUrlWithParams(basePmmUrl + dashboardPage.mySQLInstanceOverview.clearUrl, { from: 'now-5m' });
 
   I.amOnPage(dashboardUrl);
