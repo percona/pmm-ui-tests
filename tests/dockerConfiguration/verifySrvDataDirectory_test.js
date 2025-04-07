@@ -37,6 +37,7 @@ const runContainerWithDataContainer = async (I) => {
 const stopAndRemoveContainerWithoutDataContainer = async (I) => {
   await I.verifyCommand('docker stop pmm-server-srv || true');
   await I.verifyCommand('docker rm pmm-server-srv || true');
+  await I.verifyCommand('rm -fr $HOME/srvNoData/ || true');
 };
 
 const stopAndRemoveContainerWithPasswordVariable = async (I) => {
