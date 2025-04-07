@@ -11,7 +11,7 @@ ST = Prague
 L  = Prague
 O  = Percona
 OU = Percona Unit
-CN = external-postgres-ssl
+CN = 127.0.0.1
 
 [v3_req]
 keyUsage            = digitalSignature, keyEncipherment
