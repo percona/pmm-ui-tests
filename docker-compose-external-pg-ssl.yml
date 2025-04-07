@@ -7,7 +7,7 @@ services:
     volumes:
       - ./ssl:/certs
       - ./utils:/utils
-    entrypoint: sh -c "apt install openssl && openssl genrsa -out /certs/ca.key 2048 && openssl req -x509 -new -nodes -key /certs/ca.key -sha256 -config /utils/external-pgsql-ssl-config.cnf -out /certs/ca.crt && chown 1000 /certs/ca.crt"
+    entrypoint: /utils/external-pg-ssl-ca-generator.sh
 
   cert-generator:
     image: phusion/baseimage:focal-1.2.0
