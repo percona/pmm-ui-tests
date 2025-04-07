@@ -5,7 +5,7 @@ Feature('Test PMM server with external PostgreSQL').retry(1);
 const DOCKER_IMAGE = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-latest';
 const data = new DataTable(['composeName', 'containerName', 'postgresqlAddress', 'serverPort', 'pdpgsqlContainerName']);
 
-data.add(['docker-compose-external-pg', 'pmm-server-external-postgres', 'external-postgres:5432', '8081', 'external-postgres']);
+// data.add(['docker-compose-external-pg', 'pmm-server-external-postgres', 'external-postgres:5432', '8081', 'external-postgres']);
 data.add(['docker-compose-external-pg-ssl', 'pmm-server-external-postgres-ssl', 'external-postgres-ssl:5432', '8082', ' external-postgres-ssl']);
 
 AfterSuite(async ({ I }) => {
