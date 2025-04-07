@@ -1,6 +1,6 @@
 const { adminPage } = inject();
 
-Feature('Test PMM server with external PostgreSQL').retry(1);
+Feature('Test PMM server with external PostgreSQL');
 
 const DOCKER_IMAGE = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-latest';
 const data = new DataTable(['composeName', 'containerName', 'postgresqlAddress', 'serverPort', 'pdpgsqlContainerName']);
