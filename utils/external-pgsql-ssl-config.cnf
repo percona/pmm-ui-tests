@@ -19,5 +19,5 @@ extendedKeyUsage    = serverAuth
 subjectAltName      = @alt_names
 
 [alt_names]
-DNS.1 = external-postgres-ssl
-IP.1  = external-postgres-ssl
+DNS.1 = 127.0.0.1
+IP.1  = 127.0.0.1
