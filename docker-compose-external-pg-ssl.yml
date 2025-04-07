@@ -25,7 +25,7 @@ services:
     volumes:
       - ./ssl:/certs
       - ./utils:/utils
-    entrypoint: sh -c "apt install openssl && openssl genrsa -out /certs/client.key 2048 && openssl req -new -key /certs/client.key -config /utils/external-pgsql-ssl-config.cnf -out /certs/client.csr && openssl x509 -req -in /certs/client.csr -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial -out /certs/client.crt -days 365 -sha256 && chown 1000 /certs/client.key && chown 1000 /certs/client.crt && chown 1000 /certs/ca.crt"
+    entrypoint: sh -c "apt install openssl && openssl genrsa -out /certs/client.key 2048 && openssl req -new -key /certs/client.key -out /certs/client.csr && openssl x509 -req -in /certs/client.csr -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial -out /certs/client.crt -days 365 -sha256 && chown 1000 /certs/client.key && chown 1000 /certs/client.crt && chown 1000 /certs/ca.crt"
 
 
   external-postgres-ssl:
