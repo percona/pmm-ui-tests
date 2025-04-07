@@ -17,6 +17,7 @@ CN = 127.0.0.1
 keyUsage            = digitalSignature, keyEncipherment
 extendedKeyUsage    = serverAuth
 subjectAltName      = @alt_names
+basicConstraints    = CA:FALSE
 
 [alt_names]
 DNS.1 = external-postgres-ssl
