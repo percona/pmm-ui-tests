@@ -3,10 +3,10 @@ const { adminPage } = inject();
 Feature('Test PMM server with external PostgreSQL').retry(1);
 
 const DOCKER_IMAGE = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-latest';
-const data = new DataTable(['composeName', 'containerName', 'postgresqlAddress', 'serverPort']);
+const data = new DataTable(['composeName', 'containerName', 'postgresqlAddress', 'serverPort', 'pdpgsqlContainerName']);
 
-data.add(['docker-compose-external-pg', 'pmm-server-external-postgres', 'external-postgres:5432', '8081']);
-data.add(['docker-compose-external-pg-ssl', 'pmm-server-external-postgres-ssl', 'external-postgres-ssl:5432', '8082']);
+data.add(['docker-compose-external-pg', 'pmm-server-external-postgres', 'external-postgres:5432', '8081', 'external-postgres']);
+data.add(['docker-compose-external-pg-ssl', 'pmm-server-external-postgres-ssl', 'external-postgres-ssl:5432', '8082', ' external-postgres-ssl']);
 
 AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker compose -f docker-compose-external-pg.yml down -v || true');
@@ -18,13 +18,15 @@ Data(data).Scenario(
   async ({
     I, dashboardPage, pmmInventoryPage, current, queryAnalyticsPage,
   }) => {
-    const { postgresqlAddress, composeName, containerName } = current;
-    const basePmmUrl = `http://127.0.0.1:${current.serverPort}/`;
+    const {
+      postgresqlAddress, composeName, containerName, serverPort, pdpgsqlContainerName,
+    } = current;
+    const basePmmUrl = `http://127.0.0.1:${serverPort}/`;
     const serviceName = 'pmm-server-postgresql';
     const postgresDataSourceLocator = locate('div').withChild(locate('h2 > a').withText('PostgreSQL'));
 
     await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f ${composeName}.yml up -d`);
-    await I.verifyCommand('docker exec external-postgres psql "postgresql://postgres:pmm_password@localhost/grafana" -c \'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;\'');
+    await I.verifyCommand(`docker exec ${pdpgsqlContainerName} psql "postgresql://postgres:pmm_password@localhost/grafana" -c 'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;'`);
     await I.verifyCommand(`docker container restart ${containerName}`);
     await I.wait(30);
 
