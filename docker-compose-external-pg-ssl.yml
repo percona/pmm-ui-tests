@@ -14,7 +14,7 @@ services:
       - ca-generator
     volumes:
       - ./ssl:/certs
-    entrypoint: sh -c "apt install openssl && openssl genrsa -out /certs/server.key 2048 && openssl req -new -key /certs/server.key -subj '/C=US/ST=California/L=San Francisco/O=Percona/OU=root/CN=$external-postgres-ssl/emailAddress=test@percona.com' -addext 'subjectAltName = DNS:external-postgres-ssl' -out /certs/server.csr && openssl x509 -req -in /certs/server.csr -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial -out /certs/server.crt -days 365 -sha256 && chown 1001 /certs/server.crt && chown 1001 /certs/server.key"
+    entrypoint: sh -c "apt install openssl && openssl genrsa -out /certs/server.key 2048 && openssl req -new -key /certs/server.key -subj '/C=US/ST=California/L=San Francisco/O=Percona/OU=root/CN=external-postgres-ssl/emailAddress=test@percona.com' -out /certs/server.csr && openssl x509 -req -in /certs/server.csr -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial -out /certs/server.crt -days 365 -sha256 && chown 1001 /certs/server.crt && chown 1001 /certs/server.key"
 
   client-cert-generator:
     image: phusion/baseimage:focal-1.2.0
