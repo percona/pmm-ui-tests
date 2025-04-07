@@ -8,7 +8,7 @@ const dockerVersion = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev
 
 const runContainerWithoutDataContainer = async (I) => {
   await I.verifyCommand('mkdir $HOME/srvNoData/ || true');
-  await I.verifyCommand('chmod -R 777 $HOME/srvNoData/');
+  await I.verifyCommand('chmod -R 777 $HOME/srvNoData/ || true');
   await I.verifyCommand(`docker run -v $HOME/srvNoData:/srv -d --restart always --publish 8081:8080 --name pmm-server-srv ${dockerVersion}`);
 };
 
@@ -37,7 +37,6 @@ const runContainerWithDataContainer = async (I) => {
 const stopAndRemoveContainerWithoutDataContainer = async (I) => {
   await I.verifyCommand('docker stop pmm-server-srv || true');
   await I.verifyCommand('docker rm pmm-server-srv || true');
-  await I.verifyCommand('sudo rm -fr $HOME/srvNoData/ || true');
 };
 
 const stopAndRemoveContainerWithPasswordVariable = async (I) => {
@@ -64,7 +63,7 @@ After(async ({ I }) => {
 Scenario(
   'PMM-T1243 Verify PMM Server without data container @docker-configuration',
   async ({
-    I, adminPage, queryAnalyticsPage, dashboardPage,
+    I, queryAnalyticsPage, dashboardPage,
   }) => {
     const basePmmUrl = 'http://127.0.0.1:8081/';
 
@@ -88,10 +87,14 @@ Scenario(
     const logs = await I.verifyCommand('docker logs pmm-server-srv');
 
     assert.ok(!logs.includes('Error: The directory named as part of the path /srv/logs/supervisord.log does not exist'));
-    await I.amOnPage(basePmmUrl + queryAnalyticsPage.url);
-    adminPage.setAbsoluteTimeRange(moment().subtract({ hours: 12 }).format('YYYY-MM-DD HH:mm:00'), moment().subtract({ minutes: 1 }).format('YYYY-MM-DD HH:mm:00'));
+    const url = I.buildUrlWithParams(
+      basePmmUrl + queryAnalyticsPage.url,
+      { from: 'now-30m' },
+    );
 
-    await I.waitForInvisible(queryAnalyticsPage.data.elements.noResultTableText, 180);
+    await I.amOnPage(url);
+
+    await I.waitForInvisible(queryAnalyticsPage.data.elements.noResultTableText, 240);
     await I.waitForVisible(queryAnalyticsPage.data.elements.queryRows);
     const qanRowsAfterRestart = await I.grabNumberOfVisibleElements(queryAnalyticsPage.data.elements.queryRows);
 
