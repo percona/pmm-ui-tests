@@ -25,7 +25,6 @@ module.exports = {
 
   async getServiceMonitoringStatus(serviceName) {
     I.waitForVisible(this.fields.serviceRow(serviceName), 60);
-    console.log(`Monitoring status is: ${(await I.grabTextFrom(this.fields.serviceCellMonitoring(serviceName))).trim()}`);
 
     return (await I.grabTextFrom(this.fields.serviceCellMonitoring(serviceName))).trim();
   },

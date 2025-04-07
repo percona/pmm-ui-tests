@@ -38,14 +38,3 @@ services:
     environment:
       - POSTGRES_PASSWORD=pmm_password
       - POSTGRES_DB=grafana
-
-#  create_extention:
-#    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:17}
-#    container_name: create_extention
-#    command: >
-#      psql "postgresql://postgres:pmm_password@external-postgres/grafana" -c 'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;'
-#    depends_on:
-#      external-postgres:
-#        condition: service_healthy
-#    environment:
-#      - PGPASSWORD=pmm_password

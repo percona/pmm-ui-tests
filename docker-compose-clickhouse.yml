@@ -3,7 +3,7 @@ version: '3.7'
 
 services:
   pmm-server-external-clickhouse:
-    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server-fb:PR-3847-f05e17e}
+    image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:3-dev-latest}
     container_name: pmm-server-external-clickhouse
     depends_on:
       external-clickhouse:
