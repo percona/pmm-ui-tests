@@ -5,6 +5,9 @@ class LocalStorage extends Helper {
 
     // TODO replace with better test to the tour
     await page.addInitScript(() => {
+      // Hide modal to prompt user to migrate to v3
+      window.localStorage.setItem('1-grafana.pmm3.modalShown', true);
+
       if (window.localStorage.getItem('percona.tourTest') === true) {
         window.localStorage.removeItem('percona.showTour');
       } else {
