@@ -22,7 +22,7 @@ services:
       - ca-generator
     volumes:
       - ./ssl:/certs
-    entrypoint: sh -c "apt install openssl && openssl genrsa -out /certs/client.key 2048 && openssl req -new -key /certs/client.key -subj '/CN=client' -out /certs/client.csr && openssl x509 -req -in /certs/client.csr -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial -out /certs/client.crt -days 365 -sha256 && chown 1000 /certs/client.key && chown 1000 /certs/client.crt"
+    entrypoint: sh -c "apt install openssl && openssl genrsa -out /certs/client.key 2048 && openssl req -new -key /certs/client.key -subj '/CN=client' -out /certs/client.csr && openssl x509 -req -in /certs/client.csr -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial -out /certs/client.crt -days 365 -sha256 && chown 1000 /certs/client.key && chown 1000 /certs/client.crt && chown 1000 /certs/ca.crt"
 
 
   external-postgres-ssl:
@@ -56,7 +56,7 @@ services:
       - '8447:8443'
     environment:
       - PMM_POSTGRES_DBNAME=grafana
-      - PMM_POSTGRES_ADDR=external-postgres:5432
+      - PMM_POSTGRES_ADDR=external-postgres-ssl:5432
       - PMM_POSTGRES_USERNAME=postgres
       - PMM_POSTGRES_DBPASSWORD=pmm_password
       - PMM_DISABLE_BUILTIN_POSTGRES=1
@@ -64,7 +64,7 @@ services:
       - PMM_POSTGRES_SSL_CA_PATH=/etc/ssl/postgresql/ca.crt
       - PMM_POSTGRES_SSL_KEY_PATH=/etc/ssl/postgresql/client.key
       - PMM_POSTGRES_SSL_CERT_PATH=/etc/ssl/postgresql/client.crt
-      - GF_DATABASE_URL=postgres://postgres:pmm_password@external-postgres:5432/grafana
+      - GF_DATABASE_URL=postgres://postgres:pmm_password@external-postgres-ssl:5432/grafana
       - GF_DATABASE_SSL_MODE=verify-ca
       - GF_DATABASE_CA_CERT_PATH=/etc/ssl/postgresql/ca.crt
       - GF_DATABASE_CLIENT_KEY_PATH=/etc/ssl/postgresql/client.key
