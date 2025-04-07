@@ -54,9 +54,9 @@ class MongodbInstancesCompareDashboard extends BaseDashboard {
     return responseMetrics;
   }
 
-  // async verifyDashboardHaveData(): Promise<void> {
-  //   super.verifyDashboardHaveData(this., expectedMissingMetrics);
-  // }
+  async verifyDashboardHaveData(serviceName) {
+    await super.verifyData(this.metrics(serviceName), this.failingMetrics(serviceName));
+  }
 }
 
 module.exports = new MongodbInstancesCompareDashboard();

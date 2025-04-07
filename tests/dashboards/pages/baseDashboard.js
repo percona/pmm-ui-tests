@@ -19,7 +19,7 @@ class BaseDashboard {
     };
   }
 
-  async verifyDashboardHaveData(expectedMetrics, expectedMissingMetrics = ['']) {
+  async verifyData(expectedMetrics, expectedMissingMetrics = ['']) {
     let remainingExpectedMetrics = expectedMetrics;
     let countOfVerifiedMetrics = 0;
     const failingPanels = new Set();
