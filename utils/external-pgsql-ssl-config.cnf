@@ -2,8 +2,7 @@
 default_bits        = 2048
 default_keyfile     = privkey.pem
 distinguished_name  = req_distinguished_name
-req_extensions      = v3_req
-x509_extensions     = v3_ca
+x509_extensions     = v3_req
 prompt              = no
 
 [req_distinguished_name]
