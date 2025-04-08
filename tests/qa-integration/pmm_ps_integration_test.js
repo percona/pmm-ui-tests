@@ -14,7 +14,7 @@ const remoteServiceName = 'remote_pmm-mysql-integration';
 
 const connection = {
   host: container_name,
-  port: 43306,
+  port: 3306,
   username: 'msandbox',
   password: 'msandbox',
 };
