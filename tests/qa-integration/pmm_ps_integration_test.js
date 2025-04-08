@@ -148,7 +148,7 @@ Scenario(
 Scenario(
   'PMM-T1897 Verify Query Count metric on QAN page for MySQL @pmm-ps-integration',
   async ({
-    I, credentials, qanOverview, qanPage, qanFilters, qanDetails,
+    I, credentials, qanOverview, qanPage, qanFilters,
   }) => {
     const dbName = 'sbtest3';
     const sbUser = { name: 'sysbench', password: 'test' };
@@ -182,8 +182,5 @@ Scenario(
 
       if (i === 24) assert.ok(countOfQueries <= 17, 'Count of queries is incorrect');
     }
-    // Not consistent values, find another way to check QueryCount.
-    // await qanOverview.selectRow(0);
-    // I.waitForText('108', 180, qanOverview.elements.queryCountValue);
   },
 ).retry(1);
