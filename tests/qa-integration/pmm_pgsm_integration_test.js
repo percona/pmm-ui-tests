@@ -663,3 +663,22 @@ Scenario(
     await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
   },
 );
+
+Scenario(
+  'PMM-T1032 + PMM-T2021 - Verify default PG queries are shipped with PMM @pgsm-pmm-integration',
+  async ({ I, grafanaAPI }) => {
+    const metricNames = [
+      'pg_replication_lag',
+      'pg_postmaster_start_time_seconds',
+      'pg_stat_user_tables_analyze_count',
+      'pg_stat_activity_max_state_duration',
+      'pg_statio_user_tables_heap_blks_hit',
+      'pg_database_size_bytes',
+    ];
+
+    metricNames.forEach((metric) => {
+      grafanaAPI.waitForMetric(metric, { type: 'service_name', value: pgsm_service_name });
+      grafanaAPI.waitForMetric(metric, { type: 'service_name', value: pgsm_service_name_socket });
+    });
+  },
+);
