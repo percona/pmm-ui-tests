@@ -14,6 +14,7 @@ const remoteServiceName = 'remote_pmm-mysql-integration';
 
 const connection = {
   host: container_name,
+  port: 43306,
   username: 'msandbox',
   password: 'msandbox',
 };
@@ -154,18 +155,18 @@ Scenario(
 
     const psContainerName = await I.verifyCommand('sudo docker ps --format "{{.Names}}" | grep ps_');
 
-    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u root -p${connection.password} -P 3307 -e "CREATE USER IF NOT EXISTS sysbench@'%' IDENTIFIED WITH mysql_native_password BY 'test'; GRANT ALL ON *.* TO sysbench@'%'; DROP DATABASE IF EXISTS ${dbName};"`);
-    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -P 3307 -e "SET GLOBAL slow_query_log=ON;"`);
-    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -P 3307 -e "SET GLOBAL long_query_time=0;"`);
-    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -P 3307 -e "CREATE DATABASE ${dbName}"`);
+    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u root -p${connection.password} -P ${connection.port} -e "CREATE USER IF NOT EXISTS sysbench@'%' IDENTIFIED WITH mysql_native_password BY 'test'; GRANT ALL ON *.* TO sysbench@'%'; DROP DATABASE IF EXISTS ${dbName};"`);
+    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -P ${connection.port} -e "SET GLOBAL slow_query_log=ON;"`);
+    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -P ${connection.port} -e "SET GLOBAL long_query_time=0;"`);
+    await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -P ${connection.port} -e "CREATE DATABASE ${dbName}"`);
 
     for (let i = 1; i <= 5; i++) {
-      await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -P 3307 ${dbName} -e "CREATE TABLE Persons${i} ( PersonID int, LastName varchar(255), FirstName varchar(255), Address varchar(255), City varchar(255) );"`);
+      await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -P ${connection.port} ${dbName} -e "CREATE TABLE Persons${i} ( PersonID int, LastName varchar(255), FirstName varchar(255), Address varchar(255), City varchar(255) );"`);
       for (let j = 0; j <= 4; j++) {
-        await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -P 3307 ${dbName} -e "INSERT INTO Persons${i} values (${j},'Qwerty','Qwe','Address','City');"`);
+        await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -P ${connection.port} ${dbName} -e "INSERT INTO Persons${i} values (${j},'Qwerty','Qwe','Address','City');"`);
       }
 
-      await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -P 3307 ${dbName} -e "select count(*) from Persons${i};"`);
+      await I.verifyCommand(`sudo docker exec ${psContainerName} mysql -h 127.0.0.1 -u ${sbUser.name} -p${sbUser.password} -P ${connection.port} ${dbName} -e "select count(*) from Persons${i};"`);
     }
 
     I.amOnPage(I.buildUrlWithParams(qanPage.clearUrl, { from: 'now-1h', refresh: '5s' }));
