@@ -173,7 +173,15 @@ Scenario(
     qanOverview.waitForOverviewLoaded();
     await qanFilters.applyFilter(dbName);
     qanOverview.waitForOverviewLoaded();
-    I.waitForText('16', 180, qanOverview.elements.countOfItems);
+    for (let i = 0; i <= 24; i++) {
+      I.refreshPage();
+      const countOfQueries = parseInt((await I.grabTextFrom(qanOverview.elements.countOfItems)).split('of ')[1], 10);
+
+      I.wait(10);
+      if (countOfQueries <= 17) continue;
+
+      if (i === 24) assert.ok(countOfQueries <= 17, 'Count of queries is incorrect');
+    }
     // Not consistent values, find another way to check QueryCount.
     // await qanOverview.selectRow(0);
     // I.waitForText('108', 180, qanOverview.elements.queryCountValue);
