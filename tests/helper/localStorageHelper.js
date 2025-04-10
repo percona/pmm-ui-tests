@@ -10,6 +10,9 @@ class LocalStorage extends Helper {
       } else {
         window.localStorage.setItem('percona.showTour', false);
       }
+
+      window.localStorage.setItem('0-grafana.pmm3.modalShown', true);
+      window.localStorage.setItem('1-grafana.pmm3.modalShown', false);
     });
   }
 }
