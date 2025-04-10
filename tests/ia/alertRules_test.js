@@ -45,8 +45,9 @@ Scenario(
     I.waitForVisible(alertRulesPage.buttons.newAlertRule, 10);
     I.waitForVisible(alertRulesPage.elements.alertsLearnMoreLinks, 10);
     const link = await I.grabAttributeFrom(alertRulesPage.elements.alertsLearnMoreLinks, 'href');
+    const expectedLink = 'https://grafana.com/docs/grafana/latest/alerting/set-up/provision-alerting-resources/';
 
-    assert.ok(link === 'https://grafana.com/docs/', `Redirect link ${link} is incorrect please check`);
+    assert.ok(link === expectedLink, `Redirect link ${link} is incorrect please check`);
   },
 ).retry(0);
 
@@ -66,6 +67,7 @@ Scenario(
 
       I.waitForVisible(ruleFilter, 10);
     });
+    I.waitForVisible(alertRulesPage.buttons.groupCollapseButton(ruleFolder), 10);
     I.click(alertRulesPage.buttons.groupCollapseButton(ruleFolder));
     alertRulesPage.columnHeaders.forEach((header) => {
       const columnHeader = alertRulesPage.elements.columnHeaderLocator(header);
@@ -95,7 +97,8 @@ Scenario(
   async ({ I, alertRulesPage }) => {
     // TODO: https://jira.percona.com/browse/PMM-10860 name doesn't change
     alertRulesPage.openAlertRulesTab();
-    I.click(alertRulesPage.buttons.newAlertRule);
+    I.waitForElement(alertRulesPage.buttons.newAlertRuleFromTemplate);
+    I.click(alertRulesPage.buttons.newAlertRuleFromTemplate);
     I.waitForElement(alertRulesPage.fields.templatesLoader);
     await alertRulesPage.searchAndSelectResult('template', 'PostgreSQL down');
     I.waitForValue(alertRulesPage.fields.inputField('duration'), '60s');
@@ -125,10 +128,11 @@ Data(usersTable).Scenario(
     newRule.ruleName = `${newRule.ruleName}_${current.username}`;
 
     alertRulesPage.openAlertRulesTab();
-    I.waitForEnabled(alertRulesPage.buttons.newAlertRule, 10);
-    I.click(alertRulesPage.buttons.newAlertRule);
+    I.waitForVisible(alertRulesPage.buttons.newAlertRuleFromTemplate);
+    I.waitForEnabled(alertRulesPage.buttons.newAlertRuleFromTemplate);
+    I.click(alertRulesPage.buttons.newAlertRuleFromTemplate);
     await alertRulesPage.fillPerconaAlert(rule, newRule);
-    I.waitForEnabled(alertRulesPage.buttons.saveAndExit, 10);
+    I.waitForEnabled(alertRulesPage.buttons.saveAndExit);
     I.click(alertRulesPage.buttons.saveAndExit);
     // FIXME: unskip after https://jira.percona.com/browse/PMM-11399 is fixed
     // I.verifyPopUpMessage(alertRulesPage.messages.successRuleCreate(newRule.ruleName));
