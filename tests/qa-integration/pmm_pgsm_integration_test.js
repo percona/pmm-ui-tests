@@ -1,3 +1,4 @@
+const { I } = inject();
 const assert = require('assert');
 const {
   SERVICE_TYPE,
@@ -38,6 +39,10 @@ filters.add(['Command Type', 'DELETE']);
 filters.add(['Application Name', 'pmm-codeceptjs']);
 filters.add(['Application Name', 'codeceptjs']);
 filters.add(['Database', database]);
+
+const cleanupClickhouse = async () => {
+  await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --password clickhouse --query "TRUNCATE TABLE metrics"');
+};
 
 Feature('PMM + PGSM Integration Scenarios');
 
@@ -115,8 +120,7 @@ Scenario(
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
 
     // Clear metrics in clickhouse
-    await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --query "TRUNCATE TABLE metrics"');
-
+    await cleanupClickhouse();
     await I.pgExecuteQueryOnDemand('SELECT pg_stat_monitor_reset();', connection);
 
     // Run load on PG
@@ -261,8 +265,7 @@ Scenario.skip(
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
     const db = `${database}_pgbench`;
 
-    await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --query "TRUNCATE TABLE metrics"');
-
+    await cleanupClickhouse();
     await I.pgExecuteQueryOnDemand('SELECT pg_stat_monitor_reset();', connection);
     const output = await I.pgExecuteQueryOnDemand(`SELECT * FROM pg_database where datname= '${db}';`, connection);
 
@@ -384,8 +387,7 @@ Scenario.skip(
 Scenario(
   'PMM-T1063 - Verify Application Name with pg_stat_monitor @pgsm-pmm-integration @not-ui-pipeline',
   async ({ I, queryAnalyticsPage }) => {
-    await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --query "TRUNCATE TABLE metrics"');
-
+    await cleanupClickhouse();
     await I.pgExecuteQueryOnDemand('SELECT pg_stat_monitor_reset();', connection);
 
     // Set Application Name and run sample queries, wait for 60 seconds to see Data in QAN
@@ -422,8 +424,7 @@ Scenario(
     const queryWithTopId = '(select $1 + $2)';
     const topQuery = 'SELECT add2(1,2)';
 
-    await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --query "TRUNCATE TABLE metrics"');
-
+    await cleanupClickhouse();
     await I.pgExecuteQueryOnDemand('SELECT pg_stat_monitor_reset();', connection);
 
     const output = await I.pgExecuteQueryOnDemand(`SELECT * FROM pg_database where datname= '${db}';`, connection);
@@ -481,8 +482,7 @@ Scenario(
     let countHistogram = 0;
     const db = `${database}_histogram`;
 
-    await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --query "TRUNCATE TABLE metrics"');
-
+    await cleanupClickhouse();
     await I.pgExecuteQueryOnDemand('SELECT pg_stat_monitor_reset();', connection);
 
     const output = await I.pgExecuteQueryOnDemand(`SELECT * FROM pg_database where datname= '${db}';`, connection);
@@ -531,8 +531,7 @@ xScenario(
     const alteredValue = 'yes';
     const queriesNumber = 2;
 
-    await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --query "TRUNCATE TABLE metrics"');
-
+    await cleanupClickhouse();
     await I.pgExecuteQueryOnDemand('SELECT pg_stat_monitor_reset();', connection);
 
     await I.pgExecuteQueryOnDemand(`ALTER SYSTEM SET pg_stat_monitor.pgsm_normalized_query=${defaultValue};`, connection);
