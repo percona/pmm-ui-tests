@@ -10,6 +10,7 @@ const connection = {
   password: 'pmmpass',
 };
 const mongodb_service_name = 'mongodb_test_pass_plus';
+const mongodb_meta_metrics_service_name = 'mongodb_meta_metrics_service_name';
 const mongo_test_user = {
   username: 'test_user',
   password: 'pass+',
@@ -49,7 +50,7 @@ Before(async ({ I }) => {
 });
 
 After(async ({ I }) => {
-  await I.verifyCommand(`pmm-admin remove mongodb ${mongodb_service_name} || true`);
+  await I.verifyCommand(`sudo pmm-admin remove mongodb ${mongodb_service_name} || true`);
 });
 
 AfterSuite(async ({ I }) => {
@@ -60,7 +61,7 @@ Scenario(
   'PMM-T1241 - Verify add mongoDB service with "+" in user password @not-ui-pipeline @mongodb-exporter',
   async ({ I, grafanaAPI }) => {
     await I.say(
-      await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --password="${mongo_test_user.password}" --username="${mongo_test_user.username}" --service-name=${mongodb_service_name}`),
+      await I.verifyCommand(`sudo pmm-admin add mongodb --port=${connection.port} --password="${mongo_test_user.password}" --username="${mongo_test_user.username}" --service-name=${mongodb_service_name}`),
     );
 
     await grafanaAPI.waitForMetric('mongodb_up', { type: 'service_name', value: mongodb_service_name }, 65);
@@ -70,7 +71,7 @@ Scenario(
 Scenario(
   'PMM-T1458 - Verify MongoDB exporter meta-metrics supporting @not-ui-pipeline @mongodb-exporter',
   async ({ I }) => {
-    await I.say(await I.verifyCommand(`pmm-admin add mongodb --port=${connection.port} --password=${connection.password} --username=${connection.username} --service-name=${mongodb_service_name} --enable-all-collectors`));
+    await I.say(await I.verifyCommand(`sudo pmm-admin add mongodb --port=${connection.port} --password=${connection.password} --username=${connection.username} --service-name=${mongodb_meta_metrics_service_name} --enable-all-collectors`));
     let logs = '';
 
     await I.asyncWaitFor(async () => {

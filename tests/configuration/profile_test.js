@@ -40,8 +40,8 @@ Scenario(
 
     await I.say('Verify all agents have "Running" status. There is no agent with "DONE" and "UNKNOWN" status');
     for (const name of ['vmagent', 'node_exporter', 'postgres_exporter', 'mongodb_exporter', 'mysqld_exporter']) {
-      const listStatus = (await I.verifyCommand(`pmm-admin list | grep ${name} | awk -F' ' '{print $2}' | tail -n 1`)).trim();
-      const status = (await I.verifyCommand(`pmm-admin status | grep ${name} | awk -F' ' '{print $3}' | tail -n 1`)).trim();
+      const listStatus = (await I.verifyCommand(`sudo pmm-admin list | grep ${name} | awk -F' ' '{print $2}' | tail -n 1`)).trim();
+      const status = (await I.verifyCommand(`sudo pmm-admin status | grep ${name} | awk -F' ' '{print $3}' | tail -n 1`)).trim();
 
       I.assertEqual(listStatus, 'Running', `'${name}' is expected to have 'Running' status in pmm-admin list, but found: '${status}'`);
       I.assertEqual(status, 'Running', `'${name}' is expected to have 'Running' status in pmm-admin status, but found: '${status}'`);
