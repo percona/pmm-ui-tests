@@ -4,6 +4,10 @@ const grafanaHelper = {
   async authorize(page: Page, username = 'admin', password = process.env.ADMIN_PASSWORD || 'admin') {
     const authToken = await this.getToken(username, password);
     await page.setExtraHTTPHeaders({ Authorization: `Basic ${authToken}` });
+    await page.evaluate(() => {
+      window.localStorage.setItem('0-grafana.pmm3.modalShown', 'true');
+      window.localStorage.setItem('1-grafana.pmm3.modalShown', 'false');
+    });
     await page.reload();
     return page;
   },
