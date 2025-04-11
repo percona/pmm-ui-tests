@@ -33,12 +33,24 @@ class Grafana extends Helper {
     const basicAuthEncoded = await this.getAuth(username, password);
 
     Playwright.setPlaywrightRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
-    const resp = await REST.sendPostRequest(`${baseUrl}graph/login`, { user: username, password });
+    let resp;
+
+    try {
+      resp = await REST.sendPostRequest(`${baseUrl}graph/login`, { user: username, password });
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Login API call was not successful.');
+
+      return;
+    }
 
     const cookies = resp.headers['set-cookie'];
 
     if (!cookies) {
-      throw new Error('Authentication was not successful, verify base url and credentials.');
+      // eslint-disable-next-line no-console
+      console.warn('Authentication was not successful, verify base url and credentials.');
+
+      return;
     }
 
     cookies.forEach((cookie) => {
