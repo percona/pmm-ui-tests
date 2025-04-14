@@ -15,7 +15,7 @@ BeforeSuite(async ({ I }) => {
 });
 
 Before(async ({ I }) => {
-  await I.Authorize('admin', 'admin');
+  await I.Authorize('admin', 'admin', `http://127.0.0.1:${pmmServerPort}/`);
 });
 
 AfterSuite(async ({ I }) => {
@@ -24,7 +24,7 @@ AfterSuite(async ({ I }) => {
 
 // Tag only for adding into matrix job, to be fixed later.
 Scenario(
-  '@PMM-T1218 Verify PMM with external Clickhouse @docker-configuration @cli',
+  'PMM-T1218 Verify PMM with external Clickhouse @docker-configuration @cli',
   async ({ I, dataSourcePage, queryAnalyticsPage }) => {
     I.amOnPage(basePmmUrl + dataSourcePage.url);
     I.waitForVisible(dataSourcePage.elements.clickHouseDatasource, 5);

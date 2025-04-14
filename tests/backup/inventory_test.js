@@ -40,7 +40,7 @@ const mongoConnectionReplica2 = {
 Feature('BM: Backup Inventory');
 
 BeforeSuite(async ({
-  I, locationsAPI, settingsAPI,
+  I, locationsAPI, settingsAPI, inventoryAPI,
 }) => {
   await settingsAPI.changeSettings({ backup: true });
   await locationsAPI.clearAllLocations(true);
@@ -57,6 +57,11 @@ BeforeSuite(async ({
   );
 
   await I.mongoConnect(mongoConnection);
+  const mongoNodeExists = !!(await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName));
+
+  if (mongoNodeExists) {
+    return;
+  }
 
   I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
   I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
@@ -100,7 +105,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T691 - Verify message about no backups in inventory @backup @bm-mongo',
+  'PMM-T691 - Verify message about no backups in inventory @backup @bm-mongo @pre-mongo-backup-upgrade',
   async ({
     I, backupInventoryPage,
   }) => {
@@ -114,7 +119,7 @@ createBackupTests.add([location.name]);
 createBackupTests.add([localStorageLocationName]);
 
 Data(createBackupTests).Scenario(
-  'PMM-T855 + PMM-T1393 - Verify user is able to perform MongoDB backup @backup @bm-mongo @bm-fb',
+  'PMM-T855 + PMM-T1393 - Verify user is able to perform MongoDB backup @backup @bm-mongo @bm-fb @pre-mongo-backup-upgrade',
   async ({
     I, backupInventoryPage, backupAPI, current,
   }) => {
@@ -141,7 +146,7 @@ Data(createBackupTests).Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T961 + PMM-T1005 + PMM-T1024 - Verify create backup modal @backup @bm-mongo',
+  'PMM-T961 + PMM-T1005 + PMM-T1024 - Verify create backup modal @backup @bm-mongo @pre-mongo-backup-upgrade',
   async ({
     I, backupInventoryPage,
   }) => {
@@ -190,7 +195,7 @@ restoreFromDifferentStorageLocationsTests.add([locationsAPI.storageType.localCli
 
 Data(restoreFromDifferentStorageLocationsTests).Scenario(
   'PMM-T862 + PMM-T1508 + PMM-T1393 + PMM-T1394 + PMM-T1508 + PMM-T1520 + PMM-T1452 + PMM-T1583 + PMM-T1674 + PMM-T1675 -'
-  + ' Verify user is able to perform MongoDB restore from different storage locations @backup @bm-mongo @bm-fb',
+  + ' Verify user is able to perform MongoDB restore from different storage locations @backup @bm-mongo @bm-fb @post-mongo-backup-upgrade',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI, restorePage, current,
   }) => {
@@ -200,6 +205,7 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
     const isLogical = current.backupType === 'LOGICAL';
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, mongoServiceName);
+
     const artifactId = await backupAPI.startBackup(backupName, service_id, currentLocationId, false, isLogical);
 
     await backupAPI.waitForBackupFinish(artifactId);
@@ -223,6 +229,7 @@ Data(restoreFromDifferentStorageLocationsTests).Scenario(
     backupInventoryPage.startRestore(artifactName);
 
     // PMM-T1520 PMM-T1508
+    I.amOnPage(restorePage.url);
     I.waitForVisible(restorePage.elements.targetServiceByName(artifactName), 10);
     I.seeTextEquals(mongoServiceName, restorePage.elements.targetServiceByName(artifactName));
     await restorePage.waitForRestoreSuccess(artifactName);
@@ -339,7 +346,7 @@ Scenario(
 
 // Unskip after https://jira.percona.com/browse/PBM-1193 is fixed
 Scenario.skip(
-  'PMM-T928 + PMM-T992 - Verify schedule retries and restore from a scheduled backup artifact @backup @bm-mongo',
+  'PMM-T928 + PMM-T992 - Verify schedule retries and restore from a scheduled backup artifact @backup @bm-mongo @post-mongo-backup-upgrade',
   async ({
     I, backupInventoryPage, scheduledAPI, backupAPI, restorePage,
   }) => {

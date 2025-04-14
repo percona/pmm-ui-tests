@@ -76,6 +76,11 @@ module.exports = {
   async getServiceDetailsByPartialName(serviceName) {
     const service = await this.apiGetServices();
 
+    assert.ok(
+      service.status === 200,
+      `Failed to getService. Response message is "${service.data.message}"`,
+    );
+
     return service
       .data
       .services
@@ -115,6 +120,13 @@ module.exports = {
   async apiGetServices() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const url = 'v1/management/services';
+
+    return await I.sendGetRequest(url, headers);
+  },
+
+  async getServicesByType(serviceType) {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const url = `v1/inventory/services?service_type=${serviceType}`;
 
     return await I.sendGetRequest(url, headers);
   },

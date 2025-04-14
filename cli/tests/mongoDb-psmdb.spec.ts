@@ -9,7 +9,6 @@ let mongoShardHosts: string[];
 const replIpPort = '127.0.0.1:27027';
 // const mongosIpPort = '127.0.0.1:27017';
 
-// eslint-disable-next-line playwright/valid-describe-callback
 test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   test.beforeAll(async ({}) => {
     const result = await cli.exec('docker ps | grep rs101 | awk \'{print $NF}\'');
@@ -156,15 +155,9 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L148
    */
   test('PMM-T157 PMM-T161 Adding MongoDB with specified socket for modb', async ({}) => {
-    let n = 1;
-    for (const host of mongoRplHosts) {
-      console.log(host);
-      const port = host.split(':')[1];
-      const replSocketPort = Number(port) - 10;
-      const output = await cli.exec(`sudo pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} --socket=/tmp/mongodb/mongodb-${replSocketPort}.sock mongo_inst_${n++}`);
-      await output.assertSuccess();
-      await output.outContains('MongoDB Service added');
-    }
+    const output = await cli.exec(`sudo docker exec rs101 pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} --socket=/tmp/mongodb-27017.sock mongo_socket`);
+    await output.assertSuccess();
+    await output.outContains('MongoDB Service added');
     await cli.exec('sleep 2');
   });
 
@@ -172,13 +165,9 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L169
    */
   test('run pmm-admin remove mongodb Instance added with Socket Specified @imp', async ({}) => {
-    const services = (await cli.exec('sudo pmm-admin list | grep "MongoDB" | grep "mongo_inst_" | awk -F" " \'{print $2}\''))
-      .getStdOutLines();
-    for (const service of services) {
-      const output = await cli.exec(`sudo pmm-admin remove mongodb ${service}`);
-      await output.assertSuccess();
-      await output.outContains('Service removed.');
-    }
+    const output = await cli.exec('sudo docker exec rs101 pmm-admin remove mongodb mongo_socket');
+    await output.assertSuccess();
+    await output.outContains('Service removed.');
   });
 
   /**
@@ -278,5 +267,30 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
       await results.assertSuccess();
       await results.outContains('Service removed.');
     }
+  });
+
+  test('PMM-T2005 verify PBM Agent health status metric is correct', async ({}) => {
+    await cli.exec('docker exec rs103 systemctl start pbm-agent');
+    await expect(async () => {
+      const metrics = await cli.getMetrics('rs103', 'pmm', 'mypass', 'rs103');
+
+      expect(metrics).toContain('mongodb_pbm_agent_status{host="rs103:27017",replica_set="rs",role="S",self="1"} 0');
+    }).toPass({ intervals: [2_000], timeout: 120_000 });
+
+    await cli.exec('docker exec rs103 pkill -f pbm-agent');
+
+    await expect(async () => {
+      const metrics = await cli.getMetrics('rs103', 'pmm', 'mypass', 'rs103');
+
+      expect(metrics).toContain('mongodb_pbm_agent_status{host="rs103:27017",replica_set="rs",role="S",self="1"} 2');
+    }).toPass({ intervals: [2_000], timeout: 120_000 });
+
+    await cli.exec('docker exec rs103 systemctl start pbm-agent');
+
+    await expect(async () => {
+      const metrics = await cli.getMetrics('rs103', 'pmm', 'mypass', 'rs103');
+
+      expect(metrics).toContain('mongodb_pbm_agent_status{host="rs103:27017",replica_set="rs",role="S",self="1"} 0');
+    }).toPass({ intervals: [2_000], timeout: 120_000 });
   });
 });

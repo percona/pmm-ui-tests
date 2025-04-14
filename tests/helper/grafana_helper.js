@@ -28,13 +28,18 @@ class Grafana extends Helper {
     await page.click(this.ssoLoginSubmit);
   }
 
-  async Authorize(username = 'admin', password = process.env.ADMIN_PASSWORD) {
+  async Authorize(username = 'admin', password = process.env.ADMIN_PASSWORD, baseUrl = '') {
     const { Playwright, REST } = this.helpers;
     const basicAuthEncoded = await this.getAuth(username, password);
 
     Playwright.setPlaywrightRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
-    const resp = await REST.sendPostRequest('graph/login', { user: username, password });
+    const resp = await REST.sendPostRequest(`${baseUrl}graph/login`, { user: username, password });
+
     const cookies = resp.headers['set-cookie'];
+
+    if (!cookies) {
+      throw new Error('Authentication was not successful, verify base url and credentials.');
+    }
 
     cookies.forEach((cookie) => {
       const parsedCookie = {
@@ -72,6 +77,12 @@ class Grafana extends Helper {
     const { Playwright } = this.helpers;
 
     await Playwright.page.unroute('**/v1/users/me');
+  }
+
+  async stopMockingUpgrade() {
+    const { Playwright } = this.helpers;
+
+    await Playwright.page.unroute('**/v1/server/updates?force=**');
   }
 
   async unAuthorize() {
@@ -239,6 +250,24 @@ class Grafana extends Helper {
     if (returnErrorPipe) return stderr.trim();
 
     return stdout.trim();
+  }
+
+  async clickIfVisible(element) {
+    const { Playwright } = this.helpers;
+
+    for (let i = 0; i < 10; i++) {
+      const numVisible = await Playwright.grabNumberOfVisibleElements(element);
+
+      if (numVisible) {
+        await Playwright.click(element);
+
+        return element;
+      }
+
+      Playwright.wait(10);
+    }
+
+    return element;
   }
 }
 

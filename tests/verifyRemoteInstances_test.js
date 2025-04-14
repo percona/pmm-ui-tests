@@ -57,11 +57,11 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
 
 Feature('Remote DB Instances').retry(1);
 
-BeforeSuite(async ({ I }) => {
-  await I.verifyCommand('docker compose -f docker-compose.yml up -d');
-});
+// BeforeSuite(async ({ I }) => {
+//   await I.verifyCommand('docker compose -f docker-compose.yml up -d');
+// });
 
-Before(async ({ I }) => {
+Before(async ({ I, remoteInstancesPage }) => {
   await I.Authorize();
 });
 
@@ -336,7 +336,7 @@ Scenario(
     const details = {
       serviceName: remoteServiceName,
       serviceType: 'postgresql',
-      port: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.port,
+      port: remoteInstancesHelper.remote_instance.postgresql.pdpgsql_13_3.server_port,
       database: 'postgres',
       host: 'postgresnodb',
       username: 'test',

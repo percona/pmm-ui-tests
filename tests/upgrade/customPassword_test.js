@@ -73,5 +73,6 @@ Scenario(
     await I.verifyCommand(`docker exec pmm-server change-admin-password ${newPass}`);
     await I.Authorize('admin', newPass);
     await homePage.open();
+    await I.verifyCommand(`docker exec pmm-server change-admin-password ${process.env.ADMIN_PASSWORD}`);
   },
 );

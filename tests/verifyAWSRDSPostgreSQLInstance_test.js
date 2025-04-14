@@ -1,11 +1,34 @@
 const assert = require('assert');
 const { SERVICE_TYPE } = require('./helper/constants');
 
+const { remoteInstancesPage } = inject();
+
 Feature('Monitoring AWS RDS PostgreSQL');
 
 Before(async ({ I }) => {
   await I.Authorize();
 });
+
+const instances = new DataTable(['instance', 'instanceType']);
+
+instances.add(['postgresql13', 'postgres']);
+instances.add(['postgresql14', 'postgres']);
+instances.add(['postgresql15', 'postgres']);
+instances.add(['postgresql16', 'postgres']);
+instances.add(['postgresql17', 'postgres']);
+
+// Mapping here to avoid datatables to add those details to test names in allure report
+const remoteInstance = {
+  postgresql13: remoteInstancesPage.postgresql13rds,
+  postgresql14: remoteInstancesPage.postgresql14rds,
+  postgresql15: remoteInstancesPage.postgresql15rds,
+  postgresql16: remoteInstancesPage.postgresql16rds,
+  postgresql17: remoteInstancesPage.postgresql17rds,
+};
+
+function getInstance(key) {
+  return remoteInstance[key];
+}
 
 After(async ({ settingsAPI }) => {
   if (process.env.OVF_TEST === 'yes') {
@@ -21,12 +44,16 @@ After(async ({ settingsAPI }) => {
   }
 });
 
-Scenario(
+Data(instances).Scenario(
   'PMM-T1831 - Verify adding PostgreSQL RDS with specified Auto-discovery limit @aws @instances',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, agentsPage,
+    I, current, remoteInstancesPage, pmmInventoryPage, inventoryAPI, agentsPage,
   }) => {
-    const serviceName = 'pmm-qa-pgsql-12';
+    const {
+      instance,
+    } = current;
+
+    const serviceName = getInstance(instance)['Service Name'];
     const nodeName = 'pmm-server';
 
     await inventoryAPI.deleteNodeByServiceName(SERVICE_TYPE.POSTGRESQL, serviceName);
@@ -60,13 +87,17 @@ Scenario(
   },
 );
 
-Scenario(
+Data(instances).Scenario(
   'PMM-T716 + PMM-T1596 - Verify adding PostgreSQL RDS monitoring to PMM via UI @aws @instances'
   + 'Verify that PostgreSQL exporter ignores connection error to "rdsadmin" database for Amazon RDS instance @aws @instances',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, inventoryAPI,
+    I, current, remoteInstancesPage, pmmInventoryPage, inventoryAPI,
   }) => {
-    const serviceName = 'pmm-qa-pgsql-12';
+    const {
+      instance,
+    } = current;
+
+    const serviceName = getInstance(instance)['Service Name'];
     const nodeName = 'pmm-server';
 
     await inventoryAPI.deleteNodeByServiceName(SERVICE_TYPE.POSTGRESQL, serviceName);
@@ -94,12 +125,16 @@ Scenario(
   },
 );
 
-Scenario(
+Data(instances).Scenario(
   'PMM-T716 - Verify Dashboard for Postgres RDS added via UI @aws @instances',
   async ({
-    I, dashboardPage, settingsAPI,
+    I, current, dashboardPage, settingsAPI,
   }) => {
-    const serviceName = 'pmm-qa-pgsql-12';
+    const {
+      instance,
+    } = current;
+
+    const serviceName = getInstance(instance)['Service Name'];
 
     // Increase resolution to avoid failures for OVF execution
     if (process.env.OVF_TEST === 'yes') {

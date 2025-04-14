@@ -10,7 +10,16 @@ class ApiHelper extends Helper {
         user_id: 1,
         product_tour_completed: true,
         alerting_tour_completed: true,
-        snoozed_pmm_version: '3.2.0',
+        snoozed_pmm_version: '',
+      }),
+    }));
+
+    await page.route('**/v1/server/updates?force=**', (route) => route.fulfill({
+      status: 200,
+      body: JSON.stringify({
+        installed: {},
+        latest: {},
+        update_available: false,
       }),
     }));
   }

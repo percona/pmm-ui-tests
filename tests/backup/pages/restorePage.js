@@ -37,6 +37,6 @@ module.exports = {
 
   waitForRestoreFailure(backupName) {
     I.amOnPage(this.url);
-    I.waitForVisible(this.elements.backupStatusFailureIconByName(backupName), 180);
+    I.waitForVisible(this.elements.backupStatusFailureIconByName(backupName), 240);
   },
 };
