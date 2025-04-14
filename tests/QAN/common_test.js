@@ -146,7 +146,7 @@ Scenario(
   }) => {
     const { username, password } = credentials.perconaServer.msandbox;
 
-    console.log(`Ps version is: ${process.env.PS_VERSION}`);
+    console.log(`Ps version is: ${(await I.verifyCommand('docker ps -f name=ps --format "{{.Image }}"')).split(':')[1]}`);
 
     await I.verifyCommand(`mysql -h 127.0.0.1 -u ${username} -p${password} --port 3317 -e "SET MAX_EXECUTION_TIME = 1000;"`);
 
