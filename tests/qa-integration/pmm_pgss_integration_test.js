@@ -102,7 +102,7 @@ Scenario.skip(
   'PMM-T1313 - Verifying data in Clickhouse and comparing with pgss output @not-ui-pipeline @pgss-pmm-integration',
   async ({ I, qanAPI }) => {
     // Clear metrics in clickhouse
-    await I.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --query "TRUNCATE TABLE metrics"');
+    await I.verifyCommand('docker exec pmm-server clickhouse-client --password clickhouse --database pmm --query "TRUNCATE TABLE metrics"');
 
     await I.pgExecuteQueryOnDemand('SELECT now();', connection);
 
