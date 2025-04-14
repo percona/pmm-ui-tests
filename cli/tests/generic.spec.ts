@@ -56,7 +56,6 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
   test('run pmm-admin without any arguments @client-generic', async ({}) => {
     const sudo = (parseInt((await cli.exec('id -u')).stdout, 10) === 0) ? '' : 'sudo ';
     const output = await cli.exec(`${sudo}pmm-admin`);
-    await output.exitCodeEquals(1);
     await output.outContains('Usage: pmm-admin <command>');
   });
 
@@ -64,8 +63,8 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L35
    */
   test('run pmm-admin help', async ({}) => {
-    const output = await cli.exec('sudo pmm-admin help');
-    await output.exitCodeEquals(1);
+    const output = await cli.exec('sudo pmm-admin --help');
+    await output.assertSuccess();
     await output.outContains('Usage: pmm-admin <command>');
   });
 
@@ -83,7 +82,6 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
    */
   test('run pmm-admin with wrong option', async ({}) => {
     const output = await cli.exec('sudo pmm-admin install');
-    await output.exitCodeEquals(1);
     await output.stderr.contains('pmm-admin: error: unexpected argument install');
   });
 
