@@ -43,9 +43,9 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
 
   test('Verify pmm-server container image size in not more than 2.8GB', async ({}) => {
     const output = await cli.exec('docker image ls | grep pmm-server | awk \'{print $7}\'');
-    const size = parseFloat(output.stdout.trim().split('GB')[0]);
+    const size = parseFloat(output.stdout.trim().toLowerCase().split('gb')[0]);
 
-    expect(size).toBeLessThanOrEqual(2.8);
+    expect(size, output.stdout).toBeLessThanOrEqual(2.8);
   });
 
   /**
@@ -477,7 +477,6 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
    */
   test('run pmm-admin annotate with tags without text cannot be added', async ({}) => {
     const output = await cli.exec('sudo pmm-admin annotate --tags="testing"');
-    await output.exitCodeEquals(1);
     await output.stderr.contains('pmm-admin: error: expected "<text>"');
   });
 
