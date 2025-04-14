@@ -73,7 +73,7 @@ Scenario.skip(
   'PMM-T371 - Verify sorting in Inventory page(Services tab) @inventory @nightly',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
-    await pmmInventoryPage.checkSort(4);
+    await pmmInventoryPage.checkSort(15);
   },
 );
 
