@@ -36,6 +36,7 @@ test.describe('Spec file for Access Control (RBAC)', async () => {
   const roleDescriptionCreate = `Role Description ${new Date().getTime()}`;
 
   test.beforeEach(async ({ page }) => {
+    await page.goto('');
     await apiHelper.confirmTour(page);
     await grafanaHelper.authorize(page);
   });
