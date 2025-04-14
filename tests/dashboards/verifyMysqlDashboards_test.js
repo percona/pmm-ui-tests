@@ -226,7 +226,6 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.groupReplicationDashboard.metrics);
-    // Change to 3 as accetableNAcount after https://perconadev.atlassian.net/browse/PMM-13121 is fixed.
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(8);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
   },
 );
