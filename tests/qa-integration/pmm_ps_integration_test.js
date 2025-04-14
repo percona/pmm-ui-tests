@@ -151,7 +151,7 @@ Scenario(
     // Add wait for Queries to appear in PMM
     await I.wait(70);
 
-    console.log(`Mysql version is: ${await I.verifyCommand('mysql -v')}`);
+    console.log(`Mysql version is: ${await I.verifyCommand(`mysql -h 127.0.0.1 --port 33066 -u ${credentials.perconaServer.root.username} -p${credentials.perconaServer.root.password} -v`)}`);
 
     await I.verifyCommand(`docker exec ${container_name} mysql -h 127.0.0.1 --port 3307 -u ${credentials.perconaServer.root.username} -p${credentials.perconaServer.root.password} -e "CREATE USER IF NOT EXISTS sysbench@'%' IDENTIFIED BY 'test'; GRANT ALL ON *.* TO sysbench@'%'; DROP DATABASE IF EXISTS ${dbName};"`);
     await I.verifyCommand(`docker exec ${container_name} mysql -h 127.0.0.1 --port 3307 -u ${sbUser.name} -p${sbUser.password} -e "SET GLOBAL slow_query_log=ON;"`);
