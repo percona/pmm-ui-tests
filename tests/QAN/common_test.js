@@ -146,6 +146,8 @@ Scenario(
   }) => {
     const { username, password } = credentials.perconaServer.msandbox;
 
+    console.log(`Ps version is: ${process.env.PS_VERSION}`);
+
     await I.verifyCommand(`mysql -h 127.0.0.1 -u ${username} -p${password} --port 3317 -e "SET MAX_EXECUTION_TIME = 1000;"`);
 
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-30m', refresh: '5s' }));
