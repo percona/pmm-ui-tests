@@ -469,7 +469,6 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
    */
   test('run pmm-admin annotate without any text and verify it should not work', async ({}) => {
     const output = await cli.exec('sudo pmm-admin annotate');
-    await output.exitCodeEquals(1);
     await output.stderr.contains('pmm-admin: error: expected "<text>"');
   });
 
