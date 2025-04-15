@@ -10,7 +10,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 const version = process.env.PS_VERSION ? `${process.env.PS_VERSION}` : '8.4';
-const container_name = `ps_pmm_${version}_replica`;
+let container_name = `ps_pmm_${version}_replica`;
 
 Scenario(
   'Verify metrics from PS Replica instance on PMM-Server @pmm-ps-replica-integration @not-ui-pipeline',
@@ -42,13 +42,12 @@ Scenario(
   },
 ).retry(1);
 
-// PMM-12153 Update mysqld_exporter to the latest stable
-// Also adjust Graphs without Data below
-Scenario.skip(
-  'Verify dashboard for PS Replica Instance @pmm-ps-replica-integration @not-ui-pipeline',
+Scenario(
+  'PMM-T9999 - Verify dashboard for PS Replica Instance @pmm-ps-replica-integration @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage,
   }) => {
+    container_name = await I.verifyCommand('docker ps -f name=ps --format "{{.Names }}"');
     const masterServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | grep node-1 | awk -F" " '{print $2}'`)).trim();
     const slaveServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | grep node-2 | awk -F" " '{print $2}'`)).trim();
 
