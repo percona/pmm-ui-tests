@@ -47,9 +47,13 @@ Scenario(
   async ({
     I, dashboardPage, adminPage,
   }) => {
-    container_name = await I.verifyCommand('docker ps -f name=ps --format "{{.Names }}" | grep _1');
-    const masterServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | grep node-1 | awk -F" " '{print $2}'`)).trim();
-    const slaveServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | grep node-2 | awk -F" " '{print $2}'`)).trim();
+    const master_container_name = await I.verifyCommand('docker ps -f name=ps --format "{{.Names }}" | grep _1');
+    const slave_container_name = await I.verifyCommand('docker ps -f name=ps --format "{{.Names }}" | grep _2');
+    const masterServiceName = (await I.verifyCommand(`docker exec ${master_container_name} pmm-admin list | grep MySQL | awk -F" " '{print $2}'`)).trim();
+    const slaveServiceName = (await I.verifyCommand(`docker exec ${slave_container_name} pmm-admin list | grep MySQL | awk -F" " '{print $2}'`)).trim();
+
+    console.log(`Master service name: ${masterServiceName}`);
+    console.log(`Slave service name: ${slaveServiceName}`);
 
     const serviceList = [masterServiceName, slaveServiceName];
 
