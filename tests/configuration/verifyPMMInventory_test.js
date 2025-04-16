@@ -136,10 +136,10 @@ Scenario(
   async ({
     I, pmmInventoryPage, addInstanceAPI,
   }) => {
-    const psServiceName = 'ps_8.0_version_test';
+    const psServiceName = 'ps_5.7_version_test';
     const rdsPostgresqlServiceName = 'pg_rds_version_test';
-    const mongoServiceName = 'mongo_7.0_version_test';
-    const pgServiceName = 'pg_17_version_test';
+    const mongoServiceName = 'mongo_4.2_version_test';
+    const pgServiceName = 'pg_15_version_test';
 
     await addInstanceAPI.addMysql(psServiceName);
     await addInstanceAPI.addMongodb(mongoServiceName);
@@ -150,19 +150,19 @@ Scenario(
     I.waitForVisible(pmmInventoryPage.fields.showServiceDetails(psServiceName), 20);
 
     I.click(pmmInventoryPage.fields.showServiceDetails(psServiceName));
-    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=8.0.30-33-log'), 5);
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=5.7.30-33-log'), 5);
     I.click(pmmInventoryPage.fields.hideServiceDetails(psServiceName));
 
     I.click(pmmInventoryPage.fields.showServiceDetails(pgServiceName));
-    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=17.0 - Percona Distribution'), 5);
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=15.4 - Percona Distribution'), 5);
     I.click(pmmInventoryPage.fields.hideServiceDetails(pgServiceName));
 
     I.click(pmmInventoryPage.fields.showServiceDetails(mongoServiceName));
-    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=7.0.24'), 5);
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=4.4.24'), 5);
     I.click(pmmInventoryPage.fields.hideServiceDetails(mongoServiceName));
 
     I.click(pmmInventoryPage.fields.showServiceDetails(rdsPostgresqlServiceName));
-    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=17.14'), 300);
+    I.waitForVisible(pmmInventoryPage.fields.detailsLabelByText('version=12.14'), 300);
     I.click(pmmInventoryPage.fields.hideServiceDetails(rdsPostgresqlServiceName));
   },
 );
