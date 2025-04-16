@@ -14,13 +14,13 @@ const runContainerWithoutDataContainer = async (I) => {
 
 const runContainerWithPasswordVariable = async (I) => {
   await I.verifyCommand('mkdir $HOME/srvPassword/ || true');
-  await I.verifyCommand('chmod -R 777 $HOME/srvNoData/ || true');
+  await I.verifyCommand('chmod -R 777 $HOME/srvPassword/ || true');
   await I.verifyCommand(`docker run -v $HOME/srvPassword:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8082:8080 --name pmm-server-password ${dockerVersion}`);
 };
 
 const runContainerWithPasswordVariableUpgrade = async (I) => {
   await I.verifyCommand('mkdir $HOME/srvPasswordUpgrade || true');
-  await I.verifyCommand('sudo chown -R 1001:1001 $HOME/srvPasswordUpgrade/');
+  await I.verifyCommand('chmod -R 777 $HOME/srvPasswordUpgrade/ || true');
   await I.verifyCommand(`docker run -v $HOME/srvPasswordUpgrade:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass --restart always --publish 8089:8080 --name pmm-server-password-upgrade ${dockerVersion}`);
   I.wait(30);
   await I.verifyCommand('docker exec pmm-server-password-upgrade yum update -y percona-release');
@@ -63,7 +63,7 @@ After(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T1243 Verify PMM Server without data container @docker-configuration',
+  'PMM-T1243 - Verify PMM Server without data container @docker-configuration',
   async ({
     I, queryAnalyticsPage, dashboardPage,
   }) => {
