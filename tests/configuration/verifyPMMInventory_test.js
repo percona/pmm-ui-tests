@@ -15,7 +15,8 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
   if (value) {
     switch (key) {
       case 'postgresql':
-        qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
+        // TODO: https://jira.percona.com/browse/PMM-9011
+        // qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
         break;
       case 'mysql':
         qanFilters.add([remoteInstancesPage.mysqlSettings.environment]);
