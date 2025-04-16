@@ -68,6 +68,7 @@ module.exports = {
     saveConfirmButton: locate('span').withText('Confirm and save changes'),
     savePopupMessage: locate('p').withText('Changing existing labels can affect other parts of PMM dependent on it'),
     runningStatusAgent: '//td/div[contains(text(), "Running")]',
+    serviceNames: locate('//tr[@role="row"]//td[3]//span'),
   },
   servicesTab,
   pagination: paginationPart,
@@ -429,5 +430,16 @@ module.exports = {
     I.seeElement(this.fields.detailsLabelByText(`environment=${serviceParameters.environment}`));
     I.seeElement(this.fields.detailsLabelByText(`cluster=${serviceParameters.cluster}`));
     I.seeElement(this.fields.detailsLabelByText(`replication_set=${serviceParameters.replicationSet}`));
+  },
+
+  async verifyDisplayedServices(expectedServicesNames) {
+    const actualServices = await I.grabTextFromAll(this.fields.serviceNames);
+
+    if (expectedServicesNames.length !== actualServices.length) return false;
+
+    const expectedServicesNamesSorted = [...expectedServicesNames].sort();
+    const actualServicesSorted = [...actualServices].sort();
+
+    return expectedServicesNamesSorted.every((val, index) => val === actualServicesSorted[index]);
   },
 };
