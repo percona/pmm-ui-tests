@@ -1,5 +1,4 @@
 const assert = require('assert');
-const { SERVICE_TYPE } = require('../helper/constants');
 
 const { adminPage } = inject();
 
@@ -9,24 +8,15 @@ Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
 });
 
-const version = process.env.PS_VERSION ? `${process.env.PS_VERSION}` : '8.4';
-let container_name = `ps_pmm_${version}_replica`;
-
 Scenario(
-  'Verify metrics from PS Replica instance on PMM-Server @pmm-ps-replica-integration @not-ui-pipeline',
+  'PMM-T2028 - Verify metrics from PS Replica instance on PMM-Server @pmm-ps-replica-integration @not-ui-pipeline @nightly',
   async ({
-    I, grafanaAPI,
+    I, grafanaAPI, inventoryAPI,
   }) => {
     let response; let result;
     const metricNames = ['mysql_slave_status_slave_io_running', 'mysql_slave_status_slave_sql_running'];
 
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysqld_exporter" | grep "Running" | wc -l | grep "2"`);
-    await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "mysql_perfschema_agent" | grep "Running" | wc -l | grep "2"`);
-
-    const slaveServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | grep node-2 | awk -F" " '{print $2}'`)).trim();
-
-    // Waiting for metrics to start hitting for remotely added services
-    I.wait(10);
+    const slaveServiceName = (await inventoryAPI.getServiceDetailsByPartialName('slave')).service_name;
 
     // verify metric for client container slave service
     response = await grafanaAPI.checkMetricExist(metricNames[0], { type: 'service_name', value: slaveServiceName });
@@ -43,17 +33,12 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T9999 - Verify dashboard for PS Replica Instance @pmm-ps-replica-integration @not-ui-pipeline',
+  'PMM-T2029 - Verify dashboard for PS Replica Instance @pmm-ps-replica-integration @not-ui-pipeline @nightly',
   async ({
-    I, dashboardPage, adminPage,
+    I, dashboardPage, adminPage, inventoryAPI,
   }) => {
-    const master_container_name = await I.verifyCommand('docker ps -f name=ps --format "{{.Names }}" | grep _1');
-    const slave_container_name = await I.verifyCommand('docker ps -f name=ps --format "{{.Names }}" | grep _2');
-    const masterServiceName = (await I.verifyCommand(`docker exec ${master_container_name} pmm-admin list | grep MySQL | awk -F" " '{print $2}'`)).trim();
-    const slaveServiceName = (await I.verifyCommand(`docker exec ${slave_container_name} pmm-admin list | grep MySQL | awk -F" " '{print $2}'`)).trim();
-
-    console.log(`Master service name: ${masterServiceName}`);
-    console.log(`Slave service name: ${slaveServiceName}`);
+    const masterServiceName = (await inventoryAPI.getServiceDetailsByPartialName('master')).service_name;
+    const slaveServiceName = (await inventoryAPI.getServiceDetailsByPartialName('slave')).service_name;
 
     const serviceList = [masterServiceName, slaveServiceName];
 
@@ -75,13 +60,12 @@ Scenario(
   },
 ).retry(2);
 
-// PMM-12153 Update mysqld_exporter to the latest stable
-Scenario.skip(
-  'Verify QAN for PS Replica Instance @pmm-ps-replica-integration @not-ui-pipeline',
+Scenario(
+  'PMM-T2030 - Verify QAN for PS Replica Instance @pmm-ps-replica-integration @not-ui-pipeline @nightly',
   async ({
-    I, queryAnalyticsPage,
+    I, queryAnalyticsPage, inventoryAPI,
   }) => {
-    const slaveServiceName = (await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep MySQL | grep node-2 | awk -F" " '{print $2}'`)).trim();
+    const slaveServiceName = (await inventoryAPI.getServiceDetailsByPartialName('slave')).service_name;
     const serviceList = [slaveServiceName];
 
     for (const service of serviceList) {
