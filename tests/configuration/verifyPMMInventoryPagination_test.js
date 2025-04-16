@@ -91,7 +91,7 @@ Data(subPages).Scenario(
   },
 );
 
-Scenario('PMM-T2024 - Verify services list does not refresh to first page @inventory', async ({ I, pmmInventoryPage }) => {
+Scenario('PMM-T2024 - Verify services list does not refresh to first page @inventory-fb', async ({ I, pmmInventoryPage }) => {
   pmmInventoryPage.open();
   I.click(pmmInventoryPage.pagination.elements.pageNumberButton('2'));
   const startServices = await I.grabTextFromAll(pmmInventoryPage.fields.serviceNames);
