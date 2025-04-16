@@ -52,9 +52,9 @@ Scenario(
       adminPage.performPageUp(5);
       await dashboardPage.verifyMetricsExistence(dashboardPage.mysqlReplcationDashboard.metrics);
       if (service === masterServiceName) {
-        await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(7);
       } else {
-        await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
+        await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
       }
     }
   },

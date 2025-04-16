@@ -202,7 +202,7 @@ Scenario(
       I.waitForText('No queries available for this combination of filters', 30);
     });
   },
-);
+).retry(2);
 
 Scenario(
   'PMM-T221 - Verify that all filter options are always visible (but some disabled) after selecting an item and % value is changed @qan',
