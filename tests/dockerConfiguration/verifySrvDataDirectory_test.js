@@ -37,11 +37,13 @@ const runContainerWithDataContainer = async (I) => {
 const stopAndRemoveContainerWithoutDataContainer = async (I) => {
   await I.verifyCommand('docker stop pmm-server-srv || true');
   await I.verifyCommand('docker rm pmm-server-srv || true');
+  await I.verifyCommand('rm -fr $HOME/srvPasswordUpgrade || true');
 };
 
 const stopAndRemoveContainerWithPasswordVariable = async (I) => {
   await I.verifyCommand('docker stop pmm-server-password || true');
   await I.verifyCommand('docker rm pmm-server-password || true');
+  await I.verifyCommand('rm -fr $HOME/srvPasswordUpgrade || true');
 };
 
 const stopAndRemoveContainerWithDataContainer = async (I) => {
@@ -150,11 +152,10 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1255 Verify GF_SECURITY_ADMIN_PASSWORD environment variable @docker-configuration',
+  'PMM-T1255 + PMM-T1279 - Verify GF_SECURITY_ADMIN_PASSWORD environment variable also with changed admin password @docker-configuration',
   async ({
     I, homePage, loginPage,
   }) => {
-    I.say('Alo covers: PMM-T1279 Verify GF_SECURITY_ADMIN_PASSWORD environment variable with change-admin-password');
     const basePmmUrl = 'http://127.0.0.1:8082/';
 
     await runContainerWithPasswordVariable(I);
