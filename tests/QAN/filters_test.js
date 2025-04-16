@@ -180,7 +180,7 @@ Scenario(
   async ({
     I, adminPage, queryAnalyticsPage,
   }) => {
-    const serviceName = 'ps-single';
+    const serviceName = 'ps_pmm_';
     const db1 = 'postgres';
     const db2 = 'n/a';
     const section = 'Database';
@@ -210,7 +210,7 @@ Scenario(
     I, adminPage, queryAnalyticsPage,
   }) => {
     const serviceType = 'mysql';
-    const serviceName = 'ps-single';
+    const serviceName = 'ps_pmm_';
 
     await adminPage.applyTimeRange('Last 2 days');
     queryAnalyticsPage.waitForLoaded();
