@@ -234,8 +234,9 @@ Scenario('PMM-T2003 - Verify that MongoDB Compare dashboard has Cluster, Replica
 
   await I.verifyCommand(`sudo pmm-admin add mongodb --enable-all-collectors --cluster=${newClusterName} --username=${username} --password=${password} --environment=${newEnvironmentName} ${newServiceName} 127.0.0.1:27027`);
 
-  I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbInstancesCompareDashboard.url, { from: 'now-5m' }));
   I.wait(60);
+  I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbInstancesCompareDashboard.url, { from: 'now-5m' }));
+
 
   dashboardPage.mongodbInstancesCompareDashboard.selectEnvironment(newEnvironmentName);
   await dashboardPage.mongodbInstancesCompareDashboard.verifyDashboardHaveData(newServiceName);
