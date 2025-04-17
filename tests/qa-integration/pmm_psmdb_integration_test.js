@@ -228,22 +228,21 @@ Scenario('PMM-T1889 - Verify Mongo replication lag graph shows correct info @pmm
 
 Scenario('PMM-T2003 - Verify that MongoDB Compare dashboard has Cluster, Replication, Node filters @pmm-psmdb-replica-integration', async ({ I, dashboardPage, credentials }) => {
   const { username, password } = credentials.mongoReplicaPrimaryForBackups;
-  const newServiceName = 'new_replicaset_101';
+  const newServiceName = 'newServiceName';
   const newClusterName = 'new_replicaset_cluster';
   const newEnvironmentName = 'new_env';
 
   await I.verifyCommand(`sudo pmm-admin add mongodb --enable-all-collectors --cluster=${newClusterName} --username=${username} --password=${password} --environment=${newEnvironmentName} ${newServiceName} 127.0.0.1:27027`);
 
   I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbInstancesCompareDashboard.url, { from: 'now-5m' }));
-  const expectedMetrics = dashboardPage.mongodbInstancesCompareDashboard.metrics([newServiceName]);
-  const expectedFailingMetrics = dashboardPage.mongodbInstancesCompareDashboard.failingMetrics([newServiceName]);
+  I.wait(60);
 
   dashboardPage.mongodbInstancesCompareDashboard.selectEnvironment(newEnvironmentName);
-  await dashboardPage.mongodbInstancesCompareDashboard.verifyDashboardHaveData(expectedMetrics);
-  dashboardPage.mongodbInstancesCompareDashboard.selectCluster('');
+  await dashboardPage.mongodbInstancesCompareDashboard.verifyDashboardHaveData(newServiceName);
+  dashboardPage.mongodbInstancesCompareDashboard.selectEnvironment('');
 
   dashboardPage.mongodbInstancesCompareDashboard.selectCluster(newClusterName);
-  await dashboardPage.mongodbInstancesCompareDashboard.verifyDashboardHaveData(expectedMetrics, expectedFailingMetrics);
+  await dashboardPage.mongodbInstancesCompareDashboard.verifyDashboardHaveData(newServiceName);
   dashboardPage.mongodbInstancesCompareDashboard.selectCluster('');
 
   dashboardPage.mongodbInstancesCompareDashboard.selectReplicationSet('rs');
@@ -251,6 +250,6 @@ Scenario('PMM-T2003 - Verify that MongoDB Compare dashboard has Cluster, Replica
   dashboardPage.mongodbInstancesCompareDashboard.selectReplicationSet('');
 
   dashboardPage.mongodbInstancesCompareDashboard.selectServiceName(newServiceName);
-  await dashboardPage.mongodbInstancesCompareDashboard.verifyDashboardHaveData(expectedMetrics);
+  await dashboardPage.mongodbInstancesCompareDashboard.verifyDashboardHaveData(newServiceName);
   dashboardPage.mongodbInstancesCompareDashboard.selectServiceName('');
 });

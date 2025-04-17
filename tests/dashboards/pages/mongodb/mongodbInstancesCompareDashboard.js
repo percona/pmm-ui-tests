@@ -20,7 +20,7 @@ class MongodbInstancesCompareDashboard extends BaseDashboard {
       'Replica Set',
       'ReplSet State',
       'Connections',
-      'Cursors',
+      'Cursors ',
       'Latency',
       'Scan Ratios',
       'Index Filtering Effectiveness',
@@ -55,7 +55,7 @@ class MongodbInstancesCompareDashboard extends BaseDashboard {
   }
 
   async verifyDashboardHaveData(serviceName) {
-    await super.verifyData(this.metrics(serviceName), this.failingMetrics(serviceName));
+    await super.verifyData(this.metrics([serviceName]), this.failingMetrics([serviceName]));
   }
 }
 
