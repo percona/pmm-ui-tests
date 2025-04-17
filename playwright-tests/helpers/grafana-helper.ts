@@ -2,7 +2,8 @@ import { Page } from '@playwright/test';
 
 const grafanaHelper = {
   async authorize(page: Page, username = 'admin', password = process.env.ADMIN_PASSWORD || 'admin') {
-    const authToken = await this.getToken(username, password);
+    const authToken = this.getToken(username, password);
+    await page.goto('');
     await page.setExtraHTTPHeaders({ Authorization: `Basic ${authToken}` });
     await page.evaluate(() => {
       window.localStorage.setItem('0-grafana.pmm3.modalShown', 'true');
