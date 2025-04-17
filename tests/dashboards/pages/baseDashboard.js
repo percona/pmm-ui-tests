@@ -4,6 +4,7 @@ class BaseDashboard {
   constructor() {
     this.elements = {
       expandedGroups: locate('//button[@aria-expanded="true"]'),
+      collapsedGroups: locate('//div[@data-testid="dashboard-row-container"]//button[@aria-expanded="false"]'),
       groupsButton: locate('//button[contains(@data-testid, "dashboard-row-title")]'),
       headerText: locate('//*[@data-testid="header-container"]//h2[string-length(text()) > 1]'),
       noDataPanel: (panelName) => locate(`//section[contains(@data-testid, "${panelName}")]//*[contains(@data-testid, "Panel data error message") or text()="No data" or text()="N/A"]`),
@@ -65,6 +66,7 @@ class BaseDashboard {
       }
     });
 
+    await this.#expandAllGroups();
     I.assertEqual(expectedMetrics.length, countOfVerifiedMetrics, `Count of actual panels on the dashboard does not equal expected one. Actual: ${countOfVerifiedMetrics}. Expected: ${expectedMetrics.length}`);
     I.assertTrue(remainingExpectedMetrics.length === 0, `Panels ${remainingExpectedMetrics} are missing on the dashboard`);
     I.assertTrue(failingPanels.size === 0, `Panels: "${[...failingPanels].join(' ')}" do not have data dashboard`);
@@ -108,6 +110,15 @@ class BaseDashboard {
     while (numOfElements > 0) {
       numOfElements = await I.grabNumberOfVisibleElements(this.elements.expandedGroups);
       if (numOfElements > 0) I.click(this.elements.expandedGroups);
+    }
+  }
+
+  async #expandAllGroups() {
+    let numOfElements = 1;
+
+    while (numOfElements > 0) {
+      numOfElements = await I.grabNumberOfVisibleElements(this.elements.collapsedGroups);
+      if (numOfElements > 0) I.click(this.elements.collapsedGroups);
     }
   }
 }
