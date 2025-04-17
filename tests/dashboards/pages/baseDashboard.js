@@ -69,7 +69,7 @@ class BaseDashboard {
     await this.#expandAllGroups();
     I.assertEqual(expectedMetrics.length, countOfVerifiedMetrics, `Count of actual panels on the dashboard does not equal expected one. Actual: ${countOfVerifiedMetrics}. Expected: ${expectedMetrics.length}`);
     I.assertTrue(remainingExpectedMetrics.length === 0, `Panels ${remainingExpectedMetrics} are missing on the dashboard`);
-    I.assertTrue(failingPanels.size === 0, `Panels: "${[...failingPanels].join(' ')}" do not have data dashboard`);
+    I.assertTrue(failingPanels.size === 0, `Panels: "${[...failingPanels].join(', ')}" do not have data dashboard`);
   }
 
   selectEnvironment(envName) {

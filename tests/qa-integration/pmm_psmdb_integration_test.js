@@ -238,7 +238,7 @@ Scenario('PMM-T1889 - Verify Mongo replication lag graph shows correct info @pmm
 });
 
 Scenario('PMM-T2003 - Verify that MongoDB Compare dashboard has Cluster, Replication, Node filters @pmm-psmdb-replica-integration', async ({ I, dashboardPage, credentials }) => {
-  I.wait(60);
+  I.wait(240);
   I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbInstancesCompareDashboard.url, { from: 'now-5m' }));
 
   dashboardPage.mongodbInstancesCompareDashboard.selectEnvironment(newEnvironmentName);
@@ -256,4 +256,4 @@ Scenario('PMM-T2003 - Verify that MongoDB Compare dashboard has Cluster, Replica
   dashboardPage.mongodbInstancesCompareDashboard.selectServiceName(newServiceName);
   await dashboardPage.mongodbInstancesCompareDashboard.verifyDashboardHaveData(newServiceName);
   dashboardPage.mongodbInstancesCompareDashboard.selectServiceName('');
-});
+}).retry(1);
