@@ -64,7 +64,7 @@ Scenario(
   async ({
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI,
   }) => {
-    const serviceName = 'pmm-qa-pgsql-12';
+    const serviceName = 'pmm-qa-pgsql-16';
 
     await inventoryAPI.deleteNodeByServiceName('POSTGRESQL_SERVICE', serviceName);
 
@@ -96,7 +96,7 @@ Scenario(
   async ({
     I, dashboardPage, settingsAPI,
   }) => {
-    const serviceName = 'pmm-qa-pgsql-12';
+    const serviceName = 'pmm-qa-pgsql-16';
 
     // Increase resolution to avoid failures for OVF execution
     if (process.env.OVF_TEST === 'yes') {
