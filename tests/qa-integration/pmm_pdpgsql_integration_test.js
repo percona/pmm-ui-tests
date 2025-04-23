@@ -22,7 +22,7 @@ Scenario(
     dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithNA();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
-    await I.verifyCommand('pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"');
-    await I.verifyCommand('pmm-admin list | grep "postgres_exporter" | grep "Running"');
+    await I.verifyCommand('sudo pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"');
+    await I.verifyCommand('sudo pmm-admin list | grep "postgres_exporter" | grep "Running"');
   },
 );
