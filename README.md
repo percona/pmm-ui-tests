@@ -76,7 +76,6 @@ Execute command in the Project Root folder
     @bm-mongo               Backup Management functionality tests for MySQL 
     @dashboards             Dashboards functionality, check that graphs are not empty
                                 (e.g. Data from exporters is displayed at those dashboards)
-    @dbaas                  DB as a Service functionality tests
     @grafana-pr             Executed in Github Actions for PRs in percona-platform/grafana repository
     @fb-alerting                     Integrated Alerting functionality tests
     @instances              Remote Instances addition functionality 

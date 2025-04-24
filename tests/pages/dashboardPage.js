@@ -1462,18 +1462,6 @@ module.exports = {
     return '[aria-label="Variable options"]';
   },
 
-  async genericDashboardLoadForDbaaSClusters(url, timeRange = 'Last 5 minutes', performPageDown = 4, graphsWithNa = 0, graphsWithoutData = 0) {
-    I.amOnPage(url);
-    this.waitForDashboardOpened();
-    I.click(adminPage.fields.metricTitle);
-    await adminPage.applyTimeRange(timeRange);
-    I.click(adminPage.fields.metricTitle);
-    adminPage.performPageDown(performPageDown);
-    await this.expandEachDashboardRow();
-    await this.verifyThereAreNoGraphsWithNA(graphsWithNa);
-    await this.verifyThereAreNoGraphsWithoutData(graphsWithoutData);
-  },
-
   async applyFilter(filterName, filterValue) {
     const filterValueSelector = `//span[contains(text(), '${filterValue}')]`;
     const filterDropdownOptionsLocator = this.fields.filterDropdownOptionsLocator(filterValue);
