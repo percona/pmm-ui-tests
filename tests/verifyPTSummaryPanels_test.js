@@ -8,11 +8,11 @@ Before(async ({ I }) => {
 // TODO: automate PMM-T672 mongodb after fix for https://perconadev.atlassian.net/browse/PMM-11406
 
 Scenario(
-  'PMM-T671, PMM-T666, PMM-T672 - Verify summary for PS is displayed on Instance Summary dashboard @dashboards @nightly',
+  'PMM-T671 + PMM-T666 + PMM-T672 - Verify summary for PS is displayed on Instance Summary dashboard @dashboards @nightly',
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
-    const ps_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'ps-single');
+    const ps_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'ps_pmm');
     const url = I.buildUrlWithParams(
       dashboardPage.mysqlInstanceSummaryDashboard.clearUrl,
       { service_name: ps_service_response.service_name, from: 'now-15m' },
