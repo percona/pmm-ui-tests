@@ -84,7 +84,7 @@ module.exports = {
     return service
       .data
       .services
-      .find((service) => service.service_name.startsWith(serviceName));
+      .find((service) => service.service_name.includes(serviceName));
   },
 
   async apiGetPMMAgentInfoByServiceId(serviceId, agentType = AGENT_TYPE.PMM_AGENT) {
