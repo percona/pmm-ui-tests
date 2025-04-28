@@ -233,11 +233,11 @@ module.exports = {
         clusterName: 'aws_rds_mysql_5_6',
         port: 3306,
       },
-      aws_postgresql_16: {
-        address: process.env.PMM_QA_RDS_PGSQL16_HOST,
-        userName: process.env.PMM_QA_RDS_PGSQL16_USER,
-        password: process.env.PMM_QA_RDS_PGSQL16_PASSWORD,
-        clusterName: 'aws_postgresql_12',
+      aws_postgresql_15: {
+        address: process.env.PMM_QA_RDS_PGSQL15_HOST,
+        userName: process.env.PMM_QA_RDS_PGSQL15_USER,
+        password: process.env.PMM_QA_RDS_PGSQL15_PASSWORD,
+        clusterName: 'aws_postgresql_15',
         port: 42001,
       },
       aurora: {
