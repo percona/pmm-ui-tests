@@ -208,7 +208,13 @@ class Grafana extends Helper {
       password,
     };
     const headers = { Authorization: `Basic ${await this.getAuth()}` };
-    const resp = await apiContext.sendPostRequest('graph/api/admin/users', body, headers);
+    let resp;
+
+    try {
+      resp = await apiContext.sendPostRequest('graph/api/admin/users', body, headers);
+    } catch (e) {
+      throw Error(`Api call to create user failed with errors: ${e.errors}`);
+    }
 
     return resp.data.id;
   }
