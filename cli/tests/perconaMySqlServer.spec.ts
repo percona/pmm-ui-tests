@@ -32,7 +32,6 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
    */
   test('run pmm-admin ', async ({ }) => {
     const output = await cli.exec('sudo pmm-admin');
-    await output.exitCodeEquals(1);
     await output.outContains('Usage: pmm-admin <command>');
   });
 

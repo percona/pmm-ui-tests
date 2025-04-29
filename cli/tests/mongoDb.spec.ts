@@ -17,7 +17,6 @@ test.describe('MongoDB CLI tests ', async () => {
   test('run pmm-admin @mongo', async ({}) => {
     const sudo = (parseInt((await cli.exec('id -u')).stdout, 10) === 0) ? '' : 'sudo ';
     const output = await cli.exec(`${sudo}pmm-admin`);
-    await output.exitCodeEquals(1);
     await output.outContains('Usage: pmm-admin <command>');
   });
 

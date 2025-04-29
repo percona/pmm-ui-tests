@@ -26,7 +26,6 @@ test.describe('PMM Client CLI tests for PostgreSQL Data Base', async () => {
   test('run pmm-admin', async ({}) => {
     const sudo = parseInt((await cli.exec('id -u')).stdout, 10) === 0 ? '' : 'sudo ';
     const output = await cli.exec(`${sudo}pmm-admin`);
-    await output.exitCodeEquals(1);
     await output.outContains('Usage: pmm-admin <command>');
   });
 

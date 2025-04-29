@@ -144,9 +144,16 @@ Scenario(
   async ({
     I, queryAnalyticsPage, credentials,
   }) => {
+    const { root } = credentials.perconaServer;
     const { username, password } = credentials.perconaServer.msandbox;
+    const psVersion = parseFloat((await I.verifyCommand('docker ps -f name=ps --format "{{.Image }}"')).split(':')[1]);
+    const testContainerName = await I.verifyCommand('docker ps -f name=ps --format "{{.Names }}"');
 
-    await I.verifyCommand(`mysql -h 127.0.0.1 -u ${username} -p${password} --port 3317 -e "SET MAX_EXECUTION_TIME = 1000;"`);
+    if (psVersion > 8.0) {
+      await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 -u ${root.username} -p${root.password} --port 3306 -e "SET MAX_EXECUTION_TIME = 1000;"`);
+    } else {
+      await I.verifyCommand(`mysql -h 127.0.0.1 -u ${username} -p${password} --port 3317 -e "SET MAX_EXECUTION_TIME = 1000;"`);
+    }
 
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-30m', refresh: '5s' }));
     queryAnalyticsPage.waitForLoaded();
