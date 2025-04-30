@@ -1,4 +1,4 @@
-const { SERVICE_TYPE } = require("./helper/constants");
+const { SERVICE_TYPE } = require('./helper/constants');
 
 const clusterName = 'minikube';
 const pxc_cluster_name = 'upgrade-pxc';

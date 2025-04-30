@@ -1,4 +1,4 @@
-const { locateOption } = require("../../helper/locatorHelper");
+const { locateOption } = require('../../helper/locatorHelper');
 
 const { I } = inject();
 
