@@ -3,6 +3,7 @@ const {
 } = inject();
 const assert = require('assert');
 const faker = require('faker');
+const { getOptionLocator } = require('../../helper/locatorHelper');
 
 module.exports = {
   url: 'graph/dbaas',
@@ -70,7 +71,7 @@ module.exports = {
   },
   numberOfNodesError: 'Only 1, 3 or more nodes allowed',
   common: {
-    selectOptionInDropdown: (value) => `//div[@data-testid="${value}-select-option"]`,
+    selectOptionInDropdown: (value) => getOptionLocator(value),
   },
   tabs: {
     kubernetesClusterTab: {
@@ -145,8 +146,8 @@ module.exports = {
         restoreFromLocationSelect: locate('$locations-select-wrapper').find('div').at(3).as('Restore from Select'),
         backupArtifactSelect: locate('$backupArtifact-field-container').find('div').at(2).as('Backup artifact Select'),
         secretsNameSelect: locate('$secretsName-field-container').find('div').at(4).as('Secrets Name Select'),
-        backupArtifactSelectValue: (artifactName) => `//div[@data-testid="s3://pmm-backup1/${artifactName}-select-option"]`,
-        secretsNameSelectValue: (clusterName) => `//div[@data-testid="dbaas-${clusterName}-psmdb-secrets-select-option"]`,
+        backupArtifactSelectValue: (artifactName) => getOptionLocator(`s3://pmm-backup1/${artifactName}`),
+        secretsNameSelectValue: (clusterName) => getOptionLocator(`dbaas-${clusterName}-psmdb-secrets`),
       },
       backups: {
         enableBackupsToggle: '//div[text()="Enable backups"]/following-sibling::div',
@@ -160,7 +161,7 @@ module.exports = {
           cpuNumberFields: '$cpu-number-input',
           resourcesPerNodeLabel: '$resources-field-label',
           resourcesPerNodeSelect: locate('$resources-field-container').find('div').at(4).as('Resources per Node Select'),
-          resourcesPerNodesOption: (option) => `$${option}-select-option`,
+          resourcesPerNodesOption: (option) => getOptionLocator(option),
           dbClusterResourcesBarMemory: '$dbcluster-resources-bar-memory',
           dbClusterResourcesBarCpu: '$dbcluster-resources-bar-cpu',
           diskFieldErrorMessage: '$disk-field-error-message',

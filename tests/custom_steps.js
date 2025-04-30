@@ -4,6 +4,7 @@ const buildUrl = require('build-url');
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
+const { getOptionLocator } = require('./helper/locatorHelper');
 
 const systemMessageText = 'div[data-testid^="data-testid Alert"] > div';
 const systemMessageButtonClose = '[aria-label="Close alert"]';
@@ -39,7 +40,7 @@ module.exports = () => actor({
   },
 
   useDataQA: (selector) => `[data-testid="${selector}"]`,
-  getSingleSelectOptionLocator: (optionName) => locate(`[data-testid="${optionName}-select-option"]`),
+  getSingleSelectOptionLocator: (optionName) => locate(getOptionLocator(optionName)),
   getClosePopUpButtonLocator: () => systemMessageButtonClose,
   getPopUpLocator: () => systemMessageText,
 
