@@ -25,6 +25,9 @@ test.describe('PMM Client CLI tests for ProxySQL', async () => {
   test('run pmm-admin add proxysql based on running intsances', async ({}) => {
     const hosts = (await cli.exec('sudo pmm-admin list | grep "ProxySQL" | awk -F" " \'{print $3}\''))
       .getStdOutLines();
+
+    expect(hosts, 'No running ProxySQL instances found!').not.toHaveLength(0);
+
     let n = 1;
     for (const host of hosts) {
       const output = await cli.exec(`sudo pmm-admin add proxysql --username=${PXC_USER} --password=${PXC_PASSWORD} proxysql_${n++} ${host}`);
@@ -37,8 +40,11 @@ test.describe('PMM Client CLI tests for ProxySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/proxysql-specific-tests.bats#L25
    */
   test('run pmm-admin add proxysql again based on running instances', async ({}) => {
-    const hosts = (await cli.exec('sudo pmm-admin list | grep "ProxySQL" | grep "proxysql_" | awk -F" " \'{print $3}\''))
+    const hosts = (await cli.exec('sudo pmm-admin list | grep "ProxySQL" | grep "pxc_proxysql_pmm" | awk -F" " \'{print $3}\''))
       .getStdOutLines();
+
+    expect(hosts, 'No running ProxySQL instances found!').not.toHaveLength(0);
+
     let n = 1;
     for (const host of hosts) {
       const output = await cli.exec(`sudo pmm-admin add proxysql --username=${PXC_USER} --password=${PXC_PASSWORD} proxysql_${n++} ${host}`);
@@ -51,8 +57,11 @@ test.describe('PMM Client CLI tests for ProxySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/proxysql-specific-tests.bats#L38
    */
   test('run pmm-admin remove proxysql', async ({}) => {
-    const services = (await cli.exec('sudo pmm-admin list | grep "ProxySQL" | grep "proxysql_" | awk -F" " \'{print $2}\''))
+    const services = (await cli.exec('sudo pmm-admin list | grep "ProxySQL" | grep "pxc_proxysql_pmm" | awk -F" " \'{print $2}\''))
       .getStdOutLines();
+
+    expect(services, 'No running ProxySQL instances found!').not.toHaveLength(0);
+
     for (const service of services) {
       const output = await cli.exec(`sudo pmm-admin remove proxysql ${service}`);
       await output.assertSuccess();
@@ -66,6 +75,9 @@ test.describe('PMM Client CLI tests for ProxySQL', async () => {
   test('run pmm-admin remove proxysql again', async ({}) => {
     const hosts = (await cli.exec('sudo pmm-admin list | grep "ProxySQL" | awk -F" " \'{print $3}\''))
       .getStdOutLines();
+
+    expect(hosts, 'No running ProxySQL instances found!').not.toHaveLength(0);
+
     let n = 1;
     for (const host of hosts) {
       const output = await cli.exec(`sudo pmm-admin remove proxysql proxysql_${n++}`);
@@ -78,8 +90,11 @@ test.describe('PMM Client CLI tests for ProxySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/proxysql-specific-tests.bats#L63
    */
   test('PMM-T965 run pmm-admin add proxysql with --agent-password flag', async ({}) => {
-    const hosts = (await cli.exec('sudo pmm-admin list | grep "ProxySQL" | grep "proxysql_" | awk -F" " \'{print $3}\''))
+    const hosts = (await cli.exec('sudo pmm-admin list | grep "ProxySQL" | grep "pxc_proxysql_pmm" | awk -F" " \'{print $3}\''))
       .getStdOutLines();
+
+    expect(hosts, 'No running ProxySQL instances found!').not.toHaveLength(0);
+
     let n = 1;
     for (const host of hosts) {
       const output = await cli.exec(`sudo pmm-admin add proxysql --username=${PXC_USER} --password=${PXC_PASSWORD} --agent-password=mypass proxysql_${n++} ${host}`);
@@ -92,8 +107,11 @@ test.describe('PMM Client CLI tests for ProxySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/proxysql-specific-tests.bats#L76
    */
   test('PMM-T965 check metrics from proxysql service with custom agent password', async ({}) => {
-    const hosts = (await cli.exec('sudo pmm-admin list | grep "ProxySQL" | grep "proxysql_" | awk -F" " \'{print $3}\''))
+    const hosts = (await cli.exec('sudo pmm-admin list | grep "ProxySQL" | grep "pxc_proxysql_pmm" | awk -F" " \'{print $3}\''))
       .getStdOutLines();
+
+    expect(hosts, 'No running ProxySQL instances found!').not.toHaveLength(0);
+
     for (const host of hosts) {
       const serverContainer = (await cli.exec('docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Names}}" | grep \'pmm-server\' | awk \'{print $3}\''))
         .stdout.trim();
@@ -112,8 +130,11 @@ test.describe('PMM Client CLI tests for ProxySQL', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/proxysql-specific-tests.bats#L91
    */
   test('run pmm-admin remove proxysql added with custom agent password', async ({}) => {
-    const services = (await cli.exec('sudo pmm-admin list | grep "ProxySQL" | grep "proxysql_" | awk -F" " \'{print $2}\''))
+    const services = (await cli.exec('sudo pmm-admin list | grep "ProxySQL" | grep "pxc_proxysql_pmm" | awk -F" " \'{print $2}\''))
       .getStdOutLines();
+
+    expect(services, 'No running ProxySQL instances found!').not.toHaveLength(0);
+
     for (const service of services) {
       const output = await cli.exec(`sudo pmm-admin remove proxysql ${service}`);
       await output.assertSuccess();
