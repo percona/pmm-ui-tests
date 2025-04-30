@@ -555,7 +555,7 @@ module.exports = {
     tooltipObj.tooltipReadMoreLink = this.fields.tooltipReadMoreLink;
     await adminPage.verifyTooltip(tooltipObj);
 
-    I.moveCursorTo(locate('[title="Go to home"]'));
+    I.moveCursorTo(locate('[aria-label="Breadcrumbs"]'));
   },
 
   verifySwitch(switchSelector, expectedSwitchState = 'on') {
