@@ -72,8 +72,8 @@ module.exports = {
     noRulesFound: 'You haven\'t created any rules yet',
     confirmDelete: 'Deleting this rule will permanently remove it from your alert rule list. Are you sure you want to delete this rule?',
     successRuleCreate: (name) => `Rule "${name}" saved.`,
-    successRuleEdit: (name) => `Rule "${name}" updated.`,
-    successfullyDeleted: 'Rule deleted.',
+    successRuleEdit: 'Rule updated successfully',
+    successfullyDeleted: 'Rule successfully deleted',
     failRuleCreate: 'There are errors in the form. Please correct them and try again!',
     failRuleCreateDuration: 'Failed to save rule: Duration (0s) can\'t be shorter than evaluation interval for the given group (1m0s).; Duration (0s) can\'t be shorter than evaluation interval for the given group (1m0s).',
   },
@@ -121,7 +121,7 @@ module.exports = {
     I.fillField(this.fields.editRuleThreshold, duration);
     // I.fillField(this.fields.editRuleEvaluate, '10s');
     I.click(this.buttons.saveAndExit);
-    I.verifyPopUpMessage(this.messages.successRuleEdit(ruleName));
+    I.verifyPopUpMessage(this.messages.successRuleEdit);
   },
 
   openAlertRulesTab() {
