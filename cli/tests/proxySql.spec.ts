@@ -3,7 +3,7 @@ import * as cli from '@helpers/cli-helper';
 
 const PXC_USER = 'admin';
 const PXC_PASSWORD = 'admin';
-const ipPort = '127.0.0.1:6033';
+const ipPort = '127.0.0.1:6032';
 let containerName: string;
 
 test.describe('PMM Client CLI tests for ProxySQL', async () => {
@@ -33,7 +33,7 @@ test.describe('PMM Client CLI tests for ProxySQL', async () => {
 
     let n = 1;
     for (const host of hosts) {
-      const output = await cli.exec(`docker exec ${containerName} pmm-admin add proxysql --username=${PXC_USER} --password=${PXC_PASSWORD} proxysql_${n++} ${host}`);
+      const output = await cli.exec(`docker exec ${containerName} pmm-admin add proxysql --username=${PXC_USER} --password=${PXC_PASSWORD} --port=6032 proxysql_${n++} ${host}`);
       await output.assertSuccess();
       await output.outContains('ProxySQL Service added.');
     }
@@ -51,7 +51,7 @@ test.describe('PMM Client CLI tests for ProxySQL', async () => {
 
     let n = 1;
     for (const host of hosts) {
-      const output = await cli.exec(`docker exec ${containerName} pmm-admin add proxysql --username=${PXC_USER} --password=${PXC_PASSWORD} proxysql_${n++} ${host}`);
+      const output = await cli.exec(`docker exec ${containerName} pmm-admin add proxysql --username=${PXC_USER} --password=${PXC_PASSWORD} --port=6032 proxysql_${n++} ${host}`);
       await output.exitCodeEquals(1);
       await output.outContains('already exists.');
     }
@@ -86,7 +86,7 @@ test.describe('PMM Client CLI tests for ProxySQL', async () => {
 
     let n = 1;
     for (const host of hosts) {
-      const output = await cli.exec(`docker exec ${containerName} pmm-admin remove proxysql proxysql_${n++}`);
+      const output = await cli.exec(`docker exec ${containerName} pmm-admin remove proxysql --port=6032 proxysql_${n++}`);
       await output.exitCodeEquals(1);
       await output.outContains('not found.');
     }
@@ -104,7 +104,7 @@ test.describe('PMM Client CLI tests for ProxySQL', async () => {
 
     let n = 1;
     for (const host of hosts) {
-      const output = await cli.exec(`docker exec ${containerName} pmm-admin add proxysql --username=${PXC_USER} --password=${PXC_PASSWORD} --agent-password=mypass proxysql_${n++} ${host}`);
+      const output = await cli.exec(`docker exec ${containerName} pmm-admin add proxysql --username=${PXC_USER} --password=${PXC_PASSWORD} --port=6032 --agent-password=mypass proxysql_${n++} ${host}`);
       await output.assertSuccess();
       await output.outContains('ProxySQL Service added.');
     }
