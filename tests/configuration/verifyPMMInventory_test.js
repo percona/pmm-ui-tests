@@ -1,5 +1,8 @@
 const assert = require('assert');
-const { SERVICE_TYPE, NODE_TYPE } = require('../helper/constants');
+const {
+  SERVICE_TYPE, NODE_TYPE,
+  AGENT_STATUS,
+} = require('../helper/constants');
 
 const {
   remoteInstancesPage, pmmInventoryPage, remoteInstancesHelper,
@@ -243,16 +246,39 @@ Scenario(
     await I.waitForVisible(pmmInventoryPage.fields.showRowDetails, 10);
     await pmmInventoryPage.servicesTab.pagination.selectRowsPerPage(50);
 
-    const services = Object.values((await inventoryAPI.apiGetServices()).data).flat(Infinity)
-      .map((o) => (o.service_name));
+    const allAgents = [];
 
-    for (const sn of services) {
-      await I.waitForVisible(pmmInventoryPage.fields.showServiceDetails(sn), 10);
-      await I.click(pmmInventoryPage.fields.showServiceDetails(sn));
-      await I.waitForText('running', 10, pmmInventoryPage.fields.agentStatus);
-      await I.waitForVisible(pmmInventoryPage.fields.hideServiceDetails(sn), 10);
-      await I.click(pmmInventoryPage.fields.hideServiceDetails(sn));
+    Object.values((await inventoryAPI.apiGetServices()).data).flat(Infinity).forEach((o) => {
+      allAgents.push(...o.agents);
+    });
+
+    const pmmAgents = allAgents.filter((o) => o.agent_type === 'pmm-agent');
+    const otherAgents = allAgents.filter((o) => o.agent_type !== 'pmm-agent');
+
+    const allPmmAgentsAreConnected = pmmAgents.every((o) => o.is_connected === true);
+    const allAgentsAreRunning = otherAgents.every((o) => o.status === AGENT_STATUS.RUNNING);
+
+    const errors = [];
+
+    try {
+      assert.ok(allPmmAgentsAreConnected, 'Not all agents are connected');
+    } catch (e) {
+      errors.push({
+        message: 'Not all agents are connected',
+        agents: pmmAgents,
+      });
     }
+
+    try {
+      assert.ok(allAgentsAreRunning, 'Not all agents are running');
+    } catch (e) {
+      errors.push({
+        message: 'Not all agents are running',
+        agents: otherAgents,
+      });
+    }
+
+    assert.ok(errors.length === 0, `Errors found: \n${JSON.stringify(errors, null, 2)}`);
   },
 );
 
