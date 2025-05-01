@@ -255,26 +255,26 @@ Scenario(
     const pmmAgents = allAgents.filter((o) => o.agent_type === 'pmm-agent');
     const otherAgents = allAgents.filter((o) => o.agent_type !== 'pmm-agent');
 
-    const allPmmAgentsAreConnected = pmmAgents.every((o) => o.is_connected === true);
-    const allAgentsAreRunning = otherAgents.every((o) => o.status === AGENT_STATUS.RUNNING);
+    const pmmAgentsNotConnected = pmmAgents.filter((o) => o.is_connected !== true);
+    const agentsNotRunning = otherAgents.filter((o) => o.status !== AGENT_STATUS.RUNNING);
 
     const errors = [];
 
     try {
-      assert.ok(allPmmAgentsAreConnected, 'Not all agents are connected');
+      assert.ok(!pmmAgentsNotConnected.length, 'Not all agents are connected');
     } catch (e) {
       errors.push({
         message: 'Not all agents are connected',
-        agents: pmmAgents,
+        agents: pmmAgentsNotConnected,
       });
     }
 
     try {
-      assert.ok(allAgentsAreRunning, 'Not all agents are running');
+      assert.ok(!agentsNotRunning.length, 'Not all agents are running');
     } catch (e) {
       errors.push({
         message: 'Not all agents are running',
-        agents: otherAgents,
+        agents: agentsNotRunning,
       });
     }
 
