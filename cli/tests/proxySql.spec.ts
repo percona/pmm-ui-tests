@@ -14,10 +14,6 @@ test.describe('PMM Client CLI tests for ProxySQL', async () => {
     containerName = result.stdout.trim();
   });
 
-  test.afterAll(async ({}) => {
-    const output = await cli.exec('sudo pmm-admin remove proxysql prerequisite');
-    await output.assertSuccess();
-  });
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/proxysql-specific-tests.bats#L10
    */
