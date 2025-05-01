@@ -253,7 +253,7 @@ Scenario(
     });
 
     const pmmAgents = allAgents.filter((o) => o.agent_type === 'pmm-agent');
-    const otherAgents = allAgents.filter((o) => o.agent_type !== 'pmm-agent');
+    const otherAgents = allAgents.filter((o) => o.agent_type !== 'pmm-agent' && o.agent_type !== 'external_exporter');
 
     const pmmAgentsNotConnected = pmmAgents.filter((o) => o.is_connected !== true);
     const agentsNotRunning = otherAgents.filter((o) => o.status !== AGENT_STATUS.RUNNING);
