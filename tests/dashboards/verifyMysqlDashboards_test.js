@@ -81,7 +81,8 @@ Data(urlsAndMetrics).Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.panelMenu(current.metricName)
       .showMenu()
-      .share();
+      .share()
+      .shareLink();
     I.waitForVisible(dashboardPage.sharePanel.elements.imageRendererPluginLink, 20);
     I.seeAttributesOnElements(
       dashboardPage.sharePanel.elements.imageRendererPluginLink,
