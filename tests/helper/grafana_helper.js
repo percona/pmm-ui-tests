@@ -270,10 +270,10 @@ class Grafana extends Helper {
     return stdout.trim();
   }
 
-  async clickIfVisible(element) {
+  async clickIfVisible(element, timeout = 30) {
     const { Playwright } = this.helpers;
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < timeout; i++) {
       const numVisible = await Playwright.grabNumberOfVisibleElements(element);
 
       if (numVisible) {
@@ -282,7 +282,7 @@ class Grafana extends Helper {
         return element;
       }
 
-      Playwright.wait(10);
+      await Playwright.wait(1);
     }
 
     return element;
