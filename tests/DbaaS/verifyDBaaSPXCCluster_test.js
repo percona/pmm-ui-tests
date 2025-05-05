@@ -99,7 +99,7 @@ Scenario(
       process.env.VM_IP,
       `Expected the Public Address Input Field to Match ${process.env.VM_IP} but found ${publicAddress}`,
     );
-    pmmSettingsPage.applyChanges();
+    await pmmSettingsPage.applyChanges();
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     publicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);

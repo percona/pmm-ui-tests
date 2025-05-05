@@ -330,9 +330,9 @@ module.exports = {
     await this.waitForPmmSettingsPageLoaded();
   },
 
-  applyChanges() {
+  async applyChanges() {
     I.click(this.fields.applyButton);
-    I.verifyPopUpMessage(this.messages.successPopUpMessage);
+    await tryTo(() => I.verifyPopUpMessage(this.messages.successPopUpMessage));
   },
 
   switchAzure() {
