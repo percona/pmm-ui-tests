@@ -264,7 +264,7 @@ Scenario('PMM-T1401 - Verify Percona Alerting wording in Settings @max-length @s
 });
 
 Scenario(
-  'PMM-T1328 Verify public address is set automatically on Percona Platform page once connected to Portal @nightly',
+  'PMM-T1328 - Verify public address is set automatically on Percona Platform page once connected to Portal @nightly',
   async ({
     I, pmmSettingsPage, portalAPI, perconaPlatformPage, settingsAPI,
   }) => {
