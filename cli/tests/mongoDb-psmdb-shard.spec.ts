@@ -38,7 +38,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
 
     const expectedValue = 'mongodb_shards_collection_chunks_count';
     await expect(async () => {
-      const metrics = await cli.getMetrics(serviceName, 'pmm', 'mypass');
+      const metrics = await cli.getMetrics(serviceName, 'pmm', 'mypass', containerName);
       expect(metrics, `Scraped metrics must contain ${expectedValue}!`).toContain(expectedValue);
     }).toPass({
       intervals: [1_000],

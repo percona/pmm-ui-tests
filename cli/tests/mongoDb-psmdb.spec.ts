@@ -70,7 +70,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L96
    */
   test('run pmm-admin add mongodb again based on running instances to check if fails with error message exists', async ({}) => {
-    let output = await cli.exec(`sudo pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} mongo_exists ${replIpPort}`);
+    let output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} mongo_exists ${replIpPort}`);
     await output.assertSuccess();
     await output.outContains('MongoDB Service added');
     await cli.exec('sleep 2');
@@ -138,7 +138,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     await output.outContains('MongoDB Service added');
 
     await test.step('PMM-T964 check metrics from mongodb service with custom agent password', async () => {
-      const metrics = await cli.getMetrics(serviceName, 'pmm', 'mypass', ip);
+      const metrics = await cli.getMetrics(serviceName, 'pmm', 'mypass', containerName);
       const expectedValue = 'mongodb_up 1';
       expect(metrics, `Scraped metrics do not contain ${expectedValue}!`).toContain(expectedValue);
     });
