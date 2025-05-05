@@ -57,7 +57,7 @@ Scenario(
   }) => {
     I.amOnPage(pmmInventoryPage.url);
 
-    const service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'ps-');
+    const service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'ps_');
     const serviceName = service_response.service_name;
 
     // wrong node name
