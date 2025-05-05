@@ -4,7 +4,8 @@ import * as cli from '@helpers/cli-helper';
 const MONGO_USERNAME = 'pmm';
 const MONGO_PASSWORD = 'pmmpass';
 
-const replIpPort = '127.0.0.1:27027';
+const replIpPort = '127.0.0.1:27017';
+const containerName = 'rs101';
 
 test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   test.beforeAll(async ({}) => {
@@ -12,11 +13,6 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     await result.outContains('rscfg01', 'PSMDB rscfg01 docker container should exist. please run pmm-framework with --database psmdb,SETUP_TYPE=shards');
     const result1 = await cli.exec('sudo pmm-admin status');
     await result1.outContains('Running', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
-    const output = await cli.exec(`sudo pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} prerequisite_1 ${replIpPort}`);
-    await output.assertSuccess();
-  });
-
-  test.afterAll(async ({}) => {
   });
 
   test('@PMM-T1539 Verify that MongoDB exporter shows version for mongos instance @pmm-psmdb-shard-cli', async ({}) => {
@@ -30,5 +26,27 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     const actualEdition = output[0].match(/(?<=edition=").*?(?=")/);
     expect(actualExactVersion, `Scraped metrics must contain ${version[0]}!`).toContain(version[0]);
     expect(actualEdition, `Scraped metrics must contain ${edition}!`).toContain(edition);
+  });
+
+  test('PMM-T1853 Collect Data about Sharded collections in MongoDB', async ({}) => {
+    const ip = replIpPort.split(':')[0];
+    const port = replIpPort.split(':')[1];
+    const serviceName = 'mongo_shards_test_1';
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --host=${ip} --port=${port} --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} --service-name=${serviceName} --enable-all-collectors --agent-password='mypass'`);
+    await output.assertSuccess();
+    await output.outContains('MongoDB Service added');
+
+    const expectedValue = 'mongodb_shards_collection_chunks_count';
+    await expect(async () => {
+      const metrics = await cli.getMetrics(serviceName, 'pmm', 'mypass');
+      expect(metrics, `Scraped metrics must contain ${expectedValue}!`).toContain(expectedValue);
+    }).toPass({
+      intervals: [1_000],
+      timeout: 5_000,
+    });
+
+    const results = await cli.exec(`docker exec ${containerName} pmm-admin remove mongodb ${serviceName}`);
+    await results.assertSuccess();
+    await results.outContains('Service removed.');
   });
 });
