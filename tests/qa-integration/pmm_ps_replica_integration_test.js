@@ -20,21 +20,15 @@ Scenario(
     I, grafanaAPI,
   }) => {
     let response; let result;
-    const metricNames = ['mysql_slave_status_slave_io_running', 'mysql_slave_status_slave_sql_running'];
+    const metricNames = ['mysql_slave_status_replica_io_running', 'mysql_slave_status_replica_sql_running'];
 
     // verify metric for client container slave service
     response = await grafanaAPI.getMetric(metricNames[0], { type: 'service_name', value: serviceList[1].serviceName });
-    result = JSON.stringify(response.data.results);
-
-    console.log(response.data.results.A.frames[0].data);
 
     assert.ok(response.data.results.A.frames[0].data.values.length !== 0, `Metrics ${metricNames[0]} from ${serviceList[1].serviceName} should be available but got empty ${JSON.stringify(response.data.results.A.frames[0].data)}`);
 
     // verify metric for client container slave service
     response = await grafanaAPI.getMetric(metricNames[1], { type: 'service_name', value: serviceList[1].serviceName });
-    result = JSON.stringify(response.data.results);
-
-    console.log(response.data.results.A.frames[0].data);
 
     assert.ok(response.data.results.A.frames[0].data.values.length !== 0, `Metrics ${metricNames[1]} from ${serviceList[1].serviceName} should be available but got empty ${JSON.stringify(response.data.results.A.frames[0].data)}`);
   },
