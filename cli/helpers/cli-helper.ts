@@ -88,10 +88,14 @@ export async function getMetrics(
         throw new Error(`Failed to find '${serviceName}' service is in pmm-admin list output:\n${adminList}`);
       }
 
-      const listenPort = adminList.filter((item) => item.includes(serviceId))!
+      let listenPort = adminList.filter((item) => item.includes(serviceId))!
         .find((item: string) => item.includes('_exporter'))!
         .split(' ').filter((item) => item.trim().length > 0)
         .at(-1) ?? '';
+
+      const agentId = await execute(`${prefix || 'sudo '}pmm-admin list | grep '${serviceId}' | awk '/_exporter/ {print $4}'`);
+
+      listenPort = (await execute(`${prefix || 'sudo '}pmm-admin list | grep '${agentId}' | awk '/_exporter/ {print $NF}'`)).getStdOutLines()[0];
 
       if (!listenPort) {
         throw new Error(`Failed to find port of '${serviceId}' exporter is in pmm-admin list output:\n${adminList}`);
