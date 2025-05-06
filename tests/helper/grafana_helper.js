@@ -208,7 +208,13 @@ class Grafana extends Helper {
       password,
     };
     const headers = { Authorization: `Basic ${await this.getAuth()}` };
-    const resp = await apiContext.sendPostRequest('graph/api/admin/users', body, headers);
+    let resp;
+
+    try {
+      resp = await apiContext.sendPostRequest('graph/api/admin/users', body, headers);
+    } catch (e) {
+      throw Error(`Api call to create user failed with errors: ${e.errors}`);
+    }
 
     return resp.data.id;
   }
@@ -264,10 +270,10 @@ class Grafana extends Helper {
     return stdout.trim();
   }
 
-  async clickIfVisible(element) {
+  async clickIfVisible(element, timeout = 30) {
     const { Playwright } = this.helpers;
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < timeout; i++) {
       const numVisible = await Playwright.grabNumberOfVisibleElements(element);
 
       if (numVisible) {
@@ -276,7 +282,7 @@ class Grafana extends Helper {
         return element;
       }
 
-      Playwright.wait(10);
+      await Playwright.wait(1);
     }
 
     return element;

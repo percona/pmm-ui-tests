@@ -91,17 +91,3 @@ Data(subPages).Scenario(
   },
 );
 
-Scenario('PMM-T2024 - Verify services list does not refresh to first page @inventory-fb @nightly', async ({ I, pmmInventoryPage }) => {
-  pmmInventoryPage.open();
-  I.click(pmmInventoryPage.pagination.elements.pageNumberButton('2'));
-  const startServices = await I.grabTextFromAll(pmmInventoryPage.fields.serviceNames);
-
-  I.wait(15);
-  const numberOfRows = await I.grabNumberOfVisibleElements(pmmInventoryPage.fields.tableRow);
-
-  I.assertTrue(
-    await pmmInventoryPage.verifyDisplayedServices(startServices),
-    `List of displayed services after wait does not equal list of displayed services before wait: [${startServices}]`,
-  );
-  I.assertTrue(numberOfRows < 25, `Expected number of rows to be less than 25, actual number of rows is: ${numberOfRows}`);
-});

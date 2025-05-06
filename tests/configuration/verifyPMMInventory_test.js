@@ -564,3 +564,49 @@ Data(aws_instances).Scenario(
     assert.ok(count > 0, `The queries for service ${instance_id} instance do NOT exist, check QAN Data`);
   },
 ).retry(1);
+
+Scenario('PMM-T2024 - Verify services list does not refresh to first page @inventory-fb @nightly', async ({ I, pmmInventoryPage }) => {
+  I.usePlaywrightTo('Mock Services List', async ({ page }) => {
+    const mockedServices = { services: [] };
+
+    for (let i = 1; i <= 50; i++) {
+      mockedServices.services.push({
+        address: `127.0.0.${i}`,
+        agents: [],
+        cluster: '',
+        custom_labels: {},
+        database_name: 'postgres',
+        environment: '',
+        external_group: '',
+        node_id: 'pmm-server',
+        node_name: `mocked-service-node-${i}`,
+        port: 5432,
+        replication_set: '',
+        service_id: `30edfcf1-bea1-4422-b111-d2d263bdcfc${i}`,
+        service_name: `mocked-service-${i}`,
+        service_type: 'postgresql',
+        socket: '',
+        status: 'STATUS_UP',
+        version: '',
+      });
+    }
+
+    await page.route('**/v1/management/services', (route) => route.fulfill({
+      status: 200,
+      body: JSON.stringify(mockedServices),
+    }));
+  });
+
+  pmmInventoryPage.open();
+  I.click(pmmInventoryPage.pagination.elements.pageNumberButton('2'));
+  const startServices = await I.grabTextFromAll(pmmInventoryPage.fields.serviceNames);
+
+  I.wait(15);
+  const numberOfRows = await I.grabNumberOfVisibleElements(pmmInventoryPage.fields.tableRow);
+
+  I.assertTrue(
+    await pmmInventoryPage.verifyDisplayedServices(startServices),
+    `List of displayed services after wait does not equal list of displayed services before wait: [${startServices}]`,
+  );
+  I.assertTrue(numberOfRows < 50, `Expected number of rows to be less than 25, actual number of rows is: ${numberOfRows}`);
+});

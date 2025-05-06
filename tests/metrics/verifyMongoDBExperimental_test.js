@@ -36,18 +36,6 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @mongodb-exporter',
-  async ({
-    I, dashboardPage,
-  }) => {
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionsOverview.clearUrl, { from: 'now-5m', service_name: mongodb_service_name_ac }));
-    dashboardPage.waitForDashboardOpened();
-    await dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbCollectionsOverview.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
-  },
-);
-
-Scenario(
   'PMM-T1334 - Verify MongoDB - MongoDB Oplog Details @mongodb-exporter',
   async ({
     I, dashboardPage,

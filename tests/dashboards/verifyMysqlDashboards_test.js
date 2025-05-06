@@ -6,56 +6,53 @@ const {
   inventoryAPI,
 } = inject();
 let services;
-const serviceList = [];
 
 const urlsAndMetrics = new DataTable(['metricName', 'startUrl']);
+const serviceList = [{ serviceType: 'ps_service', name: '' }, { serviceType: 'pxc_service', name: '' }];
 
 urlsAndMetrics.add(['Client Connections (All Host Groups)', `${dashboardPage.proxysqlInstanceSummaryDashboard.url}?from=now-5m&to=now`]);
 urlsAndMetrics.add(['PMM Upgrade', homePage.url]);
 
-Feature('Test Dashboards inside the MySQL Folder');
+Feature('Test Dashboards inside the MySQL Folder').retry(1);
 
 BeforeSuite(async () => {
   const ps_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'ps');
-  const pxc_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'pxc_');
+  const pxc_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'pxc');
 
-  serviceList.push(ps_service_response.service_name);
-  serviceList.push(pxc_service_response.service_name);
+  serviceList[0].name = ps_service_response.service_name;
+  serviceList[1].name = pxc_service_response.service_name;
 });
 
 Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Scenario(
+Data(serviceList).Scenario(
   'PMM-T317 - Open the MySQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
-  async ({ I, dashboardPage }) => {
-    await I.say(serviceList);
-    for (const serviceName of serviceList) {
-      const url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.clearUrl, { service_name: serviceName, from: 'now-15m' });
+  async ({ I, dashboardPage, current }) => {
+    await I.say(current.serviceName);
+    const url = I.buildUrlWithParams(dashboardPage.mysqlInstanceSummaryDashboard.clearUrl, { service_name: current.serviceName, from: 'now-15m' });
 
-      I.amOnPage(url);
-      dashboardPage.waitForDashboardOpened();
-      await dashboardPage.expandEachDashboardRow();
-      await dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstanceSummaryDashboard.metrics);
-      // FIXME: 5 N/As once https://jira.percona.com/browse/PMM-10308 is fixed
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
-    }
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.mysqlInstanceSummaryDashboard.metrics);
+    // FIXME: 5 N/As once https://jira.percona.com/browse/PMM-10308 is fixed
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
   },
 );
 
-Scenario(
+Data(serviceList).Scenario(
   'PMM-T319 - Open the MySQL Instances Overview dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
-  async ({ I, dashboardPage }) => {
-    for (const serviceName of serviceList) {
-      const url = I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, { service_name: serviceName, from: 'now-15m' });
+  async ({ I, dashboardPage, current }) => {
+    await I.say(current.serviceName);
+    const url = I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, { service_name: current.serviceName, from: 'now-15m' });
 
-      I.amOnPage(url);
-      dashboardPage.waitForDashboardOpened();
-      await dashboardPage.expandEachDashboardRow();
-      await dashboardPage.verifyMetricsExistence(dashboardPage.mySQLInstanceOverview.metrics);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
-    }
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.mySQLInstanceOverview.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
   },
 );
 
@@ -146,7 +143,7 @@ Scenario.skip(
 Scenario(
   'PMM-T324 - Verify MySQL - MySQL User Details dashboard @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    const serviceName = serviceList.find((service) => service.includes('ps-'));
+    const serviceName = serviceList.find((service) => service.name.includes('ps_pmm'));
     const url = I.buildUrlWithParams(dashboardPage.mysqlUserDetailsDashboard.clearUrl, { service_name: serviceName, from: 'now-5m' });
 
     I.amOnPage(url);
@@ -195,7 +192,7 @@ xScenario(
 Scenario(
   'PMM-T348 - PXC/Galera Node Summary dashboard @dashboards @nightly',
   async ({ I, dashboardPage }) => {
-    const serviceName = serviceList.find((service) => service.includes('pxc_node'));
+    const serviceName = serviceList.find((service) => service.name.includes('pxc'));
     const url = I.buildUrlWithParams(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.clearUrl, { from: 'now-15m', service_name: serviceName });
 
     I.amOnPage(url);

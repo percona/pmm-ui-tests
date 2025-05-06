@@ -66,8 +66,6 @@ Scenario(
       dashboardPage.postgresqlInstanceCompareDashboard.cleanUrl,
       {
         from: 'now-5m',
-        service_name: 'All',
-        refresh: '1h',
       },
     );
 
