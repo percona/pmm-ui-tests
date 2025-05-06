@@ -25,7 +25,7 @@ Scenario(
   async ({
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, agentsPage,
   }) => {
-    const serviceName = 'pmm-qa-pgsql-12';
+    const serviceName = 'pmm-qa-postgres-15-10';
 
     await inventoryAPI.deleteNodeByServiceName('POSTGRESQL_SERVICE', serviceName);
 
@@ -35,7 +35,7 @@ Scenario(
     remoteInstancesPage.startMonitoringOfInstance(serviceName);
     remoteInstancesPage.verifyAddInstancePageOpened();
     I.seeInField(remoteInstancesPage.fields.serviceName, serviceName);
-    remoteInstancesPage.fillRemoteRDSFields(serviceName);
+    await remoteInstancesPage.fillRemoteRDSFields(serviceName);
     I.click(remoteInstancesPage.fields.customAutoDiscoveryButton);
     I.clearField(remoteInstancesPage.fields.customAutoDiscoveryfield);
     I.fillField(remoteInstancesPage.fields.customAutoDiscoveryfield, '1');
@@ -64,7 +64,7 @@ Scenario(
   async ({
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI,
   }) => {
-    const serviceName = 'pmm-qa-pgsql-12';
+    const serviceName = 'pmm-qa-pgsql-15-10';
 
     await inventoryAPI.deleteNodeByServiceName('POSTGRESQL_SERVICE', serviceName);
 
@@ -96,7 +96,7 @@ Scenario(
   async ({
     I, dashboardPage, settingsAPI,
   }) => {
-    const serviceName = 'pmm-qa-pgsql-12';
+    const serviceName = 'pmm-qa-pgsql-15-10';
 
     // Increase resolution to avoid failures for OVF execution
     if (process.env.OVF_TEST === 'yes') {

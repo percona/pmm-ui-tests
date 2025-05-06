@@ -61,8 +61,8 @@ module.exports = {
     replicationSet: 'rds80-replication',
   },
   postgresqlInputs: {
-    userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.userName,
-    password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_12.password,
+    userName: remoteInstancesHelper.remote_instance.aws.aws_postgresql_15.userName,
+    password: remoteInstancesHelper.remote_instance.aws.aws_postgresql_15.password,
     environment: 'RDS Postgres',
     cluster: 'rdsPostgres-cluster',
     replicationSet: 'rdsPostgres-replication',
@@ -484,7 +484,8 @@ module.exports = {
         I.seeCheckboxIsChecked(this.fields.pgStatMonitorRadioInput);
         I.click(this.fields.pgStatStatementsRadio);
         break;
-      case 'pmm-qa-pgsql-12':
+      case 'pmm-qa-pgsql-15':
+        // I.click(this.fields.useTLS);
         I.click(this.fields.disableEnhancedMetrics);
         I.click(this.fields.disableBasicMetrics);
         break;
@@ -580,7 +581,7 @@ module.exports = {
         inputs = this.mysql57rdsInput;
         this.fillFields(inputs);
         break;
-      case 'pmm-qa-pgsql-12':
+      case 'pmm-qa-postgres-15-10':
         inputs = this.postgresqlInputs;
         this.fillFields(inputs);
         break;
