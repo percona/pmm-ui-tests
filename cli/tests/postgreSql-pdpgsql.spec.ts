@@ -3,232 +3,154 @@ import * as cli from '@helpers/cli-helper';
 
 const PGSQL_USER = 'postgres';
 const PGSQL_PASSWORD = 'pass+this';
-const ipPort = '127.0.0.1:5447';
+const ipPort = '127.0.0.1:5432';
+
+let containerName: string;
+
+enum PgAgent {
+  PGSTATMONITOR_AGENT = 'postgresql_pgstatmonitor_agent',
+  PGSTATEMENTS_AGENT = 'postgresql_pgstatements_agent',
+}
+
+const waitForAgentRunning = async (agentName = PgAgent.PGSTATMONITOR_AGENT) => {
+  await test.step('Check that pgstatmonitor agent is running', async () => {
+    await expect(async () => {
+      const output = await cli.exec(`docker exec ${containerName} pmm-admin inventory list agents`);
+      await output.assertSuccess();
+      await output.outContains('postgres_exporter Running');
+      await output.outContains(`${agentName} Running`);
+    }).toPass({
+      intervals: [2_000],
+      timeout: 30_000,
+    });
+  });
+};
+
+const removeService = async (serviceName: string) => {
+  await test.step(`remove "${serviceName}" service`, async () => {
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin remove postgresql ${serviceName}`);
+    await output.assertSuccess();
+    await output.outContains('Service removed.');
+  });
+};
 
 test.describe('Percona Distribution for PostgreSQL CLI tests', async () => {
   test.beforeAll(async ({}) => {
-    const result = await cli.exec('docker ps | grep pdpgsql_pgsm_pmm | awk \'{print $NF}\'');
+    const result = await cli.exec('docker ps --format \'{{.Names}}\' | grep \'^pdpgsql_pgsm_pmm_\'');
     await result.outContains('pdpgsql_pgsm_pmm', 'PDPGSQL docker container should exist. please run pmm-framework with --database pdpgsql');
-    const result1 = await cli.exec('sudo pmm-admin status');
-    await result1.outContains('Running', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
-    const output = await cli.exec(`sudo pmm-admin add postgresql --query-source=pgstatmonitor --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} prerequisite ${ipPort}`);
-    await output.assertSuccess();
+    containerName = result.stdout.trim();
+    // const output = await cli.exec(`sudo pmm-admin add postgresql --query-source=pgstatmonitor --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} prerequisite ${ipPort}`);
+    // await output.assertSuccess();
   });
 
-  test.afterAll(async ({}) => {
-    const output = await cli.exec('sudo pmm-admin remove postgresql prerequisite');
-    await output.assertSuccess();
-  });
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pdpgsql-tests.bats#L10
    */
   test('PMM-T442 run pmm-admin add postgreSQL with pgstatmonitor', async ({}) => {
-    const hosts = [ipPort] || (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | awk -F" " \'{print $3}\'')).getStdOutLines();
-    let n = 1;
-    for (const host of hosts) {
-      const output = await cli.exec(`sudo pmm-admin add postgresql --query-source=pgstatmonitor --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} pgstatmonitor_${n} ${host}`);
+    const serviceName = 'pgstatmonitor_pg';
+    await test.step('add pg with pgstatmonitor for monitoring', async () => {
+      const output = await cli.exec(`docker exec ${containerName} pmm-admin add postgresql --query-source=pgstatmonitor --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} ${serviceName} ${ipPort}`);
       await output.assertSuccess();
       await output.outContains('PostgreSQL Service added.');
-      await output.outContains(`Service name: pgstatmonitor_${n++}`);
-    }
-  });
+    });
 
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pdpgsql-tests.bats#L25
-   */
-  test('PMM-T442 run pmm-admin inventory list agents for check agent postgresql_pgstatmonitor_agent', async ({}) => {
-    // TODO: implement fluent wait instead of sleep
-    await cli.exec('sleep 30');
-    const output = await cli.exec('sudo pmm-admin inventory list agents');
-    await output.assertSuccess();
-    await output.outContains('postgres_exporter Running');
-    await output.outContains('postgresql_pgstatmonitor_agent Running');
+    await waitForAgentRunning();
+    await removeService(serviceName);
   });
 
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pdpgsql-tests.bats#L34
    */
   test('PMM-T442 run pmm-admin add postgreSQL with default query source', async ({}) => {
-    const hosts = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | awk -F" " \'{print $3}\''))
-      .getStdOutLines();
-    let n = 1;
-    for (const host of hosts) {
-      const output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} pgdefault_${n} ${host}`);
+    const serviceName = 'default_query_source_pg';
+    await test.step('add pg with default query source for monitoring', async () => {
+      const output = await cli.exec(`docker exec ${containerName} pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} ${serviceName} ${ipPort}`);
       await output.assertSuccess();
       await output.outContains('PostgreSQL Service added.');
-      await output.outContains(`Service name: pgdefault_${n++}`);
-    }
+    });
+
+    await waitForAgentRunning();
+    await removeService(serviceName);
   });
 
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pdpgsql-tests.bats#L49
    */
   test('run pmm-admin add postgreSQL with default query source and metrics mode push', async ({}) => {
-    const hosts = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | awk -F" " \'{print $3}\''))
-      .getStdOutLines();
-    let n = 1;
-    for (const host of hosts) {
-      const output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --metrics-mode=push pgsqlpush_${n} ${host}`);
+    const serviceName = 'default_query_source_push_metrics_pg';
+    await test.step('add pg with default query source and metrics mode push for monitoring', async () => {
+      const output = await cli.exec(`docker exec ${containerName} pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --metrics-mode=push ${serviceName} ${ipPort}`);
       await output.assertSuccess();
       await output.outContains('PostgreSQL Service added.');
-      await output.outContains(`Service name: pgsqlpush_${n++}`);
-    }
+    });
+
+    await waitForAgentRunning();
+    await removeService(serviceName);
   });
 
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pdpgsql-tests.bats#L64
    */
   test('run pmm-admin add postgreSQL with default query source and metrics mode pull', async ({}) => {
-    const hosts = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | awk -F" " \'{print $3}\''))
-      .getStdOutLines();
-    let n = 1;
-    for (const host of hosts) {
-      const output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --metrics-mode=pull pgsqlpull_${n} ${host}`);
+    const serviceName = 'default_query_source_pull_metrics_pg';
+    await test.step('add pg with default query source and metrics mode pull for monitoring', async () => {
+      const output = await cli.exec(`docker exec ${containerName} pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --metrics-mode=pull ${serviceName} ${ipPort}`);
       await output.assertSuccess();
       await output.outContains('PostgreSQL Service added.');
-      await output.outContains(`Service name: pgsqlpull_${n++}`);
-    }
-  });
+    });
 
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pdpgsql-tests.bats#L79
-   */
-  test('run pmm-admin remove postgresql with metrics-mode push', async ({}) => {
-    const services = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | grep "pgsqlpush_" | awk -F" " \'{print $2}\''))
-      .getStdOutLines();
-    for (const service of services) {
-      const output = await cli.exec(`sudo pmm-admin remove postgresql ${service}`);
-      await output.assertSuccess();
-      await output.outContains('Service removed.');
-    }
-  });
-
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pdpgsql-tests.bats#L91
-   */
-  test('run pmm-admin remove postgresql with metrics-mode pull', async ({}) => {
-    const services = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | grep "pgsqlpull_" | awk -F" " \'{print $2}\''))
-      .getStdOutLines();
-    for (const service of services) {
-      const output = await cli.exec(`sudo pmm-admin remove postgresql ${service}`);
-      await output.assertSuccess();
-      await output.outContains('Service removed.');
-    }
-  });
-
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pdpgsql-tests.bats#L104
-   */
-  test('PMM-T442 run pmm-admin inventory list agents for check agent postgresql_pgstatements_agent', async ({}) => {
-    const output = await cli.exec('sudo pmm-admin inventory list agents');
-    await output.assertSuccess();
-    await output.outContains('postgres_exporter Running');
-    await output.outContains('postgresql_pgstatements_agent Running');
-  });
-
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pdpgsql-tests.bats#L267
-   */
-  test('run pmm-admin remove postgresql with pgstatmonitor', async ({}) => {
-    const services = (
-      await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | grep "pgstatmonitor" | awk -F" " \'{print $2}\''))
-      .getStdOutLines();
-    for (const service of services) {
-      const output = await cli.exec(`sudo pmm-admin remove postgresql ${service}`);
-      await output.assertSuccess();
-      await output.outContains('Service removed.');
-    }
-  });
-
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pdpgsql-tests.bats#L279
-   */
-  test('run pmm-admin remove postgresql with default query source', async ({}) => {
-    const services = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | grep "pgdefault_" | awk -F" " \'{print $2}\''))
-      .getStdOutLines();
-    for (const service of services) {
-      const output = await cli.exec(`sudo pmm-admin remove postgresql ${service}`);
-      await output.assertSuccess();
-      await output.outContains('Service removed.');
-    }
+    await waitForAgentRunning();
+    await removeService(serviceName);
   });
 
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pdpgsql-tests.bats#L291
    */
   test('PMM-T963 run pmm-admin add postgresql with --agent-password flag', async ({}) => {
-    const hosts = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | awk -F" " \'{print $3}\''))
-      .getStdOutLines();
-    let n = 1;
-    for (const host of hosts) {
-      const ip = host.split(':')[0];
-      const port = host.split(':')[1];
-      const output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --agent-password=mypass --host=${ip} --port=${port} --service-name=pgsql_${n++}`);
+    const serviceName = 'pg_agent_password';
+    await test.step('add pg with --agent-password for monitoring', async () => {
+      const output = await cli.exec(`docker exec ${containerName} pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --agent-password=mypass ${serviceName} ${ipPort}`);
       await output.assertSuccess();
       await output.outContains('PostgreSQL Service added.');
-    }
-  });
+    });
 
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pdpgsql-tests.bats#L306
-   */
-  test('PMM-T963 check metrics from postgres service with custom agent password', async ({}) => {
-    test.skip(true, 'Skipping this test, because of random failure and flaky behaviour');
-    const hosts = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | grep "pgsql_" | awk -F" " \'{print $3}\''))
-      .getStdOutLines();
-    for (const host of hosts) {
-      const ip = host.split(':')[0];
-      // await (await cli.exec('sudo chmod +x /srv/pmm-qa/pmm-tests/pmm-2-0-bats-tests/check_metric.sh')).assertSuccess();
-      // let output = await cli.exec(`./pmm-tests/pmm-2-0-bats-tests/check_metric.sh pgsql_$COUNTER pg_up ${ip} postgres_exporter pmm mypass`);
-      // await output.assertSuccess();
-      // await output.outContains('pg_up 1');
-      const metrics = await cli.getMetrics(host, 'pmm', 'mypass', ip);
+    await waitForAgentRunning();
+
+    await expect(async () => {
+      const metrics = await cli.getMetrics(serviceName, 'pmm', 'mypass', containerName);
       const expectedValue = 'pg_up 1';
       expect(metrics, `Scraped metrics do not contain ${expectedValue}!`).toContain(expectedValue);
-    }
-  });
+    }, 'PMM-T963 check metrics from postgres service with custom agent password').toPass({
+      intervals: [2_000],
+      timeout: 60_000,
+    });
 
-  /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pdpgsql-tests.bats#L321
-   */
-  test('PMM-T963 run pmm-admin remove postgresql added with custom agent password', async ({}) => {
-    const services = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | grep "pgsql_" | awk -F" " \'{print $2}\''))
-      .getStdOutLines();
-    for (const service of services) {
-      const output = await cli.exec(`sudo pmm-admin remove postgresql ${service}`);
-      await output.assertSuccess();
-      await output.outContains('Service removed.');
-    }
+    // PMM-T963 run pmm-admin remove postgresql added with custom agent password
+    await removeService(serviceName);
   });
 
   test('PMM-T1833 Verify validation for auto-discovery-limit option for adding Postgres', async ({}) => {
     const inputs = ['wer', '-34535353465757', ''];
     for (const input of inputs) {
-      const output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --auto-discovery-limit=${input}`);
+      const output = await cli.exec(`docker exec ${containerName} pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --auto-discovery-limit=${input}`);
       await output.stderr.contains(`pmm-admin: error: --auto-discovery-limit: expected a valid 32 bit int but got "${input}"`);
     }
   });
 
   test('PMM-T1829 Verify turning off autodiscovery database for PostgreSQL', async ({}) => {
-    const hosts = (await cli.exec('sudo pmm-admin list | grep "PostgreSQL" | awk -F" " \'{print $3}\''))
-      .stdout.trim().split('\n').filter((item) => item.trim().length > 0);
-    const n = 1;
-    const serviceNames: string[] = [];
-    for (const host of hosts) {
-      const serviceName = `autodiscovery_${n}`;
-      serviceNames.push(serviceName);
-
-      const output = await cli.exec(`sudo pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --auto-discovery-limit=2 ${serviceName} ${host}`);
+    const serviceName = 'autodiscovery_pg';
+    await test.step('add pg with --agent-password for monitoring', async () => {
+      const output = await cli.exec(`docker exec ${containerName} pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --agent-password=mypass --auto-discovery-limit=2 ${serviceName} ${ipPort}`);
       await output.assertSuccess();
       await output.outContains('PostgreSQL Service added.');
-    }
+    });
 
     let agentIds: string[] = [];
 
     await expect(async () => {
-      const jsonList = JSON.parse((await cli.exec('sudo pmm-admin list --json')).stdout);
+      const jsonList = JSON.parse((await cli.exec(`docker exec ${containerName} pmm-admin list --json`)).stdout);
       // eslint-disable-next-line max-len
-      const serviceIds = jsonList.service.filter((s: { service_name: string; }) => serviceNames.includes(s.service_name)).map((s: { service_id: never; }) => s.service_id);
+      const serviceIds = jsonList.service.filter((s: { service_name: string; }) => s.service_name === serviceName).map((s: { service_id: never; }) => s.service_id);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       agentIds = jsonList.agent.filter((a: { agent_type: string; status: string; service_id: string | null }) => a.agent_type === 'AGENT_TYPE_POSTGRES_EXPORTER'
        && a.status === 'RUNNING'
@@ -236,16 +158,18 @@ test.describe('Percona Distribution for PostgreSQL CLI tests', async () => {
 
       expect(agentIds.length).toBeTruthy();
     }).toPass({
-      intervals: [1_000],
+      intervals: [2_000],
       timeout: 30_000,
     });
 
     for (const agentId of agentIds) {
-      const psAuxOutput = await cli.exec(`sudo ps aux |awk '/postgres_exporter/ && /${agentId}/'`);
+      const psAuxOutput = await cli.exec(`docker exec ${containerName} ps aux |awk '/postgres_exporter/ && /${agentId}/'`);
       await psAuxOutput.assertSuccess();
       await psAuxOutput.outNotContains('--auto-discover-databases');
       await psAuxOutput.outContains('postgres_exporter --collect');
     }
+
+    await removeService(serviceName);
   });
 
   test('PMM-T1828 Verify auto-discovery-database flag is enabled by default for postgres_exporter', async ({}) => {

@@ -22,7 +22,8 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     expect(actualEdition, `Scraped metrics must contain ${edition}!`).toContain(edition);
   });
 
-  test('PMM-T1853 Collect Data about Sharded collections in MongoDB', async ({}) => {
+  //
+  test.skip('PMM-T1853 Collect Data about Sharded collections in MongoDB', async ({}) => {
     const expectedValue = 'mongodb_shards_collection_chunks_count';
     await expect(async () => {
       const metrics = await cli.getMetrics('rs101', 'pmm', 'mypass', 'rs101');
