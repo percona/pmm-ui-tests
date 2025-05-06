@@ -1,12 +1,6 @@
 import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 
-const MONGO_USERNAME = 'pmm';
-const MONGO_PASSWORD = 'pmmpass';
-
-const replIpPort = '127.0.0.1:27017';
-const containerName = 'rs101';
-
 test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   test.beforeAll(async ({}) => {
     const result = await cli.exec('docker ps | grep rscfg01 | awk \'{print $NF}\'');
