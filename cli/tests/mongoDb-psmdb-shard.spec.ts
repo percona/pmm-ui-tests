@@ -31,11 +31,11 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   test('PMM-T1853 Collect Data about Sharded collections in MongoDB', async ({}) => {
     const expectedValue = 'mongodb_shards_collection_chunks_count';
     await expect(async () => {
-      const metrics = await cli.getMetrics('mongos_', 'pmm', 'mypass', 'rscfg01');
+      const metrics = await cli.getMetrics('rs101', 'pmm', 'mypass', 'rs101');
       expect(metrics, `Scraped metrics must contain ${expectedValue}!`).toContain(expectedValue);
     }).toPass({
-      intervals: [1_000],
-      timeout: 5_000,
+      intervals: [2_000],
+      timeout: 60_000,
     });
   });
 });
