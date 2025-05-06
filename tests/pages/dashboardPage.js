@@ -926,6 +926,10 @@ module.exports = {
     url: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary?orgId=1&refresh=1m&from=now-5m&to=now',
     cleanUrl: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary',
     metrics: [
+      'Feature Compatibility Version',
+      'Nodes',
+      'DBs',
+      'Last Election',
       'Node States',
       'Top Hottest Collections by Read',
       'Query execution times',
@@ -939,7 +943,6 @@ module.exports = {
       'Replication Lag',
       'Oplog Recovery Window',
       'Flow Control',
-      'WiredTiger Concurrency Tickets Available',
       'Nodes Overview',
       'CPU Usage',
       'CPU Saturation and Max Core Usage',
