@@ -29,24 +29,13 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   });
 
   test('PMM-T1853 Collect Data about Sharded collections in MongoDB', async ({}) => {
-    const ip = replIpPort.split(':')[0];
-    const port = replIpPort.split(':')[1];
-    const serviceName = 'mongo_shards_test_1';
-    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --host=${ip} --port=${port} --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} --service-name=${serviceName} --enable-all-collectors --agent-password='mypass'`);
-    await output.assertSuccess();
-    await output.outContains('MongoDB Service added');
-
     const expectedValue = 'mongodb_shards_collection_chunks_count';
     await expect(async () => {
-      const metrics = await cli.getMetrics(serviceName, 'pmm', 'mypass', containerName);
+      const metrics = await cli.getMetrics('mongos_', 'pmm', 'mypass', 'rscfg01');
       expect(metrics, `Scraped metrics must contain ${expectedValue}!`).toContain(expectedValue);
     }).toPass({
       intervals: [1_000],
       timeout: 5_000,
     });
-
-    const results = await cli.exec(`docker exec ${containerName} pmm-admin remove mongodb ${serviceName}`);
-    await results.assertSuccess();
-    await results.outContains('Service removed.');
   });
 });
