@@ -1,86 +1,78 @@
 const assert = require('assert');
 
 const { adminPage } = inject();
+const serviceList = [{ serviceName: '_1', replication_set: 'ps-async-replication' }, { serviceName: '_2', replication_set: 'ps-async-replication' }];
 
-Feature('Integration tests for Percona Server (Replica) & PMM');
+Feature('Integration tests for Percona Server (Replica) & PMM').retry(1);
 
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I }) => {
   await I.Authorize();
+});
+
+BeforeSuite(async ({ inventoryAPI }) => {
+  serviceList[0].serviceName = (await inventoryAPI.getServiceDetailsByPartialDetails({ service_name: '_1', replication_set: serviceList[0].replication_set })).service_name;
+  serviceList[1].serviceName = (await inventoryAPI.getServiceDetailsByPartialDetails({ service_name: '_2', replication_set: serviceList[1].replication_set })).service_name;
 });
 
 Scenario(
   'PMM-T2028 - Verify metrics from PS Replica instance on PMM-Server @pmm-ps-replica-integration @not-ui-pipeline @nightly',
   async ({
-    I, grafanaAPI, inventoryAPI,
+    I, grafanaAPI,
   }) => {
     let response; let result;
-    const metricNames = ['mysql_slave_status_slave_io_running', 'mysql_slave_status_slave_sql_running'];
-
-    const slaveServiceName = (await inventoryAPI.getServiceDetailsByPartialName('slave')).service_name;
+    const metricNames = ['mysql_slave_status_replica_io_running', 'mysql_slave_status_replica_sql_running'];
 
     // verify metric for client container slave service
-    response = await grafanaAPI.checkMetricExist(metricNames[0], { type: 'service_name', value: slaveServiceName });
-    result = JSON.stringify(response.data.results);
+    response = await grafanaAPI.getMetric(metricNames[0], { type: 'service_name', value: serviceList[1].serviceName });
 
-    assert.ok(response.data.results.A.frames[0].data.values.length !== 0, `Metrics ${metricNames[0]} from ${slaveServiceName} should be available but got empty ${result}`);
+    assert.ok(response.data.results.A.frames[0].data.values.length !== 0, `Metrics ${metricNames[0]} from ${serviceList[1].serviceName} should be available but got empty ${JSON.stringify(response.data.results.A.frames[0].data)}`);
 
     // verify metric for client container slave service
-    response = await grafanaAPI.checkMetricExist(metricNames[1], { type: 'service_name', value: slaveServiceName });
-    result = JSON.stringify(response.data.results);
+    response = await grafanaAPI.getMetric(metricNames[1], { type: 'service_name', value: serviceList[1].serviceName });
 
-    assert.ok(response.data.results.A.frames[0].data.values.length !== 0, `Metrics ${metricNames[1]} from ${slaveServiceName} should be available but got empty ${result}`);
+    assert.ok(response.data.results.A.frames[0].data.values.length !== 0, `Metrics ${metricNames[1]} from ${serviceList[1].serviceName} should be available but got empty ${JSON.stringify(response.data.results.A.frames[0].data)}`);
   },
-).retry(1);
+);
 
-Scenario(
+Data(serviceList).Scenario(
   'PMM-T2029 - Verify dashboard for PS Replica Instance @pmm-ps-replica-integration @not-ui-pipeline @nightly',
   async ({
-    I, dashboardPage, adminPage, inventoryAPI,
+    I, dashboardPage, adminPage, current,
   }) => {
-    const masterServiceName = (await inventoryAPI.getServiceDetailsByPartialName('master')).service_name;
-    const slaveServiceName = (await inventoryAPI.getServiceDetailsByPartialName('slave')).service_name;
+    const url = I.buildUrlWithParams(dashboardPage.mysqlReplcationDashboard.clearUrl, { from: 'now-5m', to: 'now', service_name: current.serviceName });
 
-    const serviceList = [masterServiceName, slaveServiceName];
-
-    for (const service of serviceList) {
-      const url = I.buildUrlWithParams(dashboardPage.mysqlReplcationDashboard.clearUrl, { from: 'now-5m', to: 'now', service_name: service });
-
-      I.amOnPage(url);
-      await dashboardPage.waitForDashboardOpened();
-      adminPage.performPageDown(5);
-      await dashboardPage.expandEachDashboardRow();
-      adminPage.performPageUp(5);
-      await dashboardPage.verifyMetricsExistence(dashboardPage.mysqlReplcationDashboard.metrics);
-      if (service === masterServiceName) {
-        await dashboardPage.verifyThereAreNoGraphsWithoutData(7);
-      } else {
-        await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
-      }
+    I.amOnPage(url);
+    await dashboardPage.waitForDashboardOpened();
+    adminPage.performPageDown(5);
+    await dashboardPage.expandEachDashboardRow();
+    adminPage.performPageUp(5);
+    await dashboardPage.verifyMetricsExistence(dashboardPage.mysqlReplcationDashboard.metrics);
+    if (current.serviceName === serviceList[0].serviceName) {
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(7);
+    } else {
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
     }
   },
-).retry(2);
+);
 
 Scenario(
   'PMM-T2030 - Verify QAN for PS Replica Instance @pmm-ps-replica-integration @not-ui-pipeline @nightly',
   async ({
-    I, queryAnalyticsPage, inventoryAPI,
+    I, queryAnalyticsPage,
   }) => {
-    const slaveServiceName = (await inventoryAPI.getServiceDetailsByPartialName('slave')).service_name;
-    const serviceList = [slaveServiceName];
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    queryAnalyticsPage.waitForLoaded();
+    await adminPage.applyTimeRange('Last 12 hours');
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.selectFilterInGroup('ps-async-replication', 'Replication Set');
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.selectFilterInGroup(serviceList[1].serviceName, 'Service Name');
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.selectFilterInGroup('sbtest', 'Schema');
+    queryAnalyticsPage.waitForLoaded();
 
-    for (const service of serviceList) {
-      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
-      queryAnalyticsPage.waitForLoaded();
-      await adminPage.applyTimeRange('Last 12 hours');
-      queryAnalyticsPage.waitForLoaded();
-      await queryAnalyticsPage.filters.selectFilterInGroup(service, 'Service Name');
-      queryAnalyticsPage.waitForLoaded();
-      await queryAnalyticsPage.filters.selectFilterInGroup('sbtest', 'Schema');
-      queryAnalyticsPage.waitForLoaded();
+    const count = await queryAnalyticsPage.data.getCountOfItems();
 
-      const count = await queryAnalyticsPage.data.getCountOfItems();
-
-      assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
-    }
+    assert.ok(count > 0, `The queries for service ${serviceList[1].serviceName} instance do NOT exist, check QAN Data`);
   },
-).retry(1);
+);

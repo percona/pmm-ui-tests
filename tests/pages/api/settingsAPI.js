@@ -124,8 +124,8 @@ module.exports = {
    * @returns {Promise<void>}
    *
    * @example
-   * await settingsAPI.changeSettings({ alerting: true, dbaas: true, stt: false });
-   * await settingsAPI.changeSettings({ enable_alerting: true, enable_dbaas: true, disable_stt: true }, true);
+   * await settingsAPI.changeSettings({ alerting: true, publicAddress: 127.0.0.1, stt: false });
+   * await settingsAPI.changeSettings({ enable_alerting: true, publicAddress: 127.0.0.1, disable_stt: true }, true);
    */
   async changeSettings(values, fullPayload = false) {
     const body = fullPayload ? values : {};
@@ -138,9 +138,6 @@ module.exports = {
             break;
           case 'stt':
             body.enable_advisor = value;
-            break;
-          case 'dbaas':
-            body.enable_dbaas = value;
             break;
           case 'telemetry':
             body.enable_telemetry = value;
