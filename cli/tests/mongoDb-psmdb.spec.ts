@@ -16,8 +16,6 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   test.beforeAll(async ({}) => {
     const result = await cli.exec(`docker ps | grep ${containerName} | awk '{print $NF}'`);
     await result.outContains(containerName, 'PSMDB rs101 docker container should exist. please run pmm-framework with --database psmdb,SETUP_TYPE=pss');
-    const result1 = await cli.exec('sudo pmm-admin status');
-    await result1.outContains('Running', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
   });
 
   /**
@@ -133,14 +131,18 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     const ip = replIpPort.split(':')[0];
     const port = replIpPort.split(':')[1];
 
+    await cli.exec(`docker exec ${containerName} pmm-admin remove mongodb ${serviceName} || true`);
+
     let output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} --host=${ip} --agent-password=mypass --port=${port} --service-name=${serviceName}`);
     await output.assertSuccess();
     await output.outContains('MongoDB Service added');
 
     await test.step('PMM-T964 check metrics from mongodb service with custom agent password', async () => {
-      const metrics = await cli.getMetrics(serviceName, 'pmm', 'mypass', containerName);
-      const expectedValue = 'mongodb_up 1';
-      expect(metrics, `Scraped metrics do not contain ${expectedValue}!`).toContain(expectedValue);
+      await expect(async () => {
+        const metrics = await cli.getMetrics(serviceName, 'pmm', 'mypass', containerName);
+        const expectedValue = 'mongodb_up{cluster_role="mongod"} 1';
+        expect(metrics, `Scraped metrics do not contain ${expectedValue}!`).toContain(expectedValue);
+      }).toPass({ intervals: [2_000], timeout: 120_000 });
     });
 
     output = await cli.exec(`docker exec ${containerName} pmm-admin remove mongodb ${serviceName}`);
