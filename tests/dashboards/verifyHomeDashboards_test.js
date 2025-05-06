@@ -30,11 +30,13 @@ Data(panels).Scenario(
     const expectedDashboard = dashboardPage[dashboard];
 
     I.click(dashboardPage.fields.openFiltersDropdownLocator('Node Name'));
+    I.pressKey('Space');
     const nodeNames = await I.grabTextFromAll(dashboardPage.fields.allFilterDropdownOptions);
-    const currentPanelValue = await I.grabTextFrom(dashboardPage.panelDataByTitle('Monitored Nodes'));
+    const currentPanelValue = await I.grabTextFrom(dashboardPage.panelDataByTitle(panelName));
 
     I.click(dashboardPage.fields.filterDropdownOptionsLocator(nodeNames[0]));
     I.click(dashboardPage.fields.filterDropdownOptionsLocator(nodeNames[1]));
+    I.pressKey('Escape');
     I.click(dashboardPage.fields.refresh);
     I.waitForInvisible(locate(dashboardPage.panelDataByTitle(panelName)).withText(currentPanelValue), 20);
     I.wait(2);
