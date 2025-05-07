@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
+import { removePGService } from '@helpers/pmm-admin';
 
 const PGSQL_USER = 'postgres';
 const PGSQL_PASSWORD = 'pass+this';
@@ -26,14 +27,6 @@ const waitForAgentRunning = async (agentName = PgAgent.PGSTATMONITOR_AGENT) => {
   });
 };
 
-const removeService = async (serviceName: string) => {
-  await test.step(`remove "${serviceName}" service`, async () => {
-    const output = await cli.exec(`docker exec ${containerName} pmm-admin remove postgresql ${serviceName}`);
-    await output.assertSuccess();
-    await output.outContains('Service removed.');
-  });
-};
-
 test.describe('Percona Distribution for PostgreSQL CLI tests', async () => {
   test.beforeAll(async ({}) => {
     const result = await cli.exec('docker ps --format \'{{.Names}}\' | grep \'^pdpgsql_pgsm_pmm_\'');
@@ -55,7 +48,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests', async () => {
     });
 
     await waitForAgentRunning();
-    await removeService(serviceName);
+    await removePGService(containerName, serviceName);
   });
 
   /**
@@ -70,7 +63,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests', async () => {
     });
 
     await waitForAgentRunning();
-    await removeService(serviceName);
+    await removePGService(containerName, serviceName);
   });
 
   /**
@@ -85,7 +78,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests', async () => {
     });
 
     await waitForAgentRunning();
-    await removeService(serviceName);
+    await removePGService(containerName, serviceName);
   });
 
   /**
@@ -100,7 +93,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests', async () => {
     });
 
     await waitForAgentRunning();
-    await removeService(serviceName);
+    await removePGService(containerName, serviceName);
   });
 
   /**
@@ -126,7 +119,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests', async () => {
     });
 
     // PMM-T963 run pmm-admin remove postgresql added with custom agent password
-    await removeService(serviceName);
+    await removePGService(containerName, serviceName);
   });
 
   test('PMM-T1833 Verify validation for auto-discovery-limit option for adding Postgres', async ({}) => {
@@ -169,7 +162,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests', async () => {
       await psAuxOutput.outContains('postgres_exporter --collect');
     }
 
-    await removeService(serviceName);
+    await removePGService(containerName, serviceName);
   });
 
   test('PMM-T1828 Verify auto-discovery-database flag is enabled by default for postgres_exporter', async ({}) => {
