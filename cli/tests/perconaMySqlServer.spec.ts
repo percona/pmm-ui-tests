@@ -18,13 +18,13 @@ test.describe('PMM Client CLI tests for Percona Server Database', async () => {
     const serviceName = 'mysql_1';
 
     await test.step('run pmm-admin add mysql', async () => {
-      const output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} ${serviceName} ${ipPort}`);
+      const output = await cli.exec(`docker exec ${containerName} pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} ${serviceName} ${ipPort}`);
       await output.assertSuccess();
       await output.outContains('MySQL Service added.');
     });
 
     await test.step('run pmm-admin add mysql again', async () => {
-      const output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} ${serviceName} ${ipPort}`);
+      const output = await cli.exec(`docker exec ${containerName} pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} ${serviceName} ${ipPort}`);
       await output.exitCodeEquals(1);
       await output.outContains('already exists.');
     });
