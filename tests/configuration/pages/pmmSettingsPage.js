@@ -327,7 +327,7 @@ module.exports = {
 
   async applyChanges() {
     I.click(this.fields.applyButton);
-    await tryTo(() => I.verifyPopUpMessage(this.messages.successPopUpMessage));
+    I.verifyPopUpMessage(this.messages.successPopUpMessage, 30);
   },
 
   switchAzure() {

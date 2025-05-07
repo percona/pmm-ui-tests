@@ -204,7 +204,7 @@ Scenario(
 
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
     I.click(pmmSettingsPage.fields.publicAddressButton);
-    pmmSettingsPage.applyChanges();
+    await pmmSettingsPage.applyChanges();
     I.wait(10);
     const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
