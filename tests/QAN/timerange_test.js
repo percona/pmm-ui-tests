@@ -48,14 +48,15 @@ Scenario(
 
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
+    adminPage.applyTimeZone('Coordinated Universal Time');
     adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
     queryAnalyticsPage.waitForLoaded();
     adminPage.verifySelectedTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
 
     const url = await I.grabCurrentUrl();
 
-    I.assertContain(url.split('from=')[1].replaceAll('%20', ' '), `${currentDate.format('ddd MMM DD YYYY')} 00:00:00`, 'From Date is not correct');
-    I.assertContain(url.split('to=')[1].replaceAll('%20', ' '), `${currentDate.format('ddd MMM DD YYYY')} 23:59:59`, 'To Date is not correct');
+    I.assertContain(url.split('from=')[1].replaceAll('%20', ' '), `${date}T00:00:00.000`, 'From Date is not correct');
+    I.assertContain(url.split('to=')[1].replaceAll('%20', ' '), `${date}T23:59:59.000Z`, 'To Date is not correct');
   },
 );
 
