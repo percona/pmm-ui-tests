@@ -118,7 +118,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests', async () => {
 
     await expect(async () => {
       const metrics = await cli.getMetrics(serviceName, 'pmm', 'mypass', containerName);
-      const expectedValue = 'pg_up 1';
+      const expectedValue = 'pg_up{collector=\\"exporter\\"} 1';
       expect(metrics, `Scraped metrics do not contain ${expectedValue}!`).toContain(expectedValue);
     }, 'PMM-T963 check metrics from postgres service with custom agent password').toPass({
       intervals: [2_000],
