@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   postgres:
     image: ${POSTGRES_IMAGE:-postgres:13-alpine}
