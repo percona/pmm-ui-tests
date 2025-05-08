@@ -2,6 +2,7 @@ const {
   I, adminPage, pmmInventoryPage, codeceptjsConfig, remoteInstancesHelper,
 } = inject();
 const assert = require('assert');
+const { locateOption } = require('../helper/locatorHelper');
 
 const url = new URL(codeceptjsConfig.config.helpers.Playwright.url);
 
@@ -251,7 +252,7 @@ module.exports = {
       .find('label')
       .withText('Custom'),
     customAutoDiscoveryfield: '$autoDiscoveryLimit-number-input',
-    dropdownOption: (text) => locate('div[class$="-select-option-body"]').find('span').withText(text),
+    dropdownOption: (text) => locateOption(text),
   },
 
   async getFileContent(filePath) {

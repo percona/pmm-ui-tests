@@ -10,7 +10,7 @@ module.exports = {
   // setting locators
   url: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m&from=now-5m&to=now',
   cleanUrl: 'graph/d/pmm-home/home-dashboard',
-  landingUrl: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m',
+  landingUrl: 'graph/d/pmm-home/home-dashboard',
   genericOauthUrl: 'graph/login/generic_oauth',
   requestEnd: '/v1/Updates/Check',
   elements: {
@@ -22,7 +22,7 @@ module.exports = {
     dbUnderMonitoringCount:
       locate('.panel-content span').inside('[aria-label="Monitored DB Services panel"]'),
     dashboardHeaderText: 'Percona Monitoring and Management',
-    dashboardHeaderLocator: '//span[contains(text(),"Home Dashboard")]',
+    dashboardHeaderLocator: '//header//span[contains(text(),"Home")]',
     oldLastCheckSelector: '#pmm-update-widget > .last-check-wrapper p',
     sttDisabledFailedChecksPanelSelector: '$db-check-panel-settings-link',
     failedSecurityChecksPmmSettingsLink: locate('$db-check-panel-settings-link').find('a'),

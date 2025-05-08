@@ -8,12 +8,12 @@ const { I } = inject();
 function DashboardPanelMenu(title) {
   this.titleLocator = I.useDataQA(`data-testid Panel header ${title}`);
   // header[@data-testid="data-testid Panel header Panel Title"]/.//div[@class="panel-menu-container dropdown open"]/ul
-  this.menuLocator = I.useDataQA('panel-dropdown');
+  this.menuLocator = I.useDataQA('data-testid Panel menu item View');
   this.openMenuLocator = locate(this.titleLocator).find('[title="Menu"]');
 
   const menuItemLocator = (itemTitle) => locate('[data-role="menuitem"]').withText(itemTitle);
 
-  const subMenuItemLocator = (itemTitle) => `li > a > span[aria-label$="${itemTitle}"]`;
+  const subMenuItemLocator = (itemTitle) => I.useDataQA(`data-testid Panel menu item ${itemTitle}`)
 
   this.showMenu = () => {
     I.waitForVisible(this.titleLocator, 10);
@@ -37,9 +37,20 @@ function DashboardPanelMenu(title) {
   };
 
   this.share = () => {
-    I.click(menuItemLocator('Share'));
+    I.moveCursorTo(menuItemLocator('Share'));
+    I.waitForVisible(subMenuItemLocator('Share link'), 2);
 
-    return this;
+    return {
+      shareLink() {
+        I.click(subMenuItemLocator('Share link'));
+      },
+      shareEmbed() {
+        I.click(subMenuItemLocator('Share embed'));
+      },
+      shareSnapshot() {
+        I.click(subMenuItemLocator('Share snapshot'));
+      },
+    };
   };
 
   this.explore = () => {

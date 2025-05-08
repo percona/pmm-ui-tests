@@ -40,6 +40,15 @@ class BrowserHelper extends Helper {
 
     return await download.path();
   }
+
+  async getClipboardText() {
+    const { Playwright } = this.helpers;
+    const { browserContext, page } = Playwright;
+
+    await browserContext.grantPermissions(['clipboard-read']);
+
+    return await page.evaluate(() => navigator.clipboard.readText());
+  }
 }
 
 module.exports = BrowserHelper;

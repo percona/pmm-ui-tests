@@ -221,7 +221,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendGetRequest('v1/management/nodes', headers);
 
-    return resp.data.nodes;
+    return resp.data.nodes || [];
   },
 
   async getNodeName(nodeID) {

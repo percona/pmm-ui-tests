@@ -1,10 +1,12 @@
+const { locateOption } = require('../../helper/locatorHelper');
+
 const { I } = inject();
 
 class AccessRolesPage {
   constructor() {
     this.url = 'graph/roles';
     this.elements = {
-      option: (optionName) => locate('[data-testid*="-select-option"]').withText(optionName),
+      option: (optionName) => locateOption(optionName),
     };
     this.buttons = {
       create: locate('$access-roles-create-role'),
@@ -20,6 +22,7 @@ class AccessRolesPage {
       selectLabel: locate('[data-testid="data-testid Select label"]').find('input'),
       selectOperator: locate('[data-testid="data-testid Select match operator"]').find('input'),
       selectValue: locate('[data-testid="data-testid Select value"]').find('input'),
+      selectValueText: locate('[data-testid="data-testid Select value"]'),
     };
     this.messages = {
       roleCreated: (roleName) => `Role “${roleName}” created Your new role is now ready to be assigned to any user.`,
@@ -53,7 +56,7 @@ class AccessRolesPage {
     I.verifyPopUpMessage(this.messages.roleCreated(role.name));
   }
 
-  editAccessRole(role) {
+  async editAccessRole(role) {
     I.waitForVisible(this.buttons.openRoleOptions(role.name));
     I.click(this.buttons.openRoleOptions(role.name));
     I.click(this.buttons.editRole);
@@ -70,9 +73,14 @@ class AccessRolesPage {
     I.fillField(this.fields.selectOperator, role.operator);
     I.click(this.elements.option(role.operator));
 
-    I.fillField(this.fields.selectValue, role.value);
-    I.waitForVisible(this.elements.option(role.value));
-    I.click(this.elements.option(role.value));
+    const currentValue = await I.grabTextFrom(this.fields.selectValueText);
+
+    // dropdown option is not shown if it's the same as the current one
+    if (currentValue !== role.value) {
+      I.fillField(this.fields.selectValue, role.value);
+      I.waitForVisible(this.elements.option(role.value));
+      I.click(this.elements.option(role.value));
+    }
 
     I.click(this.buttons.submit);
 

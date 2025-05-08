@@ -1,4 +1,4 @@
-const { SERVICE_TYPE } = require("./helper/constants");
+const { SERVICE_TYPE } = require('./helper/constants');
 
 Feature('PT Summary');
 Before(async ({ I }) => {

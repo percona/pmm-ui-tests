@@ -102,7 +102,7 @@ Scenario(
     await I.Authorize();
 
     I.amOnPage(accessRolesPage.url);
-    accessRolesPage.editAccessRole(psRole);
+    await accessRolesPage.editAccessRole(psRole);
 
     await I.unAuthorize();
 

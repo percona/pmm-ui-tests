@@ -20,7 +20,7 @@ class AgentCli {
     I.assertEqual(
       actualLogLevel,
       expectedLogLevel,
-      `Expecting exporter for service ${dbDetails.service_name} added to have log level: ${expectedLogLevel} set, actual log level was: ${actualLogLevel}`
+      `Expecting exporter for service ${dbDetails.service_name} added to have log level: ${expectedLogLevel} set, actual log level was: ${actualLogLevel}`,
     );
 
     await I.verifyCommand(`docker exec ${dbDetails.container_name} pmm-admin inventory remove agent ${agent_id}`);

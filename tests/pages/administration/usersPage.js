@@ -1,3 +1,5 @@
+const { locateOption } = require('../../helper/locatorHelper');
+
 const { I } = inject();
 
 class UsersPage {
@@ -5,7 +7,7 @@ class UsersPage {
     this.url = 'graph/admin/users';
     this.elements = {
       header: locate('[class*="-title-info-container"]'),
-      option: (optionName) => locate('[data-testid*="-select-option"]').withText(optionName),
+      option: (optionName) => locateOption(optionName),
     };
     this.buttons = {
       allUsers: locate('[data-testid="data-testid all-users-tab"]'),

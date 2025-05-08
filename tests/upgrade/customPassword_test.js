@@ -52,7 +52,7 @@ Data(clientDbServices).Scenario(
     current, inventoryAPI, grafanaAPI,
   }) => {
     const {
-      serviceType, metric, upgrade_service
+      serviceType, metric, upgrade_service,
     } = current;
 
     const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName(`upgrade-${upgrade_service}`);

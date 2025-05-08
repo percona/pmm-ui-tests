@@ -325,9 +325,9 @@ module.exports = {
     await this.waitForPmmSettingsPageLoaded();
   },
 
-  applyChanges() {
+  async applyChanges() {
     I.click(this.fields.applyButton);
-    I.verifyPopUpMessage(this.messages.successPopUpMessage);
+    I.verifyPopUpMessage(this.messages.successPopUpMessage, 30);
   },
 
   switchAzure() {
@@ -550,7 +550,7 @@ module.exports = {
     tooltipObj.tooltipReadMoreLink = this.fields.tooltipReadMoreLink;
     await adminPage.verifyTooltip(tooltipObj);
 
-    I.moveCursorTo(locate('[title="Go to home"]'));
+    I.moveCursorTo(locate('[aria-label="Breadcrumbs"]'));
   },
 
   verifySwitch(switchSelector, expectedSwitchState = 'on') {
