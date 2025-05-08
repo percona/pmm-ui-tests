@@ -157,11 +157,11 @@ Scenario(
 
     const url = await I.grabCurrentUrl();
 
-    I.assertContain(url.split('from=')[1].replaceAll('%20', ' '), moment(from).format('ddd MMM DD YYYY HH:mm:ss'), 'Url does not contain selected from date time');
-    I.assertContain(url.split('to=')[1].replaceAll('%20', ' '), moment(to).format('ddd MMM DD YYYY HH:mm:ss'), 'Url does not contain selected to date time');
+    I.assertContain(url.split('from=')[1].replaceAll('%20', ' '), moment(from).toISOString(), 'Url does not contain selected from date time');
+    I.assertContain(url.split('to=')[1].replaceAll('%20', ' '), moment(to).toISOString(), 'Url does not contain selected to date time');
 
     I.click(queryAnalyticsPage.buttons.copyButton);
-    const clipBoardUrl = await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink);
+    const clipBoardUrl = await I.getClipboardText();
 
     I.amOnPage(clipBoardUrl);
     queryAnalyticsPage.waitForLoaded();
@@ -169,8 +169,8 @@ Scenario(
 
     adminPage.verifySelectedTimeRange(from, to);
 
-    I.assertContain(secondUrl.split('from=')[1].replaceAll('%20', ' '), moment(from).utc().format('ddd MMM DD YYYY HH:mm:ss'), 'Second Url does not contain selected from date time');
-    I.assertContain(secondUrl.split('to=')[1].replaceAll('%20', ' '), moment(to).utc().format('ddd MMM DD YYYY HH:mm:ss'), 'Second Url does not contain selected to date time');
+    I.assertContain(secondUrl.split('from=')[1].replaceAll('%20', ' '), moment(from).utc().toISOString(), 'Second Url does not contain selected from date time');
+    I.assertContain(secondUrl.split('to=')[1].replaceAll('%20', ' '), moment(to).utc().toISOString(), 'Second Url does not contain selected to date time');
   },
 );
 

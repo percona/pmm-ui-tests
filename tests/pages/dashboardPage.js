@@ -1245,6 +1245,7 @@ module.exports = {
     openFiltersDropdownLocator: (filterName) => locate(`//label[contains(text(), "${filterName}")]/following-sibling::div`),
     filterDropdownOptionsLocator: (filterName) => locateOption(filterName),
     filterDropdownValueLocator: (filterValue) => locate('div').withAttr({ role: 'option' }).withText(filterValue),
+    filterSelectedValues: (filterName) => locate(`//label[contains(text(), "${filterName}")]/following-sibling::div/div/div/div[contains(@class, "multi-value-container") or contains(@class, "singleValue")]`),
     refreshIntervalPicker: I.useDataQA('data-testid RefreshPicker interval button'),
     refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio"]//span[text()="${interval}"]`),
     clickablePanel: (name) => locate('$header-container').withText(name).find('a'),
@@ -1488,6 +1489,12 @@ module.exports = {
         I.click(this.fields.dropdownBackdrop);
       }
     }
+  },
+
+  async getSelectedFilterValues(filterName) {
+    const values = this.fields.filterSelectedValues(filterName);
+
+    return I.grabTextFromAll(values);
   },
 
   async getTimeRange() {
