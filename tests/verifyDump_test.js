@@ -35,7 +35,7 @@ Scenario(
     I.amOnPage(dumpPage.url);
     // Required wait as delete in previous test takes time to reload page content.
     I.wait(5);
-    dumpAPI.waitForDumpSucceed(uid.dump_id);
+    await dumpAPI.waitForDumpSucceed(uid.dump_id);
     dumpPage.verifyDumpVisible(uid.dump_id);
     await dumpAPI.deleteDump(uid.dump_id);
   },
@@ -47,7 +47,7 @@ Scenario(
     const resp = await dumpAPI.createDump([]);
     const uid = JSON.parse(JSON.stringify(resp));
 
-    dumpAPI.waitForDumpSucceed(uid.dump_id);
+    await dumpAPI.waitForDumpSucceed(uid.dump_id);
 
     I.amOnPage(dumpPage.url);
     // Required wait as delete in previous test takes time to reload page content.

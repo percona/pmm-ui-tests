@@ -77,7 +77,7 @@ export async function getMetrics(
   const output = await test.step(
     `Scraping "${serviceName}" metrics${dockerContainer ? `in "${dockerContainer}" container` : ''}`,
     async () => {
-      const prefix = dockerContainer ? `sudo docker exec ${dockerContainer} ` : '';
+      const prefix = dockerContainer ? `docker exec ${dockerContainer} ` : '';
       const adminList = (await execute(`${prefix || 'sudo '}pmm-admin list`).assertSuccess()).getStdOutLines();
       const serviceId: string = adminList.find((item) => item.includes(serviceName))
         ?.trim()

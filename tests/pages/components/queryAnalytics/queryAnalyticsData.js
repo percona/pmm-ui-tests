@@ -118,6 +118,7 @@ class QueryAnalyticsData {
   }
 
   searchByValue(value, refresh = false) {
+    I.waitForVisible(this.elements.queryRow(0), 30);
     I.waitForVisible(this.fields.searchBy, 30);
     I.clearField(this.fields.searchBy);
     I.fillField(this.fields.searchBy, value);
