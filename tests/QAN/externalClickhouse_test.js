@@ -24,7 +24,7 @@ AfterSuite(async ({ I }) => {
 
 // Tag only for adding into matrix job, to be fixed later.
 Scenario(
-  'PMM-T1218 Verify PMM with external Clickhouse @docker-configuration @cli',
+  'PMM-T1218 Verify PMM with external Clickhouse @docker-configuration @cli @post-settings-metrics-upgrade',
   async ({ I, dataSourcePage, queryAnalyticsPage }) => {
     I.amOnPage(basePmmUrl + dataSourcePage.url);
     I.waitForVisible(dataSourcePage.elements.clickHouseDatasource, 5);
@@ -49,7 +49,7 @@ Scenario(
   },
 );
 
-Scenario('PMM-T2020 - Verify external clickhouse as datasource on explore page @docker-configuration', async ({ I, explorePage }) => {
+Scenario('PMM-T2020 - Verify external clickhouse as datasource on explore page @docker-configuration @post-settings-metrics-upgrade', async ({ I, explorePage }) => {
   I.amOnPage(basePmmUrl + explorePage.url);
   explorePage.selectDataSource('ClickHouse');
   I.click(explorePage.elements.sqlEditorButton);
@@ -60,13 +60,13 @@ Scenario('PMM-T2020 - Verify external clickhouse as datasource on explore page @
   I.dontSee(explorePage.messages.authError);
 });
 
-Scenario('PMM-T2018 - Verify internal clickhouse is not running when using external clickhouse @docker-configuration', async ({ I, explorePage }) => {
+Scenario('PMM-T2018 - Verify internal clickhouse is not running when using external clickhouse @docker-configuration @post-settings-metrics-upgrade', async ({ I, explorePage }) => {
   const response = await I.verifyCommand('docker exec pmm-server-external-clickhouse supervisorctl status', null, 'fail');
 
   I.assertFalse(response.includes('clickhouse'), 'Clickhouse should not run on pmm server!');
 });
 
-Scenario('PMM-T2019 - Verify pmm managed logs do not contain errors about clickhouse @docker-configuration', async ({ I, explorePage }) => {
+Scenario('PMM-T2019 - Verify pmm managed logs do not contain errors about clickhouse @docker-configuration @post-settings-metrics-upgrade', async ({ I, explorePage }) => {
   const pmmManagedLogs = await I.verifyCommand('docker exec pmm-server-external-clickhouse cat /srv/logs/pmm-managed.log | grep "clickhouse"');
   const qanLogs = await I.verifyCommand('docker exec pmm-server-external-clickhouse cat /srv/logs/qan-api2.log | grep "clickhouse"');
 
@@ -76,7 +76,7 @@ Scenario('PMM-T2019 - Verify pmm managed logs do not contain errors about clickh
   I.assertFalse(qanLogs.includes('pmm_pass'), 'QAN logs should not contain clickhouse password in plain text');
 });
 
-Scenario('PMM-T2006 - Verify using ClickHouse Username and password variables for external databases @docker-configuration', async ({ I, dashboardPage, queryAnalyticsPage }) => {
+Scenario('PMM-T2006 - Verify using ClickHouse Username and password variables for external databases @docker-configuration @post-settings-metrics-upgrade', async ({ I, dashboardPage, queryAnalyticsPage }) => {
   const dashboardUrl = I.buildUrlWithParams(basePmmUrl + dashboardPage.mySQLInstanceOverview.clearUrl, { from: 'now-5m' });
 
   I.amOnPage(dashboardUrl);
