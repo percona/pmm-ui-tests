@@ -270,6 +270,14 @@ class Grafana extends Helper {
     return stdout.trim();
   }
 
+  async execCommandDockerContainer(containerName, command) {
+    const { stdout, stderr, code } = await shell.exec(`docker exec ${containerName} ${command}`, { silent: true, async: true });
+
+    console.log(stdout);
+    console.log(stderr);
+    console.log(code);
+  }
+
   async clickIfVisible(element, timeout = 30) {
     const { Playwright } = this.helpers;
 

@@ -60,8 +60,9 @@ Scenario('PMM-T2020 - Verify external clickhouse as datasource on explore page @
   I.dontSee(explorePage.messages.authError);
 });
 
-Scenario('PMM-T2018 - Verify internal clickhouse is not running when using external clickhouse @docker-configuration @post-settings-metrics-upgrade', async ({ I, explorePage }) => {
-  const response = await I.verifyCommand('docker exec pmm-server-external-clickhouse supervisorctl status', null, 'fail');
+Scenario('PMM-T2018 - Verify internal clickhouse is not running when using external clickhouse @docker-configuration @post-settings-metrics-upgrade', async ({ I }) => {
+  const response = await I.execCommandDockerContainer('pmm-server-external-clickhouse', 'supervisorctl status');
+  // const response = await I.verifyCommand('docker exec pmm-server-external-clickhouse supervisorctl status', null, 'fail');
 
   I.assertFalse(response.includes('clickhouse'), 'Clickhouse should not run on pmm server!');
 });
