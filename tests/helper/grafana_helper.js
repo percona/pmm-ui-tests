@@ -271,7 +271,7 @@ class Grafana extends Helper {
   }
 
   async execCommandDockerContainer(containerName, command) {
-    const { stdout, stderr, code } = await shell.exec(`docker exec ${containerName} ${command}`, { silent: true, async: true });
+    const { stdout, stderr, code } = shell.exec(`docker exec ${containerName} ${command}`, { silent: true });
 
     console.log(stdout);
     console.log(stderr);
