@@ -64,7 +64,7 @@ Scenario('PMM-T1884 - Verify disabling service account @service-account', async 
   await I.wait(10);
   const psContainerName = await I.verifyCommand('docker ps | grep ps_pmm | awk \'{print $NF}\'');
   const responseDisabled = await I.verifyCommand(`docker exec ${psContainerName} pmm-admin list`, '', 'fail');
-  const expectedDisabledMessage = 'Unauthorized. Please check username and password.';
+  const expectedDisabledMessage = 'Auth method is not service account token. Please check username and password.';
 
   I.assertEqual(
     responseDisabled,
