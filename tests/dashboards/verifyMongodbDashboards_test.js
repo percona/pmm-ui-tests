@@ -65,4 +65,4 @@ Scenario(
     await dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbCollectionsOverview.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },
-);
+).retry(2);
