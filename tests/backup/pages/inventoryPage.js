@@ -1,5 +1,6 @@
 const { I } = inject();
 const faker = require('faker');
+const { locateOption } = require('../../helper/locatorHelper');
 
 const artifactCell = (name) => `//tr[td[contains(text(), '${name}')]]`;
 
@@ -9,7 +10,7 @@ module.exports = {
     noData: '$table-no-data',
     modalHeader: '$modal-header',
     columnHeaderLocator: (columnHeaderText) => `//th[text()="${columnHeaderText}"]`,
-    dropdownOption: (text) => locate('div[class$="-select-option-body"]').find('span').withText(text),
+    dropdownOption: (text) => locateOption(text),
     selectedLocation: '//label[@data-testid="location-field-label"]/parent::div/following-sibling::div[1]//div[contains(@class, "-singleValue")]',
     selectedService: locate('div[class*="-singleValue"]').inside(locate('span').withChild('$service-select-label')),
     inProgressBackup: '$statusPending',

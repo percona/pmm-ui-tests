@@ -78,7 +78,8 @@ Data(urlsAndMetrics).Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.panelMenu(current.metricName)
       .showMenu()
-      .share();
+      .share()
+      .shareLink();
     I.waitForVisible(dashboardPage.sharePanel.elements.imageRendererPluginLink, 20);
     I.seeAttributesOnElements(
       dashboardPage.sharePanel.elements.imageRendererPluginLink,
@@ -191,8 +192,7 @@ xScenario(
 Scenario(
   'PMM-T348 - PXC/Galera Node Summary dashboard @dashboards @nightly',
   async ({ I, dashboardPage }) => {
-    const serviceName = serviceList.find((service) => service.name.includes('pxc'));
-    const url = I.buildUrlWithParams(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.clearUrl, { from: 'now-15m', service_name: serviceName });
+    const url = I.buildUrlWithParams(dashboardPage.mysqlPXCGaleraNodeSummaryDashboard.clearUrl, { from: 'now-15m' });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();

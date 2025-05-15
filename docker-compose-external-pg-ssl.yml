@@ -67,7 +67,13 @@ services:
       - PMM_POSTGRES_SSL_CA_PATH=/etc/ssl/postgresql/ca.crt
       - PMM_POSTGRES_SSL_KEY_PATH=/etc/ssl/postgresql/client.key
       - PMM_POSTGRES_SSL_CERT_PATH=/etc/ssl/postgresql/client.crt
-      - GF_DATABASE_URL=postgres://postgres:pmm_password@external-postgres-ssl:5432/grafana
+      - GF_DATABASE_TYPE=postgres
+      - GF_DATABASE_NAME=grafana
+      - GF_DATABASE_PASSWORD=pmm_password
+      - GF_DATABASE_HOST=external-postgres-ssl
+      - GF_DATABASE_USER=postgres
+      # Need to use separate variables due to https://github.com/grafana/grafana/issues/102337#issuecomment-2853847084
+      #- GF_DATABASE_URL=postgres://postgres:pmm_password@external-postgres-ssl:5432/grafana
       - GF_DATABASE_SSL_MODE=verify-ca
       - GF_DATABASE_CA_CERT_PATH=/etc/ssl/postgresql/ca.crt
       - GF_DATABASE_CLIENT_KEY_PATH=/etc/ssl/postgresql/client.key

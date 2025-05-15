@@ -3,20 +3,19 @@ const assert = require('assert');
 const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu');
 const PmmHealthDashboard = require('../dashboards/pages/pmmHealthDashboard');
 const HomeDashboard = require('../dashboards/pages/homeDashboard');
-
-const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
+const { locateOption } = require('../helper/locatorHelper');
 
 module.exports = {
   // insert your locators and methods here
   // setting locators
   serviceNameDropdown:
-    '//button[@id="var-service_name"]',
+    '//label[contains(text(), "Service Name")]/following-sibling::div',
   serviceName:
-    '//button[@id="var-service_name"]/span',
+    '//label[contains(text(), "Service Name")]/following-sibling::div',
   serviceNameInput:
     '//input[@aria-controls="options-service_name"]',
   toggleAllValues: '[aria-label="Toggle all values"]',
-  panel: 'div[data-panelid]',
+  panel: 'div[data-viz-panel-key]',
   systemUptimePanel: (nodeName) => `//div[@class="panel-title"]//h2[text()="${nodeName} - System Uptime"]`,
   nodesCompareDashboard: {
     url: 'graph/d/node-instance-compare/nodes-compare?orgId=1&refresh=1m&from=now-5m&to=now',
@@ -1212,8 +1211,8 @@ module.exports = {
     },
     annotationMarker: I.useDataQA('data-testid annotation-marker'),
     clearSelection: '//a[@ng-click="vm.clearSelections()"]',
-    collapsedDashboardRow: '//*[@data-testid="dashboard-row-container"]//button[@aria-expanded="false"]',
-    collapsedDashboardRowByName: (rowName) => `//*[@data-testid="dashboard-row-container"]//button[@aria-expanded="false" and contains(@data-testid, "${rowName}")]`,
+    collapsedDashboardRow: '//*[@aria-label="Expand row"]',
+    collapsedDashboardRowByName: (rowName) => `//*[@aria-label="Expand row" and contains(@data-testid, "${rowName}")]`,
     dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
     Last2Days: '//span[contains(text(), "Last 2 days")]',
     metricTitle: '$header-container',
@@ -1240,17 +1239,21 @@ module.exports = {
     serviceSummary: I.useDataQA('data-testid dashboard-row-title-Service Summary'),
     timeRangePickerButton: I.useDataQA('data-testid TimePicker Open Button'),
     refresh: I.useDataQA('data-testid RefreshPicker run button'),
-    allFilterDropdownOptions: '//button[contains(@data-testid, "variable-option")][span[text()][not(contains(text(), "All"))]]',
+    allFilterDropdownOptions: '//div[@role="option" and not(.="All")]',
     skipTourButton: '//button[span[text()="Skip"]]',
     closeModal: '//button[@aria-label="Close"]',
-    openFiltersDropdownLocator: (filterName) => locate(`#var-${formatElementId(filterName)}`),
-    filterDropdownOptionsLocator: (filterName) => locate(I.useDataQA('data-testid variable-option')).withText(filterName),
+    openFiltersDropdownLocator: (filterName) => locate(`//label[contains(text(), "${filterName}")]/following-sibling::div`),
+    filterDropdownOptionsLocator: (filterName) => locateOption(filterName),
+    filterDropdownValueLocator: (filterValue) => locate('div').withAttr({ role: 'option' }).withText(filterValue),
+    filterSelectedValues: (filterName) => locate(`//label[contains(text(), "${filterName}")]/following-sibling::div/div/div/div[contains(@class, "multi-value-container") or contains(@class, "singleValue")]`),
     refreshIntervalPicker: I.useDataQA('data-testid RefreshPicker interval button'),
     refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio"]//span[text()="${interval}"]`),
     clickablePanel: (name) => locate('$header-container').withText(name).find('a'),
     dashboardTitle: (name) => locate('span').withText(name),
     metricPanelNa: (name) => `//section[@aria-label="${name}"]//span[text()="N/A"]`,
     loadingElement: locate('//div[@aria-label="Panel loading bar"]'),
+    dropdownBackdrop: locate('//div[contains(@class,"ScrollManager")]'),
+    multiSelect: (filterName) => locate(`//label[contains(text(), "${filterName}")]/following-sibling::div//div[contains(@class,"grafana-select-multi-value-container")]`),
   },
 
   async checkNavigationBar(text) {
@@ -1466,10 +1469,11 @@ module.exports = {
   },
 
   async applyFilter(filterName, filterValue) {
-    const filterValueSelector = `//span[contains(text(), '${filterValue}')]`;
+    const filterValueLocator = this.fields.filterDropdownValueLocator(filterValue);
     const filterDropdownOptionsLocator = this.fields.filterDropdownOptionsLocator(filterValue);
     const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
     const selectedFilterValue = await I.grabTextFrom(dropdownLocator);
+    const isMultiSelect = await I.grabNumberOfVisibleElements(this.fields.multiSelect(filterName)) > 0;
 
     // If there is only one value for a filter it is selected by default
     if (selectedFilterValue !== 'All' && selectedFilterValue === filterValue) {
@@ -1477,9 +1481,20 @@ module.exports = {
     } else {
       this.expandFilters(filterName);
       I.waitForElement(filterDropdownOptionsLocator, 30);
-      I.waitForVisible(filterValueSelector, 30);
-      I.click(filterValueSelector);
+      I.waitForVisible(filterValueLocator, 30);
+      I.click(filterValueLocator);
+
+      // close dropdown if it's multi select
+      if (isMultiSelect) {
+        I.click(this.fields.dropdownBackdrop);
+      }
     }
+  },
+
+  async getSelectedFilterValues(filterName) {
+    const values = this.fields.filterSelectedValues(filterName);
+
+    return I.grabTextFromAll(values);
   },
 
   async getTimeRange() {

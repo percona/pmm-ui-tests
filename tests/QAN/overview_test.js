@@ -271,13 +271,12 @@ Scenario(
 Scenario(
   'PMM-T204 - Verify small and N/A values on sparkline @qan',
   async ({ I, queryAnalyticsPage }) => {
-    const firstCell = queryAnalyticsPage.data.elements.queryValue(0, 1);
     const secondCell = queryAnalyticsPage.data.elements.queryValue(3, 3);
 
     queryAnalyticsPage.changeSorting(1);
     queryAnalyticsPage.data.verifySorting(1, 'desc');
-    I.waitForVisible(firstCell, 10);
-    I.moveCursorTo(firstCell);
+    I.waitForVisible(secondCell, 10);
+    I.moveCursorTo(secondCell);
     I.waitForVisible(queryAnalyticsPage.data.elements.tooltipQPSValue, 10);
     queryAnalyticsPage.data.changeMetric('Query Time', 'Innodb Queue Wait');
     queryAnalyticsPage.waitForLoaded();

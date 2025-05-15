@@ -41,7 +41,6 @@ Data(annotation).Scenario(
     dashboardPage.waitForDashboardOpened();
     if (annotationName === 'mysql-node-name') {
       await dashboardPage.applyFilter('Node Name', nodeName);
-      dashboardPage.expandFilters('Interval');
       dashboardPage.verifyAnnotationsLoaded(annotationName, 2);
     } else {
       await dashboardPage.applyFilter('Service Name', serviceName);
