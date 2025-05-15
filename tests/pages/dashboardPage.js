@@ -1320,7 +1320,7 @@ module.exports = {
   },
 
   panelByTitle(title) {
-    return I.useDataQA(`data-testid Panel header ${title}`);
+    return locate(I.useDataQA(`data-testid Panel header ${title}`));
   },
 
   panelDataByTitle(title) {
