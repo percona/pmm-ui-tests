@@ -1,3 +1,5 @@
+const { locateOption } = require('../../helper/locatorHelper');
+
 const { I } = inject();
 
 /**
@@ -49,8 +51,8 @@ module.exports = {
     const rowsShowing = (await I.grabTextFrom(this.elements.totalsLabel)).split(' ')[1].split('-')[1];
 
     I.click(this.elements.rowsPerPageDropdown);
-    I.waitForVisible(I.getSingleSelectOptionLocator(option));
-    I.click(I.getSingleSelectOptionLocator(option));
+    I.waitForVisible(locateOption(option));
+    I.click(locateOption(option));
 
     if ((rowsShowing !== rowsTotal) && (rowsTotal > option)) {
       // 20 sec wait for pages count to change
