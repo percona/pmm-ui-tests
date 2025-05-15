@@ -1252,7 +1252,6 @@ module.exports = {
     dashboardTitle: (name) => locate('span').withText(name),
     metricPanelNa: (name) => `//section[@aria-label="${name}"]//span[text()="N/A"]`,
     loadingElement: locate('//div[@aria-label="Panel loading bar"]'),
-    dropdownBackdrop: locate('//div[contains(@class,"ScrollManager")]'),
     multiSelect: (filterName) => locate(`//label[contains(text(), "${filterName}")]/following-sibling::div//div[contains(@class,"grafana-select-multi-value-container")]`),
   },
 
@@ -1486,7 +1485,7 @@ module.exports = {
 
       // close dropdown if it's multi select
       if (isMultiSelect) {
-        I.click(this.fields.dropdownBackdrop);
+        I.pressKey('Escape');
       }
     }
   },

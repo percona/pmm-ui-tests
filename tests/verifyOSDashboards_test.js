@@ -71,7 +71,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1695 Verify that user is able to filter OS / Node Compare dashboard by Node Name @nightly @dashboards',
+  'PMM-T1695 - Verify that user is able to filter OS / Node Compare dashboard by Node Name @nightly @dashboards',
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
@@ -98,6 +98,7 @@ Scenario(
     await dashboardPage.applyFilter('Node Name', node2);
     I.scrollTo(dashboardPage.fields.metricTitle);
     I.forceClick(dashboardPage.fields.metricTitle);
+    I.wait(1);
 
     const finalNumOfPanels = await I.grabNumberOfVisibleElements(dashboardPage.panel);
 
