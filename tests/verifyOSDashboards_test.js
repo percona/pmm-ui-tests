@@ -38,7 +38,7 @@ Scenario(
 );
 
 Data(nodes).Scenario(
-  'PMM-T418 PMM-T419 Verify the pt-summary on Node Summary dashboard @nightly @dashboards',
+  'PMM-T418 + PMM-T419 - Verify the pt-summary on Node Summary dashboard @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.nodeSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
