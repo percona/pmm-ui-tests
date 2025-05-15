@@ -192,6 +192,7 @@ Scenario(
 
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
     dashboardPage.waitForDashboardOpened();
+    I.click(dashboardPage.fields.reportTitle);
     await dashboardPage.expandEachDashboardRow();
     const testConfigFile = 'c = rs.conf(); c.members[1].secondaryDelaySecs = 10; c.members[1].priority = 0; c.members[1].hidden = true; rs.reconfig(c);';
 
@@ -221,6 +222,7 @@ Scenario('PMM-T1889 - Verify Mongo replication lag graph shows correct info @pmm
   await I.verifyCommand(`sudo docker exec rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" --eval "${testConfigFile}"`);
   I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
   dashboardPage.waitForDashboardOpened();
+  I.click(dashboardPage.fields.reportTitle);
 
   await dashboardPage.expandEachDashboardRow();
   await adminPage.performPageDown(5);
