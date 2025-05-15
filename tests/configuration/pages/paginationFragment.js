@@ -67,7 +67,7 @@ module.exports = {
       I.wait(2);
     }
 
-    await this.verifySelectedCountPerPage(option);
+    await this.verifySelectedCountPerPage(optionToSelect);
   },
 
   async getTotalOfItems() {
