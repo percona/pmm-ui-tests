@@ -171,7 +171,7 @@ Scenario.skip(
 Scenario(
   'PMM-T1775 + PMM-T1888 - Verify Wrong Replication Lag by Set values if RS is PSA -( MongoDB Cluster Summary) @pmm-psmdb-arbiter-integration @not-ui-pipeline',
   async ({
-    I, dashboardPage,
+    I, dashboardPage, adminPage,
   }) => {
     const username = 'pmm';
     const password = 'pmmpass';
@@ -200,6 +200,10 @@ Scenario(
     // Gather Secondary member Service Name from Mongo
     const secondaryServiceName = (await I.verifyCommand(`docker exec ${arbiter_primary_container_name} mongo --eval rs\.printSecondaryReplicationInfo\\(\\) --username=${username} --password=${password} | awk -F ":" '/source/ {print $2}'`)).trim();
 
+    await adminPage.performPageDown(5);
+    I.waitForElement(await dashboardPage.graphsLocator('Replication Lag'), 20);
+    I.scrollTo(await dashboardPage.graphsLocator('Replication Lag'));
+
     await dashboardPage.verifyColumnLegendMaxValueAbove('Replication Lag', secondaryServiceName, 1, 240);
 
     const maxValue = await I.grabTextFrom(dashboardPage.getColumnLegendMaxValue('Replication Lag', secondaryServiceName));
@@ -219,7 +223,9 @@ Scenario('PMM-T1889 - Verify Mongo replication lag graph shows correct info @pmm
   dashboardPage.waitForDashboardOpened();
 
   await dashboardPage.expandEachDashboardRow();
-
+  await adminPage.performPageDown(5);
+  I.waitForElement(await dashboardPage.graphsLocator(graphName), 20);
+  I.scrollTo(await dashboardPage.graphsLocator(graphName));
   await dashboardPage.verifyColumnLegendMaxValueAbove(graphName, serviceName, 1, 240);
 
   const maxValue = await I.grabTextFrom(dashboardPage.getColumnLegendMaxValue(graphName, serviceName));
