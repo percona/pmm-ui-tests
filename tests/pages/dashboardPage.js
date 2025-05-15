@@ -1342,7 +1342,7 @@ module.exports = {
 
       while (actualValue < expectedValue) {
         // eslint-disable-next-line no-plusplus
-        if (retries++ > timeout) throw new Error(`Value in panel ${panelTitle} for ${serviceName} was never above ${expectedValue}`);
+        if (retries++ > timeout) throw new Error(`Value in panel ${panelTitle} for ${serviceName} was never above ${expectedValue} and is ${actualValue}`);
 
         if (await valueLocator.isVisible()) {
           actualValue = await valueLocator.textContent();
