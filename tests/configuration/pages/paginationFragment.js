@@ -42,8 +42,10 @@ module.exports = {
     return parseInt(await I.grabTextFrom(this.elements.rowsPerPageDropdown), 10);
   },
 
-  async selectRowsPerPage(option) {
-    I.assertContain([25, 50, 100], option, 'Specified option is not the one available options to select in dropdown');
+  async selectRowsPerPage(optionToSelect) {
+    const option = `${optionToSelect}`;
+
+    I.assertContain([25, 50, 100], optionToSelect, 'Specified option is not the one available options to select in dropdown');
 
     await I.say(`Changing 'Rows per page' to ${option}`);
     const pagesCount = await this.getLastPageNumber();
