@@ -40,7 +40,7 @@ module.exports = () => actor({
   },
 
   useDataQA: (selector) => `[data-testid="${selector}"]`,
-  getSingleSelectOptionLocator: (optionName) => locate(getOptionLocator(optionName)),
+  getSingleSelectOptionLocator: (optionName) => getOptionLocator(optionName),
   getClosePopUpButtonLocator: () => systemMessageButtonClose,
   getPopUpLocator: () => systemMessageText,
 
