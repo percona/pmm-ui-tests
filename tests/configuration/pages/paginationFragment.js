@@ -51,8 +51,8 @@ module.exports = {
     const rowsShowing = (await I.grabTextFrom(this.elements.totalsLabel)).split(' ')[1].split('-')[1];
 
     I.click(this.elements.rowsPerPageDropdown);
-    I.waitForVisible(locateOption(option));
-    I.click(locateOption(option));
+    I.waitForVisible(locate('[data-testid="data-testid Select option"]').withText(option), 30);
+    I.click(locate('[data-testid="data-testid Select option"]').withText(option));
 
     if ((rowsShowing !== rowsTotal) && (rowsTotal > option)) {
       // 20 sec wait for pages count to change
