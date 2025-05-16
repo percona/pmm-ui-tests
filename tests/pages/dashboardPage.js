@@ -1285,6 +1285,7 @@ module.exports = {
 
   async verifyMetricsExistence(metrics) {
     I.click(this.fields.reportTitle);
+    await adminPage.performPageDown(5);
     for (const i in metrics) {
       I.pressKey('PageDown');
       await this.expandEachDashboardRow();
