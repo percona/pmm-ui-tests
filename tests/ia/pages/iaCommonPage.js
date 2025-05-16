@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { locateOption, getOptionLocator } = require('../../helper/locatorHelper');
+const { locateOption } = require('../../helper/locatorHelper');
 
 const {
   I, alertRulesPage, ruleTemplatesPage, rulesAPI, templatesAPI, alertsPage, alertsAPI,
@@ -26,7 +26,7 @@ module.exports = {
     table: '$table-tbody',
     disabledIa: '$empty-block',
     settingsLink: '$settings-link',
-    selectDropdownOption: (option) => getOptionLocator(option),
+    selectDropdownOption: (option) => locateOption(option),
     inputField: (id) => `input[id='${id}']`,
     modalDialog: 'div[role=\'dialog\']',
   },

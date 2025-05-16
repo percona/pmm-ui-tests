@@ -1284,6 +1284,8 @@ module.exports = {
   },
 
   async verifyMetricsExistence(metrics) {
+    I.click(this.fields.reportTitle);
+    await adminPage.performPageDown(5);
     for (const i in metrics) {
       I.pressKey('PageDown');
       await this.expandEachDashboardRow();
@@ -1342,7 +1344,7 @@ module.exports = {
 
       while (actualValue < expectedValue) {
         // eslint-disable-next-line no-plusplus
-        if (retries++ > timeout) throw new Error(`Value in panel ${panelTitle} for ${serviceName} was never above ${expectedValue}`);
+        if (retries++ > timeout) throw new Error(`Value in panel ${panelTitle} for ${serviceName} was never above ${expectedValue} and is ${actualValue}`);
 
         if (await valueLocator.isVisible()) {
           actualValue = await valueLocator.textContent();
@@ -1428,6 +1430,7 @@ module.exports = {
 
   async expandEachDashboardRow() {
     await I.usePlaywrightTo('expanding collapsed rows', async ({ page }) => {
+      await page.locator(this.fields.collapsedDashboardRow).first().waitFor({ state: 'visible', timeout: 20000 });
       const getCollapsedRowsLocators = async () => await page.locator(this.fields.collapsedDashboardRow).all();
       let collapsedRowsLocators = await getCollapsedRowsLocators();
 

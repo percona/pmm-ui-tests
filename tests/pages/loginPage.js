@@ -3,10 +3,10 @@ const { I, homePage } = inject();
 module.exports = {
   url: 'graph/login',
   fields: {
-    loginInput: '//input[@name="user"]',
-    passwordInput: '//input[@name="password"]',
-    loginButton: '//button[@type="submit"]',
-    skipButton: '//button[span[text()="Skip"]]',
+    loginInput: I.useDataQA('data-testid Username input field'),
+    passwordInput: I.useDataQA('data-testid Password input field'),
+    loginButton: I.useDataQA('data-testid Login button'),
+    skipButton: I.useDataQA('data-testid Skip change password button'),
   },
   messages: {
     loginSuccess: 'Logged in',

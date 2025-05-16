@@ -11,9 +11,9 @@ const NEW_ADMIN_PASSWORD = 'admin1';
 
 After(async ({ I, profileAPI }) => {
   // eslint-disable-next-line no-undef
-  await tryTo(() => {
+  await tryTo(async () => {
     I.Authorize();
-    profileAPI.changePassword('admin', process.env.ADMIN_PASSWORD, INITIAL_ADMIN_PASSWORD);
+    await profileAPI.changePassword('admin', process.env.ADMIN_PASSWORD, INITIAL_ADMIN_PASSWORD);
   });
 });
 
