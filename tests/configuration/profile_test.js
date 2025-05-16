@@ -26,7 +26,7 @@ Scenario(
     await loginPage.login();
 
     await grafanaAPI.waitForMetric('pg_stat_activity_count', null);
-    // await grafanaAPI.waitForMetric('mysql_global_status_threads_connected', null);
+    await grafanaAPI.waitForMetric('mysql_global_status_threads_connected', null);
     await grafanaAPI.waitForMetric('mongodb_up', null);
     await grafanaAPI.waitForMetric('node_cpu_seconds_total', null);
 
