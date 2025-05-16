@@ -33,15 +33,12 @@ Scenario(
     await changePasswordPage.open();
     changePasswordPage.fillChangePasswordForm(process.env.ADMIN_PASSWORD, NEW_ADMIN_PASSWORD);
     changePasswordPage.applyChanges();
-    await pause();
     I.signOut();
     await I.waitForVisible(loginPage.fields.loginInput, 30);
-    await pause();
     process.env.ADMIN_PASSWORD = NEW_ADMIN_PASSWORD;
     await loginPage.login();
 
     await pmmInventoryPage.servicesTab.open();
-    await pause();
     await pmmInventoryPage.servicesTab.pagination.selectRowsPerPage(100);
 
     // TODO: improve inventoryAPI.apiGetServices() to handle flexible auth.
