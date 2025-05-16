@@ -133,23 +133,22 @@ Data(sslinstances).Scenario(
       databaseType, serviceName, dashboard,
     } = current;
 
-    const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName(serviceName);
+    const apiServiceDetails = await inventoryAPI.getServiceDetailsByStartsWithName(serviceName);
 
     const serviceList = [apiServiceDetails.service_name, `remote_api_${serviceName}`];
 
     for (const service of serviceList) {
-      I.amOnPage(dashboard);
+      const url = I.buildUrlWithParams(dashboard, { service_name: service, from: 'now-5m' });
+
+      I.amOnPage(url);
       dashboardPage.waitForDashboardOpened();
-      await adminPage.applyTimeRange('Last 5 minutes');
-      I.wait(2);
-      await dashboardPage.applyFilter('Service Name', service);
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(16);
+      await dashboardPage.verifyThereAreNoGraphsWithoutData(10);
     }
   },
-).retry(1);
+).retry(0);
 
 Data(sslinstances).Scenario(
   'Verify QAN after upgrade for SSL Instances added @post-ssl-upgrade',
