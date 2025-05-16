@@ -193,6 +193,7 @@ Scenario(
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
     dashboardPage.waitForDashboardOpened();
     I.click(dashboardPage.fields.reportTitle);
+    await adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     const testConfigFile = 'c = rs.conf(); c.members[1].secondaryDelaySecs = 10; c.members[1].priority = 0; c.members[1].hidden = true; rs.reconfig(c);';
 
@@ -201,7 +202,6 @@ Scenario(
     // Gather Secondary member Service Name from Mongo
     const secondaryServiceName = (await I.verifyCommand(`docker exec ${arbiter_primary_container_name} mongo --eval rs\.printSecondaryReplicationInfo\\(\\) --username=${username} --password=${password} | awk -F ":" '/source/ {print $2}'`)).trim();
 
-    await adminPage.performPageDown(5);
     I.waitForElement(await dashboardPage.graphsLocator('Replication Lag'), 20);
     I.scrollTo(await dashboardPage.graphsLocator('Replication Lag'));
 
@@ -223,9 +223,9 @@ Scenario('PMM-T1889 - Verify Mongo replication lag graph shows correct info @pmm
   I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
   dashboardPage.waitForDashboardOpened();
   I.click(dashboardPage.fields.reportTitle);
+  await adminPage.performPageDown(5);
 
   await dashboardPage.expandEachDashboardRow();
-  await adminPage.performPageDown(5);
   I.waitForElement(await dashboardPage.graphsLocator(graphName), 20);
   I.scrollTo(await dashboardPage.graphsLocator(graphName));
   await dashboardPage.verifyColumnLegendMaxValueAbove(graphName, serviceName, 1, 240);
