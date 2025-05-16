@@ -21,13 +21,13 @@ module.exports = {
   /**
    * Check that selected value in "Rows per page" dropdown matches expected
    *
-   * @param     expectedNumber    number to check, possible values: 25|50|100
+   * @param     expectedNumber    string or number to check, possible values: 25|50|100
    * @returns   {Promise<void>}
    */
   async verifySelectedCountPerPage(expectedNumber) {
     I.assertContain(
-      [25, 50, 100],
-      expectedNumber,
+      ['25', '50', '100'],
+      `${expectedNumber}`,
       'Expected number is not the one available options to select in dropdown',
     );
     I.waitForElement(this.elements.rowsPerPageDropdown, 30);
@@ -45,7 +45,7 @@ module.exports = {
   async selectRowsPerPage(optionToSelect) {
     const option = `${optionToSelect}`;
 
-    I.assertContain([25, 50, 100], optionToSelect, 'Specified option is not the one available options to select in dropdown');
+    I.assertContain(['25', '50', '100'], option, 'Specified option is not the one available options to select in dropdown');
 
     await I.say(`Changing 'Rows per page' to ${option}`);
     const pagesCount = await this.getLastPageNumber();
@@ -53,8 +53,8 @@ module.exports = {
     const rowsShowing = (await I.grabTextFrom(this.elements.totalsLabel)).split(' ')[1].split('-')[1];
 
     I.click(this.elements.rowsPerPageDropdown);
-    I.waitForVisible(locate('[data-testid="data-testid Select option"]').withText(option), 30);
-    I.click(locate('[data-testid="data-testid Select option"]').withText(option));
+    I.waitForVisible(locateOption(option), 30);
+    I.click(locateOption(option));
 
     if ((rowsShowing !== rowsTotal) && (rowsTotal > option)) {
       // 20 sec wait for pages count to change
@@ -67,7 +67,7 @@ module.exports = {
       I.wait(2);
     }
 
-    await this.verifySelectedCountPerPage(optionToSelect);
+    await this.verifySelectedCountPerPage(option);
   },
 
   async getTotalOfItems() {

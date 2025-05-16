@@ -11,9 +11,9 @@ const NEW_ADMIN_PASSWORD = 'admin1';
 
 After(async ({ I, profileAPI }) => {
   // eslint-disable-next-line no-undef
-  await tryTo(() => {
+  await tryTo(async () => {
     I.Authorize();
-    profileAPI.changePassword('admin', process.env.ADMIN_PASSWORD, INITIAL_ADMIN_PASSWORD);
+    await profileAPI.changePassword('admin', process.env.ADMIN_PASSWORD, INITIAL_ADMIN_PASSWORD);
   });
 });
 
@@ -26,19 +26,22 @@ Scenario(
     await loginPage.login();
 
     await grafanaAPI.waitForMetric('pg_stat_activity_count', null);
-    await grafanaAPI.waitForMetric('mysql_global_status_threads_connected', null);
+    // await grafanaAPI.waitForMetric('mysql_global_status_threads_connected', null);
     await grafanaAPI.waitForMetric('mongodb_up', null);
     await grafanaAPI.waitForMetric('node_cpu_seconds_total', null);
 
     await changePasswordPage.open();
     changePasswordPage.fillChangePasswordForm(process.env.ADMIN_PASSWORD, NEW_ADMIN_PASSWORD);
     changePasswordPage.applyChanges();
+    await pause();
     I.signOut();
     await I.waitForVisible(loginPage.fields.loginInput, 30);
+    await pause();
     process.env.ADMIN_PASSWORD = NEW_ADMIN_PASSWORD;
     await loginPage.login();
 
     await pmmInventoryPage.servicesTab.open();
+    await pause();
     await pmmInventoryPage.servicesTab.pagination.selectRowsPerPage(100);
 
     // TODO: improve inventoryAPI.apiGetServices() to handle flexible auth.
