@@ -82,6 +82,7 @@ module.exports = {
 
   selectDropdownOption(dropdownLocator, text) {
     I.click(dropdownLocator);
+    I.fillField(locate(dropdownLocator).find('//input'), text);
     I.waitForVisible(this.elements.dropdownOption(text), 30);
     I.click(this.elements.dropdownOption(text));
     I.dontSeeElement(this.elements.dropdownOption(text));
