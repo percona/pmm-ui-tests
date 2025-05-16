@@ -290,12 +290,10 @@ Scenario(
 Scenario(
   'PMM-T412 - Verify user is able to search by part of query @qan',
   async ({
-    I, adminPage, queryAnalyticsPage,
+    I, queryAnalyticsPage,
   }) => {
     const query = 'SELECT pg_database';
 
-    queryAnalyticsPage.waitForLoaded();
-    await adminPage.applyTimeRange('Last 3 hours');
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.searchByValue(query);
     queryAnalyticsPage.waitForLoaded();
