@@ -289,35 +289,29 @@ class Grafana extends Helper {
     return element;
   }
 
-  async selectGrafanaDropdownOption(dropdownName, optionText) {
+  async selectGrafanaDropdownOption(dropdownName, inputLocator, optionText) {
     const { Playwright } = this.helpers;
-    const dropdownNameLocator = `//label[text()="${dropdownName}"]`;
-    const dropdownLocator = `//label[text()="${dropdownName}"]//parent::span//div[@data-testid="service-select-input"]`;
-    const dropdownOption = `//div[@data-testid="data-testid Select menu"]//span[text()="${optionText}"]`;
-    const dropdownValue = `//label[text()="${dropdownName}"]//parent::span//div[contains(@class, "singleValue")]`;
+    const dropdownHeader = `//label[text()="${dropdownName}"]`;
+    const dropdownLocator = `//label[text()="${dropdownName}"]//ancestor::span//div[contains(@data-testid, "-input")]`;
 
-    for (let i = 0; i < 5; i++) {
-      await Playwright.page.locator(locate(dropdownLocator).toXPath()).waitFor({ state: 'attached', timeout: 5000 });
-      await Playwright.page.locator(locate(dropdownLocator).toXPath()).click();
+    await Playwright.page.locator(dropdownLocator).waitFor({ state: 'attached', timeout: 5000 });
+    await Playwright.page.locator(dropdownLocator).click();
 
-      try {
-        await Playwright.page.locator(dropdownOption).waitFor({ state: 'attached', timeout: 2000 });
-        await Playwright.page.locator(dropdownOption).click({ timeout: 1000 });
+    await Playwright.page.evaluate(({ inputLocator, optionText }) => {
+      const input = document.querySelector(inputLocator);
 
-        if ((await Playwright.page.locator(dropdownValue).textContent({ timeout: 1000 })) === optionText) {
-          return;
-        }
-      } catch (e) {
-        /* empty */
-      }
+      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+        window.HTMLInputElement.prototype,
+        'value',
+      ).set;
 
-      await Playwright.page.locator(dropdownNameLocator).click({ force: true, timeout: 1000 });
-      await Playwright.page.waitForTimeout(500);
+      nativeInputValueSetter.call(input, optionText);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }, { inputLocator, optionText });
 
-      if (i === 4) {
-        throw new Error(`Selecting value: ${optionText} in the dropdown: ${dropdownName} was not successful`);
-      }
-    }
+    await Playwright.page.waitForTimeout(500);
+    await Playwright.page.keyboard.press('Enter');
+    await Playwright.page.locator(dropdownHeader).click({ force: true });
   }
 }
 

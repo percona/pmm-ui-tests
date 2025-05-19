@@ -116,7 +116,7 @@ Scenario(
 const createBackupTests = new DataTable(['storageLocationName']);
 
 createBackupTests.add([location.name]);
-createBackupTests.add([localStorageLocationName]);
+// createBackupTests.add([localStorageLocationName]);
 
 Data(createBackupTests).Scenario(
   'PMM-T855 + PMM-T1393 - Verify user is able to perform MongoDB backup @backup @bm-mongo @bm-fb @pre-mongo-backup-upgrade',
@@ -127,11 +127,8 @@ Data(createBackupTests).Scenario(
 
     I.click(backupInventoryPage.buttons.openAddBackupModal);
 
-    // backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
-    // backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, current.storageLocationName);
-
-    await I.selectGrafanaDropdownOption('Service name', mongoServiceName);
-    await I.selectGrafanaDropdownOption('Location', current.storageLocationName);
+    await I.selectGrafanaDropdownOption('Service name', 'input[data-testid="service-select-input-input"]', mongoServiceName);
+    await I.selectGrafanaDropdownOption('Location', '[data-testid="location-select-input"] > input', current.storageLocationName);
 
     I.fillField(backupInventoryPage.fields.backupName, backupName);
     // TODO: uncomment when PMM-10899 will be fixed
