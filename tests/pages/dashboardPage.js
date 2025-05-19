@@ -1430,7 +1430,12 @@ module.exports = {
 
   async expandEachDashboardRow() {
     await I.usePlaywrightTo('expanding collapsed rows', async ({ page }) => {
-      await page.locator(this.fields.collapsedDashboardRow).first().waitFor({ state: 'visible', timeout: 20000 });
+      try {
+        await page.locator(this.fields.collapsedDashboardRow).first().waitFor({ state: 'visible', timeout: 20000 });
+      } catch (e) {
+        // If there are no collapsed rows, we can skip this step
+        return;
+      }
       const getCollapsedRowsLocators = async () => await page.locator(this.fields.collapsedDashboardRow).all();
       let collapsedRowsLocators = await getCollapsedRowsLocators();
 
