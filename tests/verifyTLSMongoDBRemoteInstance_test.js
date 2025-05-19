@@ -121,15 +121,11 @@ Data(instances).Scenario(
   },
 ).retry(1);
 
-Data(instances).Scenario(
+Scenario(
   'Verify dashboard after MongoDB SSL Instances are added @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
     I, dashboardPage, adminPage, current,
   }) => {
-    const {
-      serviceName,
-    } = current;
-
     const serviceList = [serviceName, `remote_${serviceName}`];
 
     for (const service of serviceList) {
@@ -149,14 +145,12 @@ Data(instances).Scenario(
 Scenario(
   'Verify QAN after MongoDB SSL Instances is added @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
-    I, queryAnalyticsPage, adminPage,
+    I, queryAnalyticsPage,
   }) => {
     const serviceList = [serviceName, `remote_${serviceName}`];
 
     for (const service of serviceList) {
-      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
-      queryAnalyticsPage.waitForLoaded();
-      await adminPage.applyTimeRange('Last 12 hours');
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-12h' }));
       queryAnalyticsPage.waitForLoaded();
       await queryAnalyticsPage.filters.selectFilter(service);
       queryAnalyticsPage.waitForLoaded();
