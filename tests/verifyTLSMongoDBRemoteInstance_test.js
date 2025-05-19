@@ -146,15 +146,11 @@ Data(instances).Scenario(
   },
 ).retry(1);
 
-Data(instances).Scenario(
+Scenario(
   'Verify QAN after MongoDB SSL Instances is added @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
-    I, queryAnalyticsPage, current, adminPage,
+    I, queryAnalyticsPage, adminPage,
   }) => {
-    const {
-      serviceName,
-    } = current;
-
     const serviceList = [serviceName, `remote_${serviceName}`];
 
     for (const service of serviceList) {
