@@ -292,10 +292,11 @@ class Grafana extends Helper {
   async selectGrafanaDropdownOption(dropdownLocator, optionText) {
     const { Playwright } = this.helpers;
 
-    await Playwright.page.locator('//div[@data-testid="data-testid Select menu"]').waitFor({ state: 'attached' });
-    await Playwright.page.locator('//div[@data-testid="data-testid Select menu"]//div[@id="react-select-9-option-1"]').waitFor({ state: 'attached' });
     await Playwright.page.locator(locate(dropdownLocator).toXPath()).waitFor({ state: 'attached' });
     await Playwright.page.locator(locate(dropdownLocator).toXPath()).click();
+
+    await Playwright.page.locator('//div[@data-testid="data-testid Select menu"]').waitFor({ state: 'attached' });
+    await Playwright.page.locator('//div[@data-testid="data-testid Select menu"]//div[@id="react-select-9-option-1"]').waitFor({ state: 'attached' });
 
     await Playwright.page.locator(locateOption(optionText).toXPath()).waitFor({ state: 'attached' });
     await Playwright.page.locator(locateOption(optionText).toXPath()).click();
