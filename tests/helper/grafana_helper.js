@@ -3,6 +3,7 @@ const assert = require('assert');
 const fs = require('fs');
 const shell = require('shelljs');
 const config = require('../../pr.codecept');
+const { locateOption } = require('./locatorHelper');
 
 class Grafana extends Helper {
   constructor(config) {
@@ -286,6 +287,16 @@ class Grafana extends Helper {
     }
 
     return element;
+  }
+
+  async selectGrafanaDropdownOption(dropdownLocator, optionText) {
+    const { Playwright } = this.helpers;
+
+    await Playwright.page.locator(locate(dropdownLocator).toXPath()).waitFor({ state: 'visible' });
+    await Playwright.page.locator(locate(dropdownLocator).toXPath()).click();
+
+    await Playwright.page.locator(locateOption(optionText).toXPath()).waitFor({ state: 'visible' });
+    await Playwright.page.locator(locateOption(optionText).toXPath()).click();
   }
 }
 
