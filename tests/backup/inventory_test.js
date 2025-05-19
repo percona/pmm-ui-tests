@@ -127,8 +127,8 @@ Data(createBackupTests).Scenario(
 
     I.click(backupInventoryPage.buttons.openAddBackupModal);
 
-    await I.selectGrafanaDropdownOption('Service name', 'input[data-testid="service-select-input-input"]', mongoServiceName);
-    await I.selectGrafanaDropdownOption('Location', '[data-testid="location-select-input"] > input', current.storageLocationName);
+    await I.manuallySelectGrafanaDropdownOption('Service name', 'input[data-testid="service-select-input-input"]', mongoServiceName);
+    await I.manuallySelectGrafanaDropdownOption('Location', '[data-testid="location-select-input"] > input', current.storageLocationName);
 
     I.fillField(backupInventoryPage.fields.backupName, backupName);
     // TODO: uncomment when PMM-10899 will be fixed
@@ -155,12 +155,12 @@ Scenario(
 
     I.click(backupInventoryPage.buttons.openAddBackupModal);
 
-    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
+    await I.manuallySelectGrafanaDropdownOption('Service name', 'input[data-testid="service-select-input-input"]', mongoServiceName);
     I.seeTextEquals(mongoServiceName, backupInventoryPage.elements.selectedService);
     I.waitForValue(backupInventoryPage.fields.vendor, 'MongoDB', 5);
     I.seeElementsDisabled(backupInventoryPage.fields.vendor);
 
-    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, location.name);
+    await I.manuallySelectGrafanaDropdownOption('Location', '[data-testid="location-select-input"] > input', location.name);
     I.seeTextEquals(location.name, backupInventoryPage.elements.selectedLocation);
 
     // I.seeInField(backupInventoryPage.elements.dataModelState, 'PHYSICAL');

@@ -289,7 +289,7 @@ class Grafana extends Helper {
     return element;
   }
 
-  async selectGrafanaDropdownOption(dropdownName, inputLocator, optionText) {
+  async manuallySelectGrafanaDropdownOption(dropdownName, inputLocator, optionText) {
     const { Playwright } = this.helpers;
     const dropdownHeader = `//label[text()="${dropdownName}"]`;
     const dropdownLocator = `//label[text()="${dropdownName}"]//ancestor::span//div[contains(@data-testid, "-input")]`;
