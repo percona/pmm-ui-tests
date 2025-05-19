@@ -1211,7 +1211,7 @@ module.exports = {
     },
     annotationMarker: I.useDataQA('data-testid annotation-marker'),
     clearSelection: '//a[@ng-click="vm.clearSelections()"]',
-    collapsedDashboardRow: '//*[@aria-label="Expand row"]',
+    collapsedDashboardRow: '//button[@aria-label="Expand row"]',
     collapsedDashboardRowByName: (rowName) => `//*[@aria-label="Expand row" and contains(@data-testid, "${rowName}")]`,
     dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
     Last2Days: '//span[contains(text(), "Last 2 days")]',
@@ -1430,12 +1430,6 @@ module.exports = {
 
   async expandEachDashboardRow() {
     await I.usePlaywrightTo('expanding collapsed rows', async ({ page }) => {
-      try {
-        await page.locator(this.fields.collapsedDashboardRow).first().waitFor({ state: 'visible', timeout: 20000 });
-      } catch (e) {
-        // If there are no collapsed rows, we can skip this step
-        return;
-      }
       const getCollapsedRowsLocators = async () => await page.locator(this.fields.collapsedDashboardRow).all();
       let collapsedRowsLocators = await getCollapsedRowsLocators();
 
