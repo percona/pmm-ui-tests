@@ -491,6 +491,7 @@ module.exports = {
   },
   mongoDbInstanceSummaryDashboard: {
     url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
+    clearUrl: 'graph/d/mongodb-instance-summary/mongodb-instance-summary',
   },
   mysqlInstanceSummaryDashboard: {
     url: 'graph/d/mysql-instance-summary/mysql-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',

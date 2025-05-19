@@ -133,10 +133,11 @@ Data(instances).Scenario(
     const serviceList = [serviceName, `remote_${serviceName}`];
 
     for (const service of serviceList) {
-      I.amOnPage(dashboardPage.mongoDbInstanceOverview.url);
+      I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbInstanceOverview.cleanUrl, {
+        service_name: service,
+        from: 'now-5m',
+      }));
       dashboardPage.waitForDashboardOpened();
-      await adminPage.applyTimeRange('Last 5 minutes');
-      await dashboardPage.applyFilter('Service Name', service);
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);

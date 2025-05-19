@@ -82,10 +82,11 @@ Data(instances).Scenario('PMM-T1295 - Verify dashboard after Aurora MySQL instan
 }) => {
   // Waiting for metrics to start hitting for remotely added services
   I.wait(60);
-  I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
+  I.amOnPage(I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, {
+    from: 'now-5m',
+    service_name: remoteInstancesHelper.remote_instance.aws.aurora[current].instance_id,
+  }));
   dashboardPage.waitForDashboardOpened();
-  await adminPage.applyTimeRange('Last 5 minutes');
-  await dashboardPage.applyFilter('Service Name', remoteInstancesHelper.remote_instance.aws.aurora[current].instance_id);
   adminPage.performPageDown(5);
   await dashboardPage.expandEachDashboardRow();
   adminPage.performPageUp(5);
