@@ -130,8 +130,8 @@ Data(createBackupTests).Scenario(
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
     backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, current.storageLocationName);
 
-    await I.selectGrafanaDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
-    await I.selectGrafanaDropdownOption(backupInventoryPage.fields.locationDropdown, current.storageLocationName);
+    // await I.selectGrafanaDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
+    // await I.selectGrafanaDropdownOption(backupInventoryPage.fields.locationDropdown, current.storageLocationName);
 
     I.fillField(backupInventoryPage.fields.backupName, backupName);
     // TODO: uncomment when PMM-10899 will be fixed
