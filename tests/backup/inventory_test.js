@@ -155,12 +155,12 @@ Scenario(
 
     I.click(backupInventoryPage.buttons.openAddBackupModal);
 
-    await I.manuallySelectGrafanaDropdownOption('Service name', mongoServiceName);
+    await I.selectGrafanaDropdownOption('Service name', mongoServiceName);
     I.seeTextEquals(mongoServiceName, backupInventoryPage.elements.selectedService);
     I.waitForValue(backupInventoryPage.fields.vendor, 'MongoDB', 5);
     I.seeElementsDisabled(backupInventoryPage.fields.vendor);
 
-    await I.manuallySelectGrafanaDropdownOption('Location', location.name);
+    await I.selectGrafanaDropdownOption('Location', location.name);
     I.seeTextEquals(location.name, backupInventoryPage.elements.selectedLocation);
 
     // I.seeInField(backupInventoryPage.elements.dataModelState, 'PHYSICAL');
