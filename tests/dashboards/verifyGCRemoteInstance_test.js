@@ -103,16 +103,20 @@ Data(instances).Scenario(
 
     I.wait(30);
     if (instanceType === 'mysql') {
-      I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
+      I.amOnPage(I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, {
+        service_name: instanceDetails.serviceName,
+        from: 'now-5m',
+      }));
     }
 
     if (instanceType === 'postgresql') {
-      I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
+      I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceOverviewDashboard.cleanUrl, {
+        service_name: instanceDetails.serviceName,
+        from: 'now-5m',
+      }));
     }
 
     dashboardPage.waitForDashboardOpened();
-    await adminPage.applyTimeRange('Last 5 minutes');
-    await dashboardPage.applyFilter('Service Name', instanceDetails.serviceName);
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(6);
   },
