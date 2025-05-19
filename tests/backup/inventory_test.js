@@ -127,11 +127,11 @@ Data(createBackupTests).Scenario(
 
     I.click(backupInventoryPage.buttons.openAddBackupModal);
 
-    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
-    backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, current.storageLocationName);
+    // backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
+    // backupInventoryPage.selectDropdownOption(backupInventoryPage.fields.locationDropdown, current.storageLocationName);
 
-    // await I.selectGrafanaDropdownOption(backupInventoryPage.fields.serviceNameDropdown, mongoServiceName);
-    // await I.selectGrafanaDropdownOption(backupInventoryPage.fields.locationDropdown, current.storageLocationName);
+    await I.selectGrafanaDropdownOption('Service name', mongoServiceName);
+    await I.selectGrafanaDropdownOption('Location', current.storageLocationName);
 
     I.fillField(backupInventoryPage.fields.backupName, backupName);
     // TODO: uncomment when PMM-10899 will be fixed
@@ -147,7 +147,7 @@ Data(createBackupTests).Scenario(
       await I.verifyCommand('ls -la /tmp/backup_data/rs', artifact.metadata_list[0].name);
     }
   },
-).retry(1);
+).retry(0);
 
 Scenario(
   'PMM-T961 + PMM-T1005 + PMM-T1024 - Verify create backup modal @backup @bm-mongo @pre-mongo-backup-upgrade',

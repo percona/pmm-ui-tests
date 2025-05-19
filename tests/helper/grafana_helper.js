@@ -289,17 +289,35 @@ class Grafana extends Helper {
     return element;
   }
 
-  async selectGrafanaDropdownOption(dropdownLocator, optionText) {
+  async selectGrafanaDropdownOption(dropdownName, optionText) {
     const { Playwright } = this.helpers;
+    const dropdownNameLocator = `//label[text()="${dropdownName}"]`;
+    const dropdownLocator = `//label[text()="${dropdownName}"]//parent::span//div[@data-testid="service-select-input"]`;
+    const dropdownOption = `//div[@data-testid="data-testid Select menu"]//span[text()="${optionText}"]`;
+    const dropdownValue = `//label[text()="${dropdownName}"]//parent::span//div[contains(@class, "singleValue")]`;
 
-    await Playwright.page.locator(locate(dropdownLocator).toXPath()).waitFor({ state: 'attached' });
-    await Playwright.page.locator(locate(dropdownLocator).toXPath()).click();
+    for (let i = 0; i < 5; i++) {
+      await Playwright.page.locator(locate(dropdownLocator).toXPath()).waitFor({ state: 'attached', timeout: 5000 });
+      await Playwright.page.locator(locate(dropdownLocator).toXPath()).click();
 
-    await Playwright.page.locator('//div[@data-testid="data-testid Select menu"]').waitFor({ state: 'attached' });
-    await Playwright.page.locator('//div[@data-testid="data-testid Select menu"]//div[@id="react-select-9-option-1"]').waitFor({ state: 'attached' });
+      try {
+        await Playwright.page.locator(dropdownOption).waitFor({ state: 'attached', timeout: 2000 });
+        await Playwright.page.locator(dropdownOption).click({ timeout: 1000 });
 
-    await Playwright.page.locator(locateOption(optionText).toXPath()).waitFor({ state: 'attached' });
-    await Playwright.page.locator(locateOption(optionText).toXPath()).click();
+        if ((await Playwright.page.locator(dropdownValue).textContent({ timeout: 1000 })) === optionText) {
+          return;
+        }
+      } catch (e) {
+        /* empty */
+      }
+
+      await Playwright.page.locator(dropdownNameLocator).click({ force: true, timeout: 1000 });
+      await Playwright.page.waitForTimeout(500);
+
+      if (i === 4) {
+        throw new Error(`Selecting value: ${optionText} in the dropdown: ${dropdownName} was not successful`);
+      }
+    }
   }
 }
 
