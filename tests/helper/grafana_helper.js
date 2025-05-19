@@ -289,9 +289,8 @@ class Grafana extends Helper {
     return element;
   }
 
-  async manuallySelectGrafanaDropdownOption(dropdownName, inputLocator, optionText) {
+  async selectGrafanaDropdownOption(dropdownName, inputLocator, optionText) {
     const { Playwright } = this.helpers;
-    const dropdownHeader = `//label[text()="${dropdownName}"]`;
     const dropdownLocator = `//label[text()="${dropdownName}"]//ancestor::span//div[contains(@data-testid, "-input")]`;
 
     await Playwright.page.locator(dropdownLocator).waitFor({ state: 'attached', timeout: 5000 });
@@ -301,27 +300,10 @@ class Grafana extends Helper {
     const optionLocator = Playwright.page.locator('div[role="option"]  span');
 
     for (let i = 0; i < await optionLocator.count(); i++) {
-      console.log(`Available options are: ${await optionLocator.nth(i).textContent()}`);
+      if ((await optionLocator.nth(i).textContent()) === optionText) {
+        await optionLocator.nth(i).click();
+      }
     }
-
-    const value = await Playwright.page.evaluate(({ inputLocator, optionText }) => {
-      const input = document.querySelector(inputLocator);
-
-      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-        window.HTMLInputElement.prototype,
-        'value',
-      ).set;
-
-      nativeInputValueSetter.call(input, optionText);
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-
-      return document.querySelector(inputLocator).value || null;
-    }, { inputLocator, optionText });
-
-    console.log(`Evaluation value is: ${value}`);
-    await Playwright.page.waitForTimeout(500);
-    await Playwright.page.keyboard.press('Enter');
-    await Playwright.page.locator(dropdownHeader).click({ force: true });
   }
 }
 

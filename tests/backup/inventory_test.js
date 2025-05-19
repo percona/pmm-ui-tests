@@ -127,8 +127,8 @@ Data(createBackupTests).Scenario(
 
     I.click(backupInventoryPage.buttons.openAddBackupModal);
 
-    await I.manuallySelectGrafanaDropdownOption('Service name', 'input[data-testid="service-select-input-input"]', mongoServiceName);
-    await I.manuallySelectGrafanaDropdownOption('Location', '[data-testid="location-select-input"] > input', current.storageLocationName);
+    await I.selectGrafanaDropdownOption('Service name', 'input[data-testid="service-select-input-input"]', mongoServiceName);
+    await I.selectGrafanaDropdownOption('Location', '[data-testid="location-select-input"] > input', current.storageLocationName);
 
     I.fillField(backupInventoryPage.fields.backupName, backupName);
     // TODO: uncomment when PMM-10899 will be fixed
