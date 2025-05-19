@@ -35,8 +35,10 @@ Scenario(
       I.wait(5);
     }
 
-    await I.amOnPage(experimentalPostgresqlDashboardsPage.vacuumDashboardPostgres.url);
-    await experimentalPostgresqlDashboardsPage.selectServiceName(pgsqlContainerName);
+    await I.amOnPage(I.buildUrlWithParams(experimentalPostgresqlDashboardsPage.vacuumDashboardPostgres.url, {
+      service_name: pgsqlContainerName,
+      from: 'now-5m',
+    }));
     await I.waitForVisible(experimentalPostgresqlDashboardsPage.elements.barWithValue, 300);
 
     const output = await I.verifyCommand(`sudo docker exec ${pgsqlContainerName} psql -U postgres -d dvdrental -c 'SELECT tablename FROM pg_catalog.pg_tables;'`);
