@@ -1467,6 +1467,8 @@ module.exports = {
     // I.wait(1);
     I.waitForElement(dropdownLocator, 30);
     I.click(dropdownLocator);
+    // click one more time to expand the multiselect dropdown
+    I.click(dropdownLocator);
 
     return '[aria-label="Variable options"]';
   },
