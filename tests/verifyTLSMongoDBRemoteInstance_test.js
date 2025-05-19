@@ -133,7 +133,7 @@ Data(instances).Scenario(
     const serviceList = [serviceName, `remote_${serviceName}`];
 
     for (const service of serviceList) {
-      I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbInstanceOverview.cleanUrl, {
+      I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbInstanceOverview.clearUrl, {
         service_name: service,
         from: 'now-5m',
       }));
