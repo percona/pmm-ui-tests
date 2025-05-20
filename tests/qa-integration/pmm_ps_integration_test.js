@@ -11,7 +11,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 const version = process.env.PS_VERSION ? `${process.env.PS_VERSION}` : '8.0';
-const container_name = `ps_pmm_${version}-1`;
+const container_name = `ps_pmm_${version}_1`;
 const remoteServiceName = 'remote_pmm-mysql-integration';
 
 Scenario(

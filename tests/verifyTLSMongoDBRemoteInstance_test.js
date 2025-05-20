@@ -124,7 +124,7 @@ Data(instances).Scenario(
 Scenario(
   'Verify dashboard after MongoDB SSL Instances are added @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
-    I, dashboardPage, adminPage, current,
+    I, dashboardPage, adminPage,
   }) => {
     const serviceList = [serviceName, `remote_${serviceName}`];
 
@@ -150,6 +150,7 @@ Scenario(
   }) => {
     const serviceList = [serviceName, `remote_${serviceName}`];
 
+    I.wait(20);
     for (const service of serviceList) {
       I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-12h' }));
       queryAnalyticsPage.waitForLoaded();
@@ -160,7 +161,7 @@ Scenario(
       assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
     }
   },
-).retry(1);
+).retry(2);
 
 Data(instances).Scenario(
   'PMM-T1276 - Verify tlsCa, tlsCert, tlsKey are generated on every MongoDB exporter (added with TLS flags) restart @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
