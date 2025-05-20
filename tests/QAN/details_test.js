@@ -51,7 +51,8 @@ databaseEnvironments.add(['pxc_node', 'select']);
 databaseEnvironments.add(['pdpgsql_pgsm_pmm', 'insert']);
 databaseEnvironments.add(['rs101', 'update']);
 
-Data(databaseEnvironments).Scenario(
+// TODO: Unskip when https://perconadev.atlassian.net/browse/PMM-13978 is finished add support for all types of queries: [SELECT, INSERT, DELETE, CREATE]
+/* Data(databaseEnvironments).Scenario(
   'PMM-T13 - Check Explain and Example for supported DBs @qan',
   async ({
     I, queryAnalyticsPage, current,
@@ -69,9 +70,9 @@ Data(databaseEnvironments).Scenario(
     }
     /**
      * Add Verification for plan after bug is closed.
-     */
+
   },
-);
+); */
 
 Scenario(
   'PMM-T1790 - Verify that there is any no error on Explains after switching between queries from different DB servers @qan',
