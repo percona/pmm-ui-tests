@@ -236,6 +236,7 @@ Scenario(
   + 'Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
+    I.wait(10);
 
     const subPageTooltips = await pmmSettingsPage.getSubpageTooltips();
 
