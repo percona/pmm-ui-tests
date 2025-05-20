@@ -5,7 +5,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T391 PMM-T1818 Verify user is able to create and set custom home dashboard @pre-dashboards-upgrade',
+  'PMM-T391 + PMM-T1818 - Verify user is able to create and set custom home dashboard @pre-dashboards-upgrade',
   async ({
     I, grafanaAPI, dashboardPage, searchDashboardsModal,
   }) => {
@@ -30,7 +30,7 @@ Scenario(
 
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
-    dashboardPage.verifyMetricsExistence(['Custom Panel']);
+    await dashboardPage.verifyMetricsExistence(['Custom Panel']);
     I.seeInCurrentUrl(grafanaAPI.customDashboardName);
   },
 );
@@ -57,7 +57,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T391 PMM-T1818 Verify that custom home dashboard stays as home dashboard after upgrade @post-dashboards-upgrade',
+  'PMM-T391 + PMM-T1818 - Verify that custom home dashboard stays as home dashboard after upgrade @post-dashboards-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();

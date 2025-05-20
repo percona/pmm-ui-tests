@@ -74,8 +74,7 @@ Data(databaseEnvironments).Scenario(
 );
 
 Scenario(
-  'PMM-T1790 - Verify that there is any no error on Explains after switching between queries from different DB servers '
-    + '@qan',
+  'PMM-T1790 - Verify that there is any no error on Explains after switching between queries from different DB servers @qan',
   async ({
     I, queryAnalyticsPage,
   }) => {
@@ -86,11 +85,11 @@ Scenario(
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.queryDetails.checkTab('Explain');
     queryAnalyticsPage.filters.selectContainFilter('pxc-dev');
+    queryAnalyticsPage.data.searchByValue('');
     queryAnalyticsPage.filters.selectFilterInGroup('mongodb', 'Service Type');
     queryAnalyticsPage.data.searchByValue('UPDATE');
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.queryDetails.checkTab('Explain');
-    // await queryAnalyticsPage.filters.selectContainFilter('pdpgsql_pgsm_pmm');
   },
 );
 
