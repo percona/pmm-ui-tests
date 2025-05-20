@@ -5,7 +5,7 @@ const noSslCheckServiceName = 'pg_no_ssl_check';
 
 Feature('Monitoring SSL/TLS PGSQL instances');
 
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I }) => {
   await I.Authorize();
 });
 

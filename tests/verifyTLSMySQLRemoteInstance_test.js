@@ -29,11 +29,14 @@ maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'm
 
 let serviceName;
 
-Before(async ({ I, inventoryAPI }) => {
-  await I.Authorize();
+BeforeSuite(async ({ inventoryAPI }) => {
   const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'mysql_ssl_8.0_ssl_service', 'remote');
 
   serviceName = service_name;
+});
+
+Before(async ({ I }) => {
+  await I.Authorize();
 });
 
 Data(instances).Scenario(

@@ -16,12 +16,14 @@ instances.add(['psmdb-server', '6.0', 'psmdb-server', 'mongodb_ssl', 'mongodb_co
 
 let serviceName;
 
-Before(async ({ I, inventoryAPI }) => {
-  await I.Authorize();
-
+BeforeSuite(async ({ inventoryAPI }) => {
   const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, 'psmdb-server');
 
   serviceName = service_name;
+});
+
+Before(async ({ I }) => {
+  await I.Authorize();
 });
 
 Data(instances).Scenario(
