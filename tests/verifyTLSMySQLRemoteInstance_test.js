@@ -141,7 +141,7 @@ Scenario(
     for (const service of serviceList) {
       I.amOnPage(I.buildUrlWithParams(
         dashboardPage.mySQLInstanceOverview.clearUrl,
-        { service_name: service, from: 'now-5m' },
+        { service_name: service, from: 'now-5m', refresh: '10s' },
       ));
 
       dashboardPage.waitForDashboardOpened();
