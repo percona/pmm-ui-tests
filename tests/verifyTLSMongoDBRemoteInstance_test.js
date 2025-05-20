@@ -30,7 +30,7 @@ Data(instances).Scenario(
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI, inventoryAPI,
   }) => {
     const {
-      serviceName, serviceType, version, container,
+      serviceName, serviceType, container,
     } = current;
     let details;
     const remoteServiceName = `remote_${serviceName}`;
