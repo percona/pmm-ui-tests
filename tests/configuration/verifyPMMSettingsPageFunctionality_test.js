@@ -299,7 +299,7 @@ Scenario(
   },
 ).retry(1);
 
-Scenario.skip(
+Scenario(
   'PMM-T1967 - Verify Update modal respects update settings @fb-settings',
   async ({
     I, homePage, settingsAPI, pmmSettingsPage,
