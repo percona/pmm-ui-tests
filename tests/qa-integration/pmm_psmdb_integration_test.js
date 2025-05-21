@@ -253,4 +253,4 @@ Scenario('PMM-T2003 - Verify that MongoDB Compare dashboard has Cluster, Replica
 
   dashboardPage.mongodbInstancesCompareDashboard.selectNode(newServiceName);
   await dashboardPage.mongodbInstancesCompareDashboard.verifyDashboardHaveData(newServiceName);
-}).retry(1);
+});
