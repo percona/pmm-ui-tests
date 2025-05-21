@@ -42,7 +42,7 @@ class MongodbInstancesCompareDashboard extends BaseDashboard {
   #getFailingMetrics(serviceNames) {
     const responseMetrics = [];
     const metrics = [
-      'Scan Ratios',
+      // 'Scan Ratios',
     ];
 
     for (const serviceName of serviceNames) {

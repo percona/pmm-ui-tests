@@ -3,20 +3,15 @@ const { I } = inject();
 class BaseDashboard {
   constructor() {
     this.elements = {
-      expandedGroups: locate('//button[@aria-expanded="true"]'),
-      collapsedGroups: locate('//div[@data-testid="dashboard-row-container"]//button[@aria-expanded="false"]'),
+      expandedGroups: locate('//button[@aria-label="Collapse row"]'),
+      collapsedGroups: locate('//button[contains(@data-testid, "dashboard-row-title") and @aria-label="Expand row"]'),
       groupsButton: locate('//button[contains(@data-testid, "dashboard-row-title")]'),
       headerText: locate('//*[@data-testid="header-container"]//h2[string-length(text()) > 1]'),
+      panelByName: (text) => locate(`//section[@data-testid="data-testid Panel header ${text}"]`),
       noDataPanel: (panelName) => locate(`//section[contains(@data-testid, "${panelName}")]//*[contains(@data-testid, "Panel data error message") or text()="No data" or text()="N/A"]`),
-      environmentInput: locate('//input[@id="var-environment"]'),
-      environmentButton: locate('//button[@id="var-environment"]'),
-      clusterInput: locate('//input[@id="var-cluster"]'),
-      clusterButton: locate('//button[@id="var-cluster"]'),
-      replicationSetInput: locate('//input[@id="var-replication_set"]'),
-      replicationSetButton: locate('//button[@id="var-replication_set"]'),
-      serviceNameInput: locate('//input[@id="var-service_name"]'),
-      serviceNameButton: locate('//button[@id="var-service_name"]'),
-      annotationsLabel: locate('//label[text()="PMM Annotations"]'),
+      variableLabel: (variableName) => locate(`//label[contains(@data-testid, "Label ${variableName}")]`),
+      removeSelectedVariable: (variableName) => locate(`//label[contains(@data-testid, "Label ${variableName}")]//parent::div//button[@aria-label="Remove"]`),
+      variableInput: (variableName) => locate(`//label[contains(@data-testid, "Label ${variableName}")]//parent::div//input`),
     };
   }
 
@@ -25,6 +20,7 @@ class BaseDashboard {
     let countOfVerifiedMetrics = 0;
     const failingPanels = new Set();
 
+    I.waitForVisible(this.elements.headerText, 10);
     // Collapse all groups of panels to verify them separately, if we do it all at once, we gate false negatives.
     await this.#collapseAllGroups();
     const numberOfGroups = Number(await I.grabNumberOfVisibleElements(this.elements.groupsButton));
@@ -67,41 +63,65 @@ class BaseDashboard {
     });
 
     await this.#expandAllGroups();
+
+    I.scrollPageToTop();
+
+    if (failingPanels.size !== 0) {
+      for (const failingPanel of failingPanels) {
+        I.scrollTo(this.elements.panelByName(failingPanel));
+        I.saveScreenshot(`${failingPanel}.png`);
+      }
+    }
+
     I.assertEqual(expectedMetrics.length, countOfVerifiedMetrics, `Count of actual panels on the dashboard does not equal expected one. Actual: ${countOfVerifiedMetrics}. Expected: ${expectedMetrics.length}`);
     I.assertTrue(remainingExpectedMetrics.length === 0, `Panels ${remainingExpectedMetrics} are missing on the dashboard`);
     I.assertTrue(failingPanels.size === 0, `Panels: "${[...failingPanels].join(', ')}" do not have data dashboard`);
   }
 
-  selectEnvironment(envName) {
-    I.waitForVisible(this.elements.environmentButton, 10);
-    I.click(this.elements.environmentButton);
-    I.fillField(this.elements.environmentInput, envName);
+  #selectVariable(variable, value) {
+    I.waitForVisible(this.elements.variableLabel(variable), 10);
+    I.click(this.elements.removeSelectedVariable(variable));
+    I.fillField(this.elements.variableInput(variable), value);
     I.pressKey('Enter');
-    I.click(this.elements.annotationsLabel);
+    I.pressKey('Escape');
   }
 
-  selectCluster(envName) {
-    I.waitForVisible(this.elements.clusterButton, 10);
-    I.click(this.elements.clusterButton);
-    I.fillField(this.elements.clusterInput, envName);
-    I.pressKey('Enter');
-    I.click(this.elements.annotationsLabel);
+  #unSelectVariable(variable) {
+    I.waitForVisible(this.elements.variableLabel(variable), 10);
+    I.click(this.elements.removeSelectedVariable(variable));
+    I.pressKey('Escape');
+  }
+
+  selectEnvironment(envName) {
+    this.#selectVariable('Environment', envName);
+  }
+
+  unselectEnvironment() {
+    this.#unSelectVariable('Environment');
+  }
+
+  selectCluster(clusterName) {
+    this.#selectVariable('Cluster', clusterName);
+  }
+
+  unselectCluster() {
+    this.#unSelectVariable('Cluster');
   }
 
   selectReplicationSet(replicationSet) {
-    I.waitForVisible(this.elements.replicationSetButton, 10);
-    I.click(this.elements.replicationSetButton);
-    I.fillField(this.elements.replicationSetInput, replicationSet);
-    I.pressKey('Enter');
-    I.click(this.elements.annotationsLabel);
+    this.#selectVariable('Replication Set', replicationSet);
   }
 
-  selectServiceName(serviceName) {
-    I.waitForVisible(this.elements.serviceNameButton, 10);
-    I.click(this.elements.serviceNameButton);
-    I.fillField(this.elements.serviceNameInput, serviceName);
-    I.pressKey('Enter');
-    I.click(this.elements.annotationsLabel);
+  unselectReplicationSet() {
+    this.#unSelectVariable('Replication Set');
+  }
+
+  selectNode(serviceName) {
+    this.#selectVariable('Node', serviceName);
+  }
+
+  unselectNode() {
+    this.#unSelectVariable('Node');
   }
 
   async #collapseAllGroups() {

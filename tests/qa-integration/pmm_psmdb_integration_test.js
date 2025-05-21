@@ -234,24 +234,24 @@ Scenario('PMM-T2003 - Verify that MongoDB Compare dashboard has Cluster, Replica
   const newServiceName = 'new_service_name';
   const newClusterName = 'new_replicaset_cluster';
   const newEnvironmentName = 'new_env';
+  const fromTime = 'now-5m';
 
-  await I.verifyCommand(`sudo pmm-admin add mongodb --enable-all-collectors --cluster=${newClusterName} --username=${username} --password=${password} --environment=${newEnvironmentName} ${newServiceName} 127.0.0.1:27027`);
-  I.wait(120);
+  // await I.verifyCommand(`sudo pmm-admin add mongodb --enable-all-collectors --cluster=${newClusterName} --username=${username} --password=${password} --environment=${newEnvironmentName} ${newServiceName} 127.0.0.1:27027`);
+  // I.wait(120);
   I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbInstancesCompareDashboard.url, { from: 'now-5m' }));
 
   dashboardPage.mongodbInstancesCompareDashboard.selectEnvironment(newEnvironmentName);
   await dashboardPage.mongodbInstancesCompareDashboard.verifyDashboardHaveData(newServiceName);
-  dashboardPage.mongodbInstancesCompareDashboard.selectEnvironment('');
+  dashboardPage.mongodbInstancesCompareDashboard.unselectEnvironment();
 
   dashboardPage.mongodbInstancesCompareDashboard.selectCluster(newClusterName);
   await dashboardPage.mongodbInstancesCompareDashboard.verifyDashboardHaveData(newServiceName);
-  dashboardPage.mongodbInstancesCompareDashboard.selectCluster('');
+  dashboardPage.mongodbInstancesCompareDashboard.unselectCluster();
 
   dashboardPage.mongodbInstancesCompareDashboard.selectReplicationSet('rs');
   I.waitInUrl('&var-replication_set=rs', 2);
-  dashboardPage.mongodbInstancesCompareDashboard.selectReplicationSet('');
+  dashboardPage.mongodbInstancesCompareDashboard.unselectReplicationSet();
 
-  dashboardPage.mongodbInstancesCompareDashboard.selectServiceName(newServiceName);
+  dashboardPage.mongodbInstancesCompareDashboard.selectNode(newServiceName);
   await dashboardPage.mongodbInstancesCompareDashboard.verifyDashboardHaveData(newServiceName);
-  dashboardPage.mongodbInstancesCompareDashboard.selectServiceName('');
 }).retry(1);
