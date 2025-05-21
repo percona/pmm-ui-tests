@@ -18,6 +18,7 @@ Scenario(
     const grabServiceName = await I.grabTextFrom('//label[@for="var-service_name"]//following-sibling::*');
     const partsServiceName = grabServiceName.split('_service');
     const containerServiceName = partsServiceName[0];
+
     I.wait(60);
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);

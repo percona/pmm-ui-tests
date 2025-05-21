@@ -34,8 +34,9 @@ module.exports = {
   },
   buttons: {
     newAlertRule: '//a[contains(.,\'New alert rule\')]',
-    saveAndExit: locate('button').withText('Save rule and exit'),
-    editAlertRule: '//a[contains(@href, \'edit?returnTo=%2Falerting%2Flist\')]',
+    newAlertRuleFromTemplate: '//a[contains(.,\'New alert rule from template\')]',
+    saveAndExit: locate('//button[.="Save rule and exit"]'),
+    editAlertRule: '//a[contains(@href, "/edit")]',
     editRuleOnView: '//span[text()="Edit"]',
     deleteAlertRule: locate('[role="menuitem"]').withText('Delete'),
     groupCollapseButton: (folderText) => `//button[@data-testid='data-testid group-collapse-toggle'][following::div/h3[contains(., '${folderText}')]]`,
@@ -51,12 +52,15 @@ module.exports = {
   fields: {
     // searchDropdown returns a locator of a search input for a given label
     searchDropdown: (option) => `$${option}-select-input`,
-    folderLocator: I.useDataQA('data-testid folder-picker-input'),
+    folderLocator: locate('button').withText('Select folder'),
+    folderResultsLocator: (name) => locate(I.useDataQA('folder-picker'))
+      .find('label')
+      .withText(name),
     dropdownValue: (option) => `//*[@id='${option}']/div/div[1]/div[1]`,
     // resultsLocator returns item locator in a search dropdown based on a text
     resultsLocator: (name) => locate('[class*="grafana-select-menu"]')
     // resultsLocator: (name) => locate('//div[@aria-label="Select options menu"]')
-      .find(I.useDataQA(`${name}-select-option`)),
+      .find(I.useDataQA('data-testid Select option')).withText(name),
     inputField: (input) => `input[name='${input}']`,
     editRuleThreshold: 'input[name=\'evaluateFor\']',
     editRuleEvaluate: 'input[name=\'evaluateEvery\']',
@@ -65,11 +69,11 @@ module.exports = {
     evaluationGroupName: I.useDataQA('data-testid alert-rule new-evaluation-group-name'),
   },
   messages: {
-    noRulesFound: 'You haven\'t created any alert rules yet',
+    noRulesFound: 'You haven\'t created any rules yet',
     confirmDelete: 'Deleting this rule will permanently remove it from your alert rule list. Are you sure you want to delete this rule?',
     successRuleCreate: (name) => `Rule "${name}" saved.`,
-    successRuleEdit: (name) => `Rule "${name}" updated.`,
-    successfullyDeleted: 'Rule deleted.',
+    successRuleEdit: 'Rule updated successfully',
+    successfullyDeleted: 'Rule successfully deleted',
     failRuleCreate: 'There are errors in the form. Please correct them and try again!',
     failRuleCreateDuration: 'Failed to save rule: Duration (0s) can\'t be shorter than evaluation interval for the given group (1m0s).; Duration (0s) can\'t be shorter than evaluation interval for the given group (1m0s).',
   },
@@ -117,7 +121,7 @@ module.exports = {
     I.fillField(this.fields.editRuleThreshold, duration);
     // I.fillField(this.fields.editRuleEvaluate, '10s');
     I.click(this.buttons.saveAndExit);
-    I.verifyPopUpMessage(this.messages.successRuleEdit(ruleName));
+    I.verifyPopUpMessage(this.messages.successRuleEdit);
   },
 
   openAlertRulesTab() {
@@ -141,8 +145,8 @@ module.exports = {
   selectFolder(option) {
     I.waitForElement(this.fields.folderLocator);
     I.click(this.fields.folderLocator);
-    I.waitForElement(this.fields.resultsLocator(option));
-    I.click(this.fields.resultsLocator(option));
+    I.waitForElement(this.fields.folderResultsLocator(option));
+    I.click(this.fields.folderResultsLocator(option));
   },
 
   verifyRuleDetails(ruleObj) {

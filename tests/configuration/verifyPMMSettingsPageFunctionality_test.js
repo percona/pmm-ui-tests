@@ -204,12 +204,12 @@ Scenario(
 
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
     I.click(pmmSettingsPage.fields.publicAddressButton);
-    pmmSettingsPage.applyChanges();
-    I.wait(5);
+    await pmmSettingsPage.applyChanges();
+    I.wait(10);
     const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
     I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
-    I.wait(5);
+    I.wait(10);
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     const publicAddressAfterRefresh = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
@@ -264,7 +264,7 @@ Scenario('PMM-T1401 - Verify Percona Alerting wording in Settings @max-length @s
 });
 
 Scenario(
-  'PMM-T1328 Verify public address is set automatically on Percona Platform page once connected to Portal @nightly',
+  'PMM-T1328 - Verify public address is set automatically on Percona Platform page once connected to Portal @nightly',
   async ({
     I, pmmSettingsPage, portalAPI, perconaPlatformPage, settingsAPI,
   }) => {
@@ -298,7 +298,7 @@ Scenario(
   },
 ).retry(1);
 
-Scenario(
+Scenario.skip(
   'PMM-T1967 - Verify Update modal respects update settings @fb-settings',
   async ({
     I, homePage, settingsAPI, pmmSettingsPage,

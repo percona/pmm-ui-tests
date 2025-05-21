@@ -84,7 +84,19 @@ module.exports = {
     return service
       .data
       .services
-      .find((service) => service.service_name.startsWith(serviceName));
+      .find((service) => service.service_name.includes(serviceName));
+  },
+
+  async getServiceDetailsByPartialDetails(details) {
+    const services = await this.apiGetServices();
+
+    assert.ok(
+      services.status === 200,
+      `Failed to getService. Response message is "${services.data.message}"`,
+    );
+
+    return services.data.services
+      .find((service) => Object.entries(details).every(([key, value]) => service[key].includes(value))) || null;
   },
 
   async apiGetPMMAgentInfoByServiceId(serviceId, agentType = AGENT_TYPE.PMM_AGENT) {
@@ -209,7 +221,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendGetRequest('v1/management/nodes', headers);
 
-    return resp.data.nodes;
+    return resp.data.nodes || [];
   },
 
   async getNodeName(nodeID) {

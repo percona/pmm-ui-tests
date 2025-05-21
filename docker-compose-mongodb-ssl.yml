@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   mongo_with_ssl:
     image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.4}

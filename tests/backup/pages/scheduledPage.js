@@ -1,3 +1,5 @@
+const { locateOption } = require('../../helper/locatorHelper');
+
 const { I } = inject();
 
 const scheduleCell = (name) => `//tr[td[contains(text(), "${name}")]]`;
@@ -8,7 +10,7 @@ module.exports = {
     noData: '$table-no-data',
     modalHeader: 'h1',
     modalContent: '$modal-content',
-    dropdownOption: (text) => locate('div[class$="-select-option-body"]').find('span').withText(text),
+    dropdownOption: (text) => locateOption(text),
     selectedLocation: '//label[@data-testid="location-field-label"]/parent::div/following-sibling::div[1]//div[contains(@class, "-singleValue")]',
     selectedService: locate('div[class*="-singleValue"]').inside(locate('span').withChild('$service-select-label')),
     retentionValidation: '$retention-field-error-message',

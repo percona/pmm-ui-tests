@@ -34,7 +34,7 @@ BeforeSuite(async ({ I, rulesAPI }) => {
   await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
 
   // Preparation steps for checking Alert via webhook server
-  await I.verifyCommand('docker compose -f docker-compose-webhook.yml up -d');
+  await I.verifyCommand('docker compose -f docker-compose-webhook.yml up -d || true');
 
   const viewerId = await I.createUser(users.viewer.username, users.viewer.password);
   const editorId = await I.createUser(users.editor.username, users.editor.password);

@@ -90,3 +90,4 @@ Data(subPages).Scenario(
     I.waitNumberOfVisibleElements(pmmInventoryPage.fields.selectedCheckbox, 0);
   },
 );
+

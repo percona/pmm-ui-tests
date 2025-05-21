@@ -111,8 +111,8 @@ class QueryAnalyticsFilters {
   selectContainFilter(filterName) {
     I.waitForVisible(this.fields.groupHeaders, 30);
     I.click(this.fields.groupHeaders);
-    I.waitForVisible(this.fields.filterByName(filterName));
     I.fillField(this.fields.filterBy, filterName);
+    I.waitForVisible(this.fields.filterByName(filterName));
     I.usePlaywrightTo('Select QAN Filter', async ({ page }) => {
       const locator = await page.locator(this.fields.filterByName(filterName).value);
 

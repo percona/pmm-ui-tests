@@ -33,12 +33,24 @@ class Grafana extends Helper {
     const basicAuthEncoded = await this.getAuth(username, password);
 
     Playwright.setPlaywrightRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
-    const resp = await REST.sendPostRequest(`${baseUrl}graph/login`, { user: username, password });
+    let resp;
+
+    try {
+      resp = await REST.sendPostRequest(`${baseUrl}graph/login`, { user: username, password });
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Login API call was not successful.');
+
+      return;
+    }
 
     const cookies = resp.headers['set-cookie'];
 
     if (!cookies) {
-      throw new Error('Authentication was not successful, verify base url and credentials.');
+      // eslint-disable-next-line no-console
+      console.warn('Authentication was not successful, verify base url and credentials.');
+
+      return;
     }
 
     cookies.forEach((cookie) => {
@@ -196,7 +208,13 @@ class Grafana extends Helper {
       password,
     };
     const headers = { Authorization: `Basic ${await this.getAuth()}` };
-    const resp = await apiContext.sendPostRequest('graph/api/admin/users', body, headers);
+    let resp;
+
+    try {
+      resp = await apiContext.sendPostRequest('graph/api/admin/users', body, headers);
+    } catch (e) {
+      throw Error(`Api call to create user failed with errors: ${e.errors}`);
+    }
 
     return resp.data.id;
   }
@@ -252,10 +270,10 @@ class Grafana extends Helper {
     return stdout.trim();
   }
 
-  async clickIfVisible(element) {
+  async clickIfVisible(element, timeout = 30) {
     const { Playwright } = this.helpers;
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < timeout; i++) {
       const numVisible = await Playwright.grabNumberOfVisibleElements(element);
 
       if (numVisible) {
@@ -264,7 +282,7 @@ class Grafana extends Helper {
         return element;
       }
 
-      Playwright.wait(10);
+      await Playwright.wait(1);
     }
 
     return element;

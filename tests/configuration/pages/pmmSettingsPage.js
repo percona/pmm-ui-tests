@@ -79,7 +79,6 @@ module.exports = {
       'Invalid argument: invalid alert_manager_url: invalid_url - missing protocol scheme.',
     invalidAlertmanagerMissingHostMessage: 'Invalid argument: invalid alert_manager_url: http:// - missing host.',
     invalidAlertmanagerRulesMessage: 'Invalid alerting rules.',
-    invalidDBaaSDisableMessage: 'DBaaS is enabled via ENABLE_DBAAS or via deprecated PERCONA_TEST_DBAAS environment variable.',
     disabledBackupManagement: 'Backup Management is disabled. You can enable it in PMM Settings.',
   },
   sectionTabsList: {
@@ -302,9 +301,6 @@ module.exports = {
     telemetrySwitchSelector: locate('$advanced-telemetry').find('label'),
     perconaAlertingSwitchInput: locate('$advanced-alerting').find('input'),
     perconaAlertingSwitch: locate('$advanced-alerting').find('label'),
-    dbaasSwitchSelectorInput: locate(deprecatedFeaturesSection).find('$advanced-dbaas').find('input'),
-    dbaasSwitchSelector: locate(deprecatedFeaturesSection).find('$advanced-dbaas').find('label'),
-    dbaasSwitchItem: '$advanced-dbaas',
     telemetryLabel: locate('$advanced-telemetry').find('span'),
     tooltipText: locate('$info-tooltip').find('./*[self::span or self::div]'),
     tooltipReadMoreLink: locate('$info-tooltip').find('a'),
@@ -312,7 +308,6 @@ module.exports = {
     tabContent: '$settings-tab-content',
     termsOfService: '//span[contains(text(), "Terms of Service")]',
     validationMessage: 'span.error-message',
-    dbaasMenuIconLocator: locate('a').withAttr({ href: '/graph/dbaas' }),
     rareIntervalInput: '$rareInterval-number-input',
     rareIntervalValidation: '$rareInterval-field-error-message',
     standartIntervalInput: '$standardInterval-number-input',
@@ -330,9 +325,9 @@ module.exports = {
     await this.waitForPmmSettingsPageLoaded();
   },
 
-  applyChanges() {
+  async applyChanges() {
     I.click(this.fields.applyButton);
-    I.verifyPopUpMessage(this.messages.successPopUpMessage);
+    I.verifyPopUpMessage(this.messages.successPopUpMessage, 30);
   },
 
   switchAzure() {
@@ -555,7 +550,7 @@ module.exports = {
     tooltipObj.tooltipReadMoreLink = this.fields.tooltipReadMoreLink;
     await adminPage.verifyTooltip(tooltipObj);
 
-    I.moveCursorTo(locate('[title="Go to home"]'));
+    I.moveCursorTo(locate('[aria-label="Breadcrumbs"]'));
   },
 
   verifySwitch(switchSelector, expectedSwitchState = 'on') {

@@ -48,14 +48,15 @@ Scenario(
 
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
+    adminPage.applyTimeZone('Coordinated Universal Time');
     adminPage.setAbsoluteTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
     queryAnalyticsPage.waitForLoaded();
     adminPage.verifySelectedTimeRange(`${date} 00:00:00`, `${date} 23:59:59`);
 
     const url = await I.grabCurrentUrl();
 
-    I.assertContain(url.split('from=')[1].replaceAll('%20', ' '), `${currentDate.format('ddd MMM DD YYYY')} 00:00:00`, 'From Date is not correct');
-    I.assertContain(url.split('to=')[1].replaceAll('%20', ' '), `${currentDate.format('ddd MMM DD YYYY')} 23:59:59`, 'To Date is not correct');
+    I.assertContain(url.split('from=')[1].replaceAll('%20', ' '), `${date}T00:00:00.000`, 'From Date is not correct');
+    I.assertContain(url.split('to=')[1].replaceAll('%20', ' '), `${date}T23:59:59.000Z`, 'To Date is not correct');
   },
 );
 
@@ -156,11 +157,11 @@ Scenario(
 
     const url = await I.grabCurrentUrl();
 
-    I.assertContain(url.split('from=')[1].replaceAll('%20', ' '), moment(from).format('ddd MMM DD YYYY HH:mm:ss'), 'Url does not contain selected from date time');
-    I.assertContain(url.split('to=')[1].replaceAll('%20', ' '), moment(to).format('ddd MMM DD YYYY HH:mm:ss'), 'Url does not contain selected to date time');
+    I.assertContain(url.split('from=')[1].replaceAll('%20', ' '), moment(from).toISOString(), 'Url does not contain selected from date time');
+    I.assertContain(url.split('to=')[1].replaceAll('%20', ' '), moment(to).toISOString(), 'Url does not contain selected to date time');
 
     I.click(queryAnalyticsPage.buttons.copyButton);
-    const clipBoardUrl = await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink);
+    const clipBoardUrl = await I.getClipboardText();
 
     I.amOnPage(clipBoardUrl);
     queryAnalyticsPage.waitForLoaded();
@@ -168,8 +169,8 @@ Scenario(
 
     adminPage.verifySelectedTimeRange(from, to);
 
-    I.assertContain(secondUrl.split('from=')[1].replaceAll('%20', ' '), moment(from).utc().format('ddd MMM DD YYYY HH:mm:ss'), 'Second Url does not contain selected from date time');
-    I.assertContain(secondUrl.split('to=')[1].replaceAll('%20', ' '), moment(to).utc().format('ddd MMM DD YYYY HH:mm:ss'), 'Second Url does not contain selected to date time');
+    I.assertContain(secondUrl.split('from=')[1].replaceAll('%20', ' '), moment(from).utc().toISOString(), 'Second Url does not contain selected from date time');
+    I.assertContain(secondUrl.split('to=')[1].replaceAll('%20', ' '), moment(to).utc().toISOString(), 'Second Url does not contain selected to date time');
   },
 );
 
