@@ -69,7 +69,7 @@ class BaseDashboard {
     if (failingPanels.size !== 0) {
       for (const failingPanel of failingPanels) {
         I.scrollTo(this.elements.panelByName(failingPanel));
-        I.saveScreenshot(`${failingPanel}.png`);
+        I.saveScreenshot(`panel-with-no-data-${failingPanel.replace(/[_ ]/g, '-')}.png`);
       }
     }
 
