@@ -214,6 +214,7 @@ module.exports = {
     if (tooltipObj.link) {
       const tooltipReadMoreLink = tooltipObj.tooltipReadMoreLink.as(`Tooltip "Read more" link for ${tooltipObj.iconLocator}`);
 
+      I.waitForVisible(tooltipReadMoreLink, 5);
       I.scrollTo(tooltipReadMoreLink);
       I.seeAttributesOnElements(tooltipReadMoreLink, { href: tooltipObj.link });
       const readMoreLink = (await I.grabAttributeFrom(tooltipReadMoreLink, 'href'));

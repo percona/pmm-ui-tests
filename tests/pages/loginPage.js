@@ -3,10 +3,10 @@ const { I, homePage } = inject();
 module.exports = {
   url: 'graph/login',
   fields: {
-    loginInput: '//input[@name="user"]',
-    passwordInput: '//input[@name="password"]',
-    loginButton: '//button[@type="submit"]',
-    skipButton: '//button[span[text()="Skip"]]',
+    loginInput: I.useDataQA('data-testid Username input field'),
+    passwordInput: I.useDataQA('data-testid Password input field'),
+    loginButton: I.useDataQA('data-testid Login button'),
+    skipButton: I.useDataQA('data-testid Skip change password button'),
   },
   messages: {
     loginSuccess: 'Logged in',
@@ -20,6 +20,7 @@ module.exports = {
    * @param   {string} password   a password for specified user; with default for 'admin' user
    */
   async login(username = 'admin', password = process.env.ADMIN_PASSWORD || 'admin') {
+    I.waitForVisible(this.fields.loginInput, 20);
     I.seeElement(this.fields.loginInput);
     I.fillField(this.fields.loginInput, username);
     I.seeElement(this.fields.passwordInput);

@@ -29,11 +29,14 @@ maxQueryLengthInstances.add(['mysql_8.0_ssl_service', '8.0', 'mysql_ssl_8.0', 'm
 
 let serviceName;
 
-Before(async ({ I, inventoryAPI }) => {
-  await I.Authorize();
+BeforeSuite(async ({ inventoryAPI }) => {
   const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'mysql_ssl_8.0_ssl_service', 'remote');
 
   serviceName = service_name;
+});
+
+Before(async ({ I }) => {
+  await I.Authorize();
 });
 
 Data(instances).Scenario(
@@ -139,10 +142,12 @@ Scenario(
     const serviceList = [serviceName, `remote_${serviceName}`];
 
     for (const service of serviceList) {
-      I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
+      I.amOnPage(I.buildUrlWithParams(
+        dashboardPage.mySQLInstanceOverview.clearUrl,
+        { service_name: service, from: 'now-5m', refresh: '10s' },
+      ));
+
       dashboardPage.waitForDashboardOpened();
-      await adminPage.applyTimeRange('Last 5 minutes');
-      await dashboardPage.applyFilter('Service Name', service);
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);

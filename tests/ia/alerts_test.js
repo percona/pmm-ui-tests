@@ -72,8 +72,10 @@ Scenario(
     await I.Authorize(users.viewer.username, users.viewer.password);
 
     await alertsAPI.waitForAlerts(24, 1);
-    await I.amOnPage(alertsPage.url);
-    await I.seeNumberOfElements(alertsPage.elements.alertRow(ruleName), 1);
+
+    I.amOnPage(alertsPage.url);
+    I.waitForElement(alertsPage.elements.alertRow(ruleName), 20);
+    I.seeNumberOfElements(alertsPage.elements.alertRow(ruleName), 1);
     I.seeAttributesOnElements(alertsPage.buttons.silenceActivate(ruleName), { 'aria-disabled': 'true' });
   },
 );

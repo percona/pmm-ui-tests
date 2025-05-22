@@ -159,9 +159,7 @@ Data(instances).Scenario(
     for (const key of Object.keys(filters)) {
       const locator = dashboardPage.expandFilters(key);
 
-      await within(locator, () => {
-        I.seeElement(locate('span').withText(filters[key]));
-      });
+      I.waitForVisible(dashboardPage.fields.filterDropdownValueLocator(filters[key]), 5);
     }
   },
 );

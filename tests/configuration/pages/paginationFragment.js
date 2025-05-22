@@ -1,3 +1,5 @@
+const { locateOption } = require('../../helper/locatorHelper');
+
 const { I } = inject();
 
 /**
@@ -19,13 +21,13 @@ module.exports = {
   /**
    * Check that selected value in "Rows per page" dropdown matches expected
    *
-   * @param     expectedNumber    number to check, possible values: 25|50|100
+   * @param     expectedNumber    string or number to check, possible values: 25|50|100
    * @returns   {Promise<void>}
    */
   async verifySelectedCountPerPage(expectedNumber) {
     I.assertContain(
-      [25, 50, 100],
-      expectedNumber,
+      ['25', '50', '100'],
+      `${expectedNumber}`,
       'Expected number is not the one available options to select in dropdown',
     );
     I.waitForElement(this.elements.rowsPerPageDropdown, 30);
@@ -40,8 +42,10 @@ module.exports = {
     return parseInt(await I.grabTextFrom(this.elements.rowsPerPageDropdown), 10);
   },
 
-  async selectRowsPerPage(option) {
-    I.assertContain([25, 50, 100], option, 'Specified option is not the one available options to select in dropdown');
+  async selectRowsPerPage(optionToSelect) {
+    const option = `${optionToSelect}`;
+
+    I.assertContain(['25', '50', '100'], option, 'Specified option is not the one available options to select in dropdown');
 
     await I.say(`Changing 'Rows per page' to ${option}`);
     const pagesCount = await this.getLastPageNumber();
@@ -49,8 +53,8 @@ module.exports = {
     const rowsShowing = (await I.grabTextFrom(this.elements.totalsLabel)).split(' ')[1].split('-')[1];
 
     I.click(this.elements.rowsPerPageDropdown);
-    I.waitForVisible(I.getSingleSelectOptionLocator(option));
-    I.click(I.getSingleSelectOptionLocator(option));
+    I.waitForVisible(locateOption(option), 30);
+    I.click(locateOption(option));
 
     if ((rowsShowing !== rowsTotal) && (rowsTotal > option)) {
       // 20 sec wait for pages count to change

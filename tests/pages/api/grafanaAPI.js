@@ -515,7 +515,7 @@ module.exports = {
       response = await this.getMetric(metricName, refineBy, lastMinutes);
 
       return response.data.results.A.frames[0].data.values.length !== 0;
-    }, 60);
+    }, 60, `failed to wait for metric "${metricName}" for ${JSON.stringify(refineBy)}`);
 
     const result = JSON.stringify(response.data.results);
 

@@ -16,12 +16,14 @@ instances.add(['psmdb-server', '6.0', 'psmdb-server', 'mongodb_ssl', 'mongodb_co
 
 let serviceName;
 
-Before(async ({ I, inventoryAPI }) => {
-  await I.Authorize();
-
+BeforeSuite(async ({ inventoryAPI }) => {
   const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, 'psmdb-server');
 
   serviceName = service_name;
+});
+
+Before(async ({ I }) => {
+  await I.Authorize();
 });
 
 Data(instances).Scenario(
@@ -30,7 +32,7 @@ Data(instances).Scenario(
     I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI, inventoryAPI,
   }) => {
     const {
-      serviceName, serviceType, version, container,
+      serviceName, serviceType, container,
     } = current;
     let details;
     const remoteServiceName = `remote_${serviceName}`;
@@ -121,22 +123,20 @@ Data(instances).Scenario(
   },
 ).retry(1);
 
-Data(instances).Scenario(
+Scenario(
   'Verify dashboard after MongoDB SSL Instances are added @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
-    I, dashboardPage, adminPage, current,
+    I, dashboardPage, adminPage,
   }) => {
-    const {
-      serviceName,
-    } = current;
-
     const serviceList = [serviceName, `remote_${serviceName}`];
 
     for (const service of serviceList) {
-      I.amOnPage(dashboardPage.mongoDbInstanceOverview.url);
+      I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbInstanceOverview.clearUrl, {
+        service_name: service,
+        from: 'now-5m',
+        refresh: '10s',
+      }));
       dashboardPage.waitForDashboardOpened();
-      await adminPage.applyTimeRange('Last 5 minutes');
-      await dashboardPage.applyFilter('Service Name', service);
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);
@@ -145,21 +145,16 @@ Data(instances).Scenario(
   },
 ).retry(1);
 
-Data(instances).Scenario(
+Scenario(
   'Verify QAN after MongoDB SSL Instances is added @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
-    I, queryAnalyticsPage, current, adminPage,
+    I, queryAnalyticsPage,
   }) => {
-    const {
-      serviceName,
-    } = current;
-
     const serviceList = [serviceName, `remote_${serviceName}`];
 
+    I.wait(20);
     for (const service of serviceList) {
-      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
-      queryAnalyticsPage.waitForLoaded();
-      await adminPage.applyTimeRange('Last 12 hours');
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-12h' }));
       queryAnalyticsPage.waitForLoaded();
       await queryAnalyticsPage.filters.selectFilter(service);
       queryAnalyticsPage.waitForLoaded();
@@ -168,7 +163,7 @@ Data(instances).Scenario(
       assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
     }
   },
-).retry(1);
+).retry(2);
 
 Data(instances).Scenario(
   'PMM-T1276 - Verify tlsCa, tlsCert, tlsKey are generated on every MongoDB exporter (added with TLS flags) restart @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',

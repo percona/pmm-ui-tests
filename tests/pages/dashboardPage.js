@@ -491,6 +491,7 @@ module.exports = {
   },
   mongoDbInstanceSummaryDashboard: {
     url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
+    clearUrl: 'graph/d/mongodb-instance-summary/mongodb-instance-summary',
   },
   mysqlInstanceSummaryDashboard: {
     url: 'graph/d/mysql-instance-summary/mysql-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
@@ -1211,7 +1212,7 @@ module.exports = {
     },
     annotationMarker: I.useDataQA('data-testid annotation-marker'),
     clearSelection: '//a[@ng-click="vm.clearSelections()"]',
-    collapsedDashboardRow: '//*[@aria-label="Expand row"]',
+    collapsedDashboardRow: '//button[@aria-label="Expand row"]',
     collapsedDashboardRowByName: (rowName) => `//*[@aria-label="Expand row" and contains(@data-testid, "${rowName}")]`,
     dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
     Last2Days: '//span[contains(text(), "Last 2 days")]',
@@ -1284,6 +1285,8 @@ module.exports = {
   },
 
   async verifyMetricsExistence(metrics) {
+    I.click(this.fields.reportTitle);
+    await adminPage.performPageDown(5);
     for (const i in metrics) {
       I.pressKey('PageDown');
       await this.expandEachDashboardRow();
@@ -1342,7 +1345,7 @@ module.exports = {
 
       while (actualValue < expectedValue) {
         // eslint-disable-next-line no-plusplus
-        if (retries++ > timeout) throw new Error(`Value in panel ${panelTitle} for ${serviceName} was never above ${expectedValue}`);
+        if (retries++ > timeout) throw new Error(`Value in panel ${panelTitle} for ${serviceName} was never above ${expectedValue} and is ${actualValue}`);
 
         if (await valueLocator.isVisible()) {
           actualValue = await valueLocator.textContent();
@@ -1463,7 +1466,9 @@ module.exports = {
     // This is due to some instances with many services take filter to load
     // I.wait(1);
     I.waitForElement(dropdownLocator, 30);
-    I.click(dropdownLocator);
+    I.forceClick(dropdownLocator);
+    // click one more time to expand the multiselect dropdown
+    I.forceClick(dropdownLocator);
 
     return '[aria-label="Variable options"]';
   },
