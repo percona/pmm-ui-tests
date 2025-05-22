@@ -1466,9 +1466,9 @@ module.exports = {
     // This is due to some instances with many services take filter to load
     // I.wait(1);
     I.waitForElement(dropdownLocator, 30);
-    I.click(dropdownLocator);
+    I.forceClick(dropdownLocator);
     // click one more time to expand the multiselect dropdown
-    I.click(dropdownLocator);
+    // I.click(dropdownLocator);
 
     return '[aria-label="Variable options"]';
   },
