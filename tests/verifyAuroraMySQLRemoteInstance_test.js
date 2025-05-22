@@ -67,11 +67,11 @@ Data(instances).Scenario('PMM-T1295 - Verify Aurora MySQL instance metrics @inst
   });
 }).retry(1);
 
-Data(instances).Scenario('PMM-T1295 - Verify MySQL Amazon Aurora Details @instances', async ({ I, dashboardPage, adminPage }) => {
+Data(instances).Scenario('PMM-T1295 - Verify MySQL Amazon Aurora Details @instances', async ({ I, dashboardPage, current }) => {
   // Waiting for metrics to start hitting for remotely added services
   I.wait(60);
   I.amOnPage(I.buildUrlWithParams(dashboardPage.mysqlAmazonAuroraDetails.url, {
-    service_name: 'pmm-qa-aurora2-mysql-instance-1',
+    service_name: remoteInstancesHelper.remote_instance.aws.aurora[current].instance_id,
     from: 'now-5m',
   }));
   dashboardPage.waitForDashboardOpened();
