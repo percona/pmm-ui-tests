@@ -87,6 +87,20 @@ module.exports = {
       .find((service) => service.service_name.includes(serviceName));
   },
 
+  async getServiceDetailsByStartsWithName(serviceName) {
+    const service = await this.apiGetServices();
+
+    assert.ok(
+      service.status === 200,
+      `Failed to getService. Response message is "${service.data.message}"`,
+    );
+
+    return service
+      .data
+      .services
+      .find((service) => service.service_name.startsWith(serviceName));
+  },
+
   async getServiceDetailsByPartialDetails(details) {
     const services = await this.apiGetServices();
 

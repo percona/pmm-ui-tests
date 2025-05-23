@@ -1211,7 +1211,7 @@ module.exports = {
     },
     annotationMarker: I.useDataQA('data-testid annotation-marker'),
     clearSelection: '//a[@ng-click="vm.clearSelections()"]',
-    collapsedDashboardRow: '//*[@aria-label="Expand row"]',
+    collapsedDashboardRow: '//button[@aria-label="Expand row"]',
     collapsedDashboardRowByName: (rowName) => `//*[@aria-label="Expand row" and contains(@data-testid, "${rowName}")]`,
     dataLinkForRoot: '//div[contains(text(), "Data links")]/..//a',
     Last2Days: '//span[contains(text(), "Last 2 days")]',
@@ -1252,7 +1252,6 @@ module.exports = {
     dashboardTitle: (name) => locate('span').withText(name),
     metricPanelNa: (name) => `//section[@aria-label="${name}"]//span[text()="N/A"]`,
     loadingElement: locate('//div[@aria-label="Panel loading bar"]'),
-    dropdownBackdrop: locate('//div[contains(@class,"ScrollManager")]'),
     multiSelect: (filterName) => locate(`//label[contains(text(), "${filterName}")]/following-sibling::div//div[contains(@class,"grafana-select-multi-value-container")]`),
   },
 
@@ -1284,6 +1283,8 @@ module.exports = {
   },
 
   async verifyMetricsExistence(metrics) {
+    I.click(this.fields.reportTitle);
+    await adminPage.performPageDown(5);
     for (const i in metrics) {
       I.pressKey('PageDown');
       await this.expandEachDashboardRow();
@@ -1342,7 +1343,7 @@ module.exports = {
 
       while (actualValue < expectedValue) {
         // eslint-disable-next-line no-plusplus
-        if (retries++ > timeout) throw new Error(`Value in panel ${panelTitle} for ${serviceName} was never above ${expectedValue}`);
+        if (retries++ > timeout) throw new Error(`Value in panel ${panelTitle} for ${serviceName} was never above ${expectedValue} and is ${actualValue}`);
 
         if (await valueLocator.isVisible()) {
           actualValue = await valueLocator.textContent();
@@ -1486,7 +1487,7 @@ module.exports = {
 
       // close dropdown if it's multi select
       if (isMultiSelect) {
-        I.click(this.fields.dropdownBackdrop);
+        I.pressKey('Escape');
       }
     }
   },

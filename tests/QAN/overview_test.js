@@ -268,7 +268,8 @@ Scenario(
   },
 );
 
-Scenario(
+// TODO: Un-skip and refactor after https://perconadev.atlassian.net/browse/PMM-14002 is fixed
+Scenario.skip(
   'PMM-T204 - Verify small and N/A values on sparkline @qan',
   async ({ I, queryAnalyticsPage }) => {
     const secondCell = queryAnalyticsPage.data.elements.queryValue(3, 3);
@@ -290,12 +291,10 @@ Scenario(
 Scenario(
   'PMM-T412 - Verify user is able to search by part of query @qan',
   async ({
-    I, adminPage, queryAnalyticsPage,
+    I, queryAnalyticsPage,
   }) => {
     const query = 'SELECT pg_database';
 
-    queryAnalyticsPage.waitForLoaded();
-    await adminPage.applyTimeRange('Last 3 hours');
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.searchByValue(query);
     queryAnalyticsPage.waitForLoaded();

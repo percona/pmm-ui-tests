@@ -5,7 +5,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T391 PMM-T1818 Verify user is able to create and set custom home dashboard @pre-dashboards-upgrade',
+  'PMM-T391 + PMM-T1818 - Verify user is able to create and set custom home dashboard @pre-dashboards-upgrade',
   async ({
     I, grafanaAPI, dashboardPage, searchDashboardsModal,
   }) => {
@@ -14,8 +14,9 @@ Scenario(
     await grafanaAPI.createCustomDashboard(grafanaAPI.randomDashboardName, insightFolder.id, null, ['pmm-qa', grafanaAPI.randomTag]);
     const folder = await grafanaAPI.createFolder(grafanaAPI.customFolderName);
     let additionalPanel = null;
+    const additionalPanelName = 'Custom Panel';
 
-    const libResp = await grafanaAPI.savePanelToLibrary('Lib Panel', folder.id);
+    const libResp = await grafanaAPI.savePanelToLibrary(additionalPanelName, folder.id);
     const libPanel = libResp.result.model;
 
     libPanel.libraryPanel.meta = libResp.result.meta;
@@ -23,14 +24,14 @@ Scenario(
     libPanel.libraryPanel.uid = libResp.result.uid;
     additionalPanel = [libPanel];
 
-    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id, null, []);
+    const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id, additionalPanel, []);
 
     await grafanaAPI.starDashboard(resp.id);
     await grafanaAPI.setHomeDashboard(resp.id);
 
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();
-    dashboardPage.verifyMetricsExistence(['Custom Panel']);
+    await dashboardPage.verifyMetricsExistence([additionalPanelName]);
     I.seeInCurrentUrl(grafanaAPI.customDashboardName);
   },
 );
@@ -57,7 +58,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T391 PMM-T1818 Verify that custom home dashboard stays as home dashboard after upgrade @post-dashboards-upgrade',
+  'PMM-T391 + PMM-T1818 - Verify that custom home dashboard stays as home dashboard after upgrade @post-dashboards-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
     I.amOnPage('');
     dashboardPage.waitForDashboardOpened();

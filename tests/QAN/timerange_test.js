@@ -161,7 +161,15 @@ Scenario(
     I.assertContain(url.split('to=')[1].replaceAll('%20', ' '), moment(to).toISOString(), 'Url does not contain selected to date time');
 
     I.click(queryAnalyticsPage.buttons.copyButton);
-    const clipBoardUrl = await I.getClipboardText();
+    I.wait(1);
+    const clipboardNotAvailable = await I.grabNumberOfVisibleElements(queryAnalyticsPage.elements.clipboardLink);
+    let clipBoardUrl;
+
+    if (clipboardNotAvailable > 0) {
+      clipBoardUrl = await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink);
+    } else {
+      clipBoardUrl = await I.getClipboardText();
+    }
 
     I.amOnPage(clipBoardUrl);
     queryAnalyticsPage.waitForLoaded();

@@ -13,9 +13,13 @@ Before(async ({ I }) => {
 Scenario(
   'Open the Node Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    I.amOnPage(dashboardPage.nodeSummaryDashboard.url);
+    const url = I.buildUrlWithParams(
+      dashboardPage.nodeSummaryDashboard.url,
+      { node_name: 'pmm-server' },
+    );
+
+    I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Node Name', 'pmm-server');
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.nodeSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
@@ -34,7 +38,7 @@ Scenario(
 );
 
 Data(nodes).Scenario(
-  'PMM-T418 PMM-T419 Verify the pt-summary on Node Summary dashboard @nightly @dashboards',
+  'PMM-T418 + PMM-T419 - Verify the pt-summary on Node Summary dashboard @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.nodeSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -67,7 +71,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1695 Verify that user is able to filter OS / Node Compare dashboard by Node Name @nightly @dashboards',
+  'PMM-T1695 - Verify that user is able to filter OS / Node Compare dashboard by Node Name @nightly @dashboards',
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
@@ -94,6 +98,7 @@ Scenario(
     await dashboardPage.applyFilter('Node Name', node2);
     I.scrollTo(dashboardPage.fields.metricTitle);
     I.forceClick(dashboardPage.fields.metricTitle);
+    I.wait(1);
 
     const finalNumOfPanels = await I.grabNumberOfVisibleElements(dashboardPage.panel);
 
