@@ -42,37 +42,41 @@ Scenario(
   },
 );
 
-const databaseEnvironments = new DataTable(['name', 'select']);
+const databaseEnvironments = [
+  // { dbType: 'PS', serviceName: 'ps_', queryTypes: ['SELECT', 'INSERT', 'DELETE', 'CREATE'] },
+  { dbType: 'PDPGSQL', serviceName: 'pdpgsql_', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', /*'DELETE FROM', 'CREATE'*/] },
+  { dbType: 'PSMDB', serviceName: 'rs101', queryTypes: ['db.students', 'db.runCommand', 'db.test'] },
+];
 
-databaseEnvironments.add(['ps_pmm_', 'select name']);
-databaseEnvironments.add(['ms-single', 'select name']);
-databaseEnvironments.add(['pxc_node', 'select']);
-// databaseEnvironments.add(['pgsql_pgss_pmm', 'insert']);
-databaseEnvironments.add(['pdpgsql_pgsm_pmm', 'insert']);
-databaseEnvironments.add(['rs101', 'update']);
-
-// TODO: Unskip when https://perconadev.atlassian.net/browse/PMM-13978 is finished add support for all types of queries: [SELECT, INSERT, DELETE, CREATE]
-/* Data(databaseEnvironments).Scenario(
-  'PMM-T13 - Check Explain and Example for supported DBs @qan',
+// TODO: Unskip Percona Server when https://perconadev.atlassian.net/browse/PMM-13978 is finished.
+Data(databaseEnvironments).Scenario(
+  'PMM-T13 - Check Example, Explain, Plan and Table tabs for supported DBs @qan',
   async ({
-    I, queryAnalyticsPage, current,
+    I, queryAnalyticsPage, current, inventoryAPI,
   }) => {
-    queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.filters.selectContainFilterInGroup(current.name, 'Service Name');
-    queryAnalyticsPage.data.searchByValue(current.select);
-    I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
-    queryAnalyticsPage.data.selectRow(1);
-    queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.queryDetails.checkExamplesTab();
+    const { service_name } = await inventoryAPI.getServiceDetailsByPartialName(current.serviceName);
 
-    if (!current.name.includes('pgsql')) {
-      queryAnalyticsPage.queryDetails.checkTab('Explain');
+    for (const query of current.queryTypes) {
+      const parameters = { service_name, query };
+
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-2h', search: query, service_name }));
+      queryAnalyticsPage.waitForLoaded();
+      await queryAnalyticsPage.data.verifyQueriesDisplayed(parameters);
+      queryAnalyticsPage.data.selectRow(1);
+      queryAnalyticsPage.waitForLoaded();
+      await queryAnalyticsPage.queryDetails.verifyExamples(parameters);
+
+      if (current.dbType !== 'PDPGSQL') {
+        await queryAnalyticsPage.queryDetails.verifyExplain(parameters);
+      }
+
+      if (current.dbType === 'PDPGSQL') {
+        await queryAnalyticsPage.queryDetails.verifyTables(parameters);
+        // await queryAnalyticsPage.queryDetails.verifyPlan(parameters);
+      }
     }
-    /**
-     * Add Verification for plan after bug is closed.
-
   },
-); */
+);
 
 Scenario(
   'PMM-T1790 - Verify that there is any no error on Explains after switching between queries from different DB servers @qan',

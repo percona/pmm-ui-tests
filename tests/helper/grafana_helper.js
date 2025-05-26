@@ -305,6 +305,21 @@ class Grafana extends Helper {
       }
     }
   }
+
+  async isElementDisplayed(locator, timeoutInSeconds = 60) {
+    const { Playwright } = this.helpers;
+    const elementLocator = Playwright.page.locator(locate(locator).toXPath());
+
+    for (let i = 0; i < timeoutInSeconds; i++) {
+      if (await elementLocator.first().isVisible()) {
+        return true;
+      }
+
+      await Playwright.page.waitForTimeout(1000);
+    }
+
+    return false;
+  }
 }
 
 module.exports = Grafana;

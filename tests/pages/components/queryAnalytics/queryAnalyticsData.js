@@ -59,6 +59,12 @@ class QueryAnalyticsData {
     };
   }
 
+  async verifyQueriesDisplayed(parameters) {
+    if (!(await I.isElementDisplayed(this.elements.queryRows))) {
+      throw new Error(`No queries displayed for selected parameters: ${JSON.stringify(parameters)}`);
+    }
+  }
+
   async changeMainMetric(newMainMetric) {
     const oldMainMetric = await I.grabTextFrom(this.elements.selectedMainMetric());
 

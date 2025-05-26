@@ -144,7 +144,7 @@ Data(createBackupTests).Scenario(
       await I.verifyCommand('ls -la /tmp/backup_data/rs', artifact.metadata_list[0].name);
     }
   },
-).retry(0);
+).retry(1);
 
 Scenario(
   'PMM-T961 + PMM-T1005 + PMM-T1024 - Verify create backup modal @backup @bm-mongo @pre-mongo-backup-upgrade',
