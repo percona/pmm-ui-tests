@@ -255,6 +255,13 @@ module.exports = {
         clusterName: 'aws_rds_mysql_8_0',
         port: 42001,
       },
+      aws_rds_8_4: {
+        address: secret(process.env.PMM_QA_MYSQL_RDS_8_4_HOST),
+        username: secret(process.env.PMM_QA_MYSQL_RDS_8_4_USER),
+        password: secret(process.env.PMM_QA_MYSQL_RDS_8_4_PASSWORD),
+        clusterName: 'aws_rds_mysql_8_4',
+        port: 42001,
+      },
       aws_rds_5_6: {
         address: secret(process.env.REMOTE_AWS_MYSQL57_HOST),
         username: secret(process.env.REMOTE_AWS_MYSQL_USER),
@@ -262,12 +269,39 @@ module.exports = {
         clusterName: 'aws_rds_mysql_5_6',
         port: 3306,
       },
-      aws_postgresql_12: {
-        address: process.env.PMM_QA_PGSQL_RDS_12_1_HOST,
-        userName: process.env.REMOTE_AWS_POSTGRES12_USER,
-        password: process.env.REMOTE_AWS_POSTGRES12_PASSWORD,
-        clusterName: 'aws_postgresql_12',
-        database: process.env.PMM_QA_PGSQL_RDS_12_1_DATABASE,
+      aws_postgresql_13: {
+        address: process.env.PMM_QA_RDS_PGSQL13_HOST,
+        userName: process.env.PMM_QA_RDS_PGSQL13_USER,
+        password: process.env.PMM_QA_RDS_PGSQL13_PASSWORD,
+        clusterName: 'aws_postgresql_13',
+        port: 42001,
+      },
+      aws_postgresql_14: {
+        address: process.env.PMM_QA_PGSQL_RDS_14_HOST,
+        userName: process.env.PMM_QA_RDS_PGSQL14_USER,
+        password: process.env.PMM_QA_RDS_PGSQL14_PASSWORD,
+        clusterName: 'aws_postgresql_14',
+        port: 42001,
+      },
+      aws_postgresql_15: {
+        address: process.env.PMM_QA_RDS_PGSQL15_HOST,
+        userName: process.env.PMM_QA_RDS_PGSQL15_USER,
+        password: process.env.PMM_QA_RDS_PGSQL15_PASSWORD,
+        clusterName: 'aws_postgresql_15',
+        port: 42001,
+      },
+      aws_postgresql_16: {
+        address: process.env.PMM_QA_RDS_PGSQL16_HOST,
+        userName: process.env.PMM_QA_RDS_PGSQL16_USER,
+        password: process.env.PMM_QA_RDS_PGSQL16_PASSWORD,
+        clusterName: 'aws_postgresql_15',
+        port: 42001,
+      },
+      aws_postgresql_17: {
+        address: process.env.PMM_QA_RDS_PGSQL17_HOST,
+        userName: process.env.PMM_QA_RDS_PGSQL17_USER,
+        password: process.env.PMM_QA_RDS_PGSQL17_PASSWORD,
+        clusterName: 'aws_postgresql_13',
         port: 42001,
       },
       aurora: {
@@ -275,17 +309,31 @@ module.exports = {
         aws_secret_key: process.env.PMM_QA_AWS_ACCESS_KEY,
         port: '42001',
         username: 'pmm',
-        aurora2: {
+        mysqlaurora2: {
           address: process.env.PMM_QA_AURORA2_MYSQL_HOST,
           password: process.env.PMM_QA_AURORA2_MYSQL_PASSWORD,
           instance_id: 'pmm-qa-aurora2-mysql-instance-1',
-          cluster_name: 'aws_aurora2',
+          cluster_name: 'mysqlaws_aurora2',
         },
-        aurora3: {
+        mysqlaurora3: {
           address: process.env.PMM_QA_AURORA3_MYSQL_HOST,
           password: process.env.PMM_QA_AURORA3_MYSQL_PASSWORD,
           instance_id: 'pmm-qa-aurora3-mysql-instance-1',
-          cluster_name: 'aws_aurora3',
+          cluster_name: 'mysqlaws_aurora3',
+        },
+        postgres15aurora: {
+          address: process.env.PMM_QA_RDS_AURORA_PGSQL15_HOST,
+          username: process.env.PMM_QA_RDS_AURORA_PGSQL15_USER,
+          password: process.env.PMM_QA_RDS_AURORA_PGSQL15_PASSWORD,
+          instance_id: 'pmm-qa-rds-aurora-15-instance-1',
+          cluster_name: 'postgres15aws_aurora',
+        },
+        postgres16aurora: {
+          address: process.env.PMM_QA_RDS_AURORA_PGSQL16_HOST,
+          username: process.env.PMM_QA_RDS_AURORA_PGSQL16_USER,
+          password: process.env.PMM_QA_RDS_AURORA_PGSQL16_PASSWORD,
+          instance_id: 'pmm-qa-aurora-postgres-16-4-instance-1',
+          cluster_name: 'postgres16aws_aurora',
         },
       },
     },
@@ -498,7 +546,7 @@ module.exports = {
   },
 
   // Used by Upgrade Job to test QAN filters
-  qanFilters: ['mysql', 'mongodb', 'postgresql', 'rds', 'rdsaurora'],
+  qanFilters: ['mysql', 'mongodb', 'postgresql', 'rds', 'aurora_rds'],
 
   getInstanceStatus(instance) {
     return remoteInstanceStatus[Object.keys(remoteInstanceStatus).filter((dbtype) => dbtype === instance)];

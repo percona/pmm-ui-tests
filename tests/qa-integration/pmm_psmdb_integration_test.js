@@ -171,7 +171,7 @@ Scenario.skip(
 Scenario(
   'PMM-T1775 + PMM-T1888 - Verify Wrong Replication Lag by Set values if RS is PSA -( MongoDB Cluster Summary) @pmm-psmdb-arbiter-integration @not-ui-pipeline',
   async ({
-    I, dashboardPage,
+    I, dashboardPage, adminPage,
   }) => {
     const username = 'pmm';
     const password = 'pmmpass';
@@ -192,13 +192,18 @@ Scenario(
 
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.expandDashboardRow('Replication');
+    I.click(dashboardPage.fields.reportTitle);
+    await adminPage.performPageDown(5);
+    await dashboardPage.expandEachDashboardRow();
     const testConfigFile = 'c = rs.conf(); c.members[1].secondaryDelaySecs = 10; c.members[1].priority = 0; c.members[1].hidden = true; rs.reconfig(c);';
 
     await I.verifyCommand(`sudo docker exec rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" --eval "${testConfigFile}"`);
 
     // Gather Secondary member Service Name from Mongo
     const secondaryServiceName = (await I.verifyCommand(`docker exec ${arbiter_primary_container_name} mongo --eval rs\.printSecondaryReplicationInfo\\(\\) --username=${username} --password=${password} | awk -F ":" '/source/ {print $2}'`)).trim();
+
+    I.waitForElement(await dashboardPage.graphsLocator('Replication Lag'), 20);
+    I.scrollTo(await dashboardPage.graphsLocator('Replication Lag'));
 
     await dashboardPage.verifyColumnLegendMaxValueAbove('Replication Lag', secondaryServiceName, 1, 240);
 
@@ -208,7 +213,7 @@ Scenario(
   },
 ).retry(1);
 
-Scenario('PMM-T1889 - Verify Mongo replication lag graph shows correct info @pmm-psmdb-replica-integration', async ({ I, dashboardPage }) => {
+Scenario('PMM-T1889 - Verify Mongo replication lag graph shows correct info @pmm-psmdb-replica-integration', async ({ I, dashboardPage, adminPage }) => {
   const lagValue = 10;
   const testConfigFile = `c = rs.conf(); c.members[2].secondaryDelaySecs = ${lagValue}; c.members[2].priority = 0; c.members[2].hidden = true; rs.reconfig(c);`;
   const serviceName = 'rs103';
@@ -217,8 +222,12 @@ Scenario('PMM-T1889 - Verify Mongo replication lag graph shows correct info @pmm
   await I.verifyCommand(`sudo docker exec rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" --eval "${testConfigFile}"`);
   I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
   dashboardPage.waitForDashboardOpened();
-  await dashboardPage.expandDashboardRow('Replication');
+  I.click(dashboardPage.fields.reportTitle);
+  await adminPage.performPageDown(5);
 
+  await dashboardPage.expandEachDashboardRow();
+  I.waitForElement(await dashboardPage.graphsLocator(graphName), 20);
+  I.scrollTo(await dashboardPage.graphsLocator(graphName));
   await dashboardPage.verifyColumnLegendMaxValueAbove(graphName, serviceName, 1, 240);
 
   const maxValue = await I.grabTextFrom(dashboardPage.getColumnLegendMaxValue(graphName, serviceName));

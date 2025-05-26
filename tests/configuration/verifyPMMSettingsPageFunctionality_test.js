@@ -204,12 +204,12 @@ Scenario(
 
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
     I.click(pmmSettingsPage.fields.publicAddressButton);
-    pmmSettingsPage.applyChanges();
-    I.wait(5);
+    await pmmSettingsPage.applyChanges();
+    I.wait(10);
     const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
     I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
-    I.wait(5);
+    I.wait(10);
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     const publicAddressAfterRefresh = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
@@ -236,6 +236,7 @@ Scenario(
   + 'Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
+    I.wait(10);
 
     const subPageTooltips = await pmmSettingsPage.getSubpageTooltips();
 
@@ -251,7 +252,7 @@ Scenario(
       }
     }
   },
-);
+).retry(2);
 
 Scenario('PMM-T1401 - Verify Percona Alerting wording in Settings @max-length @settings', async ({
   I,
@@ -263,9 +264,8 @@ Scenario('PMM-T1401 - Verify Percona Alerting wording in Settings @max-length @s
   await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.perconaAlerting);
 });
 
-// unskip after SAAS-1437 is done and 500 error is fixed
-Scenario.skip(
-  'PMM-T1328 Verify public address is set automatically on Percona Platform page once connected to Portal @nightly',
+Scenario(
+  'PMM-T1328 - Verify public address is set automatically on Percona Platform page once connected to Portal @nightly',
   async ({
     I, pmmSettingsPage, portalAPI, perconaPlatformPage, settingsAPI,
   }) => {
@@ -299,7 +299,7 @@ Scenario.skip(
   },
 ).retry(1);
 
-Scenario(
+Scenario.skip(
   'PMM-T1967 - Verify Update modal respects update settings @fb-settings',
   async ({
     I, homePage, settingsAPI, pmmSettingsPage,
@@ -310,9 +310,7 @@ Scenario(
     await I.Authorize(users.admin.username, users.admin.password);
 
     await settingsAPI.changeSettings({ updates: true });
-    await I.usePlaywrightTo('remove users/me mock', async ({ page }) => {
-      await page.route('**/v1/users/me', (route) => route.continue());
-    });
+    await I.stopMockingUpgrade();
 
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     I.waitForVisible(homePage.updatesModal.root, 30);

@@ -1,5 +1,8 @@
 const assert = require('assert');
-const { SERVICE_TYPE, NODE_TYPE } = require('../helper/constants');
+const {
+  SERVICE_TYPE, NODE_TYPE,
+  AGENT_STATUS,
+} = require('../helper/constants');
 
 const {
   remoteInstancesPage, pmmInventoryPage, remoteInstancesHelper,
@@ -50,16 +53,16 @@ if (remoteInstancesHelper.getInstanceStatus('azure').azure_postgresql.enabled) {
 const aws_instances = new DataTable(['service_name', 'password', 'instance_id', 'cluster_name']);
 
 aws_instances.add([
-  remoteInstancesHelper.remote_instance.aws.aurora.aurora2.address,
-  remoteInstancesHelper.remote_instance.aws.aurora.aurora2.password,
-  remoteInstancesHelper.remote_instance.aws.aurora.aurora2.instance_id,
-  remoteInstancesHelper.remote_instance.aws.aurora.aurora2.cluster_name,
+  remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora2.address,
+  remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora2.password,
+  remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora2.instance_id,
+  remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora2.cluster_name,
 ]);
 aws_instances.add([
-  remoteInstancesHelper.remote_instance.aws.aurora.aurora3.address,
-  remoteInstancesHelper.remote_instance.aws.aurora.aurora3.password,
-  remoteInstancesHelper.remote_instance.aws.aurora.aurora3.instance_id,
-  remoteInstancesHelper.remote_instance.aws.aurora.aurora3.cluster_name,
+  remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.address,
+  remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.password,
+  remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.instance_id,
+  remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.cluster_name,
 ]);
 
 Feature('Inventory page');
@@ -243,16 +246,39 @@ Scenario(
     await I.waitForVisible(pmmInventoryPage.fields.showRowDetails, 10);
     await pmmInventoryPage.servicesTab.pagination.selectRowsPerPage(50);
 
-    const services = Object.values((await inventoryAPI.apiGetServices()).data).flat(Infinity)
-      .map((o) => (o.service_name));
+    const allAgents = [];
 
-    for (const sn of services) {
-      await I.waitForVisible(pmmInventoryPage.fields.showServiceDetails(sn), 10);
-      await I.click(pmmInventoryPage.fields.showServiceDetails(sn));
-      await I.waitForText('running', 10, pmmInventoryPage.fields.agentStatus);
-      await I.waitForVisible(pmmInventoryPage.fields.hideServiceDetails(sn), 10);
-      await I.click(pmmInventoryPage.fields.hideServiceDetails(sn));
+    Object.values((await inventoryAPI.apiGetServices()).data).flat(Infinity).forEach((o) => {
+      allAgents.push(...o.agents);
+    });
+
+    const pmmAgents = allAgents.filter((o) => o.agent_type === 'pmm-agent');
+    const otherAgents = allAgents.filter((o) => o.agent_type !== 'pmm-agent' && o.agent_type !== 'external-exporter');
+
+    const pmmAgentsNotConnected = pmmAgents.filter((o) => o.is_connected !== true);
+    const agentsNotRunning = otherAgents.filter((o) => o.status !== AGENT_STATUS.RUNNING);
+
+    const errors = [];
+
+    try {
+      assert.ok(!pmmAgentsNotConnected.length, 'Not all agents are connected');
+    } catch (e) {
+      errors.push({
+        message: 'Not all agents are connected',
+        agents: pmmAgentsNotConnected,
+      });
     }
+
+    try {
+      assert.ok(!agentsNotRunning.length, 'Not all agents are running');
+    } catch (e) {
+      errors.push({
+        message: 'Not all agents are running',
+        agents: agentsNotRunning,
+      });
+    }
+
+    assert.ok(errors.length === 0, `Errors found: \n${JSON.stringify(errors, null, 2)}`);
   },
 );
 
@@ -564,3 +590,49 @@ Data(aws_instances).Scenario(
     assert.ok(count > 0, `The queries for service ${instance_id} instance do NOT exist, check QAN Data`);
   },
 ).retry(1);
+
+Scenario('PMM-T2024 - Verify services list does not refresh to first page @inventory-fb @nightly', async ({ I, pmmInventoryPage }) => {
+  I.usePlaywrightTo('Mock Services List', async ({ page }) => {
+    const mockedServices = { services: [] };
+
+    for (let i = 1; i <= 50; i++) {
+      mockedServices.services.push({
+        address: `127.0.0.${i}`,
+        agents: [],
+        cluster: '',
+        custom_labels: {},
+        database_name: 'postgres',
+        environment: '',
+        external_group: '',
+        node_id: 'pmm-server',
+        node_name: `mocked-service-node-${i}`,
+        port: 5432,
+        replication_set: '',
+        service_id: `30edfcf1-bea1-4422-b111-d2d263bdcfc${i}`,
+        service_name: `mocked-service-${i}`,
+        service_type: 'postgresql',
+        socket: '',
+        status: 'STATUS_UP',
+        version: '',
+      });
+    }
+
+    await page.route('**/v1/management/services', (route) => route.fulfill({
+      status: 200,
+      body: JSON.stringify(mockedServices),
+    }));
+  });
+
+  pmmInventoryPage.open();
+  I.click(pmmInventoryPage.pagination.elements.pageNumberButton('2'));
+  const startServices = await I.grabTextFromAll(pmmInventoryPage.fields.serviceNames);
+
+  I.wait(15);
+  const numberOfRows = await I.grabNumberOfVisibleElements(pmmInventoryPage.fields.tableRow);
+
+  I.assertTrue(
+    await pmmInventoryPage.verifyDisplayedServices(startServices),
+    `List of displayed services after wait does not equal list of displayed services before wait: [${startServices}]`,
+  );
+  I.assertTrue(numberOfRows < 50, `Expected number of rows to be less than 25, actual number of rows is: ${numberOfRows}`);
+});

@@ -29,7 +29,6 @@ function getVersions() {
 }
 
 const { versionMinor, patchVersionDiff, majorVersionDiff } = getVersions();
-const iaReleased = versionMinor >= 13;
 
 Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(1);
 
@@ -47,7 +46,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T289 Verify Whats New link is presented on Update Widget @ovf-upgrade @ami-upgrade @pre-upgrade @pmm-upgrade',
+  'PMM-T289 - Verify Whats New link is presented on Update Widget @ovf-upgrade @ami-upgrade @pre-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
     const locators = homePage.getLocators(versionMinor);
 
@@ -65,23 +64,26 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T288 Verify user can see Update widget before upgrade [critical] @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  'PMM-T288 - Verify user can see Update widget before upgrade [critical] @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
+    await I.stopMockingUpgrade();
     I.amOnPage(homePage.url);
     await homePage.verifyPreUpdateWidgetIsPresent(versionMinor);
   },
 );
 
 Scenario(
-  'PMM-T3 Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ovf-upgrade @ami-upgrade  ',
+  'PMM-T3 - Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ovf-upgrade @ami-upgrade  ',
   async ({ I, homePage }) => {
-    await I.stopMockingProductTourApi();
+    await I.stopMockingUpgrade();
     I.amOnPage(homePage.url);
+
+    await I.clickIfVisible(homePage.updatesModal.closeIcon);
     await homePage.upgradePMM(versionMinor);
   },
 ).retry(0);
 
-Scenario('@PMM-T1647 Verify pmm-server package doesn\'t exist @post-upgrade @pmm-upgrade', async ({ I }) => {
+Scenario('PMM-T1647 - Verify pmm-server package doesn\'t exist @post-upgrade @pmm-upgrade', async ({ I }) => {
   await I.amOnPage('');
   const packages = await I.verifyCommand('docker exec pmm-server rpm -qa');
 

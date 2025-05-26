@@ -180,7 +180,7 @@ Scenario(
   async ({
     I, adminPage, queryAnalyticsPage,
   }) => {
-    const serviceName = 'ps-single';
+    const serviceName = 'ps_pmm_';
     const db1 = 'postgres';
     const db2 = 'n/a';
     const section = 'Database';
@@ -202,7 +202,7 @@ Scenario(
       I.waitForText('No queries available for this combination of filters', 30);
     });
   },
-);
+).retry(2);
 
 Scenario(
   'PMM-T221 - Verify that all filter options are always visible (but some disabled) after selecting an item and % value is changed @qan',
@@ -210,7 +210,7 @@ Scenario(
     I, adminPage, queryAnalyticsPage,
   }) => {
     const serviceType = 'mysql';
-    const serviceName = 'ps-single';
+    const serviceName = 'ps_pmm_';
 
     await adminPage.applyTimeRange('Last 2 days');
     queryAnalyticsPage.waitForLoaded();

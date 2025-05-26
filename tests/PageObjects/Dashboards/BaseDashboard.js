@@ -1,8 +1,8 @@
 const { I } = inject();
 
 module.exports = {
-  serviceName: '//label[@for="var-service_name"]//following-sibling::*',
-  serviceNameDropdownSelect: async (databaseName) => `//*[@id="options-service_name"]//span[contains(@data-testid, "${databaseName}")]`,
+  serviceName: '//label[@data-testid="data-testid Dashboard template variables submenu Label Service Name"]//following-sibling::*',
+  serviceNameDropdownSelect: async (databaseName) => `//div[contains(@data-testid, "data-testid Dashboard template variables Variable Value DropDown option text ${databaseName}")]`,
 
   async getServiceName() {
     await I.waitForVisible(this.serviceName, 30);

@@ -11,7 +11,6 @@
     "e2e": "npx codeceptjs run-multiple parallel --debug --steps --reporter mocha-multi -c pr.codecept.js --grep '(?=.*)^(?!.*@not-ui-pipeline)^(?!.*@not-pr-pipeline)'",
     "e2e:ia": "npx codeceptjs run -c pr.codecept.js --grep '@fb-alerting'",
     "e2e:stt": "npx codeceptjs run -c pr.codecept.js --grep '@stt'",
-    "e2e:dbaas": "npx codeceptjs run -c pr.codecept.js --grep '@dbaas'",
     "e2e:grafana-pr": "npx codeceptjs run -c pr.codecept.js --grep '@grafana-pr'",
     "e2e:def": "npx codeceptjs def"
   },

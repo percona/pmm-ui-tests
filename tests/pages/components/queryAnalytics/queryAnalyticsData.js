@@ -8,6 +8,7 @@ class QueryAnalyticsData {
     this.elements = {
       queryRow: (rowNumber) => locate(`//div[@role="row" and contains(@class, "tr-${rowNumber}")]`),
       queryRows: locate('//div[@role="row" and contains(@class, "tr-")]'),
+      queryRowQueryText: (rowNumber) => locate(`//div[@role="row" and contains(@class, "tr-${rowNumber}")]//div[@role="cell" and position() = 2]`),
       queryRowCells: (rowNumber) => locate(`[class="tr tr-${rowNumber}"]`).find('[role="cell"]'),
       queryRowValue: (rowNumber) => this.elements.queryRowCells(rowNumber).at(2),
       queryRowIcon: (rowNumber) => this.elements.queryRowCells(rowNumber).at(2).find('//*[local-name()="path"]'),
@@ -78,6 +79,12 @@ class QueryAnalyticsData {
     I.waitForVisible(this.elements.selectedRow, 10);
   }
 
+  async getQueryRowQueryText(rowNumber, timeout = 60) {
+    I.waitForElement(this.elements.queryRowQueryText(rowNumber), timeout);
+
+    return await I.grabTextFrom(this.elements.queryRowQueryText(rowNumber));
+  }
+
   async verifyRowCount(expectedRowCount) {
     I.waitForVisible(this.elements.queryRows, 30);
     const count = await I.grabNumberOfVisibleElements(this.elements.queryRows);
@@ -111,6 +118,7 @@ class QueryAnalyticsData {
   }
 
   searchByValue(value, refresh = false) {
+    I.waitForVisible(this.elements.queryRow(0), 30);
     I.waitForVisible(this.fields.searchBy, 30);
     I.clearField(this.fields.searchBy);
     I.fillField(this.fields.searchBy, value);

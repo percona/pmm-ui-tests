@@ -16,7 +16,7 @@ BeforeSuite(async ({ I }) => {
 });
 
 Before(async ({ I }) => {
-  await I.Authorize('admin', 'admin');
+  await I.Authorize('admin', 'admin', `http://127.0.0.1:${pmmServerPort}/`);
 });
 
 AfterSuite(async ({ I }) => {

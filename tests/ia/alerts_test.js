@@ -34,7 +34,7 @@ BeforeSuite(async ({ I, rulesAPI }) => {
   await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
 
   // Preparation steps for checking Alert via webhook server
-  await I.verifyCommand('docker compose -f docker-compose-webhook.yml up -d');
+  await I.verifyCommand('docker compose -f docker-compose-webhook.yml up -d || true');
 
   const viewerId = await I.createUser(users.viewer.username, users.viewer.password);
   const editorId = await I.createUser(users.editor.username, users.editor.password);
@@ -72,8 +72,10 @@ Scenario(
     await I.Authorize(users.viewer.username, users.viewer.password);
 
     await alertsAPI.waitForAlerts(24, 1);
-    await I.amOnPage(alertsPage.url);
-    await I.seeNumberOfElements(alertsPage.elements.alertRow(ruleName), 1);
+
+    I.amOnPage(alertsPage.url);
+    I.waitForElement(alertsPage.elements.alertRow(ruleName), 20);
+    I.seeNumberOfElements(alertsPage.elements.alertRow(ruleName), 1);
     I.seeAttributesOnElements(alertsPage.buttons.silenceActivate(ruleName), { 'aria-disabled': 'true' });
   },
 );

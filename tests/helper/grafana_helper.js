@@ -28,13 +28,30 @@ class Grafana extends Helper {
     await page.click(this.ssoLoginSubmit);
   }
 
-  async Authorize(username = 'admin', password = process.env.ADMIN_PASSWORD) {
+  async Authorize(username = 'admin', password = process.env.ADMIN_PASSWORD, baseUrl = '') {
     const { Playwright, REST } = this.helpers;
     const basicAuthEncoded = await this.getAuth(username, password);
 
     Playwright.setPlaywrightRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
-    const resp = await REST.sendPostRequest('graph/login', { user: username, password });
+    let resp;
+
+    try {
+      resp = await REST.sendPostRequest(`${baseUrl}graph/login`, { user: username, password });
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Login API call was not successful.');
+
+      return;
+    }
+
     const cookies = resp.headers['set-cookie'];
+
+    if (!cookies) {
+      // eslint-disable-next-line no-console
+      console.warn('Authentication was not successful, verify base url and credentials.');
+
+      return;
+    }
 
     cookies.forEach((cookie) => {
       const parsedCookie = {
@@ -72,6 +89,12 @@ class Grafana extends Helper {
     const { Playwright } = this.helpers;
 
     await Playwright.page.unroute('**/v1/users/me');
+  }
+
+  async stopMockingUpgrade() {
+    const { Playwright } = this.helpers;
+
+    await Playwright.page.unroute('**/v1/server/updates?force=**');
   }
 
   async unAuthorize() {
@@ -185,7 +208,13 @@ class Grafana extends Helper {
       password,
     };
     const headers = { Authorization: `Basic ${await this.getAuth()}` };
-    const resp = await apiContext.sendPostRequest('graph/api/admin/users', body, headers);
+    let resp;
+
+    try {
+      resp = await apiContext.sendPostRequest('graph/api/admin/users', body, headers);
+    } catch (e) {
+      throw Error(`Api call to create user failed with errors: ${e.errors}`);
+    }
 
     return resp.data.id;
   }
@@ -239,6 +268,24 @@ class Grafana extends Helper {
     if (returnErrorPipe) return stderr.trim();
 
     return stdout.trim();
+  }
+
+  async clickIfVisible(element, timeout = 30) {
+    const { Playwright } = this.helpers;
+
+    for (let i = 0; i < timeout; i++) {
+      const numVisible = await Playwright.grabNumberOfVisibleElements(element);
+
+      if (numVisible) {
+        await Playwright.click(element);
+
+        return element;
+      }
+
+      await Playwright.wait(1);
+    }
+
+    return element;
   }
 }
 

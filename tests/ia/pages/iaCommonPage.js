@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { locateOption } = require('../../helper/locatorHelper');
 
 const {
   I, alertRulesPage, ruleTemplatesPage, rulesAPI, templatesAPI, alertsPage, alertsAPI,
@@ -25,7 +26,7 @@ module.exports = {
     table: '$table-tbody',
     disabledIa: '$empty-block',
     settingsLink: '$settings-link',
-    selectDropdownOption: (option) => `$${option}-select-option`,
+    selectDropdownOption: (option) => locateOption(option),
     inputField: (id) => `input[id='${id}']`,
     modalDialog: 'div[role=\'dialog\']',
   },
@@ -37,7 +38,7 @@ module.exports = {
     nextPageButton: '$next-page-button',
     lastPageButton: '$last-page-button',
     rowsPerPage: locate('$pagination').find('div[class*="-singleValue"]'),
-    rowsPerPageOption: (count) => locate('[aria-label="Select option"] span').withText(count.toString()),
+    rowsPerPageOption: (count) => locateOption(count.toString()),
   },
   messages: {
     itemsShown: (leftNumber, rightNumber, totalItems) => `Showing ${leftNumber}-${rightNumber} of ${totalItems} items`,

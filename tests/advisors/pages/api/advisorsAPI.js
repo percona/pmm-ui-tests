@@ -8,6 +8,19 @@ module.exports = {
     mysqlEmptyPassword: 'mysql_security_1',
   },
 
+  async getAdvisorsNames() {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    const resp = await I.sendGetRequest('v1/advisors/checks', headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to get Advisors. Response message is "${resp.data.message}"`,
+    );
+
+    return resp.data.checks.map((check) => check.name);
+  },
+
   async getSecurityChecksResults() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 

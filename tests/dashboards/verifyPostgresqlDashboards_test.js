@@ -1,4 +1,4 @@
-const { SERVICE_TYPE } = require("../helper/constants");
+const { SERVICE_TYPE } = require('../helper/constants');
 
 const {
   inventoryAPI,
@@ -66,8 +66,6 @@ Scenario(
       dashboardPage.postgresqlInstanceCompareDashboard.cleanUrl,
       {
         from: 'now-5m',
-        service_name: 'All',
-        refresh: '1h',
       },
     );
 

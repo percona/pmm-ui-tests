@@ -122,13 +122,14 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
       // eslint-disable-next-line no-multi-str
       'docker exec pmm-server clickhouse-client \
         --database pmm \
+        --password clickhouse \
         --query "select any(example),sum(num_queries) cnt, \
         max(m_query_time_max) slowest from metrics where period_start>subtractHours(now(),6) \
         group by queryid order by slowest desc limit 10"',
     )).assertSuccess();
 
     const output = await cli.exec(
-      'docker exec pmm-server clickhouse-client --query \'SELECT * FROM system.databases\' | grep pmm | tr -s \'[:blank:]\' \'\\n\'',
+      'docker exec pmm-server clickhouse-client --password clickhouse --query \'SELECT * FROM system.databases\' | grep pmm | tr -s \'[:blank:]\' \'\\n\'',
     );
     await output.assertSuccess();
 

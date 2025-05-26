@@ -24,10 +24,6 @@ module.exports = {
     contactPointsPage: './tests/ia/pages/contactPointsPage.js',
     dashboardPage: './tests/pages/dashboardPage.js',
     databaseChecksPage: './tests/advisors/pages/databaseChecksPage.js',
-    dbaasAPI: './tests/DbaaS/api/dbaasAPI.js',
-    dbaasPage: './tests/DbaaS/pages/dbaasPage.js',
-    dbaasActionsPage: './tests/DbaaS/pages/dbaasActionsPage.js',
-    dbaasManageVersionPage: './tests/DbaaS/pages/dbaasManageVersionPage.js',
     dbClusterSummaryDashboardPage: './tests/PageObjects/Dashboards/Experimental/dbClusterSummaryDashboard.js',
     dumpAPI: './tests/pages/api/dumpAPI.js',
     dumpPage: './tests/pages/dumpPage.js',
@@ -85,16 +81,14 @@ module.exports = {
   },
   getChunks: (files) => {
     const dependentTests = files.filter((value) => /PMMSettings|ia|stt|backup|permissions|Azure/.test(value));
-    const dbaasTests = files.filter((value) => /DbaaS|TLSMongo/.test(value));
     const portalTests = files.filter((value) => /portal/.test(value));
     const otherTests = files.filter((val) => !dependentTests.includes(val)
-      && !dbaasTests.includes(val) && !portalTests.includes(val));
+      && !portalTests.includes(val));
 
     return [
       dependentTests,
       portalTests,
       otherTests,
-      dbaasTests,
     ];
   },
 };

@@ -257,3 +257,27 @@ Scenario(
     I.waitForText('Insufficient access permissions.', 10, ruleTemplatesPage.elements.unathorizedMessage);
   },
 );
+
+Scenario(
+  'PMM-T2009 - Verify that editor user can see failed advisors data on home dashboard @nightly',
+  async ({ I, dashboardPage, advisorsAPI }) => {
+    const advisors = await advisorsAPI.getAdvisorsNames();
+
+    await advisorsAPI.startSecurityChecks(advisors);
+    await I.Authorize(users.editor.username, users.editor.password);
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.homeDashboard.url, { refresh: '5s' }));
+    I.waitForVisible(dashboardPage.homeDashboard.panelData.failedAdvisors.criticalFailedAdvisors, 480);
+
+    const criticalAdvisors = await I.grabTextFrom(dashboardPage.homeDashboard.panelData.failedAdvisors.criticalFailedAdvisors);
+    const errorAdvisors = await I.grabTextFrom(dashboardPage.homeDashboard.panelData.failedAdvisors.errorFailedAdvisors);
+    const warningAdvisors = await I.grabTextFrom(dashboardPage.homeDashboard.panelData.failedAdvisors.warningFailedAdvisors);
+    const noticeAdvisors = await I.grabTextFrom(dashboardPage.homeDashboard.panelData.failedAdvisors.noticeFailedAdvisors);
+
+    I.assertTrue(!Number.isNaN(criticalAdvisors), `Expect critical advisors value to be a number, but value was ${criticalAdvisors}`);
+    I.assertTrue(!Number.isNaN(errorAdvisors), `Expect error advisors value to be a number, but value was ${errorAdvisors}`);
+    I.assertTrue(!Number.isNaN(warningAdvisors), `Expect warning advisors value to be a number, but value was ${warningAdvisors}`);
+    I.assertTrue(!Number.isNaN(noticeAdvisors), `Expect notice advisors value to be a number, but value was ${noticeAdvisors}`);
+
+    await I.dontSee(dashboardPage.homeDashboard.panelData.failedAdvisors.insufficientPrivilege);
+  },
+);
