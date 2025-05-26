@@ -3,11 +3,11 @@ const { SERVICE_TYPE } = require('./helper/constants');
 
 const annotation = new DataTable(['annotationName', 'service', 'dashboard', 'service_type']);
 
-annotation.add(['annotation-for-postgres-server', 'pmm-server', dashboardPage.postgresqlInstanceSummaryDashboard.url, SERVICE_TYPE.POSTGRESQL]);
-annotation.add(['annotation-for-mongo', 'rs101', dashboardPage.mongoDbInstanceSummaryDashboard.url, SERVICE_TYPE.MONGODB]);
-annotation.add(['annotation-for-postgres', 'pgsql', dashboardPage.postgresqlInstanceSummaryDashboard.url, SERVICE_TYPE.POSTGRESQL]);
-annotation.add(['annotation-for-mysql', 'ps_', dashboardPage.mysqlInstanceSummaryDashboard.url, SERVICE_TYPE.MYSQL]);
-annotation.add(['mysql-node-name', 'ps_', dashboardPage.nodesCompareDashboard.url, SERVICE_TYPE.MYSQL]);
+annotation.add(['annotation-for-postgres-server', 'pmm-server', dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, SERVICE_TYPE.POSTGRESQL]);
+annotation.add(['annotation-for-mongo', 'rs101', dashboardPage.mongoDbInstanceSummaryDashboard.clearUrl, SERVICE_TYPE.MONGODB]);
+annotation.add(['annotation-for-postgres', 'pgsql', dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, SERVICE_TYPE.POSTGRESQL]);
+annotation.add(['annotation-for-mysql', 'ps_', dashboardPage.mysqlInstanceSummaryDashboard.clearUrl, SERVICE_TYPE.MYSQL]);
+annotation.add(['mysql-node-name', 'ps_', dashboardPage.nodesCompareDashboard.cleanUrl, SERVICE_TYPE.MYSQL]);
 
 Feature('Test annotation on dashboards');
 
@@ -40,10 +40,18 @@ Data(annotation).Scenario(
     I.amOnPage(current.dashboard);
     dashboardPage.waitForDashboardOpened();
     if (annotationName === 'mysql-node-name') {
-      await dashboardPage.applyFilter('Node Name', nodeName);
+      I.amOnPage(I.buildUrlWithParams(current.dashboard, {
+        node_name: nodeName,
+        from: 'now-5m',
+      }));
+      dashboardPage.waitForDashboardOpened();
       dashboardPage.verifyAnnotationsLoaded(annotationName, 2);
     } else {
-      await dashboardPage.applyFilter('Service Name', serviceName);
+      I.amOnPage(I.buildUrlWithParams(current.dashboard, {
+        service_name: serviceName,
+        from: 'now-5m',
+      }));
+      dashboardPage.waitForDashboardOpened();
       dashboardPage.verifyAnnotationsLoaded(annotationName, 1);
     }
   },
