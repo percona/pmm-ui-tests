@@ -72,7 +72,10 @@ Data(databaseEnvironments).Scenario(
 
       if (current.dbType === 'PDPGSQL') {
         await queryAnalyticsPage.queryDetails.verifyTables(parameters);
-        // await queryAnalyticsPage.queryDetails.verifyPlan(parameters);
+
+        if (current.queryTypes.includes('SELECT')) {
+          await queryAnalyticsPage.queryDetails.verifyPlan(parameters);
+        }
       }
     }
   },
