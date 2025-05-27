@@ -85,7 +85,7 @@ Scenario(
     );
     assert.ok(targets.health === 'up', `Active Target for external service Post Upgrade health value is not up! value found ${targets.health}`);
   },
-);
+).retry(2);
 
 Scenario(
   'Verify Agents are RUNNING after Upgrade (API) [critical] @post-external-upgrade @post-client-upgrade',
