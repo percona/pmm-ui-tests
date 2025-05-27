@@ -516,7 +516,7 @@ module.exports = {
         response = await this.getMetric(metricName, refineBy, lastMinutes);
 
         return response.data.results.A.frames[0].data.values.length !== 0;
-      }, 60);
+      }, 180);
     } catch (e) {
       /* empty */
     }
