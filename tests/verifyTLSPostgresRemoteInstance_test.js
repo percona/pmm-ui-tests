@@ -5,7 +5,7 @@ const noSslCheckServiceName = 'pg_no_ssl_check';
 
 Feature('Monitoring SSL/TLS PGSQL instances');
 
-Before(async ({ I, settingsAPI }) => {
+Before(async ({ I }) => {
   await I.Authorize();
 });
 
@@ -147,16 +147,20 @@ Data(instances).Scenario(
     I, dashboardPage, adminPage, current,
   }) => {
     const {
-      serviceName,
+      serviceName, container,
     } = current;
 
-    const serviceList = [serviceName, `remote_${serviceName}`, noSslCheckServiceName];
+    const localServiceName = await I.verifyCommand(`docker exec ${container} pmm-admin list | grep "PostgreSQL" | grep "ssl_service" | awk -F " " '{print $2}'`);
+
+    const serviceList = [localServiceName, `remote_${serviceName}`, noSslCheckServiceName];
 
     for (const service of serviceList) {
-      I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
+      I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceOverviewDashboard.cleanUrl, {
+        service_name: service,
+        from: 'now-5m',
+        refresh: '10s',
+      }));
       dashboardPage.waitForDashboardOpened();
-      await adminPage.applyTimeRange('Last 5 minutes');
-      await dashboardPage.applyFilter('Service Name', service);
       adminPage.performPageDown(5);
       await dashboardPage.expandEachDashboardRow();
       adminPage.performPageUp(5);

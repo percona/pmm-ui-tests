@@ -13,12 +13,10 @@ Before(async ({ I }) => {
 Scenario(
   'Open the Node Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    const url = I.buildUrlWithParams(
-      dashboardPage.nodeSummaryDashboard.url,
-      { node_name: 'pmm-server' },
-    );
-
-    I.amOnPage(url);
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.nodeSummaryDashboard.url, {
+      node_name: 'pmm-server',
+      from: 'now-5m',
+    }));
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.nodeSummaryDashboard.metrics);

@@ -161,7 +161,7 @@ module.exports = () => actor({
    * @param     timeOutInSeconds  time to wait for a service to appear
    * @returns   {Promise<void>}   requires await when called
    */
-  async asyncWaitFor(boolCallable, timeOutInSeconds) {
+  async asyncWaitFor(boolCallable, timeOutInSeconds, message = '') {
     const start = new Date().getTime();
     const timeout = timeOutInSeconds * 1000;
     const interval = 1;
@@ -176,7 +176,7 @@ module.exports = () => actor({
       // Check the timeout after evaluating main condition
       // to ensure conditions with a zero timeout can succeed.
       if (new Date().getTime() - start >= timeout) {
-        assert.fail(`"${boolCallable.name}" is false: 
+        assert.fail(`${message} \n "${boolCallable.name}" is false: 
         tried to check for ${timeOutInSeconds} second(s) with ${interval} second(s) with interval`);
       }
 

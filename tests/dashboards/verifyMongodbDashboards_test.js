@@ -56,12 +56,17 @@ Scenario(
 Scenario(
   'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @mongodb-exporter @nightly',
   async ({
-    I, dashboardPage, inventoryAPI,
+    I, dashboardPage, inventoryAPI, adminPage,
   }) => {
     const mongoService = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, 'rs101');
 
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionsOverview.clearUrl, { from: 'now-5m', service_name: mongoService.service_name }));
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionsOverview.clearUrl, {
+      from: 'now-5m',
+      service_name: mongoService.service_name,
+      refresh: '10s',
+    }));
     dashboardPage.waitForDashboardOpened();
+    await adminPage.performPageDown(5);
     await dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbCollectionsOverview.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
   },

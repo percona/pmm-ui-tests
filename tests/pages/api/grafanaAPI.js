@@ -511,15 +511,11 @@ module.exports = {
   async checkMetricExist(metricName, refineBy, lastMinutes = 5) {
     let response;
 
-    try {
       await I.asyncWaitFor(async () => {
         response = await this.getMetric(metricName, refineBy, lastMinutes);
 
-        return response.data.results.A.frames[0].data.values.length !== 0;
-      }, 180);
-    } catch (e) {
-      /* empty */
-    }
+      return response.data.results.A.frames[0].data.values.length !== 0;
+    }, 60, `failed to wait for metric "${metricName}" for ${JSON.stringify(refineBy)}`);
 
     const result = JSON.stringify(response.data.results);
 

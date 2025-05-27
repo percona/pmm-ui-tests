@@ -491,6 +491,7 @@ module.exports = {
   },
   mongoDbInstanceSummaryDashboard: {
     url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
+    clearUrl: 'graph/d/mongodb-instance-summary/mongodb-instance-summary',
   },
   mysqlInstanceSummaryDashboard: {
     url: 'graph/d/mysql-instance-summary/mysql-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
@@ -1464,7 +1465,9 @@ module.exports = {
     // This is due to some instances with many services take filter to load
     // I.wait(1);
     I.waitForElement(dropdownLocator, 30);
-    I.click(dropdownLocator);
+    I.forceClick(dropdownLocator);
+    // click one more time to expand the multiselect dropdown
+    I.forceClick(dropdownLocator);
 
     return '[aria-label="Variable options"]';
   },
