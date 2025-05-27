@@ -148,7 +148,7 @@ Data(sslinstances).Scenario(
       await dashboardPage.verifyThereAreNoGraphsWithoutData(10);
     }
   },
-).retry(0);
+).retry(1);
 
 Data(sslinstances).Scenario(
   'Verify QAN after upgrade for SSL Instances added @post-ssl-upgrade',

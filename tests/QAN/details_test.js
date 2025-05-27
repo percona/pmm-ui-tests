@@ -183,7 +183,6 @@ Scenario(
     const psVersion = parseFloat((await I.verifyCommand('docker ps -f name=ps --format "{{.Image }}"')).split(':')[1]);
     const testContainerName = await I.verifyCommand('docker ps -f name=ps --format "{{.Names }}"');
 
-    console.log(`Ps version is: ${psVersion}`);
     if (psVersion > 8.0) {
       await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 -u ${root.username} -p${root.password} --port 3306 -e "USE ${dbName}; CREATE TABLE t1 (c1 INT NOT NULL, c2 VARCHAR(100) NOT NULL, PRIMARY KEY (c1)); insert into t1 values(1,1),(2,2),(3,3),(4,5); explain select * from t1 where c1=1; explain select * from t1 where c2=1; explain select * from t1 where c2>1 and c2<=3;"`);
     } else {

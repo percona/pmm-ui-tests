@@ -71,8 +71,6 @@ Scenario(
     await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: serviceName });
     await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: 'pmm-ui-tests-redis-external-remote-2' });
 
-    I.wait(180);
-
     const response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
     const targets = response.data.data.activeTargets.find(
       (o) => o.labels.external_group === 'redis-remote',
