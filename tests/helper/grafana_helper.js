@@ -293,8 +293,8 @@ class Grafana extends Helper {
     const { Playwright } = this.helpers;
     const dropdownLocator = `//label[text()="${dropdownName}"]/parent::*//*[contains(@data-testid, "-input")]`;
 
-    await Playwright.page.locator(dropdownLocator).waitFor({ state: 'attached', timeout: 5000 });
-    await Playwright.page.locator(dropdownLocator).click();
+    await Playwright.page.locator(dropdownLocator).first().waitFor({ state: 'attached', timeout: 5000 });
+    await Playwright.page.locator(dropdownLocator).first().click();
     await Playwright.page.waitForTimeout(500);
 
     const optionLocator = Playwright.page.locator('div[role="option"]  span');
