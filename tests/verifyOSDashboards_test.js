@@ -93,7 +93,7 @@ Scenario(
     I.dontSeeElement(dashboardPage.graphsLocator(`${node2} - System Uptime`));
     I.seeElement(dashboardPage.graphsLocator(`${node1} - System Uptime`));
 
-    await dashboardPage.applyFilter('Node Name', node2);
+    await I.selectGrafanaDropdownOption('Node Name', node2);
     I.scrollTo(dashboardPage.fields.metricTitle);
     I.forceClick(dashboardPage.fields.metricTitle);
     I.wait(1);

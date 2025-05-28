@@ -291,7 +291,7 @@ class Grafana extends Helper {
 
   async selectGrafanaDropdownOption(dropdownName, optionText) {
     const { Playwright } = this.helpers;
-    const dropdownLocator = `//label[text()="${dropdownName}"]//ancestor::span//div[contains(@data-testid, "-input")]`;
+    const dropdownLocator = `//label[text()="${dropdownName}"]/parent::*//*[contains(@data-testid, "-input")]`;
 
     await Playwright.page.locator(dropdownLocator).waitFor({ state: 'attached', timeout: 5000 });
     await Playwright.page.locator(dropdownLocator).click();
@@ -304,6 +304,8 @@ class Grafana extends Helper {
         await optionLocator.nth(i).click();
       }
     }
+
+    await Playwright.page.keyboard.press('Escape');
   }
 
   async isElementDisplayed(locator, timeoutInSeconds = 60) {
