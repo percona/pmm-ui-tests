@@ -291,7 +291,7 @@ class Grafana extends Helper {
 
   async selectGrafanaDropdownOption(dropdownName, optionText) {
     const { Playwright } = this.helpers;
-    const dropdownLocator = `//label[text()="${dropdownName}"]/parent::*//*[contains(@data-testid, "-input")]`;
+    const dropdownLocator = `//label[text()="${dropdownName}"]/ancestor::*[(self::span) or (self::div and @data-testid="data-testid template variable")]//*[contains(@data-testid, "-input")]`;
 
     await Playwright.page.locator(dropdownLocator).first().waitFor({ state: 'attached', timeout: 5000 });
     await Playwright.page.locator(dropdownLocator).first().click();
