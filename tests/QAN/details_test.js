@@ -44,7 +44,7 @@ Scenario(
 
 const databaseEnvironments = [
   // { dbType: 'PS', serviceName: 'ps_', queryTypes: ['SELECT', 'INSERT', 'DELETE', 'CREATE'] },
-  { dbType: 'PDPGSQL', serviceName: 'pdpgsql_', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', /*'DELETE FROM', 'CREATE'*/] },
+  { dbType: 'PDPGSQL', serviceName: 'pdpgsql_', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', 'DELETE FROM', 'CREATE TABLE classes '] },
   { dbType: 'PSMDB', serviceName: 'rs101', queryTypes: ['db.students', 'db.runCommand', 'db.test'] },
 ];
 
@@ -54,12 +54,12 @@ Data(databaseEnvironments).Scenario(
   async ({
     I, queryAnalyticsPage, current, inventoryAPI,
   }) => {
-    const { service_name } = await inventoryAPI.getServiceDetailsByPartialName(current.serviceName);
+    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName(current.serviceName);
 
     for (const query of current.queryTypes) {
       const parameters = { service_name, query };
 
-      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-2h', search: query, service_name }));
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-1h', search: query, service_name }));
       queryAnalyticsPage.waitForLoaded();
       await queryAnalyticsPage.data.verifyQueriesDisplayed(parameters);
       queryAnalyticsPage.data.selectRow(1);
@@ -70,10 +70,10 @@ Data(databaseEnvironments).Scenario(
         await queryAnalyticsPage.queryDetails.verifyExplain(parameters);
       }
 
-      if (current.dbType === 'PDPGSQL') {
+      if (current.dbType === 'PDPGSQL' && !query.includes('CREATE')) {
         await queryAnalyticsPage.queryDetails.verifyTables(parameters);
 
-        if (current.queryTypes.includes('SELECT')) {
+        if (query.includes('SELECT')) {
           await queryAnalyticsPage.queryDetails.verifyPlan(parameters);
         }
       }

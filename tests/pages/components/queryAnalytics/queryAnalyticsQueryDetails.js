@@ -103,7 +103,7 @@ class QueryAnalyticsQueryDetails {
     queryAnalyticsPage.waitForLoaded();
     I.waitForVisible(this.elements.codeBlock, 30);
 
-    if (await I.isElementDisplayed(this.elements.noExamples, 3)) {
+    if (await I.isElementDisplayed(this.elements.noExamples, 1)) {
       throw new Error(`No examples visible for parameters: ${JSON.stringify(parameters)}`);
     }
   }
@@ -114,7 +114,7 @@ class QueryAnalyticsQueryDetails {
     queryAnalyticsPage.waitForLoaded();
     I.waitForVisible(this.elements.codeBlock, 30);
 
-    if (await I.isElementDisplayed(this.elements.explainError, 3)) {
+    if (await I.isElementDisplayed(this.elements.explainError, 1)) {
       throw new Error(`No explain visible for parameters: ${JSON.stringify(parameters)}`);
     }
   }
@@ -123,14 +123,15 @@ class QueryAnalyticsQueryDetails {
     I.waitForVisible(this.buttons.tab('Tables'), 30);
     I.click(this.buttons.tab('Tables'));
     queryAnalyticsPage.waitForLoaded();
-    I.waitForVisible(this.elements.tables, 10);
+    I.waitForVisible(this.elements.tables, 2);
     const tablesCount = await I.grabNumberOfVisibleElements(this.elements.tables);
 
     for (let i = 0; i < tablesCount; i++) {
       I.click(this.elements.table(i));
+      queryAnalyticsPage.waitForLoaded();
       I.waitForVisible(this.elements.codeBlock, 30);
 
-      if (await I.isElementDisplayed(this.elements.noTable, 3)) {
+      if (await I.isElementDisplayed(this.elements.noTable, 1)) {
         throw new Error(`No explain visible for parameters: ${JSON.stringify(parameters)}`);
       }
     }
@@ -141,7 +142,7 @@ class QueryAnalyticsQueryDetails {
     I.click(this.buttons.tab('Plan'));
     queryAnalyticsPage.waitForLoaded();
 
-    if (await I.isElementDisplayed(this.elements.noPlan, 3)) {
+    if (await I.isElementDisplayed(this.elements.noPlan, 1)) {
       throw new Error(`No plan visible for parameters: ${JSON.stringify(parameters)}`);
     }
   }

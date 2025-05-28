@@ -311,11 +311,11 @@ class Grafana extends Helper {
     const elementLocator = Playwright.page.locator(locate(locator).toXPath());
 
     for (let i = 0; i < timeoutInSeconds; i++) {
+      await Playwright.page.waitForTimeout(1000);
+
       if (await elementLocator.first().isVisible()) {
         return true;
       }
-
-      await Playwright.page.waitForTimeout(1000);
     }
 
     return false;
