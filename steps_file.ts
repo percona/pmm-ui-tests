@@ -1,7 +1,8 @@
-import shell from "shelljs";
-import assert from "assert";
+import shell from 'shelljs';
+import assert from 'assert';
+import buildUrl from 'build-url';
 
-export = function() {
+export = function () {
   return actor({
     async Authorize(username = 'admin', password = process.env.ADMIN_PASSWORD) {
       const { Playwright } = this.helpers;
@@ -22,9 +23,15 @@ export = function() {
       }
 
       if (result === 'pass') {
-        assert.ok(code === 0, `The "${command}" command was expected to run without any errors, but the error found: "${stderr || stdout}"`);
+        assert.ok(
+          code === 0,
+          `The "${command}" command was expected to run without any errors, but the error found: "${stderr || stdout}"`,
+        );
       } else {
-        assert.ok(code !== 0, `The "${command}" command was expected to exit with error code, but exited with success code: "${code}"`);
+        assert.ok(
+          code !== 0,
+          `The "${command}" command was expected to exit with error code, but exited with success code: "${code}"`,
+        );
       }
 
       if (returnErrorPipe) return stderr.trim();
@@ -47,6 +54,7 @@ export = function() {
       /* eslint no-constant-condition: ["error", { "checkLoops": false }] */
       while (true) {
         // Main condition check
+        // eslint-disable-next-line no-await-in-loop
         if (await boolCallable()) {
           return;
         }
@@ -58,8 +66,80 @@ export = function() {
         tried to check for ${timeOutInSeconds} second(s) with ${interval} second(s) with interval`);
         }
 
+        // eslint-disable-next-line no-await-in-loop
         await this.wait(interval);
       }
-    }
+    },
+    /**
+     * Create URL method
+     *
+     * @param url start
+     * @param parameters object
+     * @returns {Promise<void>}
+     *
+     * @example
+     * buildUrlWithParams('http://example.com', { environment: 'ps-dev', from: 'now-1' });
+     */
+    buildUrlWithParams(url, parameters) {
+      console.log(parameters);
+      const queryParams: {
+        from?: string,
+        to?: string,
+        columns?: string,
+        dimensionSearchText?: string,
+        page_number?: string,
+        page_size?: string,
+        refresh?: string,
+      } = {};
+
+      queryParams.from = 'now-5m';
+      queryParams.to = 'now';
+      Object.entries(parameters).forEach(([key, value]) => {
+        switch (key) {
+          case 'environment':
+            queryParams['var-environment'] = value;
+            break;
+          case 'node_name':
+            queryParams['var-node_name'] = value;
+            break;
+          case 'cluster':
+            queryParams['var-cluster'] = value;
+            break;
+          case 'service_name':
+            queryParams['var-service_name'] = value;
+            break;
+          case 'application_name':
+            queryParams['var-application_name'] = value;
+            break;
+          case 'database':
+            queryParams['var-database'] = value;
+            break;
+          case 'columns':
+            queryParams.columns = value;
+            break;
+          case 'from':
+            queryParams.from = value;
+            break;
+          case 'to':
+            queryParams.to = value;
+            break;
+          case 'search':
+            queryParams.dimensionSearchText = value;
+            break;
+          case 'page_number':
+            queryParams.page_number = value;
+            break;
+          case 'page_size':
+            queryParams.page_size = value;
+            break;
+          case 'refresh':
+            queryParams.refresh = value;
+            break;
+          default:
+        }
+      });
+
+      return buildUrl(url, { queryParams });
+    },
   });
 }

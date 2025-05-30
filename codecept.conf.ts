@@ -1,9 +1,9 @@
-const { pageObjects, getChunks } = require('./codeceptConfigHelper');
+import { pageObjects } from './codeceptConfigHelper';
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
 
-const pmmUrl = process.env.PMM_UI_URL ? process.env.PMM_UI_URL : 'http://65.108.252.32/';
+const pmmUrl = process.env.PMM_UI_URL ? process.env.PMM_UI_URL : 'http://localhost/';
 
 export const config: CodeceptJS.MainConfig = {
   tests: './tests/**/*_test.*',
@@ -24,8 +24,7 @@ export const config: CodeceptJS.MainConfig = {
           '--disable-dev-shm-usage',
           '--disable-setuid-sandbox',
         ],
-      }
-
+      },
     },
     REST: {
       endpoint: process.env.PMM_UI_URL || pmmUrl,
@@ -68,6 +67,7 @@ export const config: CodeceptJS.MainConfig = {
   include: {
     I: './steps_file',
     api: './api/api',
+    dashboards: './tests/pages/dashboards',
     ...pageObjects,
   },
   plugins: {
@@ -102,5 +102,5 @@ export const config: CodeceptJS.MainConfig = {
       },
     },
   },
-  name: 'pmm-ui-tests'
-}
+  name: 'pmm-ui-tests',
+};
