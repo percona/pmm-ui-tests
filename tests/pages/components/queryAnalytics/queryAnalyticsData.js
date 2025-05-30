@@ -59,6 +59,12 @@ class QueryAnalyticsData {
     };
   }
 
+  async verifyQueriesDisplayed(parameters) {
+    if (!(await I.isElementDisplayed(this.elements.queryRows))) {
+      throw new Error(`No queries displayed for selected parameters: ${JSON.stringify(parameters)}`);
+    }
+  }
+
   async changeMainMetric(newMainMetric) {
     const oldMainMetric = await I.grabTextFrom(this.elements.selectedMainMetric());
 
@@ -120,7 +126,9 @@ class QueryAnalyticsData {
   searchByValue(value, refresh = false) {
     I.waitForVisible(this.elements.queryRow(0), 30);
     I.waitForVisible(this.fields.searchBy, 30);
+    I.wait(1);
     I.clearField(this.fields.searchBy);
+    I.click(this.fields.searchBy);
     I.fillField(this.fields.searchBy, value);
     I.pressKey('Enter');
   }

@@ -82,9 +82,8 @@ module.exports = {
 
   selectDropdownOption(dropdownLocator, text) {
     I.click(dropdownLocator);
-    I.waitForVisible(this.elements.dropdownOption(text), 30);
-    I.click(this.elements.dropdownOption(text));
-    I.dontSeeElement(this.elements.dropdownOption(text));
+    I.waitForVisible(I.getSingleSelectOptionLocator(text));
+    I.click(I.getSingleSelectOptionLocator(text));
   },
 
   verifyBackupSucceeded(backupName) {

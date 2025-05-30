@@ -36,7 +36,7 @@ Scenario(
 );
 
 Data(nodes).Scenario(
-  'PMM-T418 PMM-T419 Verify the pt-summary on Node Summary dashboard @nightly @dashboards',
+  'PMM-T418 + PMM-T419 - Verify the pt-summary on Node Summary dashboard @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.nodeSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -69,7 +69,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1695 Verify that user is able to filter OS / Node Compare dashboard by Node Name @nightly @dashboards',
+  'PMM-T1695 - Verify that user is able to filter OS / Node Compare dashboard by Node Name @nightly @dashboards',
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
@@ -96,6 +96,7 @@ Scenario(
     await dashboardPage.applyFilter('Node Name', node2);
     I.scrollTo(dashboardPage.fields.metricTitle);
     I.forceClick(dashboardPage.fields.metricTitle);
+    I.wait(1);
 
     const finalNumOfPanels = await I.grabNumberOfVisibleElements(dashboardPage.panel);
 
