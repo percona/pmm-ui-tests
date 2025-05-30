@@ -15,6 +15,10 @@ Scenario(
     });
 
     I.amOnPage(url);
+    I.wait(5);
+
+    const urlReal = await I.grabCurrentUrl();
+    console.log(`We Are on page: ${urlReal}`);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.mongodbOverviewDashboard.metrics);
