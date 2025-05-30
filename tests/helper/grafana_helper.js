@@ -34,6 +34,7 @@ class Grafana extends Helper {
     const basicAuthEncoded = await this.getAuth(username, password);
 
     Playwright.setPlaywrightRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
+    console.log('Setting old login header');
     let resp;
 
     try {
