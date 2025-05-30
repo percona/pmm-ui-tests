@@ -1,6 +1,7 @@
 import shell from 'shelljs';
 import assert from 'assert';
 import buildUrl from 'build-url';
+import { BuildUrlInterface } from './steps.interface';
 
 export = function () {
   return actor({
@@ -80,7 +81,7 @@ export = function () {
      * @example
      * buildUrlWithParams('http://example.com', { environment: 'ps-dev', from: 'now-1' });
      */
-    buildUrlWithParams(url, parameters) {
+    buildUrlWithParams(url, parameters: BuildUrlInterface) {
       console.log(parameters);
       const queryParams: {
         from?: string,
@@ -90,6 +91,7 @@ export = function () {
         page_number?: string,
         page_size?: string,
         refresh?: string,
+        cluster?: string,
       } = {};
 
       queryParams.from = 'now-5m';

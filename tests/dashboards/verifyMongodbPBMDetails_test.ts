@@ -31,7 +31,7 @@ BeforeSuite(async ({ I, locationsAPI, inventoryAPI, scheduledAPI }) => {
     await scheduledAPI.createScheduledBackup(snapshotSchedule);
   }
   // Wait for scheduled backup to be done.
-  I.wait(60);
+  I.wait(90);
 });
 
 AfterSuite(async ({ scheduledAPI, locationsAPI }) => {
@@ -58,7 +58,9 @@ Data(backupTypes).Scenario('PMM-T2036 - Verify MongoDB PBM dashboard', async ({ 
   I.amOnPage(url);
   dashboardPage.waitForDashboardOpened();
   await dashboards.mongodbPBMDetailsDashboard.verifyBackupConfiguredValue('Yes');
+  await dashboards.mongodbPBMDetailsDashboard.verifyPitrEnabledValue(current.mode === 'pitr' ? 'Yes' : 'No');
   await dashboardPage.expandEachDashboardRow();
   await dashboardPage.verifyMetricsExistence(dashboards.mongodbPBMDetailsDashboard.metrics);
   await dashboardPage.verifyThereAreNoGraphsWithoutData();
+  I.wait(30);
 });

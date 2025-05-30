@@ -192,6 +192,7 @@ Scenario(
 
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
     dashboardPage.waitForDashboardOpened();
+    console.log(await I.grabCurrentUrl());
     I.click(dashboardPage.fields.reportTitle);
     await adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
