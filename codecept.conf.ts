@@ -1,4 +1,7 @@
+import dotenv from 'dotenv';
 import { pageObjects } from './codeceptConfigHelper';
+
+dotenv.config();
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
