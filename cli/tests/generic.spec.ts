@@ -509,6 +509,12 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     await output.outContains('Not started');
   });
 
+  test('PMM-T2031 - Verify that nomad is not listed in pmm-admin list, when not used.', async ({}) => {
+    const output = await cli.exec('pmm-admin list');
+    await output.assertSuccess();
+    await output.outNotContains('nomad');
+  });
+
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L383
    */
