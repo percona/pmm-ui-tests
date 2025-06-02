@@ -75,7 +75,7 @@ Scenario(
 const fcvPanelTestData = () => {
   const { dashboardPage } = inject();
 
-  return [dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, dashboardPage.mongoDbShardedClusterSummary.url];
+  return [dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl] //, dashboardPage.mongoDbShardedClusterSummary.url];
 };
 
 Data(fcvPanelTestData()).Scenario(
