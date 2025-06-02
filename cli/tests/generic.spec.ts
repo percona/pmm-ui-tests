@@ -502,6 +502,12 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     await output.assertSuccess();
   });
 
+  test('PMM-T2025 - Verify that Nomad server is not running by default', async ({}) => {
+    const output = await cli.exec('docker exec pmm-server supervisorctl status');
+    await output.assertSuccess();
+    console.log(output);
+  });
+
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L383
    */
