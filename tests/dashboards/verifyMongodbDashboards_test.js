@@ -88,8 +88,13 @@ Data(fcvPanelTestData()).Scenario(
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    const text = await I.grabTextFrom(dashboardPage.panelValueByTitle('Feature Compatibility Version'));
-    console.log(`Text is: ${text}`);
-    console.log(`MongoDB version is: ${process.env.PSMDB_VERSION}`);
+    const fcvVersion = await I.grabTextFrom(dashboardPage.panelValueByTitle('Feature Compatibility Version'));
+    const mongodbVersion = process.env.PSMDB_VERSION;
+
+    I.assertEqual(
+      fcvVersion,
+      mongodbVersion.split('.')[0],
+      'Feature Compatibility Version is not correct.',
+    );
   },
 );
