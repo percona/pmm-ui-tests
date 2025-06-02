@@ -504,7 +504,6 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
 
   test('PMM-T2025 - Verify that Nomad server is not running by default', async ({}) => {
     const output = await cli.exec('docker exec pmm-server supervisorctl status | grep "nomad-server"');
-    console.log(output);
     await output.assertSuccess();
     await output.outContains('STOPPED');
     await output.outContains('Not started');
