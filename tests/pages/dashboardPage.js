@@ -3,6 +3,7 @@ const assert = require('assert');
 const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu');
 const PmmHealthDashboard = require('../dashboards/pages/pmmHealthDashboard');
 const HomeDashboard = require('../dashboards/pages/homeDashboard');
+const MongodbShardedClusterSummary = require('../dashboards/pages/mongodbShardedClusterSummary');
 const { locateOption } = require('../helper/locatorHelper');
 
 module.exports = {
@@ -460,6 +461,7 @@ module.exports = {
       'Network Traffic',
     ],
   },
+  mongoDbShardedClusterSummary: MongodbShardedClusterSummary,
   mongoDbClusterSummaryDashboard: {
     url: 'graph/d/mongodb-cluster-summary/mongodb-cluster-summary',
     metrics: [
@@ -1327,6 +1329,10 @@ module.exports = {
 
   panelDataByTitle(title) {
     return locate(this.panelByTitle(title)).find(I.useDataQA('data-testid Data link'));
+  },
+
+  panelValueByTitle(title) {
+    return locate(this.panelByTitle(title)).find('//div[@data-testid="data-testid panel content"]//span');
   },
 
   async verifyColumnLegendMaxValueAbove(panelTitle, serviceName, expectedValue, timeout = 60) {
