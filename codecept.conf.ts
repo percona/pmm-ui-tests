@@ -13,8 +13,16 @@ export const config: CodeceptJS.MainConfig = {
       browser: 'chromium',
       windowSize: '1920x1080',
       url: pmmUrl.replace(/\/(?!.*\/)$/gm, ''),
+      restart: true,
       show: false,
+      timeout: 20000,
+      waitForNavigation: 'load',
+      waitForTimeout: 60000,
+      getPageTimeout: 60000,
+      waitForAction: 500,
+      pressKeyDelay: 5,
       chromium: {
+        executablePath: process.env.CHROMIUM_PATH,
         ignoreHTTPSErrors: true,
         args: [
           '--ignore-certificate-errors',
@@ -103,4 +111,8 @@ export const config: CodeceptJS.MainConfig = {
     },
   },
   name: 'pmm-ui-tests',
+  bootstrap: false,
+  teardown: null,
+  hooks: [],
+  timeout: 2400,
 };
