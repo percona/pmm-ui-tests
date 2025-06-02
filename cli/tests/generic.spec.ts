@@ -510,7 +510,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
   });
 
   test('PMM-T2031 - Verify that nomad is not listed in pmm-admin list, when not used.', async ({}) => {
-    const output = await cli.exec('pmm-admin list');
+    const output = await cli.exec('sudo pmm-admin list');
     await output.assertSuccess();
     await output.outNotContains('nomad');
   });
