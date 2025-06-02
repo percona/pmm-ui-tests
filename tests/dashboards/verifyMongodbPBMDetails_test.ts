@@ -1,3 +1,5 @@
+import { config } from 'codeceptjs';
+
 Feature('Tests for: "MongoDB PBM Details" dashboard');
 
 BeforeSuite(async ({ I, locationsAPI, inventoryAPI, scheduledAPI }) => {
@@ -49,6 +51,7 @@ const backupTypes = [
 ]
 
 Data(backupTypes).Scenario('PMM-T2036 - Verify MongoDB PBM dashboard', async ({ I, dashboards, current, dashboardPage }) => {
+  console.log(config);
   console.log(current);
   const url = I.buildUrlWithParams(dashboards.mongodbPBMDetailsDashboard.url, {
     from: 'now-5m',
@@ -62,5 +65,4 @@ Data(backupTypes).Scenario('PMM-T2036 - Verify MongoDB PBM dashboard', async ({ 
   await dashboardPage.expandEachDashboardRow();
   await dashboardPage.verifyMetricsExistence(dashboards.mongodbPBMDetailsDashboard.metrics);
   await dashboardPage.verifyThereAreNoGraphsWithoutData();
-  I.wait(30);
 });
