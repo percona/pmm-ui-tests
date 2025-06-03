@@ -291,10 +291,10 @@ class Grafana extends Helper {
 
   async selectGrafanaDropdownOption(dropdownName, optionText) {
     const { Playwright } = this.helpers;
-    const dropdownLocator = `//label[text()="${dropdownName}"]//ancestor::span//div[contains(@data-testid, "-input")]`;
+    const dropdownLocator = `//label[text()="${dropdownName}"]/ancestor::*[(self::span) or (self::div and @data-testid="data-testid template variable")]//*[contains(@data-testid, "-input")]`;
 
-    await Playwright.page.locator(dropdownLocator).waitFor({ state: 'attached', timeout: 5000 });
-    await Playwright.page.locator(dropdownLocator).click();
+    await Playwright.page.locator(dropdownLocator).first().waitFor({ state: 'attached', timeout: 5000 });
+    await Playwright.page.locator(dropdownLocator).first().click();
     await Playwright.page.waitForTimeout(500);
 
     const optionLocator = Playwright.page.locator('div[role="option"]  span');
@@ -304,6 +304,8 @@ class Grafana extends Helper {
         await optionLocator.nth(i).click();
       }
     }
+
+    await Playwright.page.keyboard.press('Escape');
   }
 
   async isElementDisplayed(locator, timeoutInSeconds = 60) {
@@ -311,11 +313,11 @@ class Grafana extends Helper {
     const elementLocator = Playwright.page.locator(locate(locator).toXPath());
 
     for (let i = 0; i < timeoutInSeconds; i++) {
+      await Playwright.page.waitForTimeout(1000);
+
       if (await elementLocator.first().isVisible()) {
         return true;
       }
-
-      await Playwright.page.waitForTimeout(1000);
     }
 
     return false;
