@@ -59,7 +59,7 @@ Data(databaseEnvironments).Scenario(
     for (const query of current.queryTypes) {
       const parameters = { service_name, query };
 
-      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-1h', search: query, service_name }));
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-3h', search: query, service_name }));
       queryAnalyticsPage.waitForLoaded();
       await queryAnalyticsPage.data.verifyQueriesDisplayed(parameters);
       queryAnalyticsPage.data.selectRow(1);
