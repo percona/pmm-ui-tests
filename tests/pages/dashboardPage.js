@@ -3,6 +3,7 @@ const assert = require('assert');
 const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu');
 const PmmHealthDashboard = require('../dashboards/pages/pmmHealthDashboard');
 const HomeDashboard = require('../dashboards/pages/homeDashboard');
+const PostgresqlTopQueriesDashboard = require('../dashboards/pages/postgresqlTopQueriesDashboard');
 const { locateOption } = require('../helper/locatorHelper');
 
 module.exports = {
@@ -1118,6 +1119,7 @@ module.exports = {
   },
   pmmHealth: PmmHealthDashboard,
   homeDashboard: HomeDashboard,
+  postgresqlTopQueriesDashboard: PostgresqlTopQueriesDashboard,
   osNodesOverview: {
     noDataElements: 3,
     clearUrl: 'graph/d/node-instance-overview/nodes-overview',

@@ -76,3 +76,17 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
+
+Scenario(
+  'PMM-T2044 - Verify PostgreSQL Top Queries Dashboard metrics @nightly @dashboards',
+  async ({ I, dashboardPage }) => {
+    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName('pdpgsql_pgsm');
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlTopQueriesDashboard.url, { from: 'now-5m', service_name });
+
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.postgresqlTopQueriesDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
+  },
+);
