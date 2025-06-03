@@ -49,6 +49,7 @@ module.exports = {
   advancedDataExplorationDashboard: {
     url:
       'graph/d/prometheus-advanced/advanced-data-exploration?orgId=1&refresh=1m&var-metric=go_gc_duration_seconds',
+    cleanUrl: 'graph/d/prometheus-advanced/advanced-data-exploration',
     metrics: [
       'View Actual Metric Values (Gauge)',
       'View Metric Rate of Change (Counter)',
