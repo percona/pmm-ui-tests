@@ -149,7 +149,7 @@ Scenario(
     const containerPort = testContainerName.includes('8.4') ? 3306 : 3307;
 
     // Add wait for Queries to appear in PMM
-    await I.wait(70);
+    await I.wait(60);
 
     await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${credentials.perconaServer.root.username} -p${credentials.perconaServer.root.password} -e "CREATE USER IF NOT EXISTS sysbench@'%' IDENTIFIED BY 'test'; GRANT ALL ON *.* TO sysbench@'%'; DROP DATABASE IF EXISTS ${dbName};"`);
     await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${sbUser.name} -p${sbUser.password} -e "SET GLOBAL slow_query_log=ON;"`);
@@ -218,7 +218,7 @@ Scenario(
     await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName2}; INSERT INTO ${tableName} (ID, Value) VALUES (1, 1);"`);
     await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName2}; INSERT INTO ${tableName} (ID, Value) VALUES (2, 2);"`);
 
-    I.wait(90);
+    I.wait(60);
 
     const queryStartText = 'insert into';
 
@@ -277,7 +277,7 @@ Scenario(
     await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName}; INSERT INTO ${tableName} (ID, Value) VALUES (1, 1);"`);
     await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName}; SELECT ID, Value FROM ${tableName} WHERE ID = 1;"`);
 
-    I.wait(90);
+    I.wait(60);
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
 
     await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName}; DROP TABLE IF EXISTS ${tableName}"`);
