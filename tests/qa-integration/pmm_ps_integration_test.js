@@ -221,9 +221,9 @@ Scenario(
     I.wait(90);
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.data.searchByValue('INSERT INTO `samequery`');
+    queryAnalyticsPage.data.searchByValue(tableName);
     queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.data.selectRowByQueryStart('INSERT INTO `samequery`');
+    queryAnalyticsPage.data.selectRowByQueryStart('INSERT INTO');
 
     const queryCountLocator = queryAnalyticsPage.queryDetails.elements.metricsCellDetailValue('Query Count', 3);
 
@@ -233,7 +233,7 @@ Scenario(
     queryAnalyticsPage.filters.selectFilter(dbName1);
 
     queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.data.selectRowByQueryStart('INSERT INTO `samequery`');
+    queryAnalyticsPage.data.selectRowByQueryStart('INSERT INTO');
 
     I.waitForVisible(queryCountLocator, 30);
     I.seeTextEquals('2.00', queryCountLocator);
@@ -242,7 +242,7 @@ Scenario(
     queryAnalyticsPage.filters.selectFilter(dbName2);
 
     queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.data.selectRowByQueryStart('INSERT INTO `samequery`');
+    queryAnalyticsPage.data.selectRowByQueryStart('INSERT INTO');
 
     I.waitForVisible(queryCountLocator, 30);
     I.seeTextEquals('2.00', queryCountLocator);
@@ -276,14 +276,13 @@ Scenario(
 
     I.wait(90);
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
-    const query = 'SELECT `ID` , VALUE FROM `tabletodelete`';
 
     await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName}; DROP TABLE IF EXISTS ${tableName}"`);
 
     queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.data.searchByValue(query);
+    queryAnalyticsPage.data.searchByValue(tableName);
     queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.data.selectRowByQueryStart(query);
+    queryAnalyticsPage.data.selectRowByQueryStart('SELECT');
     await I.verifyInvisible(I.getPopUpLocator(), 5);
 
     queryAnalyticsPage.queryDetails.openExamplesTab();
