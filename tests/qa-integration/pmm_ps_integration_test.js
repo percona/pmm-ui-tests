@@ -218,7 +218,7 @@ Scenario(
     await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName2}; INSERT INTO ${tableName} (ID, Value) VALUES (1, 1);"`);
     await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName2}; INSERT INTO ${tableName} (ID, Value) VALUES (2, 2);"`);
 
-    I.wait(60);
+    I.wait(90);
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.searchByValue('INSERT INTO `samequery`');
@@ -274,7 +274,7 @@ Scenario(
     await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName}; INSERT INTO ${tableName} (ID, Value) VALUES (1, 1);"`);
     await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName}; SELECT ID, Value FROM ${tableName} WHERE ID = 1;"`);
 
-    I.wait(60);
+    I.wait(90);
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     const query = 'SELECT `ID` , VALUE FROM `tabletodelete`';
 
