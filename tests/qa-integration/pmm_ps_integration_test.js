@@ -180,3 +180,119 @@ Scenario(
     }
   },
 ).retry(1);
+
+Scenario(
+  'PMM-T2034 - Verify the same query on different tables for MySQL @fb-pmm-ps-integration',
+  async ({
+    I, credentials, queryAnalyticsPage,
+  }) => {
+    const dbName1 = 'testdb1';
+    const dbName2 = 'testdb2';
+    const tableNameDb1 = `${dbName1}.samequery`;
+    const tableNameDb2 = `${dbName2}.samequery`;
+    const tableName = 'samequery';
+    const user = credentials.perconaServer.root;
+    const testContainerName = await I.verifyCommand('docker ps -f name=ps --format "{{.Names }}"');
+    const containerPort = testContainerName.includes('8.4') ? 3306 : 3307;
+
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    await I.cleanupClickhouse();
+
+    await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "CREATE DATABASE IF NOT EXISTS ${dbName1}"`);
+    await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "CREATE DATABASE IF NOT EXISTS ${dbName2}"`);
+    await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "DROP TABLE IF EXISTS ${tableNameDb1}"`);
+    await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "DROP TABLE IF EXISTS ${tableNameDb2}"`);
+    await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName1}; CREATE TABLE IF NOT EXISTS ${tableNameDb1} (
+    ID INT NOT NULL,
+    Value INT,
+    PRIMARY KEY (ID)
+);"`);
+    await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName2}; CREATE TABLE IF NOT EXISTS ${tableNameDb2} (
+    ID INT NOT NULL,
+    Value INT,
+    PRIMARY KEY (ID)
+);"`);
+
+    await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName1}; INSERT INTO ${tableName} (ID, Value) VALUES (1, 1);"`);
+    await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName1}; INSERT INTO ${tableName} (ID, Value) VALUES (2, 2);"`);
+    await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName2}; INSERT INTO ${tableName} (ID, Value) VALUES (1, 1);"`);
+    await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName2}; INSERT INTO ${tableName} (ID, Value) VALUES (2, 2);"`);
+
+    I.wait(60);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.searchByValue('INSERT INTO `samequery`');
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.selectRowByQueryStart('INSERT INTO `samequery`');
+
+    const queryCountLocator = queryAnalyticsPage.queryDetails.elements.metricsCellDetailValue('Query Count', 3);
+
+    I.waitForVisible(queryCountLocator, 30);
+    I.seeTextEquals('4.00', queryCountLocator);
+
+    queryAnalyticsPage.filters.selectFilter(dbName1);
+
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.selectRowByQueryStart('INSERT INTO `samequery`');
+
+    I.waitForVisible(queryCountLocator, 30);
+    I.seeTextEquals('2.00', queryCountLocator);
+
+    queryAnalyticsPage.filters.selectFilter(dbName1);
+    queryAnalyticsPage.filters.selectFilter(dbName2);
+
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.selectRowByQueryStart('INSERT INTO `samequery`');
+
+    I.waitForVisible(queryCountLocator, 30);
+    I.seeTextEquals('2.00', queryCountLocator);
+  },
+).retry(1);
+
+Scenario(
+  'PMM-T2040 - Verify there is no error while clicking on Table or Examples or Explain @fb-pmm-ps-integration',
+  async ({
+    I, credentials, queryAnalyticsPage,
+  }) => {
+    const dbName = 'dbT2040';
+    const tableName = 'tabletodelete';
+    const user = credentials.perconaServer.root;
+    const testContainerName = await I.verifyCommand('docker ps -f name=ps --format "{{.Names }}"');
+    const containerPort = testContainerName.includes('8.4') ? 3306 : 3307;
+
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    await I.cleanupClickhouse();
+
+    await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "CREATE DATABASE IF NOT EXISTS ${dbName}"`);
+    await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName}; DROP TABLE IF EXISTS ${tableName}"`);
+    await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName}; CREATE TABLE IF NOT EXISTS ${tableName} (
+    ID INT NOT NULL,
+    Value INT,
+    PRIMARY KEY (ID)
+);"`);
+
+    await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName}; INSERT INTO ${tableName} (ID, Value) VALUES (1, 1);"`);
+    await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName}; SELECT ID, Value FROM ${tableName} WHERE ID = 1;"`);
+
+    I.wait(60);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    const query = 'SELECT `ID` , VALUE FROM `tabletodelete`';
+
+    await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName}; DROP TABLE IF EXISTS ${tableName}"`);
+
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.searchByValue(query);
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.selectRowByQueryStart(query);
+    await I.verifyInvisible(I.getPopUpLocator(), 5);
+
+    queryAnalyticsPage.queryDetails.openExamplesTab();
+    await I.verifyInvisible(I.getPopUpLocator(), 5);
+
+    queryAnalyticsPage.queryDetails.openExplainTab();
+    await I.verifyInvisible(I.getPopUpLocator(), 5);
+
+    queryAnalyticsPage.queryDetails.openTablesTab();
+    await I.verifyInvisible(I.getPopUpLocator(), 5);
+  },
+);

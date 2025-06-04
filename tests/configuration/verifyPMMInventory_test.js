@@ -261,10 +261,10 @@ Scenario(
     const errors = [];
 
     try {
-      assert.ok(!pmmAgentsNotConnected.length, 'Not all agents are connected');
+      assert.ok(!pmmAgentsNotConnected.length, 'Not all pmm agents are connected');
     } catch (e) {
       errors.push({
-        message: 'Not all agents are connected',
+        message: 'Not all pmm agents are connected',
         agents: pmmAgentsNotConnected,
       });
     }

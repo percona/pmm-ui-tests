@@ -89,8 +89,7 @@ class QueryAnalyticsQueryDetails {
   }
 
   checkExamplesTab(isNoExamplesVisible = false) {
-    I.waitForVisible(this.buttons.tab('Examples'), 30);
-    I.click(this.buttons.tab('Examples'));
+    this.openExamplesTab();
     queryAnalyticsPage.waitForLoaded();
     I.waitForVisible(this.elements.codeBlock, 30);
 
@@ -150,6 +149,16 @@ class QueryAnalyticsQueryDetails {
   openExplainTab() {
     I.waitForVisible(this.buttons.tab('Explain'), 30);
     I.click(this.buttons.tab('Explain'));
+  }
+
+  openExamplesTab() {
+    I.waitForVisible(this.buttons.tab('Examples'), 30);
+    I.click(this.buttons.tab('Examples'));
+  }
+
+  openTablesTab() {
+    I.waitForVisible(this.buttons.tab('Tables'), 30);
+    I.click(this.buttons.tab('Tables'));
   }
 
   async verifyExplainError({ classicError, jsonError }) {

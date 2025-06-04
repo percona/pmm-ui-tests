@@ -166,6 +166,39 @@ Scenario.skip(
 );
 
 Scenario(
+  'PMM-T2037 - Verify QPS after changing pg_statements.max value @not-ui-pipeline @pgss-pmm-integration',
+  async ({ I, queryAnalyticsPage }) => {
+    await I.cleanupClickhouse();
+
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+
+    await I.verifyCommand(`docker exec ${container_name} psql -U ${connection.user} -c "ALTER SYSTEM SET max_locks_per_transaction = 1024;"`);
+    await I.verifyCommand(`docker exec ${container_name} psql -U ${connection.user} -c "ALTER SYSTEM SET pg_stat_statements.max = 20000;"`);
+    await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
+
+    const sql = await I.verifyCommand('cat testdata/pgsql/pgss_pmm_t2037.sql');
+
+    await I.pgExecuteQueryOnDemand(sql, connection);
+
+    await I.verifyCommand(`docker exec ${container_name} psql -U ${connection.user} -c "ALTER SYSTEM SET pg_stat_statements.max = 5000;"`);
+    await I.verifyCommand(`docker exec ${container_name} service postgresql restart`);
+    await I.pgExecuteQueryOnDemand(sql, connection);
+
+    I.wait(60);
+
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.filters.selectContainFilter(pgss_service_name);
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForElement(queryAnalyticsPage.data.elements.queryRowQueryCountValue(0), 30);
+    const value = await I.grabTextFrom(queryAnalyticsPage.data.elements.queryRowQueryCountValue(0));
+
+    assert.ok(!/[\d.]+m\s*qps/i.test(value), `TOTAL QPS value should not be in millions. Actual value: ${value}`);
+  },
+);
+
+Scenario(
   'PMM-T1301 + PMM-T1300 - Verify that pmm-admin inventory add agent qan-postgresql-pgstatements-agent with --log-level flag adds QAN PostgreSQL PgStatements Agent with corresponding log-level @not-ui-pipeline @pgss-pmm-integration',
   async ({
     I, inventoryAPI, agentCli, dashboardPage,

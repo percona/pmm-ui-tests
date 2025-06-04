@@ -1,6 +1,7 @@
 const { dashboardPage, homePage } = inject();
 const assert = require('assert');
 const { SERVICE_TYPE } = require('../helper/constants');
+const { locateOptions } = require('../helper/locatorHelper');
 
 const {
   inventoryAPI,
@@ -100,15 +101,24 @@ Data(urlsAndMetrics).Scenario(
 );
 
 Scenario(
-  'PMM-T68 - Open the ProxySQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  'PMM-T68 + PMM-T2038 - Open the ProxySQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     const url = I.buildUrlWithParams(dashboardPage.proxysqlInstanceSummaryDashboard.url, { from: 'now-5m' });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandFilters('ProxySQL Instance');
+    I.seeNumberOfVisibleElements(locateOptions, 2);
+    I.click(locateOptions.first());
+
+    dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.proxysqlInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(16);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+
+    await dashboardPage.expandFilters('Node Namegroup');
+    I.waitForElement(locateOptions, 5);
+    I.seeNumberOfVisibleElements(locateOptions, 4);
   },
 );
 

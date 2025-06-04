@@ -1465,7 +1465,7 @@ module.exports = {
     // This is due to some instances with many services take filter to load
     // I.wait(1);
     I.waitForElement(dropdownLocator, 30);
-    I.forceClick(dropdownLocator);
+    I.click(dropdownLocator);
     // click one more time to expand the multiselect dropdown
     I.forceClick(dropdownLocator);
 
