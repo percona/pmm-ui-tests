@@ -90,3 +90,17 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
+
+Scenario(
+  'PMM-T2048 - Verify PostgreSQL Instances Overview Extended metrics @nightly @dashboards',
+  async ({ I, dashboardPage }) => {
+    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName('pdpgsql_pgsm');
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlInstancesOverviewExtendedDashboard.url, { from: 'now-5m', service_name });
+
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.postgresqlInstancesOverviewExtendedDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
+  },
+);

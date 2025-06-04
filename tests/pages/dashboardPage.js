@@ -5,6 +5,7 @@ const PmmHealthDashboard = require('../dashboards/pages/pmmHealthDashboard');
 const HomeDashboard = require('../dashboards/pages/homeDashboard');
 const MongodbShardedClusterSummary = require('../dashboards/pages/mongodbShardedClusterSummary');
 const PostgresqlTopQueriesDashboard = require('../dashboards/pages/postgresqlTopQueriesDashboard');
+const PostgresqlInstancesOverviewExtendedDashboard = require('../dashboards/pages/postgresqlInstancesOverviewExtendedDashboard');
 const { locateOption } = require('../helper/locatorHelper');
 
 module.exports = {
@@ -1122,6 +1123,7 @@ module.exports = {
   pmmHealth: PmmHealthDashboard,
   homeDashboard: HomeDashboard,
   postgresqlTopQueriesDashboard: PostgresqlTopQueriesDashboard,
+  postgresqlInstancesOverviewExtendedDashboard: PostgresqlInstancesOverviewExtendedDashboard,
   osNodesOverview: {
     noDataElements: 3,
     clearUrl: 'graph/d/node-instance-overview/nodes-overview',
