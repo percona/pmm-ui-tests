@@ -279,7 +279,6 @@ Scenario(
 
     I.wait(90);
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
-    const query = 'SELECT `ID` , VALUE FROM `tabletodelete`';
 
     await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 --port ${containerPort} -u ${user.username} -p${user.password} -e "USE ${dbName}; DROP TABLE IF EXISTS ${tableName}"`);
 
