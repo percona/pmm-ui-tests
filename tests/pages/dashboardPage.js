@@ -4,6 +4,9 @@ const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu')
 const PmmHealthDashboard = require('../dashboards/pages/pmmHealthDashboard');
 const HomeDashboard = require('../dashboards/pages/homeDashboard');
 const { locateOption } = require('../helper/locatorHelper');
+const MongodbInstancesCompareDashboard = require('../dashboards/pages/mongodb/mongodbInstancesCompareDashboard');
+
+const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
 
 module.exports = {
   // insert your locators and methods here
@@ -532,6 +535,7 @@ module.exports = {
       'MySQL Table Definition Cache',
     ],
   },
+  mongodbInstancesCompareDashboard: MongodbInstancesCompareDashboard,
   mysqlUserDetailsDashboard: {
     url: 'graph/d/mysql-user/mysql-user-details?orgId=1&refresh=1m&from=now-5m&to=now',
     clearUrl: 'graph/d/mysql-user/mysql-user-details',
