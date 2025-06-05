@@ -5,4 +5,4 @@ class MongodbShardedClusterSummary {
 }
 
 module.exports = new MongodbShardedClusterSummary();
-module.exports.PmmHealthDashboard = MongodbShardedClusterSummary;
+module.exports.MongodbShardedClusterSummary = MongodbShardedClusterSummary;

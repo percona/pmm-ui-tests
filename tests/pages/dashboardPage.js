@@ -6,6 +6,7 @@ const HomeDashboard = require('../dashboards/pages/homeDashboard');
 const MongodbShardedClusterSummary = require('../dashboards/pages/mongodbShardedClusterSummary');
 const PostgresqlTopQueriesDashboard = require('../dashboards/pages/postgresqlTopQueriesDashboard');
 const PostgresqlInstancesOverviewExtendedDashboard = require('../dashboards/pages/postgresqlInstancesOverviewExtendedDashboard');
+const MongodbPBMDetailsDashboard = require('../dashboards/pages/mongodbPBMDetailsDashboard');
 const { locateOption } = require('../helper/locatorHelper');
 
 module.exports = {
@@ -429,6 +430,7 @@ module.exports = {
       'Written Files to Disk',
     ],
   },
+  mongodbPBMDetailsDashboard: MongodbPBMDetailsDashboard,
   mongodbOverviewDashboard: {
     url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary',
     metrics: [
