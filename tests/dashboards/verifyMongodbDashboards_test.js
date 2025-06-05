@@ -62,8 +62,7 @@ Scenario(
 
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionsOverview.clearUrl, {
       from: 'now-5m',
-      service_name: mongoService.service_name,
-      refresh: '10s',
+      node_name: mongoService.node_name,
     }));
     dashboardPage.waitForDashboardOpened();
     await adminPage.performPageDown(5);
