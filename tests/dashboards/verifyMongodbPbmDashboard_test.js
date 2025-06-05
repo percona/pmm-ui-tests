@@ -57,7 +57,7 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-Data(backupTypes).Scenario('PMM-T2036 - Verify MongoDB PBM dashboard', async ({
+Data(backupTypes).Scenario('PMM-T2036 - Verify MongoDB PBM dashboard @nightly', async ({
   I, dashboards, current, dashboardPage,
 }) => {
   const url = I.buildUrlWithParams(dashboards.mongodbPBMDetailsDashboard.url, {
