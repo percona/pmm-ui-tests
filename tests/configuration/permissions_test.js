@@ -264,9 +264,12 @@ Scenario(
     const advisors = await advisorsAPI.getAdvisorsNames();
 
     await advisorsAPI.startSecurityChecks(advisors);
+    // TODO: remove after https://perconadev.atlassian.net/browse/PMM-14065 is fixed
+    I.wait(30);
+    I.refreshPage();
     await I.Authorize(users.editor.username, users.editor.password);
     I.amOnPage(I.buildUrlWithParams(dashboardPage.homeDashboard.url, { refresh: '5s' }));
-    I.waitForVisible(dashboardPage.homeDashboard.panelData.failedAdvisors.criticalFailedAdvisors, 600);
+    I.waitForVisible(dashboardPage.homeDashboard.panelData.failedAdvisors.criticalFailedAdvisors, 30);
 
     const criticalAdvisors = await I.grabTextFrom(dashboardPage.homeDashboard.panelData.failedAdvisors.criticalFailedAdvisors);
     const errorAdvisors = await I.grabTextFrom(dashboardPage.homeDashboard.panelData.failedAdvisors.errorFailedAdvisors);
