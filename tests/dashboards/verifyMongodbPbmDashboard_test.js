@@ -1,8 +1,12 @@
 Feature('Tests for: "MongoDB PBM Details" dashboard');
 
 const backupTypes = [
-  { mode: 'pitr', cluster: 'sharded', service_name: 'rs101' },
-  { mode: 'snapshot', cluster: 'replicaset', service_name: 'rs101' },
+  {
+    mode: 'pitr', cluster: 'sharded', service_name: 'rs101', backupMode: 'BACKUP_MODE_PITR',
+  },
+  {
+    mode: 'snapshot', cluster: 'replicaset', service_name: 'rs101', backupMode: 'BACKUP_MODE_SNAPSHOT',
+  },
 ];
 
 BeforeSuite(async ({
@@ -15,16 +19,14 @@ BeforeSuite(async ({
       description: `test description ${backupType.cluster}`,
     };
 
-    console.log(service.node_name);
-    const node = await inventoryAPI.getNodeByName(service.node_name);
-    console.log(node);
-
     const storageLocation = {
       endpoint: backupType.cluster === 'sharded' ? `http://${process.env.VM_CLIENT_IP_PSMDB_SHARDED}:9001` : `http://${process.env.VM_CLIENT_IP_MYSQL}:9001`,
       bucket_name: 'bcp',
       access_key: 'minio1234',
       secret_key: 'minio1234',
     };
+
+    console.log(storageLocation);
 
     const locationId = await locationsAPI.createStorageLocation(
       location.name,
@@ -33,11 +35,13 @@ BeforeSuite(async ({
       location.description,
     );
 
+    console.log(`Location  id is: ${locationId}`);
+
     const snapshotSchedule = {
       service_id: service.service_id,
       location_id: locationId,
       name: `test_schedule_On_Demand_${backupType.mode}`,
-      mode: backupType.mode,
+      mode: backupType.backupMode,
       cron_expression: '* * * * *',
     };
 
