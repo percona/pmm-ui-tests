@@ -54,8 +54,6 @@ Data(databaseEnvironments).Scenario(
   async ({
     I, queryAnalyticsPage, current, inventoryAPI,
   }) => {
-    console.log(`Sharded instance ip is ${process.env.VM_CLIENT_IP_PSMDB_SHARDED}`)
-    console.log(`Replica instance ip is ${process.env.VM_CLIENT_IP_MYSQL}`)
     const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName(current.serviceName);
 
     for (const query of current.queryTypes) {
