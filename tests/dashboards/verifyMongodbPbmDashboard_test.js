@@ -20,7 +20,7 @@ BeforeSuite(async ({
     };
 
     const storageLocation = {
-      endpoint: backupType.cluster === 'sharded' ? `http://${process.env.VM_CLIENT_IP_PSMDB_SHARDED}:9001` : `http://${process.env.VM_CLIENT_IP_MYSQL}:9001`,
+      endpoint: backupType.cluster === 'sharded' ? `http://${process.env.VM_CLIENT_IP_PSMDB_SHARDED}:9000` : `http://${process.env.VM_CLIENT_IP_MYSQL}:9000`,
       bucket_name: 'bcp',
       access_key: 'minio1234',
       secret_key: 'minio1234',
