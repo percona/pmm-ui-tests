@@ -1,6 +1,7 @@
 const nodes = new DataTable(['node-type', 'name']);
 const assert = require('assert');
 const { NODE_TYPE } = require('./helper/constants');
+const { locateOptions } = require('./helper/locatorHelper');
 
 nodes.add(['pmm-client', 'ip']);
 
@@ -93,10 +94,11 @@ Scenario(
     I.dontSeeElement(dashboardPage.graphsLocator(`${node2} - System Uptime`));
     I.seeElement(dashboardPage.graphsLocator(`${node1} - System Uptime`));
 
-    await I.selectGrafanaDropdownOption('Node Name', node2);
-    I.scrollTo(dashboardPage.fields.metricTitle);
-    I.forceClick(dashboardPage.fields.metricTitle);
-    I.wait(1);
+    await dashboardPage.expandFilters('Node Name');
+    I.waitForElement(locateOptions.first(), 5);
+    I.type(node2);
+    I.click(locateOptions.at(2));
+    I.pressKey('Escape');
 
     const finalNumOfPanels = await I.grabNumberOfVisibleElements(dashboardPage.panel);
 

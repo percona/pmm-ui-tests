@@ -12,7 +12,7 @@ Before(async ({ I }) => {
 });
 
 Data(instances).Scenario(
-  'PMM-T2010 - Verify adding Aurora PostgreSQL RDS with specified Auto-discovery limit @aws @instances @temp',
+  'PMM-T2010 - Verify adding Aurora PostgreSQL RDS with specified Auto-discovery limit @aws @instances',
   async ({
     I, current, remoteInstancesPage, pmmInventoryPage, inventoryAPI, agentsPage,
   }) => {

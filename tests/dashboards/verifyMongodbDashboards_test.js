@@ -62,12 +62,12 @@ Scenario(
 
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionsOverview.clearUrl, {
       from: 'now-5m',
-      service_name: mongoService.service_name,
-      refresh: '10s',
+      node_name: mongoService.node_name,
+      refresh: '5s',
     }));
     dashboardPage.waitForDashboardOpened();
     await adminPage.performPageDown(5);
     await dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbCollectionsOverview.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
   },
 ).retry(2);
