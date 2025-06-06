@@ -43,12 +43,12 @@ Scenario(
 );
 
 const databaseEnvironments = [
+  // TODO: Unskip Percona Server when https://perconadev.atlassian.net/browse/PMM-13978 is finished.
   // { dbType: 'PS', serviceName: 'ps_', queryTypes: ['SELECT', 'INSERT', 'DELETE', 'CREATE'] },
   { dbType: 'PDPGSQL', serviceName: 'pdpgsql_', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', 'DELETE FROM', 'CREATE TABLE classes '] },
   { dbType: 'PSMDB', serviceName: 'rs101', queryTypes: ['db.students', 'db.runCommand', 'db.test'] },
 ];
 
-// TODO: Unskip Percona Server when https://perconadev.atlassian.net/browse/PMM-13978 is finished.
 Data(databaseEnvironments).Scenario(
   'PMM-T13 - Check Example, Explain, Plan and Table tabs for supported DBs @qan',
   async ({

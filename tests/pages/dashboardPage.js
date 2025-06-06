@@ -3,6 +3,10 @@ const assert = require('assert');
 const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu');
 const PmmHealthDashboard = require('../dashboards/pages/pmmHealthDashboard');
 const HomeDashboard = require('../dashboards/pages/homeDashboard');
+const MongodbShardedClusterSummary = require('../dashboards/pages/mongodbShardedClusterSummary');
+const PostgresqlTopQueriesDashboard = require('../dashboards/pages/postgresqlTopQueriesDashboard');
+const PostgresqlInstancesOverviewExtendedDashboard = require('../dashboards/pages/postgresqlInstancesOverviewExtendedDashboard');
+const MongodbPBMDetailsDashboard = require('../dashboards/pages/mongodbPBMDetailsDashboard');
 const { locateOption } = require('../helper/locatorHelper');
 
 module.exports = {
@@ -49,6 +53,7 @@ module.exports = {
   advancedDataExplorationDashboard: {
     url:
       'graph/d/prometheus-advanced/advanced-data-exploration?orgId=1&refresh=1m&var-metric=go_gc_duration_seconds',
+    cleanUrl: 'graph/d/prometheus-advanced/advanced-data-exploration',
     metrics: [
       'View Actual Metric Values (Gauge)',
       'View Metric Rate of Change (Counter)',
@@ -425,6 +430,7 @@ module.exports = {
       'Written Files to Disk',
     ],
   },
+  mongodbPBMDetailsDashboard: MongodbPBMDetailsDashboard,
   mongodbOverviewDashboard: {
     url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary',
     metrics: [
@@ -460,6 +466,7 @@ module.exports = {
       'Network Traffic',
     ],
   },
+  mongoDbShardedClusterSummary: MongodbShardedClusterSummary,
   mongoDbClusterSummaryDashboard: {
     url: 'graph/d/mongodb-cluster-summary/mongodb-cluster-summary',
     metrics: [
@@ -1117,6 +1124,8 @@ module.exports = {
   },
   pmmHealth: PmmHealthDashboard,
   homeDashboard: HomeDashboard,
+  postgresqlTopQueriesDashboard: PostgresqlTopQueriesDashboard,
+  postgresqlInstancesOverviewExtendedDashboard: PostgresqlInstancesOverviewExtendedDashboard,
   osNodesOverview: {
     noDataElements: 3,
     clearUrl: 'graph/d/node-instance-overview/nodes-overview',
@@ -1327,6 +1336,10 @@ module.exports = {
 
   panelDataByTitle(title) {
     return locate(this.panelByTitle(title)).find(I.useDataQA('data-testid Data link'));
+  },
+
+  panelValueByTitle(title) {
+    return locate(this.panelByTitle(title)).find('//div[@data-testid="data-testid panel content"]//span');
   },
 
   async verifyColumnLegendMaxValueAbove(panelTitle, serviceName, expectedValue, timeout = 60) {

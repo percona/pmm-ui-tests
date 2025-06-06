@@ -240,6 +240,9 @@ module.exports = () => actor({
         case 'refresh':
           queryParams.refresh = value;
           break;
+        case 'metric':
+          queryParams['var-metric'] = value;
+          break;
         default:
       }
     });
