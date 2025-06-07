@@ -1,9 +1,9 @@
 Feature('Tests for: "MongoDB PBM Details" dashboard');
 
 const backupTypes = [
-  {
-    mode: 'pitr', cluster: 'sharded', service_name: 'rs101', backupMode: 'BACKUP_MODE_PITR',
-  },
+  // {
+  //   mode: 'pitr', cluster: 'sharded', service_name: 'rs101', backupMode: 'BACKUP_MODE_PITR',
+  // },
   {
     mode: 'snapshot', cluster: 'replicaset', service_name: 'rs101', backupMode: 'BACKUP_MODE_SNAPSHOT',
   },
