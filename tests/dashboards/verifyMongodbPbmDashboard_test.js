@@ -1,12 +1,8 @@
 Feature('Tests for: "MongoDB PBM Details" dashboard');
 
 const backupTypes = [
-  // {
-  //   mode: 'pitr', cluster: 'sharded', service_name: 'rs101', backupMode: 'BACKUP_MODE_PITR',
-  // },
-  {
-    mode: 'snapshot', cluster: 'replicaset', service_name: 'rs101', backupMode: 'BACKUP_MODE_SNAPSHOT',
-  },
+  { cluster: 'sharded', service_name: 'rs101', backupMode: 'BACKUP_MODE_PITR' },
+  { cluster: 'replicaset', service_name: 'rs101', backupMode: 'BACKUP_MODE_SNAPSHOT' },
 ];
 
 BeforeSuite(async ({
@@ -20,8 +16,8 @@ BeforeSuite(async ({
     };
 
     const storageLocation = {
-      endpoint: backupType.cluster === 'sharded' ? `http://${process.env.VM_CLIENT_IP_PSMDB_SHARDED}:9000` : `http://${process.env.VM_CLIENT_IP_MYSQL}:9000`,
-      bucket_name: 'bcp',
+      endpoint: 'http://minio:9000',
+      bucket_name: `bcp-${backupType.cluster}`,
       access_key: 'minio1234',
       secret_key: 'minio1234',
     };
@@ -40,7 +36,7 @@ BeforeSuite(async ({
     const snapshotSchedule = {
       service_id: service.service_id,
       location_id: locationId,
-      name: `test_schedule_On_Demand_${backupType.mode}`,
+      name: `test_schedule_On_Demand_${backupType.backupMode}`,
       mode: backupType.backupMode,
       cron_expression: '* * * * *',
     };
@@ -72,7 +68,7 @@ Data(backupTypes).Scenario('PMM-T2036 - Verify MongoDB PBM dashboard @nightly', 
   I.amOnPage(url);
   dashboardPage.waitForDashboardOpened();
   await dashboardPage.mongodbPBMDetailsDashboard.verifyBackupConfiguredValue('Yes');
-  await dashboardPage.mongodbPBMDetailsDashboard.verifyPitrEnabledValue(current.mode === 'pitr' ? 'Yes' : 'No');
+  await dashboardPage.mongodbPBMDetailsDashboard.verifyPitrEnabledValue(current.backupMode === 'BACKUP_MODE_PITR' ? 'Yes' : 'No');
   await dashboardPage.expandEachDashboardRow();
   await dashboardPage.verifyMetricsExistence(dashboardPage.mongodbPBMDetailsDashboard.metrics);
   await dashboardPage.verifyThereAreNoGraphsWithoutData();
