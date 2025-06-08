@@ -16,7 +16,7 @@ BeforeSuite(async ({
     };
 
     const storageLocation = {
-      endpoint: 'http://minio:90000',
+      endpoint: 'http://minio:9000',
       bucket_name: `bcp-${backupType.cluster}`,
       access_key: 'minio1234',
       secret_key: 'minio1234',
