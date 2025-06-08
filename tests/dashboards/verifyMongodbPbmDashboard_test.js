@@ -45,7 +45,7 @@ BeforeSuite(async ({
   }
 
   // Wait for scheduled backup to be done.
-  I.wait(90);
+  I.wait(120);
 });
 
 AfterSuite(async ({ scheduledAPI, locationsAPI }) => {
