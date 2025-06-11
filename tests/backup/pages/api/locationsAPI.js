@@ -1,5 +1,5 @@
 const { I } = inject();
-const { storageLocationConnection, psStorageLocationConnection } = require('../testData');
+const { storageLocationConnection, psStorageLocationConnection, storageLocationConnectionShardedCluster, storageLocationConnectionReplicaset } = require('../testData');
 
 const storageType = {
   s3: 's3_config',
@@ -15,6 +15,8 @@ module.exports = {
   localStorageDefaultConfig,
   storageLocationConnection,
   psStorageLocationConnection,
+  storageLocationConnectionShardedCluster,
+  storageLocationConnectionReplicaset,
 
   async createStorageLocation(name, type, config, description = '') {
     const body = {
