@@ -20,21 +20,17 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'Open the PostgreSQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
-  async ({ I, dashboardPage, adminPage }) => {
-    I.say(serviceList);
-    for (const serviceName of serviceList) {
-      const url = I.buildUrlWithParams(
-        dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl,
-        { service_name: serviceName, from: 'now-5m' },
-      );
+  'PMM-T2050 - Verify PostgreSQL Instance Summary Dashboard @nightly @dashboards',
+  async ({ I, dashboardPage }) => {
+    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName('pdpgsql_');
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.url, { service_name, from: 'now-5m' });
 
-      I.amOnPage(url);
-      dashboardPage.waitForDashboardOpened();
-      await dashboardPage.expandEachDashboardRow();
-      await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData();
-    }
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.verifySlowQueriesPanel('5 minutes');
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
 
@@ -45,7 +41,7 @@ Scenario(
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.postgresqlInstanceOverviewDashboard.verifySlowQueriesPanel('5 minutes');
+    await dashboardPage.verifySlowQueriesPanel('5 minutes');
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceOverviewDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData();

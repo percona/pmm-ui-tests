@@ -57,7 +57,7 @@ Data(backupTypes).Scenario('PMM-T2036 - Verify MongoDB PBM dashboard @nightly', 
   I, current, dashboardPage,
 }) => {
   const url = I.buildUrlWithParams(dashboardPage.mongodbPBMDetailsDashboard.url, {
-    from: 'now-5m',
+    from: 'now-10m',
     cluster: current.cluster,
   });
 

@@ -8,11 +8,14 @@ const PostgresqlTopQueriesDashboard = require('../dashboards/pages/postgresqlTop
 const PostgresqlInstancesOverviewExtendedDashboard = require('../dashboards/pages/postgresqlInstancesOverviewExtendedDashboard');
 const MongodbPBMDetailsDashboard = require('../dashboards/pages/mongodbPBMDetailsDashboard');
 const PostgresqlInstanceOverviewDashboard = require('../dashboards/pages/postgresqlInstanceOverviewDashboard');
+const PostgresqlInstanceSummaryDashboard = require('../dashboards/pages/postgresqlInstanceSummaryDashboard');
 const { locateOption } = require('../helper/locatorHelper');
 
 module.exports = {
   // insert your locators and methods here
   // setting locators
+  slowQueriesText: locate('//section[contains(@data-testid, "Panel header Slow Queries") or contains(@data-testid, "Panel header Slow queries")]//div[@data-testid="TextPanel-converted-content"]'),
+  slowQueriesValue: locate('//section[contains(@data-testid, "Panel header Slow Queries") or contains(@data-testid, "Panel header Slow queries")]//div[@data-testid="TextPanel-converted-content"]//span'),
   serviceNameDropdown:
     '//label[contains(text(), "Service Name")]/following-sibling::div',
   serviceName:
@@ -299,35 +302,7 @@ module.exports = {
       'Maximum Galera Replication Latency',
     ],
   },
-  postgresqlInstanceSummaryDashboard: {
-    url: 'graph/d/postgresql-instance-summary/postgresql-instance-summary?orgId=1&from=now-5m&to=now',
-    cleanUrl: 'graph/d/postgresql-instance-summary/postgresql-instance-summary',
-    metrics: [
-      'Version',
-      'Max Connections',
-      'Shared Buffers',
-      'Disk-Page Buffers',
-      'Memory Size for each Sort',
-      'Disk Cache Size',
-      'Autovacuum',
-      'PostgreSQL Connections',
-      'Active Connections',
-      'Tuples',
-      'Read Tuple Activity',
-      'Transactions',
-      'Duration of Transactions',
-      'Number of Temp Files',
-      'Size of Temp Files',
-      'Conflicts/Deadlocks',
-      'Number of Locks',
-      'Operations with Blocks',
-      'Buffers',
-      'Canceled Queries',
-      'Cache Hit Ratio',
-      'Checkpoint stats',
-      'Number of Locks',
-    ],
-  },
+  postgresqlInstanceSummaryDashboard: PostgresqlInstanceSummaryDashboard,
   postgresqlInstanceCompareDashboard: {
     url: 'graph/d/postgresql-instance-compare/postgresql-instances-compare?orgId=1&from=now-5m&to=now',
     cleanUrl: 'graph/d/postgresql-instance-compare/postgresql-instances-compare',
@@ -1470,5 +1445,19 @@ module.exports = {
    */
   panelMenu(panelTitle) {
     return new DashboardPanelMenu(panelTitle);
+  },
+
+  async verifySlowQueriesPanel(timeFrame) {
+    I.waitForVisible(this.slowQueriesText);
+    const queryCount = await I.grabTextFrom(this.slowQueriesValue);
+    const queryText = await I.grabTextFrom(this.slowQueriesText);
+
+    if (parseInt(queryCount, 10) === 0) {
+      throw new Error('Count of Slow Queries should be greater than 0');
+    }
+
+    if (!queryText.includes(timeFrame)) {
+      throw new Error(`Slow queries text (${queryText.replace('\n', '').trim()}) should contains expected time frame: ${timeFrame}`);
+    }
   },
 };
