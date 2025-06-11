@@ -15,18 +15,10 @@ BeforeSuite(async ({
       description: `test description ${backupType.cluster}`,
     };
 
-    const storageLocation = {
-      endpoint: 'http://minio:9000',
-      bucket_name: `bcp-${backupType.cluster}`,
-      access_key: 'minio1234',
-      secret_key: 'minio1234',
-    };
-
     const locationId = await locationsAPI.createStorageLocation(
       location.name,
-      locationsAPI.storageType.s3,
-      storageLocation,
-      location.description,
+      locationsAPI.storageType.localClient,
+      locationsAPI.localStorageDefaultConfig,
     );
 
     const snapshotSchedule = {
