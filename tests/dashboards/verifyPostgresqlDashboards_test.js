@@ -1,9 +1,6 @@
 const { SERVICE_TYPE } = require('../helper/constants');
 
-const {
-  inventoryAPI,
-} = inject();
-let services;
+const { inventoryAPI } = inject();
 const serviceList = [];
 
 Feature('Test Dashboards inside the PostgreSQL Folder');
@@ -42,20 +39,16 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T394 - PostgreSQL Instance Overview Dashboard metrics @nightly @dashboards',
+  'PMM-T2049 - Verify PostgreSQL Instances Overview Dashboard @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    for (const serviceName of serviceList) {
-      const url = I.buildUrlWithParams(
-        dashboardPage.postgresqlInstanceOverviewDashboard.cleanUrl,
-        { service_name: serviceName, from: 'now-5m' },
-      );
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlInstanceOverviewDashboard.url, { from: 'now-5m' });
 
-      I.amOnPage(url);
-      dashboardPage.waitForDashboardOpened();
-      await dashboardPage.expandEachDashboardRow();
-      await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceOverviewDashboard.metrics);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
-    }
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.postgresqlInstanceOverviewDashboard.verifySlowQueriesPanel('5 minutes');
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceOverviewDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
 

@@ -22,16 +22,12 @@ BeforeSuite(async ({
       secret_key: 'minio1234',
     };
 
-    console.log(storageLocation);
-
     const locationId = await locationsAPI.createStorageLocation(
       location.name,
       locationsAPI.storageType.s3,
       storageLocation,
       location.description,
     );
-
-    console.log(`Location  id is: ${locationId}`);
 
     const snapshotSchedule = {
       service_id: service.service_id,
