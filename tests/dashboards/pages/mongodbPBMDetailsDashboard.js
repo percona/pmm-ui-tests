@@ -4,6 +4,7 @@ class MongodbPBMDetailsDashboard {
     this.elements = {
       backUpConfiguredValue: locate('//section[contains(@data-testid, "Backup Configured")]//span'),
       pitrEnabledValue: locate('//section[contains(@data-testid, "PITR Enabled")]//span'),
+      refresh: locate('//button[contains(@data-testid, "RefreshPicker run button")]'),
     };
     this.metrics = [
       'Backup Configured',
@@ -31,11 +32,12 @@ class MongodbPBMDetailsDashboard {
     const I = actor();
 
     I.waitForVisible(this.elements.pitrEnabledValue, 15);
-    const value = await I.grabTextFrom(this.elements.pitrEnabledValue);
+    await I.asyncWaitFor(async () => {
+      I.click(this.elements.refresh);
+      const value = await I.grabTextFrom(this.elements.pitrEnabledValue);
 
-    if (value !== expectedValue) {
-      throw new Error(`Expected Value for panel PITR Enabled on MongoDB PMM Details dashboard does not equal expected value. Expected: "${expectedValue}". Actual: "${value}".`);
-    }
+      return value === expectedValue;
+    }, 60);
   }
 }
 

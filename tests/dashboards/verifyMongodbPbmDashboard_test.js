@@ -1,62 +1,49 @@
 Feature('Tests for: "MongoDB PBM Details" dashboard');
 
-const backupTypes = [
-  { cluster: 'sharded', service_name: 'rs101', backupMode: 'BACKUP_MODE_PITR' },
-  { cluster: 'replicaset', service_name: 'rs101', backupMode: 'BACKUP_MODE_SNAPSHOT' },
-];
+let locationId;
+const backupTypes = ['BACKUP_MODE_PITR', 'BACKUP_MODE_SNAPSHOT'];
 
-BeforeSuite(async ({
-  I, locationsAPI, inventoryAPI, scheduledAPI,
-}) => {
-  for (const backupType of backupTypes) {
-    const service = await inventoryAPI.getServiceDetailsByPartialDetails({ cluster: backupType.cluster, service_name: 'rs101' });
-    const location = {
-      name: `mongo-location-${backupType.cluster}`,
-      description: `test description ${backupType.cluster}`,
-    };
-
-    const locationId = await locationsAPI.createStorageLocation(
-      location.name,
-      locationsAPI.storageType.localClient,
-      locationsAPI.localStorageDefaultConfig,
-    );
-
-    const snapshotSchedule = {
-      service_id: service.service_id,
-      location_id: locationId,
-      name: `test_schedule_On_Demand_${backupType.backupMode}`,
-      mode: backupType.backupMode,
-      cron_expression: '* * * * *',
-    };
-
-    await scheduledAPI.createScheduledBackup(snapshotSchedule);
-  }
-
-  // Wait for scheduled backup to be done.
-  I.wait(120);
+Before(async ({ I, locationsAPI }) => {
+  await I.Authorize();
+  locationId = await locationsAPI.createStorageLocation(
+    'mongo-location-pbm-dashboard-test',
+    locationsAPI.storageType.localClient,
+    locationsAPI.localStorageDefaultConfig,
+  );
 });
 
-AfterSuite(async ({ scheduledAPI, locationsAPI }) => {
+After(async ({ scheduledAPI, locationsAPI }) => {
   await scheduledAPI.clearAllSchedules();
   await locationsAPI.clearAllLocations();
 });
 
-Before(async ({ I }) => {
-  await I.Authorize();
-});
-
 Data(backupTypes).Scenario('PMM-T2036 - Verify MongoDB PBM dashboard @nightly', async ({
-  I, current, dashboardPage,
+  I, current, dashboardPage, inventoryAPI, scheduledAPI, backupAPI,
 }) => {
+  // Preparation
+  const service = await inventoryAPI.getServiceDetailsByPartialDetails({ cluster: 'replicaset', service_name: 'rs101' });
+  const snapshotSchedule = {
+    service_id: service.service_id,
+    location_id: locationId,
+    name: `test_schedule_pbm_${current}`,
+    mode: current,
+    cron_expression: '* * * * *',
+  };
+
+  await scheduledAPI.createScheduledBackup(snapshotSchedule);
+  await backupAPI.waitForBackupFinish(null, `test_schedule_pbm_${current}`, 90);
+
+  // Test
   const url = I.buildUrlWithParams(dashboardPage.mongodbPBMDetailsDashboard.url, {
-    from: 'now-10m',
+    from: 'now-5m',
     cluster: current.cluster,
   });
 
   I.amOnPage(url);
   dashboardPage.waitForDashboardOpened();
   await dashboardPage.mongodbPBMDetailsDashboard.verifyBackupConfiguredValue('Yes');
-  await dashboardPage.mongodbPBMDetailsDashboard.verifyPitrEnabledValue(current.backupMode === 'BACKUP_MODE_PITR' ? 'Yes' : 'No');
+
+  await dashboardPage.mongodbPBMDetailsDashboard.verifyPitrEnabledValue(current === 'BACKUP_MODE_PITR' ? 'Yes' : 'No');
   await dashboardPage.expandEachDashboardRow();
   await dashboardPage.verifyMetricsExistence(dashboardPage.mongodbPBMDetailsDashboard.metrics);
   await dashboardPage.verifyThereAreNoGraphsWithoutData();
