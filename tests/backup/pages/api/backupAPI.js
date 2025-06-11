@@ -51,6 +51,8 @@ module.exports = {
 
       I.wait(5);
     }
+
+    throw new Error(`Backup was not finished for schedule: ${scheduleName} in ${timeout}`);
   },
 
   // getArtifactByName returns artifact object by name
