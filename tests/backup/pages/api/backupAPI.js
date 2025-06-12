@@ -49,8 +49,6 @@ module.exports = {
 
       if (found.length) return;
 
-      console.log(artifacts);
-
       I.wait(5);
     }
 
