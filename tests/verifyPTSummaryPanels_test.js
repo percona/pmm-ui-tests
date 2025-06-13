@@ -29,16 +29,17 @@ Scenario(
 Scenario(
   'PMM-T666 - Verify summary for PG is displayed on Instance Summary dashboard @dashboards @nightly',
   async ({
-    I, dashboardPage, inventoryAPI,
+    I, dashboardPage, inventoryAPI, adminPage,
   }) => {
     const pgsql_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pgsql_');
     const url = I.buildUrlWithParams(
-      dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl,
+      dashboardPage.postgresqlInstanceSummaryDashboard.url,
       { service_name: pgsql_service_response.service_name, from: 'now-15m' },
     );
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
+    await adminPage.performPageDown(5);
     I.waitForVisible(dashboardPage.fields.serviceSummary, 30);
     I.click(dashboardPage.fields.serviceSummary);
     I.waitForVisible(dashboardPage.fields.postgreSQLServiceSummaryContent, 150);

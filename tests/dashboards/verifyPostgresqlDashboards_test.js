@@ -1,9 +1,6 @@
 const { SERVICE_TYPE } = require('../helper/constants');
 
-const {
-  inventoryAPI,
-} = inject();
-let services;
+const { inventoryAPI } = inject();
 const serviceList = [];
 
 Feature('Test Dashboards inside the PostgreSQL Folder');
@@ -23,39 +20,31 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'Open the PostgreSQL Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
-  async ({ I, dashboardPage, adminPage }) => {
-    I.say(serviceList);
-    for (const serviceName of serviceList) {
-      const url = I.buildUrlWithParams(
-        dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl,
-        { service_name: serviceName, from: 'now-5m' },
-      );
+  'PMM-T2050 - Verify PostgreSQL Instance Summary Dashboard @nightly @dashboards',
+  async ({ I, dashboardPage }) => {
+    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName('pdpgsql_');
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.url, { service_name, from: 'now-5m' });
 
-      I.amOnPage(url);
-      dashboardPage.waitForDashboardOpened();
-      await dashboardPage.expandEachDashboardRow();
-      await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData();
-    }
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.verifySlowQueriesPanel('5 minutes');
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
 
 Scenario(
-  'PMM-T394 - PostgreSQL Instance Overview Dashboard metrics @nightly @dashboards',
+  'PMM-T2049 - Verify PostgreSQL Instances Overview Dashboard @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    for (const serviceName of serviceList) {
-      const url = I.buildUrlWithParams(
-        dashboardPage.postgresqlInstanceOverviewDashboard.cleanUrl,
-        { service_name: serviceName, from: 'now-5m' },
-      );
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlInstanceOverviewDashboard.url, { from: 'now-5m' });
 
-      I.amOnPage(url);
-      dashboardPage.waitForDashboardOpened();
-      await dashboardPage.expandEachDashboardRow();
-      await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceOverviewDashboard.metrics);
-      await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
-    }
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.verifySlowQueriesPanel('5 minutes');
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceOverviewDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
 
@@ -73,6 +62,34 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.postgresqlInstanceCompareDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
+  },
+);
+
+Scenario(
+  'PMM-T2044 - Verify PostgreSQL Top Queries Dashboard metrics @nightly @dashboards',
+  async ({ I, dashboardPage }) => {
+    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName('pdpgsql_pgsm');
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlTopQueriesDashboard.url, { from: 'now-5m', service_name });
+
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.postgresqlTopQueriesDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
+  },
+);
+
+Scenario(
+  'PMM-T2048 - Verify PostgreSQL Instances Overview Extended metrics @nightly @dashboards',
+  async ({ I, dashboardPage }) => {
+    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName('pdpgsql_pgsm');
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlInstancesOverviewExtendedDashboard.url, { from: 'now-5m', service_name });
+
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.postgresqlInstancesOverviewExtendedDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
