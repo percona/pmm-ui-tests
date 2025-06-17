@@ -93,3 +93,29 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
+
+Scenario(
+  'PMM-T2052 - Verify PostgreSQL Checkpoints, Buffers and WAL Usage dashboard @nightly @dashboards',
+  async ({ I, dashboardPage }) => {
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlCheckpointDashboard.url, { from: 'now-5m', service_name: 'pdpgsql_pmm_replication_17_1' });
+
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.postgresqlCheckpointDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
+  },
+);
+
+Scenario(
+  'PMM-T2051 - Verify PostgreSQL Replication Overview dashboard @nightly @dashboards',
+  async ({ I, dashboardPage }) => {
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlReplicationOverviewDashboard.url, { from: 'now-5m' });
+
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.postgresqlReplicationOverviewDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
+  },
+);
