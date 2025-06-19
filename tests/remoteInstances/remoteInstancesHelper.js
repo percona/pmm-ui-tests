@@ -332,7 +332,7 @@ module.exports = {
           address: process.env.PMM_QA_RDS_AURORA_PGSQL16_HOST,
           username: process.env.PMM_QA_RDS_AURORA_PGSQL16_USER,
           password: process.env.PMM_QA_RDS_AURORA_PGSQL16_PASSWORD,
-          instance_id: 'pmm-qa-aurora-postgres-16-4-instance-1',
+          instance_id: 'pmm-qa-aurora-postgres-16-6-instance-1',
           cluster_name: 'postgres16aws_aurora',
         },
       },
