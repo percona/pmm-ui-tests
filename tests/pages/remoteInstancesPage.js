@@ -116,9 +116,9 @@ module.exports = {
   postgres16auroraInputs: {
     userName: remoteInstancesHelper.remote_instance.aws.aurora.postgres16aurora.username,
     password: remoteInstancesHelper.remote_instance.aws.aurora.postgres16aurora.password,
-    environment: 'RDS Postgres17',
-    cluster: 'rdsPostgres17-cluster',
-    replicationSet: 'rdsPostgres17-replication',
+    environment: 'RDS Postgres16',
+    cluster: 'rdsPostgres16-cluster',
+    replicationSet: 'rdsPostgres16-replication',
   },
   url: 'graph/add-instance?orgId=1',
   addMySQLRemoteURL: 'graph/add-instance?instance_type=mysql',
@@ -793,7 +793,7 @@ module.exports = {
         inputs = this.postgres15auroraInputs;
         this.fillFields(inputs);
         break;
-      case 'pmm-qa-aurora-postgres-16-4-instance-1':
+      case 'pmm-qa-aurora-postgres-16-6-instance-1':
         inputs = this.postgres16auroraInputs;
         this.fillFields(inputs);
         break;
