@@ -47,10 +47,12 @@ module.exports = {
         ? found = artifacts.filter(({ artifact_id, status }) => status !== 'BACKUP_STATUS_PENDING' && artifact_id === artifactId)
         : found = artifacts.filter(({ name, status }) => status !== 'BACKUP_STATUS_PENDING' && name.startsWith(scheduleName));
 
-      if (found.length) break;
+      if (found.length) return;
 
       I.wait(5);
     }
+
+    throw new Error(`Backup was not finished for schedule: ${scheduleName} in ${timeout} seconds`);
   },
 
   // getArtifactByName returns artifact object by name

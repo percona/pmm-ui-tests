@@ -3,6 +3,7 @@ const { I, inventoryAPI } = inject();
 const assert = require('assert');
 const paginationPart = require('./paginationFragment');
 const servicesTab = require('./servicesTab');
+const NodesTab = require('./nodesTab');
 
 const service = (serviceName) => `//span[contains(text(),'${serviceName}')]`;
 const node = (nodeName) => `//td[@title='${nodeName}'][2]`;
@@ -71,6 +72,7 @@ module.exports = {
     serviceNames: locate('//tr[@role="row"]//td[3]//span'),
   },
   servicesTab,
+  nodesTab: NodesTab,
   pagination: paginationPart,
 
   async open() {
