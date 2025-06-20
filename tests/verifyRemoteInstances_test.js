@@ -66,14 +66,14 @@ Before(async ({ I, remoteInstancesPage }) => {
 });
 
 // The test relies on --setup-external-service flag setup from pmm-framework
-Scenario.skip('@PMM-T1700 - External service name is properly displayed @instances @fb-instances', async ({ I, pmmInventoryPage }) => {
+Scenario.skip('@PMM-T1700 - External service name is properly displayed @fb-instances', async ({ I, pmmInventoryPage }) => {
   I.amOnPage(pmmInventoryPage.url);
   pmmInventoryPage.changeRowsPerPage(100);
   I.waitForVisible(pmmInventoryPage.fields.serviceRow('redis_external'), 30);
 });
 
 Scenario(
-  'PMM-T588 - Verify adding external exporter service via UI @instances @fb-instances',
+  'PMM-T588 - Verify adding external exporter service via UI @fb-instances',
   async ({ I, remoteInstancesPage, pmmInventoryPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
@@ -88,7 +88,7 @@ Scenario(
 ).retry(3);
 
 Data(instances).Scenario(
-  'PMM-T898 - Verify Remote Instance Addition [critical] @instances @fb-instances',
+  'PMM-T898 - Verify Remote Instance Addition [critical] @fb-instances',
   async ({ I, remoteInstancesPage, current }) => {
     const serviceName = remoteInstancesHelper.services[current.name];
     const nodeName = 'pmm-server';
@@ -102,7 +102,7 @@ Data(instances).Scenario(
 );
 
 Data(instances).Scenario(
-  'PMM-13166 - Verify Remote Instance Addition [critical] (Verify Ability to monitor DBs from a different node) @instances @fb-instances',
+  'PMM-13166 - Verify Remote Instance Addition [critical] (Verify Ability to monitor DBs from a different node) @fb-instances',
   async ({ I, remoteInstancesPage, current }) => {
     const serviceName = remoteInstancesHelper.services[current.name];
     const nodeName = 'client_container';
@@ -116,7 +116,7 @@ Data(instances).Scenario(
 );
 
 Scenario(
-  'PMM-T590 - Verify parsing URL on adding External service page @instances',
+  'PMM-T590 - Verify parsing URL on adding External service page @fb-instances',
   async ({ I, remoteInstancesPage }) => {
     const metricsPath = '/metrics2';
     const credentials = 'something';
@@ -131,7 +131,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T630 - Verify adding External service with empty fields via UI @instances',
+  'PMM-T630 - Verify adding External service with empty fields via UI @fb-instances',
   async ({ I, remoteInstancesPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
@@ -143,7 +143,7 @@ Scenario(
 );
 
 Data(instances).Scenario(
-  'Verify Remote Instance has Status Running [critical] @instances @fb-instances',
+  'Verify Remote Instance has Status Running [critical] @fb-instances',
   async ({
     I, pmmInventoryPage, current,
   }) => {
@@ -156,7 +156,7 @@ Data(instances).Scenario(
 ).retry(2);
 
 Scenario(
-  'TableStats UI Default table Options for Remote MySQL & AWS-RDS Instance @instances',
+  'TableStats UI Default table Options for Remote MySQL & AWS-RDS Instance @fb-instances',
   async ({ I, remoteInstancesPage, adminPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
@@ -172,7 +172,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T637 - Verify elements on HAProxy page @instances',
+  'PMM-T637 - Verify elements on HAProxy page @fb-instances',
   async ({ I, remoteInstancesPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
@@ -193,7 +193,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T636 - Verify adding HAProxy with all empty fields @instances',
+  'PMM-T636 - Verify adding HAProxy with all empty fields @fb-instances',
   async ({ I, remoteInstancesPage }) => {
     I.amOnPage(remoteInstancesPage.url);
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
@@ -205,7 +205,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T635 - Verify Adding HAProxy service via UI @instances @fb-instances',
+  'PMM-T635 - Verify Adding HAProxy service via UI @fb-instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage,
   }) => {
@@ -237,7 +237,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1089 - Verify UI elements for PostgreSQL Instance @instances',
+  'PMM-T1089 - Verify UI elements for PostgreSQL Instance @fb-instances',
   async ({
     I, remoteInstancesPage,
   }) => {
@@ -266,7 +266,7 @@ Scenario(
 );
 
 Data(remotePostgreSQL).Scenario(
-  'PMM-T441 - Verify adding Remote PostgreSQL Instance @instances',
+  'PMM-T441 - Verify adding Remote PostgreSQL Instance @fb-instances',
   async ({
     I, remoteInstancesPage, pmmInventoryPage, current,
   }) => {
@@ -285,7 +285,7 @@ Data(remotePostgreSQL).Scenario(
 );
 
 Data(dashboardCheck).Scenario(
-  'PMM-T853 - Verify dashboard after remote postgreSQL instance is added @instances',
+  'PMM-T853 - Verify dashboard after remote postgreSQL instance is added @fb-instances',
   async ({
     I, dashboardPage, adminPage, current,
   }) => {
@@ -301,7 +301,7 @@ Data(dashboardCheck).Scenario(
 ).retry(2);
 
 Data(qanFilters).Scenario(
-  'PMM-T854 - Verify QAN after remote instance is added @instances @fb-instances',
+  'PMM-T854 - Verify QAN after remote instance is added @fb-instances',
   async ({
     I, queryAnalyticsPage, current,
   }) => {
@@ -319,14 +319,14 @@ Data(qanFilters).Scenario(
 ).retry(2);
 
 Data(metrics).Scenario(
-  'PMM-T743 - Check metrics from exporters are hitting PMM Server @instances @fb-instances',
+  'PMM-T743 - Check metrics from exporters are hitting PMM Server @fb-instances',
   async ({ grafanaAPI, current }) => {
     await grafanaAPI.waitForMetric(current.metricName, { type: 'service_name', value: current.serviceName }, 10);
   },
 );
 
 Scenario(
-  'PMM-T1087 - Verify adding PostgreSQL remote instance without postgres database @instances',
+  'PMM-T1087 - Verify adding PostgreSQL remote instance without postgres database @fb-instances',
   async ({
     I, remoteInstancesPage, grafanaAPI,
   }) => {

@@ -146,7 +146,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'Verify MySQL Instances Overview Dashboard contains AWS RDS MySQL filters @instances',
   async ({
-    I, current, dashboardPage, remoteInstancesPage,
+    I, current, dashboardPage,
   }) => {
     const {
       instance,
@@ -157,8 +157,8 @@ Data(instances).Scenario(
     I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
     dashboardPage.waitForDashboardOpened();
     for (const key of Object.keys(filters)) {
-      const locator = dashboardPage.expandFilters(key);
-
+      dashboardPage.expandFilters(key);
+      I.click(dashboardPage.fields.openFiltersDropdownLocator(key));
       I.waitForVisible(dashboardPage.fields.filterDropdownValueLocator(filters[key]), 5);
     }
   },
