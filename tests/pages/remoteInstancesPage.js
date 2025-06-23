@@ -820,6 +820,7 @@ module.exports = {
     I.waitForVisible(this.fields.urlInput, 30);
     I.fillField(this.fields.urlInput, url);
     I.click(this.fields.parseFromURLRadioButton);
+    I.wait(2);
     I.click(this.fields.setManualy);
   },
 

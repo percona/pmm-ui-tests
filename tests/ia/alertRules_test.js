@@ -98,7 +98,7 @@ Scenario(
     // TODO: https://jira.percona.com/browse/PMM-10860 name doesn't change
     alertRulesPage.openAlertRulesTab();
     I.waitForElement(alertRulesPage.buttons.newAlertRuleFromTemplate);
-    I.click(alertRulesPage.buttons.newAlertRuleFromTemplate);
+    I.forceClick(alertRulesPage.buttons.newAlertRuleFromTemplate);
     I.waitForElement(alertRulesPage.fields.templatesLoader);
     await alertRulesPage.searchAndSelectResult('template', 'PostgreSQL down');
     I.waitForValue(alertRulesPage.fields.inputField('duration'), '60s');
