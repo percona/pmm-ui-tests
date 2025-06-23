@@ -126,7 +126,13 @@ Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage('external');
     remoteInstancesPage.parseURL(url);
-    await remoteInstancesPage.checkParsing(metricsPath, credentials);
+    I.wait(2);
+
+    I.seeAttributesOnElements(remoteInstancesPage.fields.hostName, { value: process.env.MONITORING_HOST });
+    I.seeAttributesOnElements(remoteInstancesPage.fields.metricsPath, { value: metricsPath });
+    I.seeAttributesOnElements(remoteInstancesPage.fields.portNumber, { value: process.env.EXTERNAL_EXPORTER_PORT });
+    I.seeAttributesOnElements(remoteInstancesPage.fields.userName, { value: credentials });
+    I.seeAttributesOnElements(locate('$schema-radio-state'), { value: 'https' });
   },
 );
 
