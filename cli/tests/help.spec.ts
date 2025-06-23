@@ -42,7 +42,7 @@ test.describe('PMM Client "--help" validation', async () => {
   test('PMM-T925 Verify pmm-admin add mongodb --help has TLS-related flags', async ({}) => {
     await addMongoHelp.outContainsMany([
       'tls                        Use TLS to connect to the database',
-      'tls-skip-verify            Skip TLS certificates validation',
+      'tls-skip-verify            Skip TLS certificate verification',
       'tls-certificate-key-file=STRING',
       'tls-certificate-key-file-password=STRING',
       'tls-ca-file=STRING         Path to certificate authority file',
@@ -112,7 +112,7 @@ test.describe('PMM Client "--help" validation', async () => {
   test('PMM-T945 - Verify help for pmm-admin add postgresql has TLS-related flags', async ({}) => {
     await addPostgreSqlHelp.outContainsMany([
       'tls                        Use TLS to connect to the database',
-      'tls-skip-verify            Skip TLS certificates validation',
+      'tls-skip-verify            Skip TLS certificate verification',
       'tls-cert-file=STRING       TLS certificate file',
       'tls-key-file=STRING        TLS certificate key file',
       'tls-ca-file=STRING         TLS CA certificate file',
@@ -223,7 +223,7 @@ test.describe('PMM Client "--help" validation', async () => {
     await output.assertSuccess();
     await output.outContainsNormalizedMany([
       'tls Use TLS to connect to the database',
-      'tls-skip-verify Skip TLS certificates validation',
+      'tls-skip-verify Skip TLS certificate verification',
       'tls-ca=STRING Path to certificate authority certificate',
       'tls-cert=STRING Path to client certificate file',
       'tls-key=STRING Path to client key file',
