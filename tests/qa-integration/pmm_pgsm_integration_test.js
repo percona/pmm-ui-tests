@@ -222,7 +222,7 @@ Data(filters).Scenario(
 Scenario(
   'PMM-T1262 - Verify Postgresql Dashboard Instance Summary has Data @not-ui-pipeline @pgsm-pmm-integration',
   async ({ I, dashboardPage }) => {
-    const url = I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, {
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.url, {
       service_name: pgsm_service_name,
       from: 'now-5m',
     });
@@ -238,7 +238,7 @@ Scenario(
 Scenario(
   'Verify Postgresql Dashboard Instance Summary has Data with socket based service and Agent log @not-ui-pipeline @pgsm-pmm-integration',
   async ({ I, dashboardPage }) => {
-    const url = I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, {
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.url, {
       service_name: pgsm_service_name_socket,
       from: 'now-5m',
     });

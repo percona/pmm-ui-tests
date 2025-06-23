@@ -46,7 +46,7 @@ Data(data).Scenario(
       `'${serviceName}' is expected to have 'OK' monitoring status`,
     );
 
-    I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl}`, { service_name: serviceName, node_name: 'pmm-server-db', from: 'now-5m' }));
+    I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${dashboardPage.postgresqlInstanceSummaryDashboard.url}`, { service_name: serviceName, node_name: 'pmm-server-db', from: 'now-5m' }));
     dashboardPage.waitForDashboardOpened();
     I.waitForText('YES', 20, locate('//section[@data-testid="data-testid Panel header Connected"]//div[@data-testid="data-testid panel content"]//span'));
 
