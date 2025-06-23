@@ -103,7 +103,7 @@ Scenario(
 ).retry(2);
 
 Scenario(
-  'PMM-T747 - Verify enabling Azure flag @instances',
+  'PMM-T747 - Verify enabling Azure flag @fb-settings',
   async ({
     I, pmmSettingsPage, remoteInstancesPage, settingsAPI,
   }) => {
@@ -230,7 +230,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T254 - Ensure Advisors are on by default @instances',
+  'PMM-T254 - Ensure Advisors are on by default @fb-instances',
   async ({ settingsAPI }) => {
     const resp = await settingsAPI.getSettings('advisor_enabled');
 

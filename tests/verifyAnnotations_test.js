@@ -79,7 +79,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T165 - Verify Annotation with Default Options @instances',
+  'PMM-T165 - Verify Annotation with Default Options @fb-instances',
   async ({ I, dashboardPage }) => {
     const annotationTitle = 'pmm-annotate-without-tags';
 
@@ -95,7 +95,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T166 - Verify adding annotation with specified tags @instances',
+  'PMM-T166 - Verify adding annotation with specified tags @fb-instances',
   async ({ I, dashboardPage }) => {
     const annotationTitle2 = 'pmm-annotate-tags';
     const annotationTag1 = 'pmm-testing-tag1';
