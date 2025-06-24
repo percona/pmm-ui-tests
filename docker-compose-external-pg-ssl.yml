@@ -58,6 +58,7 @@ services:
       - '8082:8080'
       - '8447:8443'
     environment:
+      - PMM_DEBUG=1
       - PMM_POSTGRES_DBNAME=grafana
       - PMM_POSTGRES_ADDR=external-postgres-ssl:5432
       - PMM_POSTGRES_USERNAME=postgres
