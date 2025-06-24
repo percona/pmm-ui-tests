@@ -42,8 +42,8 @@ Data(data).Scenario(
 
     I.assertEqual(
       await pmmInventoryPage.servicesTab.getServiceMonitoringAddress(serviceName),
-      data.pdpgsqlContainerName,
-      `'${serviceName}' is expected to have '${JSON.stringify(data)}' address`,
+      current.pdpgsqlContainerName,
+      `'${serviceName}' is expected to have '${current.pdpgsqlContainerName}' address`,
     );
 
     I.assertEqual(
