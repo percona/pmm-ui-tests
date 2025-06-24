@@ -1,6 +1,7 @@
 const nodes = new DataTable(['node-type', 'name']);
 const assert = require('assert');
 const { NODE_TYPE } = require('./helper/constants');
+const { locateOptions } = require('./helper/locatorHelper');
 
 nodes.add(['pmm-client', 'ip']);
 
@@ -11,11 +12,13 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'Open the Node Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  'PMM-T2039 - Open the Node Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    I.amOnPage(dashboardPage.nodeSummaryDashboard.url);
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.nodeSummaryDashboard.url, {
+      node_name: 'pmm-server',
+      from: 'now-1h',
+    }));
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.applyFilter('Node Name', 'pmm-server');
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.nodeSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
@@ -34,7 +37,7 @@ Scenario(
 );
 
 Data(nodes).Scenario(
-  'PMM-T418 PMM-T419 Verify the pt-summary on Node Summary dashboard @nightly @dashboards',
+  'PMM-T418 + PMM-T419 - Verify the pt-summary on Node Summary dashboard @nightly @dashboards',
   async ({ I, dashboardPage, adminPage }) => {
     I.amOnPage(dashboardPage.nodeSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -67,7 +70,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1695 Verify that user is able to filter OS / Node Compare dashboard by Node Name @nightly @dashboards',
+  'PMM-T1695 - Verify that user is able to filter OS / Node Compare dashboard by Node Name @nightly @dashboards',
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
@@ -91,9 +94,11 @@ Scenario(
     I.dontSeeElement(dashboardPage.graphsLocator(`${node2} - System Uptime`));
     I.seeElement(dashboardPage.graphsLocator(`${node1} - System Uptime`));
 
-    await dashboardPage.applyFilter('Node Name', node2);
-    I.scrollTo(dashboardPage.fields.metricTitle);
-    I.forceClick(dashboardPage.fields.metricTitle);
+    await dashboardPage.expandFilters('Node Name');
+    I.waitForElement(locateOptions.first(), 5);
+    I.type(node2);
+    I.click(locateOptions.at(2));
+    I.pressKey('Escape');
 
     const finalNumOfPanels = await I.grabNumberOfVisibleElements(dashboardPage.panel);
 

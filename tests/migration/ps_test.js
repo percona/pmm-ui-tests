@@ -50,3 +50,22 @@ Scenario(
     assert.ok(countAfterMigration > 0, `The queries for service ${clientServiceName} instance do NOT exist, check QAN Data`);
   },
 ).retry(1);
+
+Scenario(
+  'PMM-T2042 - Verify Explain tab for Percona Server is displayed with data after migration @pmm-migration',
+  async ({
+    I, queryAnalyticsPage, inventoryAPI,
+  }) => {
+    const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'ps_8')).service_name;
+
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, {
+      from: 'now-30m', to: 'now-10m', service_name: clientServiceName, search: 'SELECT * FROM \`information_schema\`',
+    }));
+    queryAnalyticsPage.waitForLoaded();
+
+    await queryAnalyticsPage.data.verifyQueriesDisplayed();
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.waitForLoaded();
+    await queryAnalyticsPage.queryDetails.verifyExplain();
+  },
+).retry(1);

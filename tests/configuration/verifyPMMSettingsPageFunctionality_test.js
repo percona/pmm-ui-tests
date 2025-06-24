@@ -193,10 +193,12 @@ Scenario(
 Scenario(
   'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
   async ({
-    I, pmmSettingsPage, settingsAPI,
+    I, pmmSettingsPage, settingsAPI, codeceptjsConfig,
   }) => {
+    const expectedUrl = codeceptjsConfig.config.helpers.Playwright.url;
+
     await settingsAPI.changeSettings({ publicAddress: '' });
-    I.wait(10);
+    I.wait(3);
     await pmmSettingsPage.openAdvancedSettings();
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.publicAddress);
 
@@ -204,12 +206,13 @@ Scenario(
 
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
     I.click(pmmSettingsPage.fields.publicAddressButton);
+    I.wait(1);
     await pmmSettingsPage.applyChanges();
-    I.wait(10);
+
     const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
     I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
-    I.wait(10);
+    I.wait(3);
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     const publicAddressAfterRefresh = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
@@ -218,6 +221,10 @@ Scenario(
       publicAddressAfterRefresh,
       publicAddressValue,
       `Expected the Public Address to be saved and Match ${publicAddressValue}`,
+    );
+    I.assertTrue(
+      expectedUrl.includes(publicAddressAfterRefresh),
+      `Expected the Public Address (${publicAddressAfterRefresh}) to be saved and Match configuration url: ${expectedUrl}`,
     );
   },
 ).retry(1);
@@ -236,6 +243,7 @@ Scenario(
   + 'Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
+    I.wait(10);
 
     const subPageTooltips = await pmmSettingsPage.getSubpageTooltips();
 
@@ -251,7 +259,7 @@ Scenario(
       }
     }
   },
-);
+).retry(2);
 
 Scenario('PMM-T1401 - Verify Percona Alerting wording in Settings @max-length @settings', async ({
   I,

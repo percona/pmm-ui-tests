@@ -7,8 +7,10 @@ class QueryAnalyticsData {
     this.root = locate('.query-analytics-data');
     this.elements = {
       queryRow: (rowNumber) => locate(`//div[@role="row" and contains(@class, "tr-${rowNumber}")]`),
+      queryRowByText: (text) => locate(locate('div').withText(text)).inside('//div[@role="cell"]'),
       queryRows: locate('//div[@role="row" and contains(@class, "tr-")]'),
       queryRowQueryText: (rowNumber) => locate(`//div[@role="row" and contains(@class, "tr-${rowNumber}")]//div[@role="cell" and position() = 2]`),
+      queryRowQueryCountValue: (rowNumber) => locate(`[class="tr tr-${rowNumber}"]`).find('[role="cell"]').at(4),
       queryRowCells: (rowNumber) => locate(`[class="tr tr-${rowNumber}"]`).find('[role="cell"]'),
       queryRowValue: (rowNumber) => this.elements.queryRowCells(rowNumber).at(2),
       queryRowIcon: (rowNumber) => this.elements.queryRowCells(rowNumber).at(2).find('//*[local-name()="path"]'),
@@ -59,6 +61,12 @@ class QueryAnalyticsData {
     };
   }
 
+  async verifyQueriesDisplayed(parameters) {
+    if (!(await I.isElementDisplayed(this.elements.queryRows))) {
+      throw new Error(`No queries displayed for selected parameters: ${JSON.stringify(parameters)}`);
+    }
+  }
+
   async changeMainMetric(newMainMetric) {
     const oldMainMetric = await I.grabTextFrom(this.elements.selectedMainMetric());
 
@@ -75,6 +83,13 @@ class QueryAnalyticsData {
   selectRow(rowNumber) {
     I.waitForElement(this.elements.queryRow(rowNumber), 60);
     I.forceClick(this.elements.queryRow(rowNumber));
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(this.elements.selectedRow, 10);
+  }
+
+  selectRowByQueryStart(queryStartText) {
+    I.waitForElement(this.elements.queryRowByText(queryStartText), 60);
+    I.forceClick(this.elements.queryRowByText(queryStartText));
     queryAnalyticsPage.waitForLoaded();
     I.waitForVisible(this.elements.selectedRow, 10);
   }
@@ -120,7 +135,9 @@ class QueryAnalyticsData {
   searchByValue(value, refresh = false) {
     I.waitForVisible(this.elements.queryRow(0), 30);
     I.waitForVisible(this.fields.searchBy, 30);
+    I.wait(1);
     I.clearField(this.fields.searchBy);
+    I.click(this.fields.searchBy);
     I.fillField(this.fields.searchBy, value);
     I.pressKey('Enter');
   }

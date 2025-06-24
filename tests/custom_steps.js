@@ -4,7 +4,7 @@ const buildUrl = require('build-url');
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
-const { getOptionLocator } = require('./helper/locatorHelper');
+const { locateOption } = require('./helper/locatorHelper');
 
 const systemMessageText = 'div[data-testid^="data-testid Alert"] > div';
 const systemMessageButtonClose = '[aria-label="Close alert"]';
@@ -40,7 +40,7 @@ module.exports = () => actor({
   },
 
   useDataQA: (selector) => `[data-testid="${selector}"]`,
-  getSingleSelectOptionLocator: (optionName) => locate(getOptionLocator(optionName)),
+  getSingleSelectOptionLocator: (optionName) => locateOption(optionName),
   getClosePopUpButtonLocator: () => systemMessageButtonClose,
   getPopUpLocator: () => systemMessageText,
 
@@ -161,7 +161,7 @@ module.exports = () => actor({
    * @param     timeOutInSeconds  time to wait for a service to appear
    * @returns   {Promise<void>}   requires await when called
    */
-  async asyncWaitFor(boolCallable, timeOutInSeconds) {
+  async asyncWaitFor(boolCallable, timeOutInSeconds, message = '') {
     const start = new Date().getTime();
     const timeout = timeOutInSeconds * 1000;
     const interval = 1;
@@ -176,7 +176,7 @@ module.exports = () => actor({
       // Check the timeout after evaluating main condition
       // to ensure conditions with a zero timeout can succeed.
       if (new Date().getTime() - start >= timeout) {
-        assert.fail(`"${boolCallable.name}" is false: 
+        assert.fail(`${message} \n "${boolCallable.name}" is false: 
         tried to check for ${timeOutInSeconds} second(s) with ${interval} second(s) with interval`);
       }
 
@@ -240,6 +240,9 @@ module.exports = () => actor({
         case 'refresh':
           queryParams.refresh = value;
           break;
+        case 'metric':
+          queryParams['var-metric'] = value;
+          break;
         default:
       }
     });
@@ -249,5 +252,9 @@ module.exports = () => actor({
 
   signOut() {
     this.amOnPage('graph/logout');
+  },
+
+  async cleanupClickhouse() {
+    await this.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --password clickhouse --query "TRUNCATE TABLE metrics"');
   },
 });

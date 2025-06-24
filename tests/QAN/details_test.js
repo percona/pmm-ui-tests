@@ -42,40 +42,47 @@ Scenario(
   },
 );
 
-const databaseEnvironments = new DataTable(['name', 'select']);
-
-databaseEnvironments.add(['ps_pmm_', 'select name']);
-databaseEnvironments.add(['ms-single', 'select name']);
-databaseEnvironments.add(['pxc_node', 'select']);
-// databaseEnvironments.add(['pgsql_pgss_pmm', 'insert']);
-databaseEnvironments.add(['pdpgsql_pgsm_pmm', 'insert']);
-databaseEnvironments.add(['rs101', 'update']);
+const databaseEnvironments = [
+  // TODO: Unskip Percona Server when https://perconadev.atlassian.net/browse/PMM-13978 is finished.
+  // { dbType: 'PS', serviceName: 'ps_', queryTypes: ['SELECT', 'INSERT', 'DELETE', 'CREATE'] },
+  { dbType: 'PDPGSQL', serviceName: 'pdpgsql_', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', 'DELETE FROM', 'CREATE TABLE classes '] },
+  { dbType: 'PSMDB', serviceName: 'rs101', queryTypes: ['db.students', 'db.runCommand', 'db.test'] },
+];
 
 Data(databaseEnvironments).Scenario(
-  'PMM-T13 - Check Explain and Example for supported DBs @qan',
+  'PMM-T13 - Check Example, Explain, Plan and Table tabs for supported DBs @qan',
   async ({
-    I, queryAnalyticsPage, current,
+    I, queryAnalyticsPage, current, inventoryAPI,
   }) => {
-    queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.filters.selectContainFilterInGroup(current.name, 'Service Name');
-    queryAnalyticsPage.data.searchByValue(current.select);
-    I.waitForElement(queryAnalyticsPage.data.elements.queryRows, 30);
-    queryAnalyticsPage.data.selectRow(1);
-    queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.queryDetails.checkExamplesTab();
+    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName(current.serviceName);
 
-    if (!current.name.includes('pgsql')) {
-      queryAnalyticsPage.queryDetails.checkTab('Explain');
+    for (const query of current.queryTypes) {
+      const parameters = { service_name, query };
+
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-3h', search: query, service_name }));
+      queryAnalyticsPage.waitForLoaded();
+      await queryAnalyticsPage.data.verifyQueriesDisplayed(parameters);
+      queryAnalyticsPage.data.selectRow(1);
+      queryAnalyticsPage.waitForLoaded();
+      await queryAnalyticsPage.queryDetails.verifyExamples(parameters);
+
+      if (current.dbType !== 'PDPGSQL') {
+        await queryAnalyticsPage.queryDetails.verifyExplain(parameters);
+      }
+
+      if (current.dbType === 'PDPGSQL' && !query.includes('CREATE')) {
+        await queryAnalyticsPage.queryDetails.verifyTables(parameters);
+
+        if (query.includes('SELECT')) {
+          await queryAnalyticsPage.queryDetails.verifyPlan(parameters);
+        }
+      }
     }
-    /**
-     * Add Verification for plan after bug is closed.
-     */
   },
 );
 
 Scenario(
-  'PMM-T1790 - Verify that there is any no error on Explains after switching between queries from different DB servers '
-    + '@qan',
+  'PMM-T1790 - Verify that there is any no error on Explains after switching between queries from different DB servers @qan',
   async ({
     I, queryAnalyticsPage,
   }) => {
@@ -86,11 +93,11 @@ Scenario(
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.queryDetails.checkTab('Explain');
     queryAnalyticsPage.filters.selectContainFilter('pxc-dev');
+    queryAnalyticsPage.data.searchByValue('');
     queryAnalyticsPage.filters.selectFilterInGroup('mongodb', 'Service Type');
     queryAnalyticsPage.data.searchByValue('UPDATE');
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.queryDetails.checkTab('Explain');
-    // await queryAnalyticsPage.filters.selectContainFilter('pdpgsql_pgsm_pmm');
   },
 );
 
@@ -176,14 +183,14 @@ Scenario(
     const psVersion = parseFloat((await I.verifyCommand('docker ps -f name=ps --format "{{.Image }}"')).split(':')[1]);
     const testContainerName = await I.verifyCommand('docker ps -f name=ps --format "{{.Names }}"');
 
-    console.log(`Ps version is: ${psVersion}`);
     if (psVersion > 8.0) {
       await I.verifyCommand(`docker exec ${testContainerName} mysql -h 127.0.0.1 -u ${root.username} -p${root.password} --port 3306 -e "USE ${dbName}; CREATE TABLE t1 (c1 INT NOT NULL, c2 VARCHAR(100) NOT NULL, PRIMARY KEY (c1)); insert into t1 values(1,1),(2,2),(3,3),(4,5); explain select * from t1 where c1=1; explain select * from t1 where c2=1; explain select * from t1 where c2>1 and c2<=3;"`);
     } else {
       await I.verifyCommand(`mysql -h 127.0.0.1 -u ${username} -p${password} --port 3317 -e "USE ${dbName}; CREATE TABLE t1 (c1 INT NOT NULL, c2 VARCHAR(100) NOT NULL, PRIMARY KEY (c1)); insert into t1 values(1,1),(2,2),(3,3),(4,5); explain select * from t1 where c1=1; explain select * from t1 where c2=1; explain select * from t1 where c2>1 and c2<=3;"`);
     }
 
-    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-15m', refresh: '5s' }));
+    I.wait(60);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-15m' }));
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.searchByValue('explain select * from t1');
     I.waitForInvisible(queryAnalyticsPage.data.elements.noResultTableText, 240);

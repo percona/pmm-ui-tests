@@ -253,7 +253,7 @@ Scenario(
     });
 
     const pmmAgents = allAgents.filter((o) => o.agent_type === 'pmm-agent');
-    const otherAgents = allAgents.filter((o) => o.agent_type !== 'pmm-agent' && o.agent_type !== 'external_exporter');
+    const otherAgents = allAgents.filter((o) => o.agent_type !== 'pmm-agent' && o.agent_type !== 'external-exporter');
 
     const pmmAgentsNotConnected = pmmAgents.filter((o) => o.is_connected !== true);
     const agentsNotRunning = otherAgents.filter((o) => o.status !== AGENT_STATUS.RUNNING);
@@ -261,10 +261,10 @@ Scenario(
     const errors = [];
 
     try {
-      assert.ok(!pmmAgentsNotConnected.length, 'Not all agents are connected');
+      assert.ok(!pmmAgentsNotConnected.length, 'Not all pmm agents are connected');
     } catch (e) {
       errors.push({
-        message: 'Not all agents are connected',
+        message: 'Not all pmm agents are connected',
         agents: pmmAgentsNotConnected,
       });
     }

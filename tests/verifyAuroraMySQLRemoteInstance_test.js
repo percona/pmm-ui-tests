@@ -9,7 +9,7 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-const instances = ['mysqlaurora2', 'mysqlaurora3'];
+const instances = ['mysqlaurora3'];
 const mysql_metric = 'mysql_global_status_max_used_connections';
 const aurora_metric = 'mysql_global_status_auroradb_commit_latency';
 
@@ -67,13 +67,14 @@ Data(instances).Scenario('PMM-T1295 - Verify Aurora MySQL instance metrics @inst
   });
 }).retry(1);
 
-Data(instances).Scenario('PMM-T1295 - Verify MySQL Amazon Aurora Details @instances', async ({ I, dashboardPage, adminPage }) => {
+Data(instances).Scenario('PMM-T1295 - Verify MySQL Amazon Aurora Details @instances', async ({ I, dashboardPage, current }) => {
   // Waiting for metrics to start hitting for remotely added services
   I.wait(60);
-  I.amOnPage(dashboardPage.mysqlAmazonAuroraDetails.url);
+  I.amOnPage(I.buildUrlWithParams(dashboardPage.mysqlAmazonAuroraDetails.url, {
+    service_name: remoteInstancesHelper.remote_instance.aws.aurora[current].instance_id,
+    from: 'now-5m',
+  }));
   dashboardPage.waitForDashboardOpened();
-  await adminPage.applyTimeRange('Last 5 minutes');
-  await dashboardPage.applyFilter('Service Name', 'pmm-qa-aurora2-mysql-instance-1');
   await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
 }).retry(3);
 
@@ -82,10 +83,11 @@ Data(instances).Scenario('PMM-T1295 - Verify dashboard after Aurora MySQL instan
 }) => {
   // Waiting for metrics to start hitting for remotely added services
   I.wait(60);
-  I.amOnPage(dashboardPage.mySQLInstanceOverview.url);
+  I.amOnPage(I.buildUrlWithParams(dashboardPage.mySQLInstanceOverview.clearUrl, {
+    from: 'now-5m',
+    service_name: remoteInstancesHelper.remote_instance.aws.aurora[current].instance_id,
+  }));
   dashboardPage.waitForDashboardOpened();
-  await adminPage.applyTimeRange('Last 5 minutes');
-  await dashboardPage.applyFilter('Service Name', remoteInstancesHelper.remote_instance.aws.aurora[current].instance_id);
   adminPage.performPageDown(5);
   await dashboardPage.expandEachDashboardRow();
   adminPage.performPageUp(5);

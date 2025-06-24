@@ -8,7 +8,9 @@ class QueryAnalyticsQueryDetails {
       metricsCellDetailValue: (metricName, columnNumber) => locate(`//td//span[contains(text(), "${metricName}")]/ancestor::tr/td[${columnNumber}]//span[1]`),
       codeBlock: locate('//*[@data-testid="highlight-code" or contains(@class, "pretty-json-container")]'),
       noExamples: locate('pre').withText('Sorry, no examples found for this query'),
+      noPlan: locate('pre').withText('No plan found'),
       noClassic: locate('pre').withText('No classic explain found'),
+      noTable: locate('pre').withText('No table info from example nor explain'),
       noJSON: locate('pre').withText('No JSON explain found'),
       explainError: locate('$json-explain-error'),
       classicExplainError: locate('//*[@data-testid="classic-explain-error"]'),
@@ -18,6 +20,8 @@ class QueryAnalyticsQueryDetails {
       planText: locate('pre').find('code'),
       planInfoIcon: locate('$query-analytics-details').find('[tabindex="0"]'),
       tooltipPlanId: locate(I.useDataQA('data-testid tooltip')),
+      table: (tableIndex) => locate(`((//div[@role="tablist"])[2]//button)[${tableIndex + 1}]`),
+      tables: locate('(//div[@role="tablist"])[2]//button'),
     };
     this.buttons = {
       tab: (tabName) => locate('button').withText(tabName),
@@ -85,17 +89,76 @@ class QueryAnalyticsQueryDetails {
   }
 
   checkExamplesTab(isNoExamplesVisible = false) {
-    I.waitForVisible(this.buttons.tab('Examples'), 30);
-    I.click(this.buttons.tab('Examples'));
+    this.openExamplesTab();
     queryAnalyticsPage.waitForLoaded();
     I.waitForVisible(this.elements.codeBlock, 30);
 
     if (isNoExamplesVisible) { I.seeElement(this.elements.noExamples); } else { I.dontSeeElement(this.elements.noExamples); }
   }
 
+  async verifyExamples(parameters = {}) {
+    I.waitForVisible(this.buttons.tab('Examples'), 30);
+    I.click(this.buttons.tab('Examples'));
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(this.elements.codeBlock, 30);
+
+    if (await I.isElementDisplayed(this.elements.noExamples, 1)) {
+      throw new Error(`No examples visible for parameters: ${JSON.stringify(parameters)}`);
+    }
+  }
+
+  async verifyExplain(parameters = {}) {
+    I.waitForVisible(this.buttons.tab('Explain'), 30);
+    I.click(this.buttons.tab('Explain'));
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(this.elements.codeBlock, 30);
+
+    if (await I.isElementDisplayed(this.elements.explainError, 1)) {
+      throw new Error(`No explain visible for parameters: ${JSON.stringify(parameters)}`);
+    }
+  }
+
+  async verifyTables(parameters = {}) {
+    I.waitForVisible(this.buttons.tab('Tables'), 30);
+    I.click(this.buttons.tab('Tables'));
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(this.elements.tables, 2);
+    const tablesCount = await I.grabNumberOfVisibleElements(this.elements.tables);
+
+    for (let i = 0; i < tablesCount; i++) {
+      I.click(this.elements.table(i));
+      queryAnalyticsPage.waitForLoaded();
+      I.waitForVisible(this.elements.codeBlock, 30);
+
+      if (await I.isElementDisplayed(this.elements.noTable, 1)) {
+        throw new Error(`No explain visible for parameters: ${JSON.stringify(parameters)}`);
+      }
+    }
+  }
+
+  async verifyPlan(parameters = {}) {
+    I.waitForVisible(this.buttons.tab('Plan'), 30);
+    I.click(this.buttons.tab('Plan'));
+    queryAnalyticsPage.waitForLoaded();
+
+    if (await I.isElementDisplayed(this.elements.noPlan, 1)) {
+      throw new Error(`No plan visible for parameters: ${JSON.stringify(parameters)}`);
+    }
+  }
+
   openExplainTab() {
     I.waitForVisible(this.buttons.tab('Explain'), 30);
     I.click(this.buttons.tab('Explain'));
+  }
+
+  openExamplesTab() {
+    I.waitForVisible(this.buttons.tab('Examples'), 30);
+    I.click(this.buttons.tab('Examples'));
+  }
+
+  openTablesTab() {
+    I.waitForVisible(this.buttons.tab('Tables'), 30);
+    I.click(this.buttons.tab('Tables'));
   }
 
   async verifyExplainError({ classicError, jsonError }) {
