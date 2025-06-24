@@ -116,7 +116,7 @@ Data(instances).Scenario(
 );
 
 Scenario(
-  'PMM-T590 - Verify parsing URL on adding External service page @fb-instances',
+  'PMM-T590 - Verify parsing URL on adding External service page @instances',
   async ({ I, remoteInstancesPage }) => {
     const metricsPath = '/metrics2';
     const credentials = 'something';
