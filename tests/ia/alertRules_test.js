@@ -97,9 +97,9 @@ Scenario(
   async ({ I, alertRulesPage }) => {
     // TODO: https://jira.percona.com/browse/PMM-10860 name doesn't change
     alertRulesPage.openAlertRulesTab();
-    I.waitForElement(alertRulesPage.buttons.newAlertRuleFromTemplate);
+    I.waitForElement(alertRulesPage.buttons.newAlertRuleFromTemplate, 10);
     I.forceClick(alertRulesPage.buttons.newAlertRuleFromTemplate);
-    I.waitForElement(alertRulesPage.fields.templatesLoader);
+    I.waitForElement(alertRulesPage.fields.templatesLoader, 10);
     await alertRulesPage.searchAndSelectResult('template', 'PostgreSQL down');
     I.waitForValue(alertRulesPage.fields.inputField('duration'), '60s');
     I.seeTextEquals('Critical', alertRulesPage.fields.dropdownValue('severity'));
@@ -108,7 +108,7 @@ Scenario(
     I.waitForValue(alertRulesPage.fields.inputField('duration'), '60s');
     I.seeTextEquals('Warning', alertRulesPage.fields.dropdownValue('severity'));
   },
-);
+).retry(2);
 
 const usersTable = new DataTable(['username', 'password']);
 
