@@ -41,9 +41,9 @@ Data(data).Scenario(
     await I.waitForVisible(pmmInventoryPage.fields.serviceRow(serviceName), 30);
 
     I.assertEqual(
-      await pmmInventoryPage.servicesTab.getServiceMonitoringStatus(serviceName),
+      await pmmInventoryPage.servicesTab.getServiceMonitoringAddress(serviceName),
       data.pdpgsqlContainerName,
-      `'${serviceName}' is expected to have '${data.pdpgsqlContainerName}' address`,
+      `'${serviceName}' is expected to have '${data}' address`,
     );
 
     I.assertEqual(
