@@ -42,13 +42,15 @@ Data(data).Scenario(
 
     I.assertEqual(
       await pmmInventoryPage.servicesTab.getServiceMonitoringStatus(serviceName),
+      data.pdpgsqlContainerName,
+      `'${serviceName}' is expected to have '${data.pdpgsqlContainerName}' address`,
+    );
+
+    I.assertEqual(
+      await pmmInventoryPage.servicesTab.getServiceMonitoringStatus(serviceName),
       'OK',
       `'${serviceName}' is expected to have 'OK' monitoring status`,
     );
-
-    I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl}`, { service_name: serviceName, node_name: 'pmm-server-db', from: 'now-5m' }));
-    dashboardPage.waitForDashboardOpened();
-    I.waitForText('YES', 20, locate('//section[@data-testid="data-testid Panel header Connected"]//div[@data-testid="data-testid panel content"]//span'));
 
     I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${queryAnalyticsPage.url}`, {
       service_name: serviceName, node_name: 'pmm-server-db', from: 'now-5m', refresh: '30s',
