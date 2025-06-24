@@ -58,14 +58,16 @@ services:
       - '8082:8080'
       - '8447:8443'
     environment:
+      - PMM_DEBUG=1
       - PMM_POSTGRES_ADDR=external-postgres-ssl:5432
       - PMM_POSTGRES_DBNAME=grafana
+      - PMM_POSTGRES_USERNAME=postgres
       - GF_DATABASE_PASSWORD=pmm_password
       - PMM_POSTGRES_DBPASSWORD=pmm_password
+      - GF_DATABASE_TYPE=postgres
       - GF_DATABASE_HOST=external-postgres-ssl
       - GF_DATABASE_NAME=grafana \
       - GF_DATABASE_USER=postgres
-      - GF_DATABASE_PASSWORD=pmm_password
       - GF_DATABASE_SSL_MODE=verify-ca
       - GF_DATABASE_CA_CERT_PATH=/etc/ssl/postgresql/ca.crt
       - GF_DATABASE_CLIENT_KEY_PATH=/etc/ssl/postgresql/client.key
