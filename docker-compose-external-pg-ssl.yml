@@ -66,7 +66,7 @@ services:
       - PMM_POSTGRES_DBPASSWORD=pmm_password
       - GF_DATABASE_TYPE=postgres
       - GF_DATABASE_HOST=external-postgres-ssl
-      - GF_DATABASE_NAME=grafana
+      - GF_DATABASE_NAME="grafana"
       - GF_DATABASE_USER=postgres
       - GF_DATABASE_SSL_MODE=verify-ca
       - GF_DATABASE_CA_CERT_PATH=/etc/ssl/postgresql/ca.crt
