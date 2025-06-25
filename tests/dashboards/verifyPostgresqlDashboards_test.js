@@ -119,3 +119,16 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
+
+Scenario(
+  'PMM-T2053 - Verify PostgreSQL Patroni Details dashboard @nightly @dashboards',
+  async ({ I, dashboardPage }) => {
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlPatroniDashboard.url, { from: 'now-5m' });
+
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.postgresqlPatroniDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
+  },
+);
