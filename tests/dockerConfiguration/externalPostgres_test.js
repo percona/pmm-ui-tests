@@ -11,8 +11,6 @@ data.add(['docker-compose-external-pg-ssl', 'pmm-server-external-postgres-ssl', 
 AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker compose -f docker-compose-external-pg.yml down -v || true');
   await I.verifyCommand('docker compose -f docker-compose-external-pg-ssl.yml down -v || true');
-  await I.verifyCommand('docker volume rm pmm-server-external-pg-ssl || true');
-  await I.verifyCommand('docker volume rm pmm-server-external-pg || true');
 });
 
 Data(data).Scenario(
