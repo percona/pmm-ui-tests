@@ -6,7 +6,7 @@ const DOCKER_IMAGE = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-
 const data = new DataTable(['composeName', 'containerName', 'postgresqlAddress', 'serverPort', 'pdpgsqlContainerName']);
 
 // data.add(['docker-compose-external-pg', 'pmm-server-external-postgres', 'external-postgres:5432', '8081', 'external-postgres']);
-data.add(['docker-compose-external-pg-ssl', 'pmm-server-external-postgres-ssl', 'external-postgres-ssl:5432', '8082', ' external-postgres-ssl']);
+data.add(['docker-compose-external-pg-ssl', 'pmm-server-external-postgres-ssl', 'external-postgres-ssl:5432', '8082', 'external-postgres-ssl']);
 
 AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker compose -f docker-compose-external-pg.yml down -v || true');
