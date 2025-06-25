@@ -11,6 +11,7 @@ const PostgresqlInstanceOverviewDashboard = require('../dashboards/pages/postgre
 const PostgresqlInstanceSummaryDashboard = require('../dashboards/pages/postgresqlInstanceSummaryDashboard');
 const PostgresqlCheckpointDashboard = require('../dashboards/pages/postgresqlCheckpointDashboard');
 const PostgresqlReplicationOverviewDashboard = require('../dashboards/pages/postgresqlReplicationOverviewDashboard');
+const PostgresqlPatroniDashboard = require('../dashboards/pages/postgresqlPatroniDashboard');
 const { locateOption } = require('../helper/locatorHelper');
 
 module.exports = {
@@ -307,6 +308,7 @@ module.exports = {
   postgresqlInstanceSummaryDashboard: PostgresqlInstanceSummaryDashboard,
   postgresqlCheckpointDashboard: PostgresqlCheckpointDashboard,
   postgresqlReplicationOverviewDashboard: PostgresqlReplicationOverviewDashboard,
+  postgresqlPatroniDashboard: PostgresqlPatroniDashboard,
   postgresqlInstanceCompareDashboard: {
     url: 'graph/d/postgresql-instance-compare/postgresql-instances-compare?orgId=1&from=now-5m&to=now',
     cleanUrl: 'graph/d/postgresql-instance-compare/postgresql-instances-compare',
