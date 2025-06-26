@@ -12,9 +12,9 @@ Scenario(
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
-    const service = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'PDPGSQL_');
+    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName('pdpgsql_');
 
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.url, { from: 'now-5m', service_name: service.service_name }));
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.url, { from: 'now-5m', service_name }));
     await dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
@@ -25,7 +25,7 @@ Scenario(
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus({
       serviceType: SERVICE_TYPE.POSTGRESQL,
       service: 'postgresql',
-    }, service.service_name);
+    }, service_name);
   },
 ).retry(3);
 
