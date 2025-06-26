@@ -97,7 +97,7 @@ Scenario(
 Scenario(
   'PMM-T2052 - Verify PostgreSQL Checkpoints, Buffers and WAL Usage dashboard @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    const url = I.buildUrlWithParams(dashboardPage.postgresqlCheckpointDashboard.url, { from: 'now-5m', service_name: 'pdpgsql_pmm_replication_17_1' });
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlCheckpointDashboard.url, { from: 'now-5m', service_name: 'pdpgsql_pmm_patroni_17_1' });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
