@@ -103,7 +103,7 @@ Scenario(
 ).retry(2);
 
 Scenario(
-  'PMM-T747 - Verify enabling Azure flag @instances',
+  'PMM-T747 - Verify enabling Azure flag @fb-settings',
   async ({
     I, pmmSettingsPage, remoteInstancesPage, settingsAPI,
   }) => {
@@ -230,7 +230,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T254 - Ensure Advisors are on by default @instances',
+  'PMM-T254 - Ensure Advisors are on by default @fb-instances',
   async ({ settingsAPI }) => {
     const resp = await settingsAPI.getSettings('advisor_enabled');
 
@@ -240,7 +240,7 @@ Scenario(
 
 Scenario(
   'PMM-T1227 + PMM-T1338 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
-  + 'Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
+  + 'Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @fb-settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
     I.wait(10);
