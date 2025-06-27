@@ -23,11 +23,11 @@ Scenario(
   'PMM-T2050 - Verify PostgreSQL Instance Summary Dashboard @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName('pdpgsql_');
-    const url = I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.url, { service_name, from: 'now-5m' });
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.url, { service_name, from: 'now-30m' });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.verifySlowQueriesPanel('5 minutes');
+    await dashboardPage.verifySlowQueriesPanel('30 minutes');
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
