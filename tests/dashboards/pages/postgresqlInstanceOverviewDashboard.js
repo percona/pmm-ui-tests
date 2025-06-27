@@ -7,8 +7,8 @@ class PostgresqlInstanceOverviewDashboard {
       'Databases Monitored',
       'Executed Queries',
       'Slow Queries',
-      'Execution time',
-      'Transactions per second',
+      'Execution Time',
+      'Transactions per Second',
       'Lowest Uptime (top 3)',
       'Queries',
     ];
