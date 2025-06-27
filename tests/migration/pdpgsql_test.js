@@ -12,7 +12,7 @@ Scenario(
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
-    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName('pdpgsql_');
+    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName('PDPGSQL_');
 
     I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.url, { from: 'now-5m', service_name }));
     await dashboardPage.waitForDashboardOpened();
