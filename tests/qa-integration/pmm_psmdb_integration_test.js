@@ -191,6 +191,8 @@ Scenario(
     I.assertTrue(errorCode.includes(1), `No errors for arbiter setup expected but got error code: ${errorCode}`);
 
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
+    I.wait(5)
+    console.log(await I.grabCurrentUrl());
     dashboardPage.waitForDashboardOpened();
     I.click(dashboardPage.fields.reportTitle);
     await adminPage.performPageDown(5);
