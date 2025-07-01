@@ -90,9 +90,9 @@ Scenario(
         (o) => o.labels.external_group === 'redis-remote',
       );
 
-      console.log(targets);
+      console.log(targets.health);
 
-      return targets === 'up';
+      return targets.health === 'up';
     }, 60, 'Active Target for external service Post Upgrade health value is not up!');
   },
 ).retry(2);
