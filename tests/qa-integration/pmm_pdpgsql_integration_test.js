@@ -14,7 +14,7 @@ Scenario(
   }) => {
     const pgsm_service = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pdpgsql_');
 
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, {
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.url, {
       service_name: pgsm_service.service_name,
       from: 'now-5m',
     }));
