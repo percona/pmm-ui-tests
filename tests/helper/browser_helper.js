@@ -49,6 +49,12 @@ class BrowserHelper extends Helper {
 
     return await page.evaluate(() => navigator.clipboard.readText());
   }
+
+  async goBack() {
+    const { page } = this.helpers.Playwright;
+
+    await page.goBack();
+  }
 }
 
 module.exports = BrowserHelper;
