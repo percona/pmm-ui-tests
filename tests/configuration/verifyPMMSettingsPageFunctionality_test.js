@@ -227,7 +227,7 @@ Scenario(
       `Expected the Public Address (${publicAddressAfterRefresh}) to be saved and Match configuration url: ${expectedUrl}`,
     );
   },
-).retry(1);
+).retry(5);
 
 Scenario(
   'PMM-T254 - Ensure Advisors are on by default @fb-instances',

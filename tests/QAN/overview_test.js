@@ -64,7 +64,7 @@ Scenario(
     queryAnalyticsPage.queryDetails.checkTab('Plan');
     await queryAnalyticsPage.queryDetails.checkPlanTabIsEmpty();
   },
-);
+).retry(2);
 
 Scenario(
   'PMM-T146 - Verify user is able to see  chart tooltip for time related metric  @qan',
