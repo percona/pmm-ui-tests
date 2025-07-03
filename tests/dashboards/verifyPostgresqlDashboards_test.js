@@ -97,8 +97,8 @@ Scenario(
 Scenario(
   'PMM-T2052 - Verify PostgreSQL Checkpoints, Buffers and WAL Usage dashboard @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName('pdpgsql_pmm_patroni');
-    const url = I.buildUrlWithParams(dashboardPage.postgresqlCheckpointDashboard.url, { from: 'now-5m', service_name });
+    const details = (await inventoryAPI.getNodeByServiceName('patroni_service_1')).services.find((service) => service.service_name.includes('pdpgsql_pmm_patroni'));
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlCheckpointDashboard.url, { from: 'now-5m', service_name: details.service_name });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
