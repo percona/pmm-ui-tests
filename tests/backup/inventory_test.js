@@ -1,6 +1,6 @@
 const assert = require('assert');
 const moment = require('moment/moment');
-const faker = require('faker');
+const faker = require('@faker-js/faker');
 const { SERVICE_TYPE } = require('../helper/constants');
 
 const { locationsAPI } = inject();

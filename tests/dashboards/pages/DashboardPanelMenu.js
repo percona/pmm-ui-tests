@@ -13,7 +13,7 @@ function DashboardPanelMenu(title) {
 
   const menuItemLocator = (itemTitle) => locate('[data-role="menuitem"]').withText(itemTitle);
 
-  const subMenuItemLocator = (itemTitle) => I.useDataQA(`data-testid Panel menu item ${itemTitle}`)
+  const subMenuItemLocator = (itemTitle) => I.useDataQA(`data-testid Panel menu item ${itemTitle}`);
 
   this.showMenu = () => {
     I.waitForVisible(this.titleLocator, 10);
