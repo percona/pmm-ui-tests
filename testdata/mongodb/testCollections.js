@@ -1,3 +1,4 @@
+ 
 const dbObject = { name: 'Honey1', age: 25, cars: ['Audi R8'] };
 
 const dbArray = [

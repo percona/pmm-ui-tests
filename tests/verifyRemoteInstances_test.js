@@ -1,5 +1,5 @@
 const assert = require('assert');
-const faker = require('faker');
+const faker = require('@faker-js/faker');
 
 const {
   remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage,
@@ -23,7 +23,7 @@ for (const [key, value] of Object.entries(remoteInstancesHelper.services)) {
     switch (key) {
       case 'postgresql':
         // TODO: https://jira.percona.com/browse/PMM-9011
-        // eslint-disable-next-line max-len
+         
         // remotePostgreSQL.add(['postgresPGStatStatements', remoteInstancesPage.fields.usePgStatStatements, pmmInventoryPage.fields.postgresPgStatements]);
         // qanFilters.add([remoteInstancesPage.potgresqlSettings.environment]);
         // dashboardCheck.add([remoteInstancesHelper.services.postgresql]);

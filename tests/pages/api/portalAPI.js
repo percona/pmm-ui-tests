@@ -1,5 +1,5 @@
 const assert = require('assert');
-const faker = require('faker');
+const faker = require('@faker-js/faker');
 const { generate } = require('generate-password');
 
 const { I } = inject();
@@ -28,7 +28,7 @@ module.exports = {
     };
   },
 
-  // eslint-disable-next-line object-curly-newline
+   
   async oktaCreateUser({ email, password, firstName, lastName }) {
     const oktaUrl = `${this.oktaUrl}api/v1/users?activate=true`;
     const headers = { Authorization: this.oktaToken };

@@ -20,9 +20,9 @@ module.exports = {
     ruleDetails: I.useDataQA('data-testid expanded-content'),
     searchByDataSourceDropdown: I.useDataQA('data-testid Data source picker select container'),
     searchByLabel: '$input-wrapper',
-    // eslint-disable-next-line no-inline-comments
+     
     ruleFilterLocator: (ruleFilterText) => locate('label').withText(ruleFilterText).after('//input[@type="radio"]'),
-    // eslint-disable-next-line no-inline-comments
+     
     totalRulesCounter: (count, folder) => locate('$rule-group-header').withText(folder).find('span').withText(count),
     alertsLearnMoreLinks: locate('a').withText('Learn more'),
     detailsEvaluateValue: '//div[text()="Evaluate"]/following-sibling::div',

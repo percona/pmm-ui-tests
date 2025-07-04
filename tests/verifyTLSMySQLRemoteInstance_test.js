@@ -1,5 +1,5 @@
 const assert = require('assert');
-const faker = require('faker');
+const faker = require('@faker-js/faker');
 const { SERVICE_TYPE } = require('./helper/constants');
 
 const { adminPage } = inject();

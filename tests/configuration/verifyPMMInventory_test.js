@@ -296,7 +296,7 @@ Scenario(
 
     for (const key of Object.keys(actAg.data)) {
       if (key.endsWith('exporter') && key !== 'external_exporter') {
-        // eslint-disable-next-line no-return-assign
+         
         actAg.data[key].map((o) => o.type = key);
 
         arr.push(...actAg.data[key]);

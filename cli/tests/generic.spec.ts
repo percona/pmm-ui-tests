@@ -238,9 +238,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
   test('run pmm-admin summary --json', async ({}) => {
     const output = await cli.exec('sudo pmm-admin summary --json');
     await output.assertSuccess();
-    /* eslint-disable-next-line no-useless-escape */
     await output.outContains('{\"filename\":\"');
-    /* eslint-disable-next-line no-useless-escape */
     await output.outContains('.zip\"}');
   });
 
@@ -400,7 +398,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     test.skip(true, 'skipping because -pprof flag takes a lot of time');
     const output = await cli.exec('sudo pmm-admin summary --pprof --json');
     await output.assertSuccess();
-    /* eslint-disable-next-line no-useless-escape */
+
     await output.outContainsMany(['{\"filename\":\"', '.zip\"']);
   });
 
