@@ -132,7 +132,7 @@ Scenario.skip(
 );
 
 // Data(intervalsTests).Scenario(
-// eslint-disable-next-line max-len
+ 
 //   'PMM-T706 PMM-709 PMM-T711 Verify checks are executed based on interval value, change interval, fix problem [critical] @stt @not-ovf',
 //   async ({
 //     advisorsAPI, settingsAPI, perconaServerDB, databaseChecksPage, current,

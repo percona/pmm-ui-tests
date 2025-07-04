@@ -39,7 +39,7 @@ class Grafana extends Helper {
     try {
       resp = await REST.sendPostRequest(`${baseUrl}graph/login`, { user: username, password });
     } catch (e) {
-      // eslint-disable-next-line no-console
+       
       console.error('Login API call was not successful.');
 
       return;
@@ -48,7 +48,7 @@ class Grafana extends Helper {
     const cookies = resp.headers['set-cookie'];
 
     if (!cookies) {
-      // eslint-disable-next-line no-console
+       
       console.warn('Authentication was not successful, verify base url and credentials.');
 
       return;

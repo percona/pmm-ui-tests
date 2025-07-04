@@ -294,7 +294,7 @@ module.exports = {
   },
 
   openAddRemotePage(instanceType) {
-    // eslint-disable-next-line default-case
+     
     switch (instanceType) {
       case 'mysql':
       case 'mysql_ssl':
@@ -347,7 +347,7 @@ module.exports = {
     I.fillField(this.fields.environment, details.environment);
     I.fillField(this.fields.cluster, details.cluster);
 
-    // eslint-disable-next-line no-empty
+     
     if (details.type === 'postgresql') {
       I.fillField(this.fields.database, details.database);
     }
@@ -434,7 +434,7 @@ module.exports = {
       this.selectNodeForRemoteInstance(nodeName);
     }
 
-    // eslint-disable-next-line default-case
+     
     switch (serviceName) {
       case remoteInstancesHelper.services.mysql:
         inputs = {
@@ -621,7 +621,7 @@ module.exports = {
   createRemoteInstance(serviceName) {
     I.waitForVisible(this.fields.skipTLSL, 30);
     I.checkOption(this.fields.skipTLSL);
-    // eslint-disable-next-line default-case
+     
     switch (serviceName) {
       case remoteInstancesHelper.services.mongodb:
       case remoteInstancesHelper.services.mongodb_ssl:
@@ -739,7 +739,7 @@ module.exports = {
     const srviceName = nodeName.startsWith('client_container') ? `${serviceName}_client` : serviceName;
 
     this.selectNodeForRemoteInstance(nodeName);
-    // eslint-disable-next-line default-case
+     
     switch (serviceName) {
       case 'rds-mysql56':
         inputs = this.mysqlInputs;

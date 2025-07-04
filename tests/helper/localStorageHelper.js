@@ -1,5 +1,5 @@
 class LocalStorage extends Helper {
-  // eslint-disable-next-line no-underscore-dangle
+   
   async _before() {
     const { page } = this.helpers.Playwright;
 
