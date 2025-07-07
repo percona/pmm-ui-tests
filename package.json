@@ -22,7 +22,7 @@
   "dependencies": {
     "@faker-js/faker": "^9.9.0",
     "@pagerduty/pdjs": "^2.2.4",
-    "@playwright/test": "^1.53.2",
+    "@playwright/test": "^1.44.1",
     "@types/lodash": "^4.17.20",
     "@types/luxon": "^3.6.2",
     "@types/mocha": "^10.0.10",
@@ -64,7 +64,6 @@
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-playwright": "^2.2.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.1.2"
+    "husky": "^9.1.7"
   }
 }

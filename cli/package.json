@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@faker-js/faker": "^9.9.0",
-    "@playwright/test": "^1.53.2",
+    "@playwright/test": "^1.44.1",
     "@types/luxon": "^3.3.5",
     "adm-zip": "^0.5.10",
     "luxon": "^3.4.4",
