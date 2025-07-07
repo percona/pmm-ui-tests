@@ -22,7 +22,7 @@
   "dependencies": {
     "@faker-js/faker": "^9.9.0",
     "@pagerduty/pdjs": "^2.2.4",
-    "@playwright/test": "^1.44.1",
+    "@playwright/test": "1.44.1",
     "@types/lodash": "^4.17.20",
     "@types/luxon": "^3.6.2",
     "@types/mocha": "^10.0.10",
@@ -48,6 +48,7 @@
     "mysql": "^2.18.1",
     "mysql2": "^3.14.1",
     "pg": "^8.16.3",
+    "playwright": "1.44.1",
     "prettier": "^3.6.2",
     "shelljs": "^0.10.0",
     "typescript": "^5.8.3",
