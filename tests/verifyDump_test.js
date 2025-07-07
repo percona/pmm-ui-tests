@@ -4,7 +4,7 @@ const { I } = inject();
 
 Feature('Tests for Dump Tool');
 
-const hostVolume = `${process.cwd()}/tests/output/sftp/`;
+const hostVolume = `${process.cwd()}/tests/output/sftp`;
 const sftp = {
   username: 'foo',
   password: 'password',

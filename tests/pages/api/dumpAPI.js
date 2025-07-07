@@ -6,7 +6,7 @@ const { extract } = require('tar');
 const path = require('path');
 const { readdirSync } = require('fs');
 
-const outputDir = `${process.cwd()}/tests/output/`;
+const outputDir = `${process.cwd()}/output`;
 
 module.exports = {
   async createDump(serviceName, Qan = true) {
