@@ -51,8 +51,8 @@ module.exports = {
     
     await pipeline(response.data, fs.createWriteStream(targzFile));
     console.log(`Download concluído com sucesso: ${targzFile}`);
-    await extract({file: targzFile, cwd: destnDir});
-    console.log(`Dump file downloaded and extracted to DestnDir: ${destnDir}`);
+    await extract({file: targzFile, cwd: outputDir});
+    console.log(`Dump file downloaded and extracted to DestnDir: ${outputDir}`);
     
     return true;
     // return new Promise(resolve => {
@@ -72,9 +72,9 @@ module.exports = {
     const targzFile = `${sftpDir}/${uid}.tar.gz`;
     const destnDir = `${sftpDir}/${uid}`;
 
-    console.log(`Extracting dump file: ${targzFile} to destination directory: ${destnDir}`);
+    console.log(`Extracting dump file: ${targzFile} to destination directory: ${sftpDir}`);
     await I.asyncWaitFor(async () => fs.existsSync(targzFile), 60);
-    await extract({file: targzFile, cwd: destnDir});
+    await extract({file: targzFile, cwd: sftpDir});
   },
 
   async verifyDump(uid, sftDir) {
