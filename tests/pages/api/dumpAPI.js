@@ -6,7 +6,7 @@ const { extract } = require('tar');
 const path = require('path');
 const { readdirSync } = require('fs');
 
-const outputDir = `${process.cwd()}/output`;
+const outputDir = `${process.cwd()}/tests/output`;
 
 module.exports = {
   async createDump(serviceName, Qan = true) {
@@ -43,7 +43,7 @@ module.exports = {
       axios.get(`${process.env.PMM_UI_URL}dump/${uid}.tar.gz`, { headers, responseType: 'stream' }).then(response => {
         response.data.pipe(fs.createWriteStream(targzFile))
         .on('close', () => {
-          extract({file: targzFile, cwd: destnDir});
+          extract({file: targzFile});
           console.log(`Dump file downloaded and extracted to DestnDir: ${destnDir}`);
           resolve(true);
         });
@@ -58,7 +58,7 @@ module.exports = {
 
     console.log(`Extracting dump file: ${targzFile} to destination directory: ${destnDir}`);
     await I.asyncWaitFor(async () => fs.existsSync(targzFile), 60);
-    await extract({file: targzFile, cwd: destnDir});
+    await extract({file: targzFile});
   },
 
   async verifyDump(uid, sftDir) {
