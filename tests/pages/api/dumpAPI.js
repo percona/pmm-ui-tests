@@ -6,6 +6,7 @@ const { extract } = require('tar');
 const path = require('path');
 const { readdirSync } = require('fs');
 const { pipeline } = require('stream/promises'); 
+const { execSync } = require('child_process');
 
 const outputDir = `${process.cwd()}/tests/output`;
 
@@ -79,6 +80,15 @@ module.exports = {
   async verifyDump(uid, sftDir) {
     const absOutputDir = sftDir || outputDir;
     const destnDir = `${absOutputDir}/${uid}`;
+
+    console.log(`Verifying dump in directory: ${destnDir}`);
+    try {
+      const lsOutput = execSync('ls', { cwd: destnDir }).toString();
+
+      console.log('ls output:\n', lsOutput);
+    } catch (err) {
+      console.error('Error running ls:', err);
+    }
 
     await I.asyncWaitFor(async () => fs.existsSync(destnDir), 60);
     let isDir = 0; let
