@@ -1,5 +1,5 @@
 const { I } = inject();
-const faker = require('@faker-js/faker');
+const { faker } = require('@faker-js/faker');
 const { locateOption } = require('../../helper/locatorHelper');
 
 const artifactCell = (name) => `//tr[td[contains(text(), '${name}')]]`;

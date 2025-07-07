@@ -1,5 +1,5 @@
 const assert = require('assert');
-const faker = require('@faker-js/faker');
+const { faker } = require('@faker-js/faker');
 
 const {
   remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage,

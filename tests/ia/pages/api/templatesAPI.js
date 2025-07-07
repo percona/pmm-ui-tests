@@ -1,6 +1,6 @@
 const { I, ruleTemplatesPage } = inject();
 const assert = require('assert');
-const faker = require('@faker-js/faker');
+const { faker } = require('@faker-js/faker');
 
 module.exports = {
   async createRuleTemplate(path = ruleTemplatesPage.ruleTemplate.inputFilePath) {
