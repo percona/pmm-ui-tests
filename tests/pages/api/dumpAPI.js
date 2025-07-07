@@ -39,13 +39,14 @@ module.exports = {
     const targzFile = `${outputDir}/${uid}.tar.gz`;
     const destnDir = `${outputDir}/${uid}`;
 
-    return new Promise((resolve, reject) => {
-      axios.get(`${process.env.PMM_UI_URL}dump/${uid}.tar.gz`, { headers }, (error, response, body) => {
-      }).pipe(fs.createWriteStream(targzFile))
+    return new Promise(resolve => {
+      axios.get(`${process.env.PMM_UI_URL}dump/${uid}.tar.gz`, { headers, responseType: 'stream' }).then(response => {
+        response.data.pipe(fs.createWriteStream(targzFile))
         .on('close', () => {
           targz.extract(targzFile, destnDir);
           resolve(true);
         });
+      });
     });
   },
 
@@ -54,7 +55,7 @@ module.exports = {
     const destnDir = `${sftpDir}/${uid}`;
 
     await I.asyncWaitFor(async () => fs.existsSync(targzFile), 60);
-    targz().extract(targzFile, destnDir);
+    targz.extract(targzFile, destnDir);
   },
 
   async verifyDump(uid, sftDir) {
