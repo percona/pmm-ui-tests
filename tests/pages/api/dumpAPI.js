@@ -44,6 +44,7 @@ module.exports = {
         response.data.pipe(fs.createWriteStream(targzFile))
         .on('close', () => {
           extract({file: targzFile, cwd: destnDir});
+          console.log(`Dump file downloaded and extracted to DestnDir: ${destnDir}`);
           resolve(true);
         });
       });
@@ -55,8 +56,9 @@ module.exports = {
     const targzFile = `${sftpDir}/${uid}.tar.gz`;
     const destnDir = `${sftpDir}/${uid}`;
 
+    console.log(`Extracting dump file: ${targzFile} to destination directory: ${destnDir}`);
     await I.asyncWaitFor(async () => fs.existsSync(targzFile), 60);
-    extract({file: targzFile, cwd: destnDir});
+    await extract({file: targzFile, cwd: destnDir});
   },
 
   async verifyDump(uid, sftDir) {
