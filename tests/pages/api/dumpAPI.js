@@ -72,9 +72,23 @@ module.exports = {
     const targzFile = `${sftpDir}/${uid}.tar.gz`;
     const destnDir = `${sftpDir}/${uid}`;
 
-    console.log(`Extracting dump file: ${targzFile} to destination directory: ${sftpDir}`);
+    console.log(`Tentando criar o diretório de destino: ${destnDir}`);
+    fs.mkdirSync(destnDir, { recursive: true });
+
+    // --- LOGS DE DEBUG ---
+    const dirExiste = fs.existsSync(destnDir);
+    
+    console.log(`O diretório ${destnDir} existe? ${dirExiste}`);
+    if (!dirExiste) {
+      console.error('ALERTA: mkdirSync terminou, mas o diretório ainda não é visível!');
+    }
+    // --- FIM DOS LOGS ---
+
+    console.log(`Aguardando o arquivo de dump: ${targzFile}`);
     await I.asyncWaitFor(async () => fs.existsSync(targzFile), 60);
-    await extract({file: targzFile, cwd: sftpDir});
+
+    console.log(`Extraindo para ${destnDir}...`);
+    await extract({ file: targzFile, cwd: destnDir });
   },
 
   async verifyDump(uid, sftDir) {
