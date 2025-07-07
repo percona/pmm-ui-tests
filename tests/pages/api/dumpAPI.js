@@ -40,7 +40,6 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const targzFile = `${outputDir}/${uid}.tar.gz`;
     const destnDir = `${outputDir}/${uid}`;
-
     const response = await axios.get(
       `${process.env.PMM_UI_URL}dump/${uid}.tar.gz`,
       {
@@ -48,62 +47,28 @@ module.exports = {
         responseType: 'stream',
       },
     );
-    
+
     await pipeline(response.data, fs.createWriteStream(targzFile));
-    console.log(`Download concluído com sucesso: ${targzFile}`);
-    await extract({file: targzFile, cwd: outputDir});
-    console.log(`Dump file downloaded and extracted to DestnDir: ${outputDir}`);
-    
+    fs.mkdirSync(destnDir, { recursive: true });
+    await I.asyncWaitFor(async () => fs.existsSync(targzFile), 60);
+    await extract({ file: targzFile, cwd: destnDir });
+
     return true;
-    // return new Promise(resolve => {
-    //   axios.get(`${process.env.PMM_UI_URL}dump/${uid}.tar.gz`, { headers, responseType: 'stream' }).then(response => {
-    //     response.data.pipe(fs.createWriteStream(targzFile))
-    //     .on('close', () => {
-    //       extract({file: targzFile, cwd: destnDir});
-    //       console.log(`Dump file downloaded and extracted to DestnDir: ${destnDir}`);
-    //       resolve(true);
-    //     });
-    //   });
-    // });
-    
   },
 
   async extractDump(uid, sftpDir) {
     const targzFile = `${sftpDir}/${uid}.tar.gz`;
     const destnDir = `${sftpDir}/${uid}`;
 
-    console.log(`Tentando criar o diretório de destino: ${destnDir}`);
     fs.mkdirSync(destnDir, { recursive: true });
-
-    // --- LOGS DE DEBUG ---
-    const dirExiste = fs.existsSync(destnDir);
-    
-    console.log(`O diretório ${destnDir} existe? ${dirExiste}`);
-    if (!dirExiste) {
-      console.error('ALERTA: mkdirSync terminou, mas o diretório ainda não é visível!');
-    }
-    // --- FIM DOS LOGS ---
-
-    console.log(`Aguardando o arquivo de dump: ${targzFile}`);
     await I.asyncWaitFor(async () => fs.existsSync(targzFile), 60);
-
-    console.log(`Extraindo para ${destnDir}...`);
     await extract({ file: targzFile, cwd: destnDir });
   },
 
   async verifyDump(uid, sftDir) {
     const absOutputDir = sftDir || outputDir;
     const destnDir = `${absOutputDir}/${uid}`;
-
-    console.log(`Verifying dump in directory: ${destnDir}`);
-    try {
-      const lsOutput = execSync('ls', { cwd: destnDir }).toString();
-
-      console.log('ls output:\n', lsOutput);
-    } catch (err) {
-      console.error('Error running ls:', err);
-    }
-
+    
     await I.asyncWaitFor(async () => fs.existsSync(destnDir), 60);
     let isDir = 0; let
       isFile = 0;
