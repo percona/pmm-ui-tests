@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: percona-platform/checkout@v2
-      - name: Use Node.js 20.x
+      - name: Use Node.js 22.x
         uses: percona-platform/setup-node@v2
         with:
-          node-version: 20.x
+          node-version: 22.x
       - name: Install Dependencies
         run: npm ci
       - name: Run lint:tests
