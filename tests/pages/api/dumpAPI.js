@@ -2,7 +2,7 @@ const { I } = inject();
 const assert = require('assert');
 const axios = require('axios');
 const fs = require('fs');
-const targz = require('tar.gz');
+const targz = require('tar');
 const path = require('path');
 const { readdirSync } = require('fs');
 
@@ -43,7 +43,7 @@ module.exports = {
       axios.get(`${process.env.PMM_UI_URL}dump/${uid}.tar.gz`, { headers }, (error, response, body) => {
       }).pipe(fs.createWriteStream(targzFile))
         .on('close', () => {
-          targz().extract(targzFile, destnDir);
+          targz.extract(targzFile, destnDir);
           resolve(true);
         });
     });

@@ -26,7 +26,7 @@ Scenario.skip('@PMM-T1325 Verify that pmm-admin summary generates ZIP file, whic
 
   I.assertEqual(agentsFromArchive.length, agentIdsArr.length, `The number of actual Agents doesn't match expected (Expected ${agentsFromArchive.length} but got ${agentIdsArr.length})`);
 
-  agentsFromArchive.forEach((agentId) => {
+  agentsFromArchive.forEach(({ agentId }) => {
     I.assertTrue(agentIdsArr.includes(agentId), `Actual Agents don't include expected agent_id (Expected ${agentId} but didn't found)`);
   });
 });

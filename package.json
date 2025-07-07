@@ -10,6 +10,7 @@
     "cli"
   ],
   "scripts": {
+    "build:types": "npx codeceptjs def pr.codecept.js",
     "lint:cli": "npm run lint --workspace=cli",
     "lint:root": "eslint .",
     "lint:tests": "eslint tests/",
@@ -30,7 +31,7 @@
     "axios": "1.10.0",
     "build-url": "^6.0.1",
     "chai": "^5.2.0",
-    "codeceptjs": "3.7.3",
+    "codeceptjs": "^3.7.3",
     "codeceptjs-chai": "^2.3.5",
     "codeceptjs-dbhelper": "^1.2.2",
     "codeceptjs-mailosaurhelper": "^1.0.5",
@@ -51,6 +52,7 @@
     "playwright": "1.44.1",
     "prettier": "^3.6.2",
     "shelljs": "^0.10.0",
+    "tar": "^7.4.3",
     "typescript": "^5.8.3",
     "yaml": "^2.8.0"
   },

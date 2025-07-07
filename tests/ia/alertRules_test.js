@@ -62,14 +62,14 @@ Scenario(
     alertRulesPage.openAlertRulesTab();
     I.seeElement(alertRulesPage.elements.searchByDataSourceDropdown);
     I.seeElement(alertRulesPage.elements.searchByLabel);
-    alertRulesPage.alertRuleFilters.forEach((filter) => {
+    alertRulesPage.alertRuleFilters.forEach(({ filter }) => {
       const ruleFilter = alertRulesPage.elements.ruleFilterLocator(filter);
 
       I.waitForVisible(ruleFilter, 10);
     });
     I.waitForVisible(alertRulesPage.buttons.groupCollapseButton(ruleFolder), 10);
     I.click(alertRulesPage.buttons.groupCollapseButton(ruleFolder));
-    alertRulesPage.columnHeaders.forEach((header) => {
+    alertRulesPage.columnHeaders.forEach(({ header }) => {
       const columnHeader = alertRulesPage.elements.columnHeaderLocator(header);
 
       I.waitForVisible(columnHeader, 30);

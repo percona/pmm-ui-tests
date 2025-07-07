@@ -53,7 +53,7 @@ Scenario(
   async ({ I, alertsPage, alertsAPI }) => {
     await alertsAPI.waitForAlerts(24, 1);
     await I.amOnPage(alertsPage.url);
-    alertsPage.columnHeaders.forEach((header) => {
+    alertsPage.columnHeaders.forEach(({ header }) => {
       const columnHeader = alertsPage.elements.columnHeaderLocator(header);
 
       I.waitForVisible(columnHeader, 10);

@@ -248,7 +248,7 @@ Scenario(
 
     const allAgents = [];
 
-    Object.values((await inventoryAPI.apiGetServices()).data).flat(Infinity).forEach((o) => {
+    Object.values((await inventoryAPI.apiGetServices()).data).flat(Infinity).forEach(({ o }) => {
       allAgents.push(...o.agents);
     });
 
@@ -326,7 +326,7 @@ Scenario(
 
     I.amOnPage(pmmInventoryPage.url);
 
-    exporters.forEach((agent) => {
+    exporters.forEach(({ agent }) => {
       if (agent.process_exec_path) {
         I.say(`process_exec_path for agent ${agent.agent_type} is ${agent.process_exec_path}`);
         assert.ok(agent.process_exec_path.length, `Process exec path for ${agent.agent_type} is empty`);

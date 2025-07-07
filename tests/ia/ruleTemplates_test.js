@@ -78,7 +78,7 @@ Scenario(
     I.waitForVisible(ruleTemplatesPage.elements.columnHeaderLocator('Actions'), 30);
     const templateName = await I.grabTextFromAll(ruleTemplatesPage.elements.templateName);
 
-    templateName.forEach((name) => {
+    templateName.forEach(({ name }) => {
       assert.ok(name.length > 0, 'Rule Template name should not be empty');
     });
     I.seeElement(ruleTemplatesPage.buttons.openAddTemplateModal);

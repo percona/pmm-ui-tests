@@ -12,7 +12,7 @@ Scenario(
     const newTabs = await I.openNewTabs(4);
     const addresses = [homePage.landingUrl, pmmInventoryPage.url, pmmSettingsPage.url, advisorsPage.url];
 
-    newTabs.forEach(async (tab, index) => {
+    newTabs.forEach(async ({ tab, index }) => {
       await I.navigateTabTo(tab, addresses[index]);
       const loadTime = await I.getPageTimeToLoad(tab);
 

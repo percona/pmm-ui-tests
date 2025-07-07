@@ -1,4 +1,5 @@
 const { I, homePage } = inject();
+const { tryTo } = require('codeceptjs/effects')
 
 module.exports = {
   url: 'graph/login',

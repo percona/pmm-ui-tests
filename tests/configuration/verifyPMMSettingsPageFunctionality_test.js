@@ -1,5 +1,6 @@
 const assert = require('assert');
 const { users } = require('../helper/constants');
+const { tryTo } = require('codeceptjs/effects');
 
 Feature('PMM Settings Functionality').retry(1);
 
