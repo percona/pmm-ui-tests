@@ -1,6 +1,6 @@
 const { I } = inject();
 const assert = require('assert');
-const request = require('request');
+const axios = require('axios');
 const fs = require('fs');
 const targz = require('tar.gz');
 const path = require('path');
@@ -40,7 +40,7 @@ module.exports = {
     const destnDir = `${outputDir}/${uid}`;
 
     return new Promise((resolve, reject) => {
-      request.get(`${process.env.PMM_UI_URL}dump/${uid}.tar.gz`, { headers }, (error, response, body) => {
+      axios.get(`${process.env.PMM_UI_URL}dump/${uid}.tar.gz`, { headers }, (error, response, body) => {
       }).pipe(fs.createWriteStream(targzFile))
         .on('close', () => {
           targz().extract(targzFile, destnDir);

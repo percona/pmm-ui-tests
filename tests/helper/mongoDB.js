@@ -9,7 +9,7 @@ class MongoDBHelper extends Helper {
     this.password = config.password;
     this.url = `mongodb://${config.username}:${encodeURIComponent(config.password)}@${config.host}:${config.port}/?authSource=admin`;
     this.client = new MongoClient(this.url, {
-      useNewUrlParser: true, connectTimeoutMS: 30000,
+      connectTimeoutMS: 30000,
     });
   }
 
@@ -36,7 +36,7 @@ class MongoDBHelper extends Helper {
     this.client.s.url = this.url;
 
     this.client = new MongoClient(this.url, {
-      useNewUrlParser: true, useUnifiedTopology: true, connectTimeoutMS: 30000,
+      useUnifiedTopology: true, connectTimeoutMS: 30000,
     });
 
     return await this.client.connect();
@@ -60,7 +60,7 @@ class MongoDBHelper extends Helper {
     this.client.s.url = this.url;
 
     this.client = new MongoClient(this.url, {
-      useNewUrlParser: true, useUnifiedTopology: true, connectTimeoutMS: 30000,
+      useUnifiedTopology: true, connectTimeoutMS: 30000,
     });
 
     return await this.client.connect();
@@ -93,7 +93,7 @@ class MongoDBHelper extends Helper {
     const user = username || this.username;
     const pass = password || this.password;
     const url = `mongodb://${user}:${encodeURIComponent(pass)}@${member1},${member2},${member3}/?authSource=admin&replicaSet=${replicaName}`;
-    const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true, connectTimeoutMS: 30000 });
+    const client = new MongoClient(url, { useUnifiedTopology: true, connectTimeoutMS: 30000 });
 
     return await client.connect();
   }
@@ -114,7 +114,7 @@ class MongoDBHelper extends Helper {
     const user = username || this.username;
     const pass = password || this.password;
     const url = `mongodb://${user}:${encodeURIComponent(pass)}@${this.host}:${port}/?authSource=admin`;
-    const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true, connectTimeoutMS: 30000 });
+    const client = new MongoClient(url, { useUnifiedTopology: true, connectTimeoutMS: 30000 });
 
     return await client.connect();
   }
