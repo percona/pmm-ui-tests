@@ -5,6 +5,7 @@ const fs = require('fs');
 const { extract } = require('tar');
 const path = require('path');
 const { readdirSync } = require('fs');
+const { pipeline } = require('stream/promises'); 
 
 const outputDir = `${process.cwd()}/tests/output`;
 
@@ -39,16 +40,30 @@ module.exports = {
     const targzFile = `${outputDir}/${uid}.tar.gz`;
     const destnDir = `${outputDir}/${uid}`;
 
-    return new Promise(resolve => {
-      axios.get(`${process.env.PMM_UI_URL}dump/${uid}.tar.gz`, { headers, responseType: 'stream' }).then(response => {
-        response.data.pipe(fs.createWriteStream(targzFile))
-        .on('close', () => {
-          extract({file: targzFile});
-          console.log(`Dump file downloaded and extracted to DestnDir: ${destnDir}`);
-          resolve(true);
-        });
-      });
-    });
+    const response = await axios.get(
+      `${process.env.PMM_UI_URL}dump/${uid}.tar.gz`,
+      {
+        headers,
+        responseType: 'stream',
+      },
+    );
+    
+    await pipeline(response.data, fs.createWriteStream(targzFile));
+    console.log(`Download concluído com sucesso: ${targzFile}`);
+    await extract({file: targzFile, cwd: destnDir});
+    console.log(`Dump file downloaded and extracted to DestnDir: ${destnDir}`);
+    
+    return true;
+    // return new Promise(resolve => {
+    //   axios.get(`${process.env.PMM_UI_URL}dump/${uid}.tar.gz`, { headers, responseType: 'stream' }).then(response => {
+    //     response.data.pipe(fs.createWriteStream(targzFile))
+    //     .on('close', () => {
+    //       extract({file: targzFile, cwd: destnDir});
+    //       console.log(`Dump file downloaded and extracted to DestnDir: ${destnDir}`);
+    //       resolve(true);
+    //     });
+    //   });
+    // });
     
   },
 
@@ -58,7 +73,7 @@ module.exports = {
 
     console.log(`Extracting dump file: ${targzFile} to destination directory: ${destnDir}`);
     await I.asyncWaitFor(async () => fs.existsSync(targzFile), 60);
-    await extract({file: targzFile});
+    await extract({file: targzFile, cwd: destnDir});
   },
 
   async verifyDump(uid, sftDir) {
