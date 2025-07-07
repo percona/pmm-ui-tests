@@ -2,7 +2,7 @@ const { I } = inject();
 const assert = require('assert');
 const axios = require('axios');
 const fs = require('fs');
-const targz = require('tar');
+const { extract } = require('tar');
 const path = require('path');
 const { readdirSync } = require('fs');
 
@@ -43,11 +43,12 @@ module.exports = {
       axios.get(`${process.env.PMM_UI_URL}dump/${uid}.tar.gz`, { headers, responseType: 'stream' }).then(response => {
         response.data.pipe(fs.createWriteStream(targzFile))
         .on('close', () => {
-          targz.extract(targzFile, destnDir);
+          extract({file: targzFile, cwd: destnDir});
           resolve(true);
         });
       });
     });
+    
   },
 
   async extractDump(uid, sftpDir) {
@@ -55,7 +56,7 @@ module.exports = {
     const destnDir = `${sftpDir}/${uid}`;
 
     await I.asyncWaitFor(async () => fs.existsSync(targzFile), 60);
-    targz.extract(targzFile, destnDir);
+    extract({file: targzFile, cwd: destnDir});
   },
 
   async verifyDump(uid, sftDir) {
