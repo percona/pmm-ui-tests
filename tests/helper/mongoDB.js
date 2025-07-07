@@ -128,7 +128,7 @@ class MongoDBHelper extends Helper {
    * @returns {Promise<*>}
    */
   async mongoExecuteCommand(cmdObj, db) {
-    return await this.client.db(db).command(cmdObj);
+    return this.client.db(db).command(cmdObj);
   }
 
   /**
@@ -139,7 +139,7 @@ class MongoDBHelper extends Helper {
    * @returns {Promise<*>}
    */
   async mongoExecuteAdminCommand(cmdObj) {
-    return await this.client.db().admin().command(cmdObj);
+    return this.client.db('admin').command(cmdObj);
   }
 
   /**
@@ -150,7 +150,13 @@ class MongoDBHelper extends Helper {
    * @returns {Promise<unknown>}
    */
   async mongoAddUser(username, password, roles = [{ db: 'admin', role: 'userAdminAnyDatabase' }]) {
-    return this.client.db().admin().addUser(username, password, { roles });
+    const command = {
+      createUser: username,
+      pwd: password,
+      roles,
+    };
+
+    return this.client.db('admin').command(command);
   }
 
   /**
@@ -159,7 +165,7 @@ class MongoDBHelper extends Helper {
    * @returns {Promise<*>}
    */
   async mongoRemoveUser(username) {
-    return await this.client.db().admin().removeUser(username);
+    return this.client.db('admin').command({ dropUser: username });
   }
 
   /**
@@ -167,7 +173,7 @@ class MongoDBHelper extends Helper {
    * @returns {Promise<*>}
    */
   async mongoListDBs() {
-    return await this.client.db().admin().listDatabases();
+    return this.client.db('admin').admin().listDatabases();
   }
 
   /**
@@ -181,7 +187,7 @@ class MongoDBHelper extends Helper {
    * @returns {Promise<*>}
    */
   async mongoCreateCollection(dbName, collectionName) {
-    return await this.client.db(dbName).createCollection(collectionName);
+    return this.client.db(dbName).createCollection(collectionName);
   }
 
   /**
@@ -204,7 +210,7 @@ class MongoDBHelper extends Helper {
    * @returns {Promise<*>}
    */
   async mongoDropCollection(dbName, collectionName) {
-    return await this.client.db(dbName).dropCollection(collectionName);
+    return this.client.db(dbName).dropCollection(collectionName);
   }
 
   /**
@@ -213,9 +219,9 @@ class MongoDBHelper extends Helper {
    * @returns {Promise<*>}
    */
   async mongoShowCollections(dbName) {
-    const collections = await this.client.db(dbName).listCollections();
+    const collections = await this.client.db(dbName).listCollections().toArray();
 
-    return await collections.toArray();
+    return collections;
   }
 
   /**
@@ -227,8 +233,8 @@ class MongoDBHelper extends Helper {
   async dropCollectionIfExist(dbname, col) {
     const collections = (await this.mongoShowCollections(dbname)).map((collection) => collection.name);
 
-    if (collections.indexOf(col) !== -1) {
-      await this.client.db(dbname).dropCollection(col);
+    if (collections.includes(col)) {
+      await this.mongoDropCollection(dbname, col);
     }
   }
 
@@ -242,12 +248,11 @@ class MongoDBHelper extends Helper {
    * @param collectionNames, array of collection
    */
   async mongoCreateBulkCollections(dbName, collectionNames = []) {
-    for (let i = 0; i < collectionNames.length; i++) {
-      await this.dropCollectionIfExist(dbName, collectionNames[i]);
-
-      const col = await this.client.db(dbName).createCollection(collectionNames[i]);
-
-      await col.insertOne({ a: `${dbName}-${collectionNames[i]}` });
+    for (const collectionName of collectionNames) {
+      await this.dropCollectionIfExist(dbName, collectionName);
+      const col = await this.mongoCreateCollection(dbName, collectionName);
+    
+      await col.insertOne({ placeholder: `initial-doc-for-${collectionName}` });
     }
   }
 }
