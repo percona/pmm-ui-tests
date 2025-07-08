@@ -36,11 +36,11 @@ class MongoDBHelper extends Helper {
     this.client = new MongoClient(this.url, {family: 4});
 
     try {
-      await client.connect();
-      await client.db('admin').command({ ping: 1 });
+      await this.client.connect();
+      await this.client.db('admin').command({ ping: 1 });
       console.log('Pinged your deployment. You successfully connected to MongoDB!');
     } finally {
-      await client.close();
+      await this.client.close();
     }
     
     run().catch(console.dir);
