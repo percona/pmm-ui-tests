@@ -20,9 +20,7 @@ module.exports = {
     ruleDetails: I.useDataQA('data-testid expanded-content'),
     searchByDataSourceDropdown: I.useDataQA('data-testid Data source picker select container'),
     searchByLabel: '$input-wrapper',
-     
     ruleFilterLocator: (ruleFilterText) => locate('label').withText(ruleFilterText).after('//input[@type="radio"]'),
-     
     totalRulesCounter: (count, folder) => locate('$rule-group-header').withText(folder).find('span').withText(count),
     alertsLearnMoreLinks: locate('a').withText('Learn more'),
     detailsEvaluateValue: '//div[text()="Evaluate"]/following-sibling::div',

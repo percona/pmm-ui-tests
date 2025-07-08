@@ -296,7 +296,6 @@ Scenario(
 
     for (const key of Object.keys(actAg.data)) {
       if (key.endsWith('exporter') && key !== 'external_exporter') {
-         
         actAg.data[key].map((o) => o.type = key);
 
         arr.push(...actAg.data[key]);
@@ -322,8 +321,6 @@ Scenario(
 
     await I.verifyCommand(`docker cp rs101:/${zipFileName} ./summary.zip`);
     const statusFile = JSON.parse(await I.readFileInZipArchive('summary.zip', 'client/status.json'));
-    
-    console.log(`statusFile: ${JSON.stringify(statusFile, null, 2)}`);
     const exporters = statusFile.agents_info.filter((agent) => !agent.agent_type.toLowerCase().includes('qan'));
 
     I.amOnPage(pmmInventoryPage.url);

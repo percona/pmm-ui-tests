@@ -294,7 +294,6 @@ module.exports = {
   },
 
   openAddRemotePage(instanceType) {
-     
     switch (instanceType) {
       case 'mysql':
       case 'mysql_ssl':
@@ -347,7 +346,6 @@ module.exports = {
     I.fillField(this.fields.environment, details.environment);
     I.fillField(this.fields.cluster, details.cluster);
 
-     
     if (details.type === 'postgresql') {
       I.fillField(this.fields.database, details.database);
     }
@@ -434,7 +432,6 @@ module.exports = {
       this.selectNodeForRemoteInstance(nodeName);
     }
 
-     
     switch (serviceName) {
       case remoteInstancesHelper.services.mysql:
         inputs = {
@@ -621,7 +618,6 @@ module.exports = {
   createRemoteInstance(serviceName) {
     I.waitForVisible(this.fields.skipTLSL, 30);
     I.checkOption(this.fields.skipTLSL);
-     
     switch (serviceName) {
       case remoteInstancesHelper.services.mongodb:
       case remoteInstancesHelper.services.mongodb_ssl:
@@ -739,7 +735,6 @@ module.exports = {
     const srviceName = nodeName.startsWith('client_container') ? `${serviceName}_client` : serviceName;
 
     this.selectNodeForRemoteInstance(nodeName);
-     
     switch (serviceName) {
       case 'rds-mysql56':
         inputs = this.mysqlInputs;

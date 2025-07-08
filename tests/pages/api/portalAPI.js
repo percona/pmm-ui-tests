@@ -28,7 +28,6 @@ module.exports = {
     };
   },
 
-   
   async oktaCreateUser({ email, password, firstName, lastName }) {
     const oktaUrl = `${this.oktaUrl}api/v1/users?activate=true`;
     const headers = { Authorization: this.oktaToken };

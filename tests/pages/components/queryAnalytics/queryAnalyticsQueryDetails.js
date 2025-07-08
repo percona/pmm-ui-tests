@@ -48,7 +48,6 @@ class QueryAnalyticsQueryDetails {
     const countLocator = this.elements.metricsCellDetailValue('Query Count', 3);
     const loadLocator = this.elements.metricsCellDetailValue('Query Time', 2);
 
-     
     let [perQueryStats, perQueryUnit] = (await I.grabTextFrom(timeLocator)).split(' ');
 
     if (perQueryUnit === 'ms') perQueryStats /= 1000;

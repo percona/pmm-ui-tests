@@ -37,7 +37,6 @@ module.exports = {
 
       if (!artifacts) {
         I.wait(5);
-         
         continue;
       }
 

@@ -131,7 +131,6 @@ module.exports = {
     I.click(pmmUpgradePage.elements.updateNowButton);
     I.waitForElement(pmmUpgradePage.elements.updateSuccess, 240);
 
-     
     console.log(`Upgraded to pmm server tag: ${await I.verifyCommand('docker ps -a | grep pmm-server | awk -F "pmm-server:" \'{print $2}\' | awk -F "  " \'{print $1}\'')}`);
   },
 

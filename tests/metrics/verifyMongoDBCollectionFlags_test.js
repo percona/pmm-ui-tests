@@ -83,7 +83,6 @@ Scenario(
     const mongoDbOptions = agent.mongo_db_options;
 
     // assert dbstats and topmetrics collectors are disabled
-     
     assert.ok(!mongoDbOptions.enable_all_collectors, `Was expecting enable_all_collectors to be disabled for Mongo Exporter for service "${mongodb_service_name}"`);
     I.say('Wait 180 seconds for Metrics being collected for the new service');
     await I.wait(180);
@@ -107,11 +106,8 @@ Scenario(
       .apiGetPMMAgentInfoByServiceId(service_id, AGENT_TYPE.MONGODB_EXPORTER);
 
     // assert dbstats and topmetrics collectors are enabled
-     
     assert.ok(mongoDbOptions.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
-     
     assert.ok(disabledCollectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "disabled_collectors" property`);
-     
     assert.ok(disabledCollectors[0] === collectorsToDisable, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "disabled_collectors: [ 'topmetrics' ]" property`);
     assert.ok(disabledCollectors.length === 1, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "disabled_collectors: [ 'topmetrics' ]" property`);
     assert.ok(mongoDbOptions.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property with "true"`);
@@ -155,7 +151,6 @@ Scenario(
       .apiGetPMMAgentInfoByServiceId(service_id, AGENT_TYPE.MONGODB_EXPORTER);
 
     // assert dbstats and topmetrics collectors are enabled
-     
     assert.ok(mongoDbOptions.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
     I.say('Wait 180 seconds for Metrics being collected for the new service');
     await I.wait(180);
@@ -179,11 +174,8 @@ Scenario(
       .apiGetPMMAgentInfoByServiceId(service_id, AGENT_TYPE.MONGODB_EXPORTER);
 
     // assert dbstats and topmetrics collectors are enabled
-     
     assert.ok(mongoDbOptions.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
-     
     assert.ok(disabledCollectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
-     
     assert.ok(disabledCollectors[0] === 'collstats', `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "disabled_collectors: [ 'collstats', 'dbstats', 'topmetrics' ]" property but found ${disabledCollectors}`);
     assert.ok(disabledCollectors[1] === 'dbstats', `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "disabled_collectors: [ 'collstats', 'dbstats', 'topmetrics' ]" property but found ${disabledCollectors}`);
     assert.ok(disabledCollectors[2] === 'topmetrics', `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "disabled_collectors: [ 'collstats', 'dbstats', 'topmetrics' ]" property but found ${disabledCollectors}`);
@@ -209,7 +201,6 @@ Scenario(
       .apiGetPMMAgentInfoByServiceId(service_id, AGENT_TYPE.MONGODB_EXPORTER);
 
     // assert dbstats and topmetrics collectors are enabled
-     
     assert.ok(mongoDbOptions.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
     I.say('Wait 180 seconds for Metrics being collected for the new service');
     await I.wait(180);
@@ -235,7 +226,6 @@ Scenario(
       .apiGetPMMAgentInfoByServiceId(service_id, AGENT_TYPE.MONGODB_EXPORTER);
 
     // assert dbstats and topmetrics collectors are enabled
-     
     assert.ok(mongoDbOptions.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
     I.say('Wait 180 seconds for Metrics being collected for the new service');
     await I.wait(180);
@@ -261,7 +251,6 @@ Scenario(
       .apiGetPMMAgentInfoByServiceId(service_id, AGENT_TYPE.MONGODB_EXPORTER);
 
     // assert dbstats and topmetrics collectors are enabled
-     
     assert.ok(mongoDbOptions.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
     I.say('Wait 180 seconds for Metrics being collected for the new service');
     await I.wait(180);
@@ -287,7 +276,6 @@ Scenario(
     const smartMetricName = 'collector_scrape_time_ms';
 
     // assert dbstats and topmetrics collectors are enabled
-     
     assert.ok(mongoDbOptions.enable_all_collectors, `Was expecting Mongo Exporter for service ${mongodb_service_name} to have "enable_all_collectors" property`);
     I.say('Wait 180 seconds for Metrics being collected for the new service');
     await I.wait(180);

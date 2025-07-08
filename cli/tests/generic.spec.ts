@@ -398,7 +398,6 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     test.skip(true, 'skipping because -pprof flag takes a lot of time');
     const output = await cli.exec('sudo pmm-admin summary --pprof --json');
     await output.assertSuccess();
-
     await output.outContainsMany(['{\"filename\":\"', '.zip\"']);
   });
 

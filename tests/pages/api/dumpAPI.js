@@ -68,7 +68,7 @@ module.exports = {
   async verifyDump(uid, sftDir) {
     const absOutputDir = sftDir || outputDir;
     const destnDir = `${absOutputDir}/${uid}`;
-    
+
     await I.asyncWaitFor(async () => fs.existsSync(destnDir), 60);
     let isDir = 0; let
       isFile = 0;

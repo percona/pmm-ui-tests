@@ -40,7 +40,6 @@ test.describe('Percona Server MySql (PS) Configuration file test', async () => {
       await output.outContains('MySQL Service added.');
 
       const adminList = (await execute('sudo pmm-admin list').assertSuccess()).getStdOutLines();
-
       const serviceId: string = adminList.find((item: string | string[]) => item.includes(`mysql_conf_${n}`))
         ?.trim()
         .split(' ')

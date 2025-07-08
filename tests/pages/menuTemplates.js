@@ -129,7 +129,6 @@ const menuOption = (menuName, label, path, menuLevel = 1) => new MenuOption(menu
  * @param   menuOptions   an object collection of {@link MenuOption} and/or {@link SubMenu}
  * @constructor
  */
- 
 function SubMenu(topMenuName, name, path = '#', menuOptions) {
   this.menu = { };
   if (menuOptions != null) {

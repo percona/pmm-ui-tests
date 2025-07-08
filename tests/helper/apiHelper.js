@@ -1,5 +1,4 @@
 class ApiHelper extends Helper {
-   
   async _before() {
     const { page } = this.helpers.Playwright;
 

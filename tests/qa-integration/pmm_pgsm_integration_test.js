@@ -347,7 +347,6 @@ Scenario.skip(
       } = await qanAPI.getMetricsFromPGSM(db, pgsm_output.rows[i].pgsm_query_id, connection, version);
       const { query } = pgsm_output.rows[i];
 
-       
       if (excluded_queries.includes(query)) continue;
 
       if (response.status !== 200) {
@@ -468,9 +467,7 @@ Scenario(
       // qanOverview.waitForOverviewLoaded();
       // const queryid = await I.grabValueFrom(qanOverview.fields.searchBy);
       //
-       
       // assert.ok(pgsmTopQuery === topQuery, `Top Query for query ${pgsmQuery} found in pgsm view is ${pgsmTopQuery} while the expected query was ${topQuery}`);
-       
       // assert.ok(queryid === topQueryId, `Top Query ID found in PGSM view was ${topQueryId} while the one present in QAN for ${queryWithTopId} is ${queryid}`);
     }
   },

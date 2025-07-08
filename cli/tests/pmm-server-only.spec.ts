@@ -119,7 +119,6 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
    */
   test('Basic Sanity using Clickhouse shipped with PMM-Server, Check Connection, Run a Query', async ({}) => {
     await (await cli.exec(
-
       'docker exec pmm-server clickhouse-client \
         --database pmm \
         --password clickhouse \
