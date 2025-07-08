@@ -322,6 +322,8 @@ Scenario(
 
     await I.verifyCommand(`docker cp rs101:/${zipFileName} ./summary.zip`);
     const statusFile = JSON.parse(await I.readFileInZipArchive('summary.zip', 'client/status.json'));
+    
+    console.log(`statusFile: ${JSON.stringify(statusFile, null, 2)}`);
     const exporters = statusFile.agents_info.filter((agent) => !agent.agent_type.toLowerCase().includes('qan'));
 
     I.amOnPage(pmmInventoryPage.url);

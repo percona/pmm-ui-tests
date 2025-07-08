@@ -8,9 +8,7 @@ class MongoDBHelper extends Helper {
     this.username = config.username;
     this.password = config.password;
     this.url = `mongodb://${config.username}:${encodeURIComponent(config.password)}@${config.host}:${config.port}/?authSource=admin`;
-    this.client = new MongoClient(this.url, {
-      connectTimeoutMS: 30000,
-    });
+    this.client = new MongoClient(this.url, {connectTimeoutMS: 30000});
   }
 
   /**
@@ -32,14 +30,20 @@ class MongoDBHelper extends Helper {
 
     if (password) this.password = password;
 
-    this.url = `mongodb://${this.username}:${encodeURIComponent(this.password)}@${this.host}:${this.port}/?authSource=admin`;
+    this.url = `mongodb://${this.username}:${encodeURIComponent(this.password)}@${this.host}:${this.port}/?authSource=admin&connectTimeoutMS=30000`;
     this.client.s.url = this.url;
+    console.log(this.url);
+    this.client = new MongoClient(this.url, {family: 4});
 
-    this.client = new MongoClient(this.url, {
-      useUnifiedTopology: true, connectTimeoutMS: 30000, serverApi: {
-        version: '1',
-      },
-    });
+    try {
+      await client.connect();
+      await client.db('admin').command({ ping: 1 });
+      console.log('Pinged your deployment. You successfully connected to MongoDB!');
+    } finally {
+      await client.close();
+    }
+    
+    run().catch(console.dir);
 
     return await this.client.connect();
   }
@@ -61,9 +65,7 @@ class MongoDBHelper extends Helper {
     this.url = `mongodb://${this.username}:${encodeURIComponent(this.password)}@${member1},${member2},${member3}/?authSource=admin&replicaSet=${replicaName}`;
     this.client.s.url = this.url;
 
-    this.client = new MongoClient(this.url, {
-      useUnifiedTopology: true, connectTimeoutMS: 30000,
-    });
+    this.client = new MongoClient(this.url, {connectTimeoutMS: 30000});
 
     return await this.client.connect();
   }
@@ -95,7 +97,7 @@ class MongoDBHelper extends Helper {
     const user = username || this.username;
     const pass = password || this.password;
     const url = `mongodb://${user}:${encodeURIComponent(pass)}@${member1},${member2},${member3}/?authSource=admin&replicaSet=${replicaName}`;
-    const client = new MongoClient(url, { useUnifiedTopology: true, connectTimeoutMS: 30000 });
+    const client = new MongoClient(url, {connectTimeoutMS: 30000});
 
     return await client.connect();
   }
@@ -116,7 +118,7 @@ class MongoDBHelper extends Helper {
     const user = username || this.username;
     const pass = password || this.password;
     const url = `mongodb://${user}:${encodeURIComponent(pass)}@${this.host}:${port}/?authSource=admin`;
-    const client = new MongoClient(url, { useUnifiedTopology: true, connectTimeoutMS: 30000 });
+    const client = new MongoClient(url, {connectTimeoutMS: 30000});
 
     return await client.connect();
   }
