@@ -29,7 +29,6 @@ class MongoDBHelper extends Helper {
     if (password) this.password = password;
 
     this.url = `mongodb+srv://${this.username}:${encodeURIComponent(this.password)}@${this.host}:${this.port}/?authSource=admin&connectTimeoutMS=30000`;
-    this.client.s.url = this.url;
     console.log(this.url);
 
 
@@ -64,7 +63,6 @@ class MongoDBHelper extends Helper {
     if (password) this.password = password;
 
     this.url = `mongodb://${this.username}:${encodeURIComponent(this.password)}@${member1},${member2},${member3}/?authSource=admin&replicaSet=${replicaName}`;
-    this.client.s.url = this.url;
 
     this.client = new MongoClient(this.url, {connectTimeoutMS: 30000});
 

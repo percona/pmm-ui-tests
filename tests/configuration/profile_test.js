@@ -1,3 +1,4 @@
+const { tryTo } = require('codeceptjs/effects');
 /**
  * Note!
  * All tests with changing password must use UI login: {@code loginPage.login();}
