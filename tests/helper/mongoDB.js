@@ -30,17 +30,19 @@ class MongoDBHelper extends Helper {
 
     if (password) this.password = password;
 
-    this.url = `mongodb://${this.username}:${encodeURIComponent(this.password)}@${this.host}:${this.port}/?authSource=admin&connectTimeoutMS=30000`;
+    this.url = `mongodb+srv://${this.username}:${encodeURIComponent(this.password)}@${this.host}:${this.port}/?authSource=admin&connectTimeoutMS=30000`;
     this.client.s.url = this.url;
     console.log(this.url);
+
     this.client = new MongoClient(this.url, {family: 4});
 
     try {
+      console.log('Trying to connect to MongoDB...');
       await this.client.connect();
       await this.client.db('admin').command({ ping: 1 });
       console.log('Pinged your deployment. You successfully connected to MongoDB!');
-    } finally {
-      await this.client.close();
+    } catch (err) {
+      console.error('MongoDB connection error:', err);
     }
     
     run().catch(console.dir);
