@@ -18,10 +18,10 @@ exports.config = {
       show: false,
       browser: 'chromium',
       windowSize: '1920x1080',
-      timeout: 20000,
+      timeout: 20,
       waitForNavigation: 'networkidle0',
-      waitForTimeout: 60000,
-      getPageTimeout: 60000,
+      waitForTimeout: 60,
+      getPageTimeout: 60,
       waitForAction: 500,
       pressKeyDelay: 5,
       chromium: {
@@ -69,7 +69,7 @@ exports.config = {
     },
     REST: {
       endpoint: process.env.PMM_UI_URL || pmmUrl,
-      timeout: 60000,
+      timeout: 60,
       httpsAgent: new Agent({
         rejectUnauthorized: false,
       }),
@@ -78,7 +78,7 @@ exports.config = {
       require: 'codeceptjs-mailosaurhelper',
       apiKey: process.env.MAILOSAUR_API_KEY || 'key',
       serverId: process.env.MAILOSAUR_SERVER_ID || 'id',
-      timeout: 15000,
+      timeout: 15,
     },
     DbHelper: {
       require: 'codeceptjs-dbhelper',
@@ -137,6 +137,6 @@ exports.config = {
   hooks: [],
   gherkin: {},
   tests: 'tests/**/*_test.js',
-  timeout: 2400,
+  timeout: 24/10,
   name: 'pmm-qa',
 };
