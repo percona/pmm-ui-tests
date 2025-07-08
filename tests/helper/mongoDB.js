@@ -36,7 +36,9 @@ class MongoDBHelper extends Helper {
     this.client.s.url = this.url;
 
     this.client = new MongoClient(this.url, {
-      useUnifiedTopology: true, connectTimeoutMS: 30000,
+      useUnifiedTopology: true, connectTimeoutMS: 30000, serverApi: {
+        version: '1',
+      },
     });
 
     return await this.client.connect();
