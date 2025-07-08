@@ -7,8 +7,6 @@ class MongoDBHelper extends Helper {
     this.port = config.port;
     this.username = config.username;
     this.password = config.password;
-    this.url = `mongodb://${config.username}:${encodeURIComponent(config.password)}@${config.host}:${config.port}/?authSource=admin`;
-    this.client = new MongoClient(this.url, {connectTimeoutMS: 30000});
   }
 
   /**
@@ -34,7 +32,8 @@ class MongoDBHelper extends Helper {
     this.client.s.url = this.url;
     console.log(this.url);
 
-    this.client = new MongoClient(this.url, {family: 4});
+
+    this.client = new MongoClient('mongodb://pmm:pmmpass@localhost:27027/?authSource=admin&connectTimeoutMS=30000');
 
     try {
       console.log('Trying to connect to MongoDB...');
