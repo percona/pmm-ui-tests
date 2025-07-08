@@ -124,7 +124,7 @@ module.exports = {
   },
 
   inputRandomBackupName(length = 10) {
-    const backupName = faker.random.alpha(length);
+    const backupName = faker.string.alpha(length);
 
     I.clearField(this.elements.backupNameInput);
     I.fillField(this.elements.backupNameInput, backupName);

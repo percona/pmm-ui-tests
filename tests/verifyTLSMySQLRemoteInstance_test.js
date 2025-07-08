@@ -226,7 +226,7 @@ Data(maxQueryLengthInstances).Scenario(
       serviceType, version, container, maxQueryLength,
     } = current;
     let details;
-    const remoteServiceName = `MaxQueryLength_remote_${serviceName}_${faker.random.alphaNumeric(3)}`;
+    const remoteServiceName = `MaxQueryLength_remote_${serviceName}_${faker.string.alphanumeric(5)}`;
 
     if (serviceType === 'mysql_ssl') {
       details = {

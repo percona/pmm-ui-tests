@@ -61,11 +61,11 @@ module.exports = {
   },
 
   async getUser(email = '') {
-    const firstName = faker.name.firstName();
-    const lastName = faker.name.lastName();
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
 
     return {
-      email: email || `${firstName.toLowerCase()}.${lastName.toLowerCase()}.${Date.now()}.${faker.datatype.number()}@test.com`,
+      email: email || `${firstName.toLowerCase()}.${lastName.toLowerCase()}.${Date.now()}.${faker.number.int()}@test.com`,
       password: generate({
         length: 16,
         numbers: true,

@@ -8,7 +8,7 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     // Ternary is used to generate different ids for templates
     const templateText = path === ruleTemplatesPage.ruleTemplate.inputFilePath
-      ? content.replace('name: input_template_yml', `name: ${faker.internet.userName()}_template`)
+      ? content.replace('name: input_template_yml', `name: ${faker.internet.username()}_template`)
       : content;
     const body = {
       yaml: templateText,
