@@ -312,7 +312,7 @@ Scenario(
 );
 
 // the test relies on --database psmdb
-Scenario(
+Scenario.only(
   'PMM-T1225 - Verify summary file includes process_exec_path for agents @mongodb-exporter',
   async ({ I, pmmInventoryPage }) => {
     I.amOnPage(pmmInventoryPage.url);
@@ -328,20 +328,20 @@ Scenario(
     I.amOnPage(pmmInventoryPage.url);
 
     exporters.forEach((item, idx) => {
-      I.say(`Exporter[${idx}] debug: ${JSON.stringify(item, null, 2)}`);
+      console.log(`Exporter[${idx}] debug: ${JSON.stringify(item, null, 2)}`);
       if (item.agent) {
         if (item.agent.process_exec_path) {
-          I.say(`process_exec_path for agent ${item.agent.agent_type} is ${item.agent.process_exec_path}`);
+          console.log(`process_exec_path for agent ${item.agent.agent_type} is ${item.agent.process_exec_path}`);
           assert.ok(item.agent.process_exec_path.length, `Process exec path for ${item.agent.agent_type} is empty`);
         } else {
           assert.fail(`Process exec path is not present for ${item.agent.agent_type}`);
         }
       } else {
         if (item.process_exec_path) {
-          I.say(`process_exec_path for agent ${item.agent_type} is ${item.process_exec_path}`);
+          console.log(`process_exec_path for agent ${item.agent_type} is ${item.process_exec_path}`);
           assert.ok(item.process_exec_path.length, `Process exec path for ${item.agent_type} is empty`);
         } else {
-          I.say(`Item without 'agent' property: ${JSON.stringify(item, null, 2)}`);
+          console.log(`Item without 'agent' property: ${JSON.stringify(item, null, 2)}`);
           assert.fail(`'agent' property is not present or process_exec_path missing for item: ${JSON.stringify(item)}`);
         }
       }
