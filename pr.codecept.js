@@ -69,7 +69,7 @@ exports.config = {
     },
     REST: {
       endpoint: process.env.PMM_UI_URL || pmmUrl,
-      timeout: 60,
+      timeout: 60000,
       httpsAgent: new Agent({
         rejectUnauthorized: false,
       }),
