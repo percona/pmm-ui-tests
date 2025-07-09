@@ -18,10 +18,10 @@ exports.config = {
       show: false,
       browser: 'chromium',
       windowSize: '1920x1080',
-      timeout: 20,
+      timeout: 20000,
       waitForNavigation: 'networkidle0',
-      waitForTimeout: 60,
-      getPageTimeout: 60,
+      waitForTimeout: 60000,
+      getPageTimeout: 60000,
       waitForAction: 500,
       pressKeyDelay: 5,
       chromium: {
