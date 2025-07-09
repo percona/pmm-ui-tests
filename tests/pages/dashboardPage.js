@@ -948,7 +948,6 @@ module.exports = {
       'Oplog Buffer Capacity',
       'Oplog Operations',
       'Oplog GB/Hour',
-      'Oplog Window',
     ],
   },
 
