@@ -39,7 +39,7 @@ Scenario(
     // give title time to change from 'Grafana'
     I.wait(10);
     // PMM-T776
-    const verifyTitle = ({ page }) => {
+    const verifyTitle = ( page ) => {
       I.seeTitleEquals(`${page} - Percona Monitoring and Management`);
     };
 
