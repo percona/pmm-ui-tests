@@ -1,4 +1,3 @@
-import { Helper } from 'codeceptjs';
 import buildUrl from 'build-url';
 
 class BrowserHelper extends Helper {
@@ -12,8 +11,7 @@ class BrowserHelper extends Helper {
    * @example
    * buildUrlWithParameters('http://example.com', { environment: 'ps-dev', from: 'now-1' });
    */
-  buildUrlWithParameters(url, parameters) {
-    console.log(parameters);
+  buildUrlWithParameters(url: string, parameters:  Record<string, string>) {
     const queryParams: {
       from?: string,
       to?: string,
@@ -48,25 +46,25 @@ class BrowserHelper extends Helper {
           queryParams['var-database'] = value;
           break;
         case 'columns':
-          queryParams.columns = value as string;
+          queryParams.columns = value;
           break;
         case 'from':
-          queryParams.from = value as string;
+          queryParams.from = value;
           break;
         case 'to':
-          queryParams.to = value as string;
+          queryParams.to = value;
           break;
         case 'search':
-          queryParams.dimensionSearchText = value as string;
+          queryParams.dimensionSearchText = value;
           break;
         case 'page_number':
-          queryParams.page_number = value as string;
+          queryParams.page_number = value;
           break;
         case 'page_size':
-          queryParams.page_size = value as string;
+          queryParams.page_size = value;
           break;
         case 'refresh':
-          queryParams.refresh = value as string;
+          queryParams.refresh = value;
           break;
         default:
       }
