@@ -71,7 +71,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.verifyThereAreNoGraphsWithoutData(4);
 
-    I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.cleanUrl);
+    I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     dashboardPage.waitForDashboardOpened();
@@ -87,7 +87,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.verifyThatAllGraphsNoData(3);
 
-    I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.cleanUrl);
+    I.amOnPage(dashboardPage.postgresqlInstanceOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     dashboardPage.waitForDashboardOpened();

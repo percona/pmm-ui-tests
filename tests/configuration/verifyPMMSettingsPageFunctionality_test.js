@@ -103,7 +103,7 @@ Scenario(
 ).retry(2);
 
 Scenario(
-  'PMM-T747 - Verify enabling Azure flag @instances',
+  'PMM-T747 - Verify enabling Azure flag @fb-settings',
   async ({
     I, pmmSettingsPage, remoteInstancesPage, settingsAPI,
   }) => {
@@ -193,10 +193,12 @@ Scenario(
 Scenario(
   'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
   async ({
-    I, pmmSettingsPage, settingsAPI,
+    I, pmmSettingsPage, settingsAPI, codeceptjsConfig,
   }) => {
+    const expectedUrl = codeceptjsConfig.config.helpers.Playwright.url;
+
     await settingsAPI.changeSettings({ publicAddress: '' });
-    I.wait(10);
+    I.wait(3);
     await pmmSettingsPage.openAdvancedSettings();
     await pmmSettingsPage.verifyTooltip(pmmSettingsPage.tooltips.advancedSettings.publicAddress);
 
@@ -204,12 +206,13 @@ Scenario(
 
     I.seeElement(pmmSettingsPage.fields.publicAddressButton);
     I.click(pmmSettingsPage.fields.publicAddressButton);
+    I.wait(1);
     await pmmSettingsPage.applyChanges();
-    I.wait(10);
+
     const publicAddressValue = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
     I.assertTrue(publicAddressValue.length > 0, 'Expected the Public Address Input Field to be not empty!');
-    I.wait(10);
+    I.wait(3);
     I.refreshPage();
     await pmmSettingsPage.waitForPmmSettingsPageLoaded();
     const publicAddressAfterRefresh = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
@@ -219,11 +222,15 @@ Scenario(
       publicAddressValue,
       `Expected the Public Address to be saved and Match ${publicAddressValue}`,
     );
+    I.assertTrue(
+      expectedUrl.includes(publicAddressAfterRefresh),
+      `Expected the Public Address (${publicAddressAfterRefresh}) to be saved and Match configuration url: ${expectedUrl}`,
+    );
   },
-).retry(1);
+).retry(5);
 
 Scenario(
-  'PMM-T254 - Ensure Advisors are on by default @instances',
+  'PMM-T254 - Ensure Advisors are on by default @fb-instances',
   async ({ settingsAPI }) => {
     const resp = await settingsAPI.getSettings('advisor_enabled');
 
@@ -233,7 +240,7 @@ Scenario(
 
 Scenario(
   'PMM-T1227 + PMM-T1338 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
-  + 'Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
+  + 'Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @fb-settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
     I.wait(10);

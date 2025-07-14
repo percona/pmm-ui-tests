@@ -240,6 +240,9 @@ module.exports = () => actor({
         case 'refresh':
           queryParams.refresh = value;
           break;
+        case 'metric':
+          queryParams['var-metric'] = value;
+          break;
         default:
       }
     });
@@ -249,5 +252,9 @@ module.exports = () => actor({
 
   signOut() {
     this.amOnPage('graph/logout');
+  },
+
+  async cleanupClickhouse() {
+    await this.verifyCommand('docker exec pmm-server clickhouse-client --database pmm --password clickhouse --query "TRUNCATE TABLE metrics"');
   },
 });

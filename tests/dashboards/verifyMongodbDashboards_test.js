@@ -62,16 +62,43 @@ Scenario(
   async ({
     I, dashboardPage, inventoryAPI, adminPage,
   }) => {
-    const mongoService = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, 'rs101');
+    const mongoService = await inventoryAPI.getServiceDetailsByPartialDetails({ cluster: 'replicaset', service_name: 'rs101' });
 
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionsOverview.clearUrl, {
       from: 'now-5m',
-      service_name: mongoService.service_name,
-      refresh: '10s',
+      node_name: mongoService.node_name,
+      refresh: '5s',
     }));
     dashboardPage.waitForDashboardOpened();
     await adminPage.performPageDown(5);
     await dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbCollectionsOverview.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
   },
 ).retry(2);
+
+const fcvPanelTestData = () => {
+  const { dashboardPage } = inject();
+
+  return [dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, dashboardPage.mongoDbShardedClusterSummary.url];
+};
+
+Data(fcvPanelTestData()).Scenario(
+  'PMM-T2035 - Verify MongoDb Cluster and MongoDB ReplSet dashboards has FCV panel @nightly @dashboards',
+  async ({ I, dashboardPage, current }) => {
+    const url = I.buildUrlWithParams(current, {
+      from: 'now-5m',
+      cluster: 'sharded',
+    });
+
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    const fcvVersion = await I.grabTextFrom(dashboardPage.panelValueByTitle('Feature Compatibility Version'));
+    const mongodbVersion = process.env.PSMDB_VERSION;
+
+    I.assertEqual(
+      fcvVersion,
+      mongodbVersion.split('.')[0],
+      'Feature Compatibility Version is not correct.',
+    );
+  },
+);

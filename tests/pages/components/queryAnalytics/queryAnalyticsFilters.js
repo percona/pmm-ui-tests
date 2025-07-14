@@ -50,6 +50,7 @@ class QueryAnalyticsFilters {
 
       await locator.waitFor({ state: 'attached' });
       await locator.type(filterName);
+      await page.waitForTimeout(200);
     });
   }
 

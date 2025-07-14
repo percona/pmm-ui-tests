@@ -3,11 +3,22 @@ const assert = require('assert');
 const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu');
 const PmmHealthDashboard = require('../dashboards/pages/pmmHealthDashboard');
 const HomeDashboard = require('../dashboards/pages/homeDashboard');
+const MongodbShardedClusterSummary = require('../dashboards/pages/mongodbShardedClusterSummary');
+const PostgresqlTopQueriesDashboard = require('../dashboards/pages/postgresqlTopQueriesDashboard');
+const PostgresqlInstancesOverviewExtendedDashboard = require('../dashboards/pages/postgresqlInstancesOverviewExtendedDashboard');
+const MongodbPBMDetailsDashboard = require('../dashboards/pages/mongodbPBMDetailsDashboard');
+const PostgresqlInstanceOverviewDashboard = require('../dashboards/pages/postgresqlInstanceOverviewDashboard');
+const PostgresqlInstanceSummaryDashboard = require('../dashboards/pages/postgresqlInstanceSummaryDashboard');
+const PostgresqlCheckpointDashboard = require('../dashboards/pages/postgresqlCheckpointDashboard');
+const PostgresqlReplicationOverviewDashboard = require('../dashboards/pages/postgresqlReplicationOverviewDashboard');
+const PostgresqlPatroniDashboard = require('../dashboards/pages/postgresqlPatroniDashboard');
 const { locateOption } = require('../helper/locatorHelper');
 
 module.exports = {
   // insert your locators and methods here
   // setting locators
+  slowQueriesText: locate('//section[contains(@data-testid, "Panel header Slow Queries") or contains(@data-testid, "Panel header Slow queries")]//div[@data-testid="TextPanel-converted-content"]'),
+  slowQueriesValue: locate('//section[contains(@data-testid, "Panel header Slow Queries") or contains(@data-testid, "Panel header Slow queries")]//div[@data-testid="TextPanel-converted-content"]//span'),
   serviceNameDropdown:
     '//label[contains(text(), "Service Name")]/following-sibling::div',
   serviceName:
@@ -49,6 +60,7 @@ module.exports = {
   advancedDataExplorationDashboard: {
     url:
       'graph/d/prometheus-advanced/advanced-data-exploration?orgId=1&refresh=1m&var-metric=go_gc_duration_seconds',
+    cleanUrl: 'graph/d/prometheus-advanced/advanced-data-exploration',
     metrics: [
       'View Actual Metric Values (Gauge)',
       'View Metric Rate of Change (Counter)',
@@ -293,35 +305,10 @@ module.exports = {
       'Maximum Galera Replication Latency',
     ],
   },
-  postgresqlInstanceSummaryDashboard: {
-    url: 'graph/d/postgresql-instance-summary/postgresql-instance-summary?orgId=1&from=now-5m&to=now',
-    cleanUrl: 'graph/d/postgresql-instance-summary/postgresql-instance-summary',
-    metrics: [
-      'Version',
-      'Max Connections',
-      'Shared Buffers',
-      'Disk-Page Buffers',
-      'Memory Size for each Sort',
-      'Disk Cache Size',
-      'Autovacuum',
-      'PostgreSQL Connections',
-      'Active Connections',
-      'Tuples',
-      'Read Tuple Activity',
-      'Transactions',
-      'Duration of Transactions',
-      'Number of Temp Files',
-      'Size of Temp Files',
-      'Conflicts/Deadlocks',
-      'Number of Locks',
-      'Operations with Blocks',
-      'Buffers',
-      'Canceled Queries',
-      'Cache Hit Ratio',
-      'Checkpoint stats',
-      'Number of Locks',
-    ],
-  },
+  postgresqlInstanceSummaryDashboard: PostgresqlInstanceSummaryDashboard,
+  postgresqlCheckpointDashboard: PostgresqlCheckpointDashboard,
+  postgresqlReplicationOverviewDashboard: PostgresqlReplicationOverviewDashboard,
+  postgresqlPatroniDashboard: PostgresqlPatroniDashboard,
   postgresqlInstanceCompareDashboard: {
     url: 'graph/d/postgresql-instance-compare/postgresql-instances-compare?orgId=1&from=now-5m&to=now',
     cleanUrl: 'graph/d/postgresql-instance-compare/postgresql-instances-compare',
@@ -333,98 +320,8 @@ module.exports = {
       'Transactions',
     ],
   },
-  postgresqlInstanceOverviewDashboard: {
-    // had to be changed after the PMM-6386 bug will be fixed
-    url: 'graph/d/postgresql-instance-overview/postgresql-instances-overview?orgId=1&from=now-5m&to=now',
-    cleanUrl: 'graph/d/postgresql-instance-overview/postgresql-instances-overview',
-    metrics: [
-      'Services',
-      'Max Active Connections',
-      'Total Disk-Page Buffers',
-      'Total Memory Size for each Sort',
-      'Total Shared Buffers',
-      'Services Autovacuum',
-      'Top 5 PostgreSQL Connections',
-      'Top 5 Active Connections',
-      'Idle Connections',
-      'Active Connections',
-      'Autovacuum',
-      'Total Tuples',
-      'Max Fetched Tuples',
-      'Max Returned Tuples',
-      'Max Inserted Tuples',
-      'Max Updated Tuples',
-      'Max Deleted Tuples',
-      'Top 5 Fetched Tuples Rate',
-      'Fetched Tuples Rate',
-      'Top 5 Returned Tuples Rate',
-      'Returned Tuples Rate',
-      'Top 5 Inserted Tuples Rate',
-      'Inserted Tuples Rate',
-      'Top 5 Updated Tuples Rate',
-      'Updated Tuples Rate',
-      'Top 5 Deleted Tuples Rate',
-      'Deleted Tuples Rate',
-      'Total Transactions',
-      'Max Commits Transactions',
-      'Max Rollback Transactions',
-      'Max Transaction Duration',
-      'Max Number of Temp Files',
-      'Max Size of Temp Files',
-      'Top 5 Commit Transactions',
-      'Commit Transactions',
-      'Top 5 Rollbacks Transactions',
-      'Rollback Transactions',
-      'Top 5 Duration of Active Transactions',
-      ' Duration of Active Transactions',
-      'Top 5 Duration of Other Transactions',
-      'Duration of Other Transactions',
-      'Top 5 Number of Temp Files',
-      'Number of Temp Files',
-      'Top 5 Size of Temp Files',
-      'Size of Temp Files',
-      'Total Locks',
-      'Total Deadlocks',
-      'Total Conflicts',
-      'Min Cache Hit Ratio',
-      'Max Cache Hit Ratio',
-      'Total Canceled Queries',
-      'Top 5 Locks',
-      'Locks',
-      'Top 5 Deadlocks',
-      'Deadlocks',
-      'Top 5 Conflicts',
-      'Conflicts',
-      'Top 5 Lowest Cache Hit Ratio',
-      'Cache Hit Ratio',
-      'Top 5 Canceled Queries',
-      'Canceled Queries',
-      'Total Blocks Operations',
-      'Max Blocks Writes',
-      'Max Blocks Reads',
-      'Max Allocated Buffers',
-      'Total Written Files to disk',
-      'Total Files Synchronization to Disk',
-      'Top 5 Read Operations with Blocks',
-      'Read Operations with Blocks',
-      'Top 5 Write Operations with Blocks',
-      'Write Operations with Blocks',
-      'Top 5 Allocated Buffers',
-      'Allocated Buffers',
-      'Top 5 Fsync calls by a backend',
-      'Fsync calls by a backend',
-      'Top 5 Written directly by a backend',
-      'Written directly by a backend',
-      'Top 5 Written by the background writer',
-      'Written by the background writer',
-      'Top 5 Written during checkpoints',
-      'Written during checkpoints',
-      'Top 5 Files Synchronization to disk',
-      'Files Synchronization to disk',
-      'Top 5 Written Files to Disk',
-      'Written Files to Disk',
-    ],
-  },
+  postgresqlInstanceOverviewDashboard: PostgresqlInstanceOverviewDashboard,
+  mongodbPBMDetailsDashboard: MongodbPBMDetailsDashboard,
   mongodbOverviewDashboard: {
     url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary',
     metrics: [
@@ -460,6 +357,7 @@ module.exports = {
       'Network Traffic',
     ],
   },
+  mongoDbShardedClusterSummary: MongodbShardedClusterSummary,
   mongoDbClusterSummaryDashboard: {
     url: 'graph/d/mongodb-cluster-summary/mongodb-cluster-summary',
     metrics: [
@@ -1050,7 +948,6 @@ module.exports = {
       'Oplog Buffer Capacity',
       'Oplog Operations',
       'Oplog GB/Hour',
-      'Oplog Window',
     ],
   },
 
@@ -1117,6 +1014,8 @@ module.exports = {
   },
   pmmHealth: PmmHealthDashboard,
   homeDashboard: HomeDashboard,
+  postgresqlTopQueriesDashboard: PostgresqlTopQueriesDashboard,
+  postgresqlInstancesOverviewExtendedDashboard: PostgresqlInstancesOverviewExtendedDashboard,
   osNodesOverview: {
     noDataElements: 3,
     clearUrl: 'graph/d/node-instance-overview/nodes-overview',
@@ -1329,6 +1228,10 @@ module.exports = {
     return locate(this.panelByTitle(title)).find(I.useDataQA('data-testid Data link'));
   },
 
+  panelValueByTitle(title) {
+    return locate(this.panelByTitle(title)).find('//div[@data-testid="data-testid panel content"]//span');
+  },
+
   async verifyColumnLegendMaxValueAbove(panelTitle, serviceName, expectedValue, timeout = 60) {
     const maxValueLegendLocator = this.getColumnLegendMaxValue(panelTitle, serviceName);
 
@@ -1465,7 +1368,7 @@ module.exports = {
     // This is due to some instances with many services take filter to load
     // I.wait(1);
     I.waitForElement(dropdownLocator, 30);
-    I.forceClick(dropdownLocator);
+    I.click(dropdownLocator);
     // click one more time to expand the multiselect dropdown
     I.forceClick(dropdownLocator);
 
@@ -1547,5 +1450,19 @@ module.exports = {
    */
   panelMenu(panelTitle) {
     return new DashboardPanelMenu(panelTitle);
+  },
+
+  async verifySlowQueriesPanel(timeFrame) {
+    I.waitForVisible(this.slowQueriesText);
+    const queryCount = await I.grabTextFrom(this.slowQueriesValue);
+    const queryText = await I.grabTextFrom(this.slowQueriesText);
+
+    if (parseInt(queryCount, 10) === 0) {
+      throw new Error('Count of Slow Queries should be greater than 0');
+    }
+
+    if (!queryText.includes(timeFrame)) {
+      throw new Error(`Slow queries text (${queryText.replace('\n', '').trim()}) should contains expected time frame: ${timeFrame}`);
+    }
   },
 };

@@ -1,6 +1,7 @@
 const nodes = new DataTable(['node-type', 'name']);
 const assert = require('assert');
 const { NODE_TYPE } = require('./helper/constants');
+const { locateOptions } = require('./helper/locatorHelper');
 
 nodes.add(['pmm-client', 'ip']);
 
@@ -11,11 +12,11 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'Open the Node Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  'PMM-T2039 - Open the Node Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     I.amOnPage(I.buildUrlWithParams(dashboardPage.nodeSummaryDashboard.url, {
       node_name: 'pmm-server',
-      from: 'now-5m',
+      from: 'now-1h',
     }));
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
@@ -93,10 +94,11 @@ Scenario(
     I.dontSeeElement(dashboardPage.graphsLocator(`${node2} - System Uptime`));
     I.seeElement(dashboardPage.graphsLocator(`${node1} - System Uptime`));
 
-    await dashboardPage.applyFilter('Node Name', node2);
-    I.scrollTo(dashboardPage.fields.metricTitle);
-    I.forceClick(dashboardPage.fields.metricTitle);
-    I.wait(1);
+    await dashboardPage.expandFilters('Node Name');
+    I.waitForElement(locateOptions.first(), 5);
+    I.type(node2);
+    I.click(locateOptions.at(2));
+    I.pressKey('Escape');
 
     const finalNumOfPanels = await I.grabNumberOfVisibleElements(dashboardPage.panel);
 

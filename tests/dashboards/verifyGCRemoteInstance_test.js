@@ -110,7 +110,7 @@ Data(instances).Scenario(
     }
 
     if (instanceType === 'postgresql') {
-      I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceOverviewDashboard.cleanUrl, {
+      I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceOverviewDashboard.url, {
         service_name: instanceDetails.serviceName,
         from: 'now-5m',
       }));

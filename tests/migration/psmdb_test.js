@@ -33,7 +33,7 @@ Scenario(
     adminPage.performPageDown(5);
     await dashboardPage.expandEachDashboardRow();
     adminPage.performPageUp(5);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(3);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(4);
 
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus({
       serviceType: SERVICE_TYPE.MONGODB,

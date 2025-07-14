@@ -11,6 +11,7 @@ module.exports = {
   fields: {
     serviceRow: (serviceName) => getServiceRowLocator(serviceName),
     serviceCellMonitoring: (serviceName) => `${getServiceRowLocator(serviceName)}/td[5]`,
+    serviceCellAddress: (serviceName) => `${getServiceRowLocator(serviceName)}/td[6]`,
     inventoryTable: locate('table'),
   },
   buttons: {
@@ -27,5 +28,11 @@ module.exports = {
     I.waitForVisible(this.fields.serviceRow(serviceName), 60);
 
     return (await I.grabTextFrom(this.fields.serviceCellMonitoring(serviceName))).trim();
+  },
+
+  async getServiceMonitoringAddress(serviceName) {
+    I.waitForVisible(this.fields.serviceRow(serviceName), 60);
+
+    return (await I.grabTextFrom(this.fields.serviceCellAddress(serviceName))).trim();
   },
 };

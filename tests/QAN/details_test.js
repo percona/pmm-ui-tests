@@ -43,37 +43,39 @@ Scenario(
 );
 
 const databaseEnvironments = [
+  // TODO: Unskip Percona Server when https://perconadev.atlassian.net/browse/PMM-13978 is finished.
   // { dbType: 'PS', serviceName: 'ps_', queryTypes: ['SELECT', 'INSERT', 'DELETE', 'CREATE'] },
-  { dbType: 'PDPGSQL', serviceName: 'pdpgsql_', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', /*'DELETE FROM', 'CREATE'*/] },
-  { dbType: 'PSMDB', serviceName: 'rs101', queryTypes: ['db.students', 'db.runCommand', 'db.test'] },
+  { serviceName: 'pdpgsql_pgsm_pmm_', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', 'DELETE FROM', 'CREATE TABLE classes '], cluster: '' },
+  { serviceName: 'rs101', queryTypes: ['db.students', 'db.runCommand', 'db.test'], cluster: 'replicaset' },
 ];
 
-// TODO: Unskip Percona Server when https://perconadev.atlassian.net/browse/PMM-13978 is finished.
 Data(databaseEnvironments).Scenario(
   'PMM-T13 - Check Example, Explain, Plan and Table tabs for supported DBs @qan',
   async ({
     I, queryAnalyticsPage, current, inventoryAPI,
   }) => {
-    const { service_name } = await inventoryAPI.getServiceDetailsByPartialName(current.serviceName);
+    const { service_name } = await inventoryAPI.getServiceDetailsByPartialDetails(
+      { cluster: current.cluster, service_name: current.serviceName },
+    );
 
     for (const query of current.queryTypes) {
       const parameters = { service_name, query };
 
-      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-2h', search: query, service_name }));
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-6h', search: query, service_name }));
       queryAnalyticsPage.waitForLoaded();
       await queryAnalyticsPage.data.verifyQueriesDisplayed(parameters);
       queryAnalyticsPage.data.selectRow(1);
       queryAnalyticsPage.waitForLoaded();
       await queryAnalyticsPage.queryDetails.verifyExamples(parameters);
 
-      if (current.dbType !== 'PDPGSQL') {
+      if (current.serviceName !== 'pdpgsql_pgsm_pmm_') {
         await queryAnalyticsPage.queryDetails.verifyExplain(parameters);
       }
 
-      if (current.dbType === 'PDPGSQL') {
+      if (current.serviceName === 'pdpgsql_pgsm_pmm_' && !query.includes('CREATE')) {
         await queryAnalyticsPage.queryDetails.verifyTables(parameters);
 
-        if (current.queryTypes.includes('SELECT')) {
+        if (query.includes('SELECT')) {
           await queryAnalyticsPage.queryDetails.verifyPlan(parameters);
         }
       }
@@ -189,7 +191,8 @@ Scenario(
       await I.verifyCommand(`mysql -h 127.0.0.1 -u ${username} -p${password} --port 3317 -e "USE ${dbName}; CREATE TABLE t1 (c1 INT NOT NULL, c2 VARCHAR(100) NOT NULL, PRIMARY KEY (c1)); insert into t1 values(1,1),(2,2),(3,3),(4,5); explain select * from t1 where c1=1; explain select * from t1 where c2=1; explain select * from t1 where c2>1 and c2<=3;"`);
     }
 
-    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-15m', refresh: '5s' }));
+    I.wait(60);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-15m' }));
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.searchByValue('explain select * from t1');
     I.waitForInvisible(queryAnalyticsPage.data.elements.noResultTableText, 240);

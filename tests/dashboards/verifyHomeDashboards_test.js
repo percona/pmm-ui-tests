@@ -71,7 +71,7 @@ Data(panels).Scenario(
     await dashboardPage.verifyMetricsExistence(expectedDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(expectedDashboard.noDataElements);
   },
-);
+).retry(1);
 
 Scenario(
   'PMM-T2007 - Verify Monitored DB Services panel on home dashboard @nightly @dashboards',

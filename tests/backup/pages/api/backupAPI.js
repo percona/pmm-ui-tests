@@ -5,8 +5,8 @@ module.exports = {
   async startBackup(name, service_id, location_id, autoRetries = false, isLogical = true) {
     const data_model = isLogical ? 'DATA_MODEL_LOGICAL' : 'DATA_MODEL_PHYSICAL';
     const retryConfig = {
-      retries: 2,
-      retry_interval: '30s',
+      retries: 5,
+      retry_interval: '60s',
     };
     const retires = autoRetries ? retryConfig : {};
     const body = {
@@ -47,10 +47,12 @@ module.exports = {
         ? found = artifacts.filter(({ artifact_id, status }) => status !== 'BACKUP_STATUS_PENDING' && artifact_id === artifactId)
         : found = artifacts.filter(({ name, status }) => status !== 'BACKUP_STATUS_PENDING' && name.startsWith(scheduleName));
 
-      if (found.length) break;
+      if (found.length) return;
 
       I.wait(5);
     }
+
+    throw new Error(`Backup was not finished for schedule: ${scheduleName} in ${timeout} seconds`);
   },
 
   // getArtifactByName returns artifact object by name

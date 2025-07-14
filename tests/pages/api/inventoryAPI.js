@@ -250,6 +250,12 @@ module.exports = {
     return values.node_name;
   },
 
+  async getNodeByServiceName(serviceName) {
+    const nodes = await this.getAllNodes();
+
+    return nodes.find((node) => node.services.some((service) => service.service_name === serviceName));
+  },
+
   async verifyAgentLogLevel(agentType, dbDetails, logLevel) {
     let agent_id;
     let output;
