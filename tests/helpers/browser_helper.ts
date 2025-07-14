@@ -1,13 +1,15 @@
 import buildUrl from 'build-url';
 
 class BrowserHelper extends Helper {
+  constructor(config) {
+    super(config);
+  }
+
   /**
    * Create URL method
    *
-   * @param url start
-   * @param parameters object
-   * @returns {Promise<void>}
-   *
+   * @param url - Base URL to build on
+   * @param parameters - Query parameters as key-value pairs
    * @example
    * buildUrlWithParameters('http://example.com', { environment: 'ps-dev', from: 'now-1' });
    */
@@ -74,4 +76,4 @@ class BrowserHelper extends Helper {
   }
 }
 
-export default BrowserHelper;
+export = BrowserHelper;
