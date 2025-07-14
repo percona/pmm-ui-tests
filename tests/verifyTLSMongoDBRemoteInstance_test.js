@@ -151,8 +151,8 @@ Scenario(
   }) => {
     const serviceList = [serviceName, `remote_${serviceName}`];
 
-    I.wait(60);
     for (const service of serviceList) {
+      I.wait(60);
       I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
       queryAnalyticsPage.waitForLoaded();
       await queryAnalyticsPage.filters.selectFilter(service);
