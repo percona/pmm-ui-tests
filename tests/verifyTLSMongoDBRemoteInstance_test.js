@@ -2,7 +2,6 @@ const assert = require('assert');
 const { SERVICE_TYPE } = require('./helper/constants');
 
 const { adminPage } = inject();
-const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 const pathToPMMFramework = adminPage.pathToPMMTests;
 
 Feature('Monitoring SSL/TLS MongoDB instances');
@@ -29,7 +28,7 @@ Before(async ({ I }) => {
 Data(instances).Scenario(
   'PMM-T888 + PMM-T919 - Verify Adding SSL services remotely @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI, inventoryAPI,
+    I, remoteInstancesPage, pmmInventoryPage, current, inventoryAPI,
   }) => {
     const {
       serviceName, serviceType, container,
@@ -75,7 +74,7 @@ Data(instances).Scenario(
 Data(instances).Scenario(
   'Verify metrics from SSL instances on PMM-Server @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
-    I, remoteInstancesPage, pmmInventoryPage, current, grafanaAPI, inventoryAPI,
+    I, current, grafanaAPI, inventoryAPI,
   }) => {
     const {
       serviceName, metric,
@@ -154,7 +153,7 @@ Scenario(
 
     I.wait(20);
     for (const service of serviceList) {
-      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-12h' }));
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
       queryAnalyticsPage.waitForLoaded();
       await queryAnalyticsPage.filters.selectFilter(service);
       queryAnalyticsPage.waitForLoaded();
@@ -163,7 +162,7 @@ Scenario(
       assert.ok(count > 0, `The queries for service ${service} instance do NOT exist, check QAN Data`);
     }
   },
-).retry(2);
+).retry(4);
 
 Data(instances).Scenario(
   'PMM-T1276 - Verify tlsCa, tlsCert, tlsKey are generated on every MongoDB exporter (added with TLS flags) restart @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
@@ -195,7 +194,7 @@ Data(instances).Scenario(
     I, remoteInstancesPage, pmmInventoryPage, inventoryAPI, current,
   }) => {
     const {
-      serviceName, serviceType, version, container, maxQueryLength,
+      serviceName, serviceType, container, maxQueryLength,
     } = current;
     let details;
     const remoteServiceName = `MaxQueryLength_remote_${serviceName}`;

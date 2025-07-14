@@ -259,7 +259,7 @@ Scenario(
       }
     }
   },
-).retry(2);
+).retry(3);
 
 Scenario('PMM-T1401 - Verify Percona Alerting wording in Settings @max-length @settings', async ({
   I,

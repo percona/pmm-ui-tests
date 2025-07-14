@@ -204,10 +204,8 @@ module.exports = {
     const tooltipText = tooltipObj.tooltipText.as('Tooltip text');
 
     I.waitForVisible(tooltipIcon, 5);
-    I.scrollTo(tooltipIcon);
     I.moveCursorTo(tooltipIcon);
     I.waitForVisible(tooltipText, 5);
-    I.scrollTo(tooltipText);
     I.waitForVisible(tooltipText, 5);
     I.seeTextEquals(tooltipObj.text, tooltipText);
     /* there are tooltip without "Read more" link */
