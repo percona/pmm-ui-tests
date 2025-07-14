@@ -47,7 +47,7 @@
     "request": "^2.88.2",
     "shelljs": "^0.8.5",
     "tar.gz": "^1.0.7",
-    "typescript": "^5.4.5",
+    "typescript": "^5.7.3",
     "yaml": "^2.2.2"
   },
   "devDependencies": {
