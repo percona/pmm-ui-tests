@@ -1,4 +1,11 @@
 /// <reference types='codeceptjs' />
+declare const Feature: CodeceptJS.Feature;
+declare const Scenario: CodeceptJS.Scenario;
+declare const Data: CodeceptJS.Data;
+declare const Before: CodeceptJS.Hook;
+declare const After: CodeceptJS.Hook;
+declare const BeforeSuite: CodeceptJS.Hook;
+declare const AfterSuite: CodeceptJS.Hook;
 type steps_file = typeof import('./steps_file');
 type api = typeof import('./api/api');
 type dashboards = typeof import('./tests/pages/dashboards');
