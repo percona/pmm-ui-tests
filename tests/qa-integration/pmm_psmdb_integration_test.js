@@ -222,6 +222,7 @@ Scenario('PMM-T1889 - Verify Mongo replication lag graph shows correct info @pmm
   const graphName = 'Replication Lag';
 
   await I.verifyCommand(`sudo docker exec rs101 mongo "mongodb://root:root@localhost/?replicaSet=rs" --eval "${testConfigFile}"`);
+  console.log(I);
   console.log(await I.buildUrlWithParameters(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }))
   I.amOnPage(await I.buildUrlWithParameters(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, { from: 'now-5m', refresh: '5s' }));
   I.wait(10);
