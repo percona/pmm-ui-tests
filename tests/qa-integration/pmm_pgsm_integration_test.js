@@ -672,7 +672,7 @@ Scenario(
       'pg_database_size_bytes',
     ];
 
-    metricNames.forEach(({ metric }) => {
+    metricNames.forEach((metric) => {
       grafanaAPI.waitForMetric(metric, { type: 'service_name', value: pgsm_service_name });
       grafanaAPI.waitForMetric(metric, { type: 'service_name', value: pgsm_service_name_socket });
     });

@@ -54,16 +54,16 @@ Scenario.skip(
     I.amOnPage(databaseChecksPage.allChecks);
     await I.waitForVisible(databaseChecksPage.elements.allChecksTable);
 
-    databaseChecksPage.checks.anonymous.forEach(({ check }) => {
+    databaseChecksPage.checks.anonymous.forEach((check) => {
       databaseChecksPage.verifyAdvisorCheckExistence(check);
     });
-    databaseChecksPage.checks.registered.forEach(({ check }) => {
+    databaseChecksPage.checks.registered.forEach((check) => {
       databaseChecksPage.verifyAdvisorCheckIsNotPresent(check);
     });
-    databaseChecksPage.checks.registeredOnly.forEach(({ check }) => {
+    databaseChecksPage.checks.registeredOnly.forEach((check) => {
       databaseChecksPage.verifyAdvisorCheckIsNotPresent(check);
     });
-    databaseChecksPage.checks.paid.forEach(({ check }) => {
+    databaseChecksPage.checks.paid.forEach((check) => {
       databaseChecksPage.verifyAdvisorCheckIsNotPresent(check);
     });
     freeUser = await portalAPI.getUser();
@@ -96,10 +96,10 @@ Scenario.skip(
     await I.say(expectedRegisteredUserChecks);
     await I.say(expectedRegisteredUserChecks.size);
 
-    expectedRegisteredUserChecks.forEach(({ check }) => {
+    expectedRegisteredUserChecks.forEach((check) => {
       databaseChecksPage.verifyAdvisorCheckExistence(check);
     });
-    databaseChecksPage.checks.paid.forEach(({ check }) => {
+    databaseChecksPage.checks.paid.forEach((check) => {
       databaseChecksPage.verifyAdvisorCheckIsNotPresent(check);
     });
 
@@ -134,7 +134,7 @@ Scenario.skip(
       ...databaseChecksPage.checks.paid,
     ]);
 
-    expectedPaidUserChecks.forEach(({ check }) => {
+    expectedPaidUserChecks.forEach((check) => {
       databaseChecksPage.verifyAdvisorCheckExistence(check);
     });
 

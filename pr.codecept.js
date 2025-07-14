@@ -78,7 +78,7 @@ exports.config = {
       require: 'codeceptjs-mailosaurhelper',
       apiKey: process.env.MAILOSAUR_API_KEY || 'key',
       serverId: process.env.MAILOSAUR_SERVER_ID || 'id',
-      timeout: 15,
+      timeout: 15000,
     },
     DbHelper: {
       require: 'codeceptjs-dbhelper',

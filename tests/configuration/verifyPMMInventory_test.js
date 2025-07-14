@@ -248,7 +248,7 @@ Scenario(
 
     const allAgents = [];
 
-    Object.values((await inventoryAPI.apiGetServices()).data).flat(Infinity).forEach(({ o }) => {
+    Object.values((await inventoryAPI.apiGetServices()).data).flat(Infinity).forEach((o) => {
       allAgents.push(...o.agents);
     });
 

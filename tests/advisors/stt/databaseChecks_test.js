@@ -113,7 +113,7 @@ Scenario.skip(
     let trivial = 0;
 
     // Calculate severity numbers taken from details popUp
-    levels.forEach(({ level }) => {
+    levels.forEach((level) => {
       const [l, num] = level.split(' – ');
       const sum = parseInt(num, 10);
 
