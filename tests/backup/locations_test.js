@@ -18,8 +18,9 @@ BeforeSuite(async ({ I }) => {
 });
 
 Before(async ({
-  I, settingsAPI, locationsPage, locationsAPI,
+  I, settingsAPI, locationsPage, locationsAPI, codeceptjsConfig,
 }) => {
+  console.log(codeceptjsConfig);
   await I.Authorize();
   await settingsAPI.changeSettings({ backup: true });
   await locationsAPI.clearAllLocations(true);

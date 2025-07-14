@@ -88,6 +88,8 @@ module.exports = {
 
   openLocationsPage() {
     I.amOnPage(this.url);
+    I.wait(10);
+    console.log(`Current Url is: ${I.grabCurrentUrl()}`)
     I.waitForText('Add', 30, this.buttons.openAddLocationModal);
   },
 
