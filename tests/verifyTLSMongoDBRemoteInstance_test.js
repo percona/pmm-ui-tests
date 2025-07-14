@@ -153,7 +153,7 @@ Scenario(
 
     for (const service of serviceList) {
       I.wait(60);
-      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m', refresh: '10s' }));
       queryAnalyticsPage.waitForLoaded();
       await queryAnalyticsPage.filters.selectFilter(service);
       queryAnalyticsPage.waitForLoaded();
