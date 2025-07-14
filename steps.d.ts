@@ -86,19 +86,22 @@ type queryAnalyticsPage = typeof import('./tests/pages/queryAnalyticsPage.js');
 type usersPage = typeof import('./tests/pages/administration/usersPage.js');
 type agentCli = typeof import('./tests/pages/cliHelpers/agentCli.js');
 type pmmUpgradePage = typeof import('./tests/pages/pmmUpgradePage.js');
+type MongoDBHelper = import('./tests/helper/mongoDB.js');
+type PostgresqlDBHelper = import('codeceptjs-postgresqlhelper');
+type Grafana = import('./tests/helper/grafana_helper.js');
 type FileHelper = import('./tests/helper/file_helper.js');
 type PerformanceHelper = import('./tests/helper/performance_helper.js');
 type BrowserHelper = import('./tests/helper/browser_helper.js');
-type Grafana = import('./tests/helper/grafana_helper.js');
 type Mailosaur = import('codeceptjs-mailosaurhelper');
 type DbHelper = import('codeceptjs-dbhelper');
 type ChaiWrapper = import('codeceptjs-chai');
 type LocalStorageHelper = import('./tests/helper/localStorageHelper.js');
 type ApiHelper = import('./tests/helper/apiHelper.js');
+type ReporterHelper = import('./tests/helper/reporter_helper.js');
 
 declare namespace CodeceptJS {
   interface SupportObject { I: I, current: any, api: api, dashboards: dashboards, codeceptjsConfig: codeceptjsConfig, credentials: credentials, accessRolesPage: accessRolesPage, addInstanceAPI: addInstanceAPI, addInstancePage: addInstancePage, amiInstanceAPI: amiInstanceAPI, adminPage: adminPage, alertGroupsPage: alertGroupsPage, alertRulesPage: alertRulesPage, aiAdminPage: aiAdminPage, alertmanagerAPI: alertmanagerAPI, alertsAPI: alertsAPI, alertsPage: alertsPage, advisorsPage: advisorsPage, amiInstanceSetupPage: amiInstanceSetupPage, annotationAPI: annotationAPI, backupAPI: backupAPI, backupInventoryPage: backupInventoryPage, changePasswordPage: changePasswordPage, contactPointsAPI: contactPointsAPI, contactPointsPage: contactPointsPage, dashboardPage: dashboardPage, databaseChecksPage: databaseChecksPage, dbClusterSummaryDashboardPage: dbClusterSummaryDashboardPage, dumpAPI: dumpAPI, dumpPage: dumpPage, explorePage: explorePage, experimentalPostgresqlDashboardsPage: experimentalPostgresqlDashboardsPage, grafanaAPI: grafanaAPI, homePage: homePage, inventoryAPI: inventoryAPI, mysqlTableDetailsPage: mysqlTableDetailsPage, leftNavMenu: leftNavMenu, links: links, locationsPage: locationsPage, locationsAPI: locationsAPI, nPoliciesPage: nPoliciesPage, psMySql: psMySql, organizationEntitlementsPage: organizationEntitlementsPage, organizationTicketsPage: organizationTicketsPage, perconaPlatformPage: perconaPlatformPage, pmmDemoPage: pmmDemoPage, pmmInventoryPage: pmmInventoryPage, agentsPage: agentsPage, pmmServerAdminSettingsPage: pmmServerAdminSettingsPage, pmmSettingsPage: pmmSettingsPage, portalAPI: portalAPI, profileAPI: profileAPI, remoteInstancesPage: remoteInstancesPage, remoteInstancesHelper: remoteInstancesHelper, restorePage: restorePage, rolesApi: rolesApi, rulesAPI: rulesAPI, ruleTemplatesPage: ruleTemplatesPage, scheduledAPI: scheduledAPI, scheduledPage: scheduledPage, searchDashboardsModal: searchDashboardsModal, serverApi: serverApi, serviceAccountsPage: serviceAccountsPage, silencesPage: silencesPage, iaCommon: iaCommon, platformAPI: platformAPI, advisorsAPI: advisorsAPI, settingsAPI: settingsAPI, templatesAPI: templatesAPI, qanAPI: qanAPI, environmentOverviewPage: environmentOverviewPage, tooltips: tooltips, statsAndLicensePage: statsAndLicensePage, dataSourcePage: dataSourcePage, pmmTourPage: pmmTourPage, loginPage: loginPage, nodesOverviewPage: nodesOverviewPage, queryAnalyticsPage: queryAnalyticsPage, usersPage: usersPage, agentCli: agentCli, pmmUpgradePage: pmmUpgradePage }
-  interface Methods extends Playwright, REST, FileHelper, FileSystem, PerformanceHelper, BrowserHelper, Grafana, Mailosaur, DbHelper, ChaiWrapper, LocalStorageHelper, ApiHelper {}
+  interface Methods extends Playwright, MongoDBHelper, PostgresqlDBHelper, Grafana, FileHelper, FileSystem, PerformanceHelper, BrowserHelper, REST, Mailosaur, DbHelper, ChaiWrapper, LocalStorageHelper, ApiHelper, ReporterHelper {}
   interface I extends ReturnType<steps_file>, WithTranslation<Methods> {}
   namespace Translation {
     interface Actions {}

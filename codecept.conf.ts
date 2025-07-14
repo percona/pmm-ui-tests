@@ -1,25 +1,25 @@
-import dotenv from 'dotenv';
 import { pageObjects } from './codeceptConfigHelper';
+import dotenv from 'dotenv';
+import { Agent } from 'https';
 
 dotenv.config();
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
-
 const pmmUrl = process.env.PMM_UI_URL ? process.env.PMM_UI_URL : 'http://localhost/';
+process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 export const config = {
-  tests: './tests/**/*_test.*',
   output: 'tests/output',
   helpers: {
     Playwright: {
-      browser: 'chromium',
-      windowSize: '1920x1080',
+      // Replaces last forward slash in url due to bug of duplicate slashes
       url: pmmUrl.replace(/\/(?!.*\/)$/gm, ''),
       restart: true,
       show: false,
+      browser: 'chromium',
+      windowSize: '1920x1080',
       timeout: 20000,
-      waitForNavigation: 'load',
+      waitForNavigation: 'networkidle0',
       waitForTimeout: 60000,
       getPageTimeout: 60000,
       waitForAction: 500,
@@ -37,9 +37,25 @@ export const config = {
         ],
       },
     },
-    REST: {
-      endpoint: process.env.PMM_UI_URL || pmmUrl,
-      timeout: 60000,
+    MongoDBHelper: {
+      require: './tests/helper/mongoDB.js',
+      host: '127.0.0.1',
+      port: 27017,
+      username: 'root',
+      password: 'root-!@#%^password',
+    },
+    PostgresqlDBHelper: {
+      require: 'codeceptjs-postgresqlhelper',
+      host: '127.0.0.1',
+      port: 5433,
+      user: 'postgres',
+      password: 'pmm-^*&@agent-password',
+      database: 'postgres',
+    },
+    Grafana: {
+      require: './tests/helper/grafana_helper.js',
+      username: process.env.GRAFANA_USERNAME,
+      password: process.env.GRAFANA_PASSWORD,
     },
     FileHelper: {
       require: './tests/helper/file_helper.js',
@@ -51,10 +67,12 @@ export const config = {
     BrowserHelper: {
       require: './tests/helper/browser_helper.js',
     },
-    Grafana: {
-      require: './tests/helper/grafana_helper.js',
-      username: process.env.GRAFANA_USERNAME,
-      password: process.env.GRAFANA_PASSWORD,
+    REST: {
+      endpoint: process.env.PMM_UI_URL || pmmUrl,
+      timeout: 60000,
+      httpsAgent: new Agent({
+        rejectUnauthorized: false,
+      }),
     },
     Mailosaur: {
       require: 'codeceptjs-mailosaurhelper',
@@ -74,12 +92,20 @@ export const config = {
     ApiHelper: {
       require: './tests/helper/apiHelper.js',
     },
+    ReporterHelper: {
+      require: './tests/helper/reporter_helper.js',
+    },
   },
   include: {
     I: './steps_file',
     api: './api/api',
     dashboards: './tests/pages/dashboards',
     ...pageObjects,
+  },
+  multiple: {
+    parallel: {
+      browsers: ['chromium'],
+    },
   },
   plugins: {
     autoDelay: {
@@ -113,9 +139,11 @@ export const config = {
       },
     },
   },
-  name: 'pmm-ui-tests',
   bootstrap: false,
   teardown: null,
   hooks: [],
+  gherkin: {},
+  tests: 'tests/**/*_test.js',
   timeout: 2400,
+  name: 'pmm-qa',
 };
