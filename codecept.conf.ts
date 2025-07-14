@@ -1,6 +1,6 @@
-import { pageObjects } from './codeceptConfigHelper';
 import dotenv from 'dotenv';
 import { Agent } from 'https';
+import { pageObjects } from './codeceptConfigHelper';
 
 dotenv.config();
 
@@ -65,7 +65,7 @@ export const config = {
       require: './tests/helper/performance_helper.js',
     },
     BrowserHelper: {
-      require: './tests/helper/browser_helper.js',
+      require: './tests/helpers/browser_helper.ts',
     },
     REST: {
       endpoint: process.env.PMM_UI_URL || pmmUrl,
