@@ -1,4 +1,5 @@
 /// <reference types='codeceptjs' />
+declare function actor(customSteps?: CodeceptJS.ActorSuite): CodeceptJS.I;
 declare const Feature: CodeceptJS.Feature;
 declare const Scenario: CodeceptJS.Scenario;
 declare const Data: CodeceptJS.Data;

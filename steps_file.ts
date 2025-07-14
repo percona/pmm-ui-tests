@@ -4,6 +4,11 @@ import { config } from './codecept.conf';
 
 export = function () {
   return actor({
+    buildUrlWithParameters(url: string, params: Record<string, string>) {
+      const helper = this.helpers.BrowserHelper;
+
+      return helper.buildUrlWithParameters(url, params);
+    },
     async Authorize(username = 'admin', password = process.env.ADMIN_PASSWORD, baseUrl = '') {
       const { Playwright, REST } = this.helpers;
       const basicAuthEncoded = await this.getAuth(username, password);
@@ -33,7 +38,7 @@ export = function () {
         const parsedCookie = {
           name: cookie.split('=')[0],
           value: cookie.split('=')[1].split(';')[0],
-          domain: config.config.helpers.Playwright.url.replace(/[^.\d]/g, ''),
+          domain: config.helpers.Playwright.url.replace(/[^.\d]/g, ''),
           path: '/',
         };
 
