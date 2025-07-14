@@ -8,7 +8,7 @@ process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
 
 const pmmUrl = process.env.PMM_UI_URL ? process.env.PMM_UI_URL : 'http://localhost/';
 
-export const config: CodeceptJS.MainConfig = {
+export const config = {
   tests: './tests/**/*_test.*',
   output: 'tests/output',
   helpers: {
