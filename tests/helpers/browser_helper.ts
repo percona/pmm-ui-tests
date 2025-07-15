@@ -1,4 +1,5 @@
 import buildUrl from 'build-url';
+import Helper from '@codeceptjs/helper';
 
 class BrowserHelper extends Helper {
   constructor(config) {

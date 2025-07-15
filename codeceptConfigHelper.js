@@ -1,7 +1,6 @@
 module.exports = {
   pageObjects: {
-    I: './tests/custom_steps.js',
-    codeceptjsConfig: './pr.codecept.js',
+    codeceptjsConfig: './codecept.conf.ts',
     credentials: './tests/pages/credentials.js',
     accessRolesPage: './tests/pages/administration/accessRolesPage.js',
     addInstanceAPI: './tests/pages/api/addInstanceAPI.js',
