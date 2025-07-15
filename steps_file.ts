@@ -46,6 +46,8 @@ export = function () {
       });
     },
 
+    useDataQA: (selector) => `[data-testid="${selector}"]`,
+
     async getAuth(username = 'admin', password = process.env.ADMIN_PASSWORD) {
       return Buffer.from(`${username}:${password}`).toString(
         'base64',

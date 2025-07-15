@@ -10,7 +10,7 @@ declare const AfterSuite: CodeceptJS.Hook;
 type steps_file = typeof import('./steps_file');
 type api = typeof import('./api/api');
 type dashboards = typeof import('./tests/pages/dashboards');
-type codeceptjsConfig = typeof import('./pr.codecept.js');
+type codeceptjsConfig = typeof import('./codecept.conf.ts');
 type credentials = typeof import('./tests/pages/credentials.js');
 type accessRolesPage = typeof import('./tests/pages/administration/accessRolesPage.js');
 type addInstanceAPI = typeof import('./tests/pages/api/addInstanceAPI.js');
