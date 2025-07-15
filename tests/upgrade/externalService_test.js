@@ -83,15 +83,7 @@ Scenario(
       targets.scrapeUrl === expectedScrapeUrl,
       `Active Target for external service Post Upgrade has wrong Address value, value found is ${targets.scrapeUrl} and value expected was ${expectedScrapeUrl}`,
     );
-
-    await I.asyncWaitFor(async () => {
-      const response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
-      const targets = response.data.data.activeTargets.find(
-        (o) => o.labels.external_group === 'redis-remote',
-      );
-
-      return targets.health === 'up';
-    }, 60, 'Active Target for external service Post Upgrade health value is not up!');
+    assert.ok(targets.health === 'up', `Active Target for external service Post Upgrade health value is not up! value found ${targets.health}`);
   },
 ).retry(2);
 

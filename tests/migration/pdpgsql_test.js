@@ -12,20 +12,20 @@ Scenario(
   async ({
     I, dashboardPage, inventoryAPI,
   }) => {
-    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName('PDPGSQL_');
+    const service = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'PDPGSQL_');
 
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.url, { from: 'now-5m', service_name }));
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, { from: 'now-5m', service_name: service.service_name }));
     await dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData();
     await I.verifyCommand('pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"');
     await I.verifyCommand('pmm-admin list | grep "postgres_exporter" | grep "Running"');
 
     await inventoryAPI.verifyServiceExistsAndHasRunningStatus({
       serviceType: SERVICE_TYPE.POSTGRESQL,
       service: 'postgresql',
-    }, service_name);
+    }, service.service_name);
   },
 ).retry(3);
 

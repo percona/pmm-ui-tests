@@ -211,7 +211,7 @@ Scenario(
     I.click(alertRulesPage.buttons.ruleCollapseButton);
     alertRulesPage.openMoreMenu(ruleName);
     I.click(alertRulesPage.buttons.deleteAlertRule);
-    I.waitForText(alertRulesPage.messages.confirmDelete, iaCommon.elements.modalDialog);
+    I.waitForText(alertRulesPage.messages.confirmDelete, undefined, iaCommon.elements.modalDialog);
     I.click(alertRulesPage.buttons.cancelModal);
     alertRulesPage.openMoreMenu(ruleName);
     I.click(alertRulesPage.buttons.deleteAlertRule);
@@ -219,7 +219,7 @@ Scenario(
     I.click(alertRulesPage.buttons.confirmModal);
     I.verifyPopUpMessage(alertRulesPage.messages.successfullyDeleted);
     I.dontSeeElement(alertRulesPage.buttons.groupCollapseButton(ruleFolder));
-    I.waitForText(alertRulesPage.messages.noRulesFound, alertRulesPage.elements.noRules);
+    I.waitForText(alertRulesPage.messages.noRulesFound, undefined, alertRulesPage.elements.noRules);
   },
 );
 

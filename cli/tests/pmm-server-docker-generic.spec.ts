@@ -49,7 +49,7 @@ test.describe('PMM Server Configuration impacts on client tests', async () => {
       -e PMM_AGENT_SETUP_NODE_NAME=${clientContainer}
       -e PMM_AGENT_SETUP_FORCE=1
       -e PMM_AGENT_SETUP_NODE_TYPE=container
-     --network scrape-interval ${CLIENT_IMAGE}`)).assertSuccess();
+      --network scrape-interval ${CLIENT_IMAGE}`)).assertSuccess();
     stopList.push(clientContainer);
     removeList.push(clientContainer);
 
@@ -79,17 +79,11 @@ test.describe('PMM Server Configuration impacts on client tests', async () => {
   });
 
   test('@PMM-T1861 PMM does not honor the environment variables for VictoriaMetrics', async () => {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     const search_maxQueryLen = '1';
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     const search_maxQueryDuration = '100';
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     const search_latencyOffset = '6';
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     const search_maxQueueDuration = '40';
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     const search_logSlowQueryDuration = '40';
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     const search_maxSamplesPerQuery = '1500000000';
     const serverContainer = 'PMM-T1861';
     await (await cli.exec(`docker run -d --restart always -p 290:8080 -p 2443:8443 --name ${serverContainer} 

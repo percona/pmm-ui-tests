@@ -3,9 +3,9 @@ const { SERVICE_TYPE } = require('./helper/constants');
 
 const annotation = new DataTable(['annotationName', 'service', 'dashboard', 'service_type']);
 
-annotation.add(['annotation-for-postgres-server', 'pmm-server', dashboardPage.postgresqlInstanceSummaryDashboard.url, SERVICE_TYPE.POSTGRESQL]);
+annotation.add(['annotation-for-postgres-server', 'pmm-server', dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, SERVICE_TYPE.POSTGRESQL]);
 annotation.add(['annotation-for-mongo', 'rs101', dashboardPage.mongoDbInstanceSummaryDashboard.clearUrl, SERVICE_TYPE.MONGODB]);
-annotation.add(['annotation-for-postgres', 'pgsql', dashboardPage.postgresqlInstanceSummaryDashboard.url, SERVICE_TYPE.POSTGRESQL]);
+annotation.add(['annotation-for-postgres', 'pgsql', dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl, SERVICE_TYPE.POSTGRESQL]);
 annotation.add(['annotation-for-mysql', 'ps_', dashboardPage.mysqlInstanceSummaryDashboard.clearUrl, SERVICE_TYPE.MYSQL]);
 annotation.add(['mysql-node-name', 'ps_', dashboardPage.nodesCompareDashboard.cleanUrl, SERVICE_TYPE.MYSQL]);
 

@@ -1,5 +1,6 @@
 const assert = require('assert');
 const { users } = require('../helper/constants');
+const { tryTo } = require('codeceptjs/effects');
 
 Feature('PMM Settings Functionality').retry(1);
 
@@ -227,7 +228,7 @@ Scenario(
       `Expected the Public Address (${publicAddressAfterRefresh}) to be saved and Match configuration url: ${expectedUrl}`,
     );
   },
-).retry(5);
+).retry(1);
 
 Scenario(
   'PMM-T254 - Ensure Advisors are on by default @fb-instances',
@@ -322,7 +323,6 @@ Scenario.skip(
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
     I.waitForVisible(homePage.updatesModal.root, 30);
     I.click(homePage.updatesModal.closeIcon);
-    // eslint-disable-next-line no-undef
     await tryTo(() => {
       I.waitForVisible(homePage.productTour.skipButton, 5);
       I.click(homePage.productTour.skipButton);

@@ -1,4 +1,5 @@
 const { I, homePage } = inject();
+const { tryTo } = require('codeceptjs/effects')
 
 module.exports = {
   url: 'graph/login',
@@ -28,7 +29,6 @@ module.exports = {
     I.click(this.fields.loginButton);
 
     // BUG: system message on success for changed password is gone before the next line executed
-    // eslint-disable-next-line no-undef
     await tryTo(() => I.verifyPopUpMessage(this.messages.loginSuccess, 5));
 
     if ((await I.grabCurrentUrl()).includes(this.url)) {

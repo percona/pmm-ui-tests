@@ -1,5 +1,5 @@
 const assert = require('assert');
-const faker = require('faker');
+const { faker } = require('@faker-js/faker');
 const { generate } = require('generate-password');
 
 const { I } = inject();
@@ -28,7 +28,6 @@ module.exports = {
     };
   },
 
-  // eslint-disable-next-line object-curly-newline
   async oktaCreateUser({ email, password, firstName, lastName }) {
     const oktaUrl = `${this.oktaUrl}api/v1/users?activate=true`;
     const headers = { Authorization: this.oktaToken };
@@ -62,11 +61,11 @@ module.exports = {
   },
 
   async getUser(email = '') {
-    const firstName = faker.name.firstName();
-    const lastName = faker.name.lastName();
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
 
     return {
-      email: email || `${firstName.toLowerCase()}.${lastName.toLowerCase()}.${Date.now()}.${faker.datatype.number()}@test.com`,
+      email: email || `${firstName.toLowerCase()}.${lastName.toLowerCase()}.${Date.now()}.${faker.number.int()}@test.com`,
       password: generate({
         length: 16,
         numbers: true,

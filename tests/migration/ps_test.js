@@ -59,7 +59,7 @@ Scenario(
     const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'ps_8')).service_name;
 
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, {
-      from: 'now-30m', to: 'now-10m', service_name: clientServiceName, search: 'SELECT',
+      from: 'now-30m', to: 'now-10m', service_name: clientServiceName, search: 'SELECT * FROM \`information_schema\`',
     }));
     queryAnalyticsPage.waitForLoaded();
 

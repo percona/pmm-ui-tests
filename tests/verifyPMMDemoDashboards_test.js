@@ -1,7 +1,6 @@
 Feature('Tests for PMM Demo Sanity Tests Cycle Dashboard Checks').retry(2);
 
 Scenario(
-  // eslint-disable-next-line max-len
   'PMM-T319 Open the MySQL Instance Overview Dashboard and verify Metrics are present and graphs are displayed [critical] @pmm-demo @not-ui-pipeline @not-pr-pipeline',
   async ({
     I, adminPage, dashboardPage, pmmDemoPage,
@@ -24,7 +23,6 @@ Scenario(
 );
 
 Scenario(
-  // eslint-disable-next-line max-len
   'PMM-T319 Open the MySQL Summary Dashboard and verify Metrics are present and graphs are displayed [critical] @pmm-demo @not-ui-pipeline @not-pr-pipeline',
   async ({
     I, adminPage, dashboardPage, pmmDemoPage,
@@ -131,7 +129,6 @@ Scenario(
 );
 
 Scenario(
-  // eslint-disable-next-line max-len
   'PMM-T73 Open Advanced Exploration Dashboard and verify Metrics are present and graphs are displayed [critical] @pmm-demo @not-ui-pipeline @not-pr-pipeline',
   async ({ I, dashboardPage, pmmDemoPage }) => {
     I.amOnPage(pmmDemoPage.url + pmmDemoPage.advancedDataExplorationDashboardUrl);
@@ -143,7 +140,6 @@ Scenario(
 );
 
 Scenario(
-  // eslint-disable-next-line max-len
   'PMM-T72 Open the Prometheus Exporters Status Dashboard and verify Metrics are present and graphs are displayed [critical] @pmm-demo @not-ui-pipeline @not-pr-pipeline',
   async ({
     I, dashboardPage, adminPage, pmmDemoPage,
@@ -164,7 +160,6 @@ Scenario(
 );
 
 Scenario(
-  // eslint-disable-next-line max-len
   'PMM-T72 Open the Prometheus Exporters Overview Dashboard and verify Metrics are present and graphs are displayed [critical] @pmm-demo @not-ui-pipeline @not-pr-pipeline',
   async ({
     I, dashboardPage, adminPage, pmmDemoPage,
