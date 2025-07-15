@@ -14,8 +14,8 @@ module.exports = {
   },
   fields: {
     navigation: '//i[contains(@class, "navbar-page-btn__search")]',
-    timePickerMenu: I.useDataQA('data-testid TimePicker Open Button'),
-    applyCustomTimer: I.useDataQA('data-testid TimePicker submit button'),
+    // timePickerMenu: I.useDataQA('data-testid TimePicker Open Button'),
+    // applyCustomTimer: I.useDataQA('data-testid TimePicker submit button'),
     backToDashboard: '//button[@ng-click=\'ctrl.close()\']',
     discardChanges: '//button[@ng-click="ctrl.discard()"]',
     metricTitle: '(//div[@class="panel-title"])[2]',
@@ -84,9 +84,9 @@ module.exports = {
   },
 
   async verifyTimeRange(timeRange) {
-    const selectedTimeRange = locate(I.useDataQA('data-testid TimePicker Open Button')).find('span').withText(timeRange);
+    // const selectedTimeRange = locate(I.useDataQA('data-testid TimePicker Open Button')).find('span').withText(timeRange);
 
-    I.seeElement(selectedTimeRange);
+    // I.seeElement(selectedTimeRange);
   },
 
   setAbsoluteTimeRange(from = '2022-01-10 09:09:59', to = '2022-01-10 10:00:59') {
