@@ -4,55 +4,12 @@ import { config } from './codecept.conf';
 
 export = function () {
   return actor({
-    buildUrlWithParameters(url: string, params: Record<string, string>) {
+    /* buildUrlWithParameters(url: string, params: Record<string, string>) {
       const helper = this.helpers.BrowserHelper;
 
       return helper.buildUrlWithParameters(url, params);
-    },
-    async Authorize(username = 'admin', password = process.env.ADMIN_PASSWORD, baseUrl = '') {
-      const { Playwright, REST } = this.helpers;
-      const basicAuthEncoded = await this.getAuth(username, password);
-      let resp;
+    }, */
 
-      Playwright.setPlaywrightRequestHeaders({ Authorization: `Basic ${basicAuthEncoded}` });
-      console.log('Setting new login header');
-      try {
-        resp = await REST.sendPostRequest(`${baseUrl}graph/login`, { user: username, password });
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error('Login API call was not successful.');
-
-        return;
-      }
-
-      const cookies = resp.headers['set-cookie'];
-
-      if (!cookies) {
-        // eslint-disable-next-line no-console
-        console.warn('Authentication was not successful, verify base url and credentials.');
-
-        return;
-      }
-
-      cookies.forEach((cookie) => {
-        const parsedCookie = {
-          name: cookie.split('=')[0],
-          value: cookie.split('=')[1].split(';')[0],
-          domain: config.helpers.Playwright.url.replace(/[^.\d]/g, ''),
-          path: '/',
-        };
-
-        Playwright.setCookie(parsedCookie);
-      });
-    },
-
-    useDataQA: (selector) => `[data-testid="${selector}"]`,
-
-    async getAuth(username = 'admin', password = process.env.ADMIN_PASSWORD) {
-      return Buffer.from(`${username}:${password}`).toString(
-        'base64',
-      );
-    },
     async verifyCommand(command, output = null, result = 'pass', returnErrorPipe = false) {
       const { stdout, stderr, code } = shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: true });
 
