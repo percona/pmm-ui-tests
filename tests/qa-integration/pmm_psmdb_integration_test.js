@@ -215,7 +215,7 @@ Scenario(
   },
 ).retry(1);
 
-Scenario('PMM-T1889 - Verify Mongo replication lag graph shows correct info @pmm-psmdb-replica-integration', async ({ I, dashboardPage, adminPage, codeceptjsConfig }) => {
+Scenario('PMM-T1889 - Verify Mongo replication lag graph shows correct info @pmm-psmdb-replica-integration', async ({ I, dashboardPage}) => {
   const lagValue = 10;
   const testConfigFile = `c = rs.conf(); c.members[2].secondaryDelaySecs = ${lagValue}; c.members[2].priority = 0; c.members[2].hidden = true; rs.reconfig(c);`;
   const serviceName = 'rs103';
@@ -229,7 +229,7 @@ Scenario('PMM-T1889 - Verify Mongo replication lag graph shows correct info @pmm
   console.log(await I.grabCurrentUrl());
   dashboardPage.waitForDashboardOpened();
   I.click(dashboardPage.fields.reportTitle);
-  await adminPage.performPageDown(5);
+  // await adminPage.performPageDown(5);
 
   await dashboardPage.expandEachDashboardRow();
   I.waitForElement(await dashboardPage.graphsLocator(graphName), 20);
