@@ -4,7 +4,7 @@ networks:
 
 services:
   mysql:
-    image: ${MYSQL_IMAGE:-percona:5.7.44}
+    image: ${MYSQL_IMAGE:-percona:5.7.30}
     container_name: pmm-agent_mysql_5_7
     command: >
       --sql-mode="ANSI_QUOTES"
