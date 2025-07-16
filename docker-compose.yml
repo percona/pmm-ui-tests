@@ -38,7 +38,7 @@ services:
   # It is essential to have an extra directory `/slowlogs/` between host and container;
   # Otherwise, MySQL in Docker for Mac completely locks during/after slowlog rotation tests.
   mysql:
-    image: ${MYSQL_IMAGE:-percona:5.7.30}
+    image: ${MYSQL_IMAGE:-percona:5.7.44}
     container_name: pmm-agent_mysql_5_7
     command: >
       --sql-mode="ANSI_QUOTES"
@@ -80,7 +80,7 @@ services:
       - pmm-network
 
   mongo:
-    image: ${MONGO_IMAGE:-percona/percona-server-mongodb:4.4.24}
+    image: ${MONGO_IMAGE:-percona/percona-server-mongodb:8.0}
     container_name: pmm-agent_mongo
     command: --profile 2
     ports:
@@ -92,7 +92,7 @@ services:
       - pmm-network
 
   postgres:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:15.4}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:17}
     container_name: pmm-agent_postgres
     command: >
       -c shared_preload_libraries=pg_stat_monitor,pg_stat_statements
@@ -112,7 +112,7 @@ services:
 
   # it needs for deleting postgres db for test T1087
   postgresremovedefaultdb:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:15}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:17}
     command: >
       psql -Utest -hpostgresnodb -dnot_default_db -c 'DROP DATABASE postgres WITH (FORCE);'
     depends_on:
@@ -124,7 +124,7 @@ services:
       - pmm-network
 
   postgresnodb:
-    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:15}
+    image: ${POSTGRES_IMAGE:-perconalab/percona-distribution-postgresql:17}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
       interval: 1s
@@ -139,7 +139,7 @@ services:
       - pmm-network
 
   proxysql:
-    image: ${PROXYSQL_IMAGE:-proxysql/proxysql:2.1.1}
+    image: ${PROXYSQL_IMAGE:-proxysql/proxysql:3.0.1}
     container_name: pmm-agent_proxysql
     ports:
       - "6032:6032"
