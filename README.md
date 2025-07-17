@@ -35,7 +35,7 @@ Automated end-to-end tests for Percona Monitoring and Management (PMM) UI, cover
 The easiest and most reliable way to run local E2E tests is via the provided script, which automates environment setup, dependencies, Docker, and test execution.
 
 ```sh
-./run-e2e-locally.sh --grep @tag
+bash ./run-e2e-locally.sh --grep @tag
 ```
 
 Replace `@tag` with the tag(s) of the tests you want to run (see below for available tags).
