@@ -141,6 +141,8 @@ Scenario(
     const serviceList = [serviceName, `remote_${serviceName}`];
 
     for (const service of serviceList) {
+      // Wait for metrics to start hitting
+      I.wait(60);
       I.amOnPage(I.buildUrlWithParams(
         dashboardPage.mySQLInstanceOverview.clearUrl,
         { service_name: service, from: 'now-5m', refresh: '10s' },

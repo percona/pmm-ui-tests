@@ -144,7 +144,8 @@ Scenario(
   },
 ).retry(1);
 
-Scenario(
+// Fixme: PMM-14188 - Verify QAN after MongoDB SSL Instances is added
+Scenario.skip(
   'Verify QAN after MongoDB SSL Instances is added @ssl @ssl-remote @ssl-mongo @not-ui-pipeline',
   async ({
     I, queryAnalyticsPage,
