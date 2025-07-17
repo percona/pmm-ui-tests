@@ -63,9 +63,9 @@ docker exec -u 0 mongors3 /bin/bash -c "bash ./pmm2-client-setup-centos.sh --pmm
 
 # Install PBM 1.8.1
 
-docker exec -u 0 mongors1 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
-docker exec -u 0 mongors2 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
-docker exec -u 0 mongors3 /bin/bash -c "percona-release enable pbm release && yum -y install percona-backup-mongodb"
+docker exec -u 0 mongors1 /bin/bash -c "percona-release enable pbm release && dnf -y install percona-backup-mongodb"
+docker exec -u 0 mongors2 /bin/bash -c "percona-release enable pbm release && dnf -y install percona-backup-mongodb"
+docker exec -u 0 mongors3 /bin/bash -c "percona-release enable pbm release && dnf -y install percona-backup-mongodb"
 
 docker exec  -d mongors1 /bin/bash -c 'PBM_MONGODB_URI="mongodb://pbmuser:secretpwd@localhost:27027" pbm-agent'
 docker exec  -d mongors2 /bin/bash -c 'PBM_MONGODB_URI="mongodb://pbmuser:secretpwd@localhost:27028" pbm-agent'

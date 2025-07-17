@@ -9,7 +9,8 @@ let serviceId;
 
 Feature('Security Checks: All Checks');
 
-BeforeSuite(async ({ addInstanceAPI }) => {
+/*
+ BeforeSuite(async ({ addInstanceAPI }) => {
   [nodeId, serviceId] = await addInstanceAPI.addInstanceForSTT(connection, psServiceName);
 });
 AfterSuite(async ({ inventoryAPI }) => {
@@ -26,6 +27,7 @@ After(async ({ settingsAPI, advisorsAPI }) => {
   await settingsAPI.apiEnableSTT();
   await advisorsAPI.enableCheck(advisorsAPI.checkNames.mysqlVersion);
 });
+*/
 
 Scenario.skip(
   'PMM-T469 PMM-T472 PMM-T654 Verify list of all checks [critical] @stt',

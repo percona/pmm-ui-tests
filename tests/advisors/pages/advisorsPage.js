@@ -7,8 +7,18 @@ const {
 } = inject();
 
 module.exports = {
+  url: 'graph/advisors/insights',
   urlConfiguration: 'graph/advisors/configuration',
+  urlQuery: 'graph/advisors/query',
+  urlSecurity: 'graph/advisors/security',
   elements: {
+    tableRow: (index) => locate(`(//tr[@data-testid="table-tbody-tr"])[${index + 1}]`),
+    failedAdvisorsServices: locate('//tbody//tr/td[position()=1]'),
+    failedAdvisorsNames: locate('//tbody//tr/td[position()=1]'),
+    failedAdvisorName: (index) => locate(`(//tr[@data-testid="table-tbody-tr"])[${index + 1}]//td[position()=1]`),
+    disableAdvisor: (advisor) => locate(`//*[text()="${advisor}"]//ancestor::tr//span[text()="Disable"]`),
+    enableAdvisor: (advisor) => locate(`//*[text()="${advisor}"]//ancestor::tr//span[text()="Enable"]`),
+    advisorsGroups: locate('//*[@data-testid="collapse-clickable"]'),
     expandableSectionByName: (name) => locate('div[class$="collapse__header-label"] span').withText(name),
     checkNameCell: (checkName) => locate(checkRow(checkName)).find('td').at(1),
     descriptionCellByName: (checkName) => locate(checkRow(checkName)).find('td').at(2),
@@ -85,5 +95,72 @@ module.exports = {
     I.waitForVisible(this.buttons.startDBChecks, 30);
     I.click(this.buttons.startDBChecks);
     I.verifyPopUpMessage(this.messages.securityChecksDone, 60);
+  },
+
+  runAdvisors() {
+    I.waitForVisible(this.buttons.startDBChecks, 30);
+    I.click(this.buttons.startDBChecks);
+    I.verifyPopUpMessage(this.messages.securityChecksDone, 60);
+  },
+
+  getUrlByCategory(categoryName) {
+    switch (categoryName) {
+      case 'configuration':
+        return this.urlConfiguration;
+      case 'query':
+        return this.urlQuery;
+      case 'security':
+        return this.urlSecurity;
+      default:
+        throw new Error(`${categoryName} is not a valid category`);
+    }
+  },
+
+  async openAllCategories() {
+    I.waitForVisible(this.elements.advisorsGroups);
+    const numberOfCategories = await I.grabNumberOfVisibleElements(this.elements.advisorsGroups);
+
+    for (let i = 0; i < numberOfCategories; i++) {
+      I.click(this.elements.advisorsGroups.at(i + 1));
+    }
+  },
+
+  async verifyAdvisorIsNotFailed(advisorName) {
+    I.waitForVisible(this.elements.failedAdvisorsServices);
+    const numberOfServices = await I.grabNumberOfVisibleElements(this.elements.failedAdvisorsServices);
+
+    for (let i = 0; i < numberOfServices; i++) {
+      I.waitForVisible(this.elements.failedAdvisorsServices.at(i + 1), 5);
+      I.click(this.elements.failedAdvisorsServices.at(i + 1));
+      I.waitForVisible(this.elements.failedAdvisorsNames);
+      const failedAdvisors = await I.grabTextFromAll(this.elements.failedAdvisorsNames);
+
+      I.assertFalse(failedAdvisors.includes(advisorName), `Disabled failed advisor: ${advisorName} should not be present in the list of failed advisors: ${failedAdvisors}`);
+      await I.goBack();
+    }
+  },
+
+  async verifyAdvisorIsFailed(advisorName) {
+    I.waitForVisible(this.elements.failedAdvisorsServices);
+    const numberOfServices = await I.grabNumberOfVisibleElements(this.elements.failedAdvisorsServices);
+
+    for (let i = 0; i < numberOfServices; i++) {
+      I.waitForVisible(this.elements.failedAdvisorsServices.at(i + 1), 5);
+      I.click(this.elements.failedAdvisorsServices.at(i + 1));
+      I.waitForVisible(this.elements.failedAdvisorsNames);
+      const failedAdvisors = await I.grabTextFromAll(this.elements.failedAdvisorsNames);
+
+      I.assertTrue(failedAdvisors.includes(advisorName), `Disabled failed advisor: ${advisorName} should not be present in the list of failed advisors: ${failedAdvisors}`);
+      await I.goBack();
+    }
+  },
+
+  runAllAdvisors() {
+    const urls = [this.urlConfiguration, this.urlQuery, this.urlSecurity];
+
+    for (const url of urls) {
+      I.amOnPage(url);
+      this.runAdvisors();
+    }
   },
 };
