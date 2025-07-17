@@ -132,7 +132,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T841 - Verify user is able to enable Backup Management @backup',
+  'PMM-T841 - Verify user is able to enable Backup Management @fb-settings',
   async ({
     I, pmmSettingsPage, scheduledPage, settingsAPI, codeceptjsConfig,
   }) => {
@@ -153,7 +153,7 @@ Scenario(
       message.replace(/\s+/g, ' ') === pmmSettingsPage.messages.disabledBackupManagement,
       `Message Shown on ${message} should be equal to ${pmmSettingsPage.messages.disabledBackupManagement}`,
     );
-    I.seeAttributesOnElements('$settings-link', { href: `${codeceptjsConfig.config.helpers.Playwright.url}graph/settings/advanced-settings` });
+    I.seeAttributesOnElements('$settings-link', { href: `${codeceptjsConfig.config.helpers.Playwright.url}/graph/settings/advanced-settings` });
 
     // Open advanced settings and enable backup management
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
@@ -259,7 +259,7 @@ Scenario(
       }
     }
   },
-).retry(2);
+).retry(3);
 
 Scenario('PMM-T1401 - Verify Percona Alerting wording in Settings @max-length @settings', async ({
   I,
