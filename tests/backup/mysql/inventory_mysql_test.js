@@ -35,9 +35,9 @@ BeforeSuite(async ({
   );
   await inventoryAPI.deleteNodeByServiceName(SERVICE_TYPE.MYSQL, mysqlServiceNameForPreCheckTest);
 
-  await I.verifyCommand('docker exec pmm-server yum remove -y Percona-Server-server-57');
-  await I.verifyCommand('docker exec pmm-server yum remove -y percona-xtrabackup-24');
-  await I.verifyCommand('docker exec pmm-server yum remove -y qpress');
+  await I.verifyCommand('docker exec pmm-server dnf remove -y Percona-Server-server-57');
+  await I.verifyCommand('docker exec pmm-server dnf remove -y percona-xtrabackup-24');
+  await I.verifyCommand('docker exec pmm-server dnf remove -y qpress');
 
   psMySql.connectToPS(mysqlCredentials);
 
@@ -220,18 +220,18 @@ Scenario(
     await I.verifyPopUpMessage('software "mysqld" is not installed: incompatible service');
 
     await I.verifyCommand('docker exec pmm-server percona-release setup ps57');
-    await I.verifyCommand('docker exec pmm-server yum install -y Percona-Server-server-57');
+    await I.verifyCommand('docker exec pmm-server dnf install -y Percona-Server-server-57');
     I.click(backupInventoryPage.buttons.addBackup);
     await I.verifyPopUpMessage('software "xtrabackup" is not installed: xtrabackup is not installed');
 
     I.seeTextEquals('Xtrabackup is not installed. ', backupInventoryPage.elements.addBackupModalError);
     I.seeAttributesOnElements(backupInventoryPage.elements.addBackupModalErrorReadMore, { href: links.xtrabackup80Docs });
 
-    await I.verifyCommand('docker exec pmm-server yum install -y percona-xtrabackup-24');
+    await I.verifyCommand('docker exec pmm-server dnf install -y percona-xtrabackup-24');
     I.click(backupInventoryPage.buttons.addBackup);
     await I.verifyPopUpMessage('software "qpress" is not installed: incompatible service');
 
-    await I.verifyCommand('docker exec pmm-server yum install -y qpress');
+    await I.verifyCommand('docker exec pmm-server dnf install -y qpress');
     I.click(backupInventoryPage.buttons.addBackup);
 
     I.waitForVisible(backupInventoryPage.elements.pendingBackupByName(backupName), 10);
