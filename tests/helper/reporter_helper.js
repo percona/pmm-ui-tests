@@ -21,7 +21,7 @@ class ReporterHelper extends Helper {
           if (statusName) {
             for await (const testCaseKey of testCaseKeys.split(' + ')) {
               resp = await this.helpers.REST.sendPostRequest(
-                'https://api222222.zephyrscale.smartbear.com/v2/testexecutions',
+                'https://api.zephyrscale.smartbear.com/v2/testexecutions',
                 {
                   projectKey: 'PMM',
                   testCaseKey,
