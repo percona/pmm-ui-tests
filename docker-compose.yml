@@ -158,7 +158,7 @@ services:
     networks:
       - pmm-network
     command: >
-      bash -c "
+      bash -c '
           set -o xtrace
           sleep 20
           mysql \
@@ -166,7 +166,7 @@ services:
               --port=3306 \
               --user=root \
               --password=^O6VrIoC1@9b \
-              -e 'CREATE DATABASE IF NOT EXISTS sbtest'
+              -e "CREATE DATABASE IF NOT EXISTS sbtest"
           sysbench \
               --db-driver=mysql \
               --mysql-host=mysql \
@@ -196,4 +196,4 @@ services:
               --oltp-table-size=1000000 \
               /usr/share/sysbench/tests/include/oltp_legacy/select.lua \
               run
-      "
+      '
