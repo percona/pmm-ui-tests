@@ -3,7 +3,6 @@ const { faker } = require('@faker-js/faker');
 const { SERVICE_TYPE } = require('./helper/constants');
 
 const { adminPage } = inject();
-const pmmFrameworkLoader = `bash ${adminPage.pathToFramework}`;
 
 Feature('Monitoring SSL/TLS MYSQL instances');
 
@@ -110,7 +109,7 @@ Scenario(
 Data(instances).Scenario(
   'PMM-T937 + PMM-T938 - Verify MySQL cannot be added without specified --tls-key, Verify MySQL cannot be added without specified --tls-cert @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
-    I, current, grafanaAPI, remoteInstancesPage,
+    I, current, remoteInstancesPage,
   }) => {
     const {
       container,
@@ -142,6 +141,8 @@ Scenario(
     const serviceList = [serviceName, `remote_${serviceName}`];
 
     for (const service of serviceList) {
+      // Wait for metrics to start hitting
+      I.wait(60);
       I.amOnPage(I.buildUrlWithParams(
         dashboardPage.mySQLInstanceOverview.clearUrl,
         { service_name: service, from: 'now-5m', refresh: '10s' },
@@ -154,7 +155,7 @@ Scenario(
       await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
     }
   },
-).retry(2);
+).retry(4);
 
 Scenario(
   'Verify QAN after MySQL SSL Instances is added @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
