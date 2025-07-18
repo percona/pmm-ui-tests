@@ -83,13 +83,14 @@ Scenario(
   },
 ).retry(0);
 
-Scenario('PMM-T1647 - Verify pmm-server package doesn\'t exist @post-upgrade @pmm-upgrade', async ({ I }) => {
-  console.log(`Server type is: ${process.env.SERVER_TYPE}`);
-  await I.amOnPage('');
-  const packages = await I.verifyCommand('docker exec pmm-server rpm -qa');
+if (process.env.SERVER_TYPE !== 'ami') {
+  Scenario('PMM-T1647 - Verify pmm-server package doesn\'t exist @post-upgrade @pmm-upgrade', async ({ I }) => {
+    await I.amOnPage('');
+    const packages = await I.verifyCommand('docker exec pmm-server rpm -qa');
 
-  I.assertTrue(!packages.includes('pmm-server'), 'pmm-server package present in package list.');
-});
+    I.assertTrue(!packages.includes('pmm-server'), 'pmm-server package present in package list.');
+  });
+}
 
 Scenario.skip(
   'Verify user can see Update widget [critical] @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
