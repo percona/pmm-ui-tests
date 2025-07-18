@@ -84,6 +84,7 @@ Scenario(
 ).retry(0);
 
 Scenario('PMM-T1647 - Verify pmm-server package doesn\'t exist @post-upgrade @pmm-upgrade', async ({ I }) => {
+  console.log(`Server type is: ${process.env.SERVER_TYPE}`);
   await I.amOnPage('');
   const packages = await I.verifyCommand('docker exec pmm-server rpm -qa');
 
