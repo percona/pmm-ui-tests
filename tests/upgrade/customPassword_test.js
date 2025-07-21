@@ -66,13 +66,13 @@ Data(clientDbServices).Scenario(
 
 Scenario(
   'PMM-T1189 - verify user is able to change password after upgrade @post-custom-password-upgrade',
-  async ({ I, homePage }) => {
+  async ({ I, homePage, profileAPI }) => {
     const newPass = process.env.NEW_ADMIN_PASSWORD || 'admin1';
 
     await I.unAuthorize();
-    await I.verifyCommand(`docker exec pmm-server change-admin-password ${newPass}`);
+    await profileAPI.changePassword(process.env.ADMIN_PASSWORD, newPass, newPass);
     await I.Authorize('admin', newPass);
     await homePage.open();
-    await I.verifyCommand(`docker exec pmm-server change-admin-password ${process.env.ADMIN_PASSWORD}`);
+    await profileAPI.changePassword(newPass, process.env.ADMIN_PASSWORD, process.env.ADMIN_PASSWORD);
   },
 );
