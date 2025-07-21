@@ -70,7 +70,7 @@ Scenario(
     const newPass = process.env.NEW_ADMIN_PASSWORD || 'admin1';
 
     await I.unAuthorize();
-    await profileAPI.changePassword(process.env.ADMIN_PASSWORD, newPass, newPass);
+    await profileAPI.changePassword('admin', newPass, newPass);
     await I.Authorize('admin', newPass);
     await homePage.open();
     await profileAPI.changePassword(newPass, process.env.ADMIN_PASSWORD, process.env.ADMIN_PASSWORD);
