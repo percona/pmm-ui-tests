@@ -93,13 +93,21 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1392 - Verify fields dynamically change value when template is changed @fb-alerting @grafana-pr',
+  'Verify opening New Alert Rule from Template @ia @grafana-pr',
   async ({ I, alertRulesPage }) => {
-    // TODO: https://jira.percona.com/browse/PMM-10860 name doesn't change
     alertRulesPage.openAlertRulesTab();
     I.waitForElement(alertRulesPage.buttons.newAlertRuleFromTemplate, 10);
-    I.forceClick(alertRulesPage.buttons.newAlertRuleFromTemplate);
+    I.usePlaywrightTo('click New Alert Rule from Template button', async ({ page }) => {
+      await page.click(alertRulesPage.buttons.newAlertRuleFromTemplate.value);
+    });
     I.waitForElement(alertRulesPage.fields.templatesLoader, 10);
+  },
+).retry(2);
+
+Scenario(
+  'PMM-T1392 - Verify fields dynamically change value when template is changed @fb-alerting @grafana-pr',
+  async ({ I, alertRulesPage }) => {
+    alertRulesPage.openAlertRuleFromTemplatePage();
     await alertRulesPage.searchAndSelectResult('template', 'PostgreSQL down');
     I.waitForValue(alertRulesPage.fields.inputField('duration'), '60s');
     I.seeTextEquals('Critical', alertRulesPage.fields.dropdownValue('severity'));

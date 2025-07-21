@@ -28,7 +28,7 @@ Data(data).Scenario(
     await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f ${composeName}.yml up -d`);
     await I.verifyCommand(`docker exec ${pdpgsqlContainerName} psql "postgresql://postgres:pmm_password@localhost/grafana" -c 'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;'`);
     await I.verifyCommand(`docker container restart ${containerName}`);
-    await I.wait(30);
+    await I.wait(60);
 
     await I.Authorize('admin', 'admin', basePmmUrl);
     I.amOnPage(`${basePmmUrl}graph/datasources`);
