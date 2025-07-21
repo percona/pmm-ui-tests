@@ -191,7 +191,7 @@ Scenario(
 ).retry(2);
 
 Scenario(
-  'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
+  'PMM-T486 - Verify Public Address in PMM Settings @nightly',
   async ({
     I, pmmSettingsPage, settingsAPI, codeceptjsConfig,
   }) => {
