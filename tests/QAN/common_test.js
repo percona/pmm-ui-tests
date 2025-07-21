@@ -12,6 +12,9 @@ Scenario(
   async ({
     I, queryAnalyticsPage,
   }) => {
+    I.wait(5);
+    console.log(`Current url is: ${await I.grabCurrentUrl()}`);
+
     queryAnalyticsPage.waitForLoaded();
     I.waitForVisible(queryAnalyticsPage.buttons.addColumnButton, 30);
     await queryAnalyticsPage.data.verifyRowCount(26);
