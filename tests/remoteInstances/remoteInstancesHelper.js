@@ -91,7 +91,7 @@ const remoteInstanceStatus = {
   },
 };
 
-let SERVER_HOST; let EXTERNAL_EXPORTER_HOST; let DB_CONFIG = {};
+let SERVER_HOST; let EXTERNAL_EXPORTER_HOST; let DB_CONFIG = {}; let AMI_SERVER;
 let PMM_SERVER_OVF_AMI_SETUP = 'false';
 
 DB_CONFIG = {
@@ -118,6 +118,11 @@ if (process.env.OVF_TEST === 'yes') {
   SERVER_HOST = process.env.SERVER_IP;
   EXTERNAL_EXPORTER_HOST = process.env.SERVER_IP;
   DB_CONFIG.POSTGRES_SERVER_PORT = '5433';
+}
+
+if (process.env.SERVER_TYPE === 'ami') {
+  AMI_SERVER = true;
+  console.log(`Client ip is: ${process.env.VM_IP}`);
 }
 
 module.exports = {
