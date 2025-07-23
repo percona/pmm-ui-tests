@@ -138,7 +138,7 @@ module.exports = {
       },
       ps_8_0: {
         host: AMI_SERVER === true ? process.env.VM_IP : 'ps_pmm_8.0',
-        port: '3307',
+        port: AMI_SERVER === true ? '3317' : '3307',
         username: 'msandbox',
         password: 'msandbox',
         clusterName: 'mysql_clstr',
