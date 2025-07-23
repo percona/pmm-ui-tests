@@ -8,6 +8,9 @@ const remoteInstanceStatus = {
     ps_8_0: {
       enabled: true,
     },
+    ps_8_4: {
+      enabled: true,
+    },
     ms_8_0_ssl: {
       enabled: false,
     },
@@ -139,6 +142,13 @@ module.exports = {
       ps_8_0: {
         host: AMI_SERVER === true ? process.env.VM_IP : 'ps_pmm_8.0',
         port: AMI_SERVER === true ? '3317' : '3307',
+        username: 'msandbox',
+        password: 'msandbox',
+        clusterName: 'mysql_clstr',
+      },
+      ps_8_4: {
+        host: AMI_SERVER === true ? process.env.VM_IP : 'ps_pmm_8.4_1',
+        port: AMI_SERVER === true ? '33066' : '3306',
         username: 'msandbox',
         password: 'msandbox',
         clusterName: 'mysql_clstr',
@@ -457,7 +467,7 @@ module.exports = {
 
   // Used for Adding Remote Instance during Upgrade Tests runs for AMI and Docker via API
   instanceTypes: {
-    mysql: (remoteInstanceStatus.mysql.ps_8_0.enabled ? 'MySQL' : undefined),
+    mysql: (remoteInstanceStatus.mysql.ps_8_4.enabled ? 'MySQL' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'PostgreSQL' : undefined),
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'MongoDB' : undefined),
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'ProxySQL' : undefined),
