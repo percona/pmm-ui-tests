@@ -15,9 +15,11 @@ Scenario(
     I, addInstanceAPI,
   }) => {
     await addInstanceAPI.addExternalService(serviceName);
-    await I.verifyCommand(
-      `docker exec external_pmm pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name=${serviceName}-2`,
-    );
+    if (process.env.SERVER_TYPE !== 'ami') {
+      await I.verifyCommand(
+        `docker exec external_pmm pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name=${serviceName}-2`,
+      );
+    }
   },
 );
 
@@ -69,7 +71,12 @@ Scenario(
 
     await grafanaAPI.checkMetricExist(metricName);
     await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: serviceName });
-    await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: 'pmm-ui-tests-redis-external-remote-2' });
+    if (process.env.SERVER_TYPE !== 'ami') {
+      await grafanaAPI.checkMetricExist(metricName, {
+        type: 'service_name',
+        value: 'pmm-ui-tests-redis-external-remote-2',
+      });
+    }
 
     const response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
     const targets = response.data.data.activeTargets.find(
