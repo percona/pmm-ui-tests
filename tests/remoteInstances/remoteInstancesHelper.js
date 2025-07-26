@@ -244,7 +244,7 @@ module.exports = {
     },
     external: {
       redis: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? EXTERNAL_EXPORTER_HOST : 'external_pmm'),
+        host: AMI_SERVER === true ? process.env.VM_IP : 'external_pmm',
         port: '42200',
         clusterName: 'redis_external_exporter',
         environment: 'redis_external',
