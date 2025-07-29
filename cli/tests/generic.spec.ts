@@ -14,7 +14,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     await result1.outContains('pmm-admin', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
   });
 
-  let PMM_VERSION = `${process.env.CLIENT_VERSION}`;
+  let PMM_VERSION = `3.3.1`;
   if (/3-dev-latest|pmm3-rc|https:/.test(PMM_VERSION)) {
     // TODO: refactor to use docker hub API to remove file-update dependency
     // See: https://github.com/Percona-QA/package-testing/blob/master/playbooks/pmm2-client_integration_upgrade_custom_path.yml#L41
