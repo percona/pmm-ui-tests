@@ -56,6 +56,9 @@ const remoteInstanceStatus = {
     aws_rds_8_0: {
       enabled: true,
     },
+    aws_rds_8_4: {
+      enabled: true,
+    },
     aws_rds_5_6: {
       enabled: false,
     },
@@ -546,7 +549,7 @@ module.exports = {
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'psmdb_upgrade_scervice' : undefined),
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_upgrade_service' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgres_upgrade_service' : undefined),
-    rds: (remoteInstanceStatus.aws.aws_rds_5_7.enabled ? 'mysql_rds_uprgade_service' : undefined),
+    rds: (remoteInstanceStatus.aws.aws_rds_8_4.enabled ? 'mysql_rds_uprgade_service' : undefined),
     rdsaurora: (remoteInstanceStatus.aurora.aurora2.enabled ? 'aurora_rds_upgrade_service' : undefined),
     postgresgc: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
   },
