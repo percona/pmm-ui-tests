@@ -267,9 +267,9 @@ module.exports = {
         port: 42001,
       },
       aws_rds_8_0: {
-        address: secret(process.env.REMOTE_AWS_MYSQL80_HOST),
-        username: secret(process.env.REMOTE_AWS_MYSQL80_USER),
-        password: secret(process.env.REMOTE_AWS_MYSQL80_PASSWORD),
+        address: process.env.REMOTE_AWS_MYSQL80_HOST,
+        username: process.env.REMOTE_AWS_MYSQL80_USER,
+        password: process.env.REMOTE_AWS_MYSQL80_PASSWORD,
         clusterName: 'aws_rds_mysql_8_0',
         port: 42001,
       },
