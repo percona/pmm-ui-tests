@@ -4,7 +4,7 @@ const { dashboardPage } = inject();
 
 const clientDbServices = new DataTable(['serviceType', 'name', 'metric']);
 
-clientDbServices.add(['mysql', 'ps_pmm', 'mysql_global_status_max_used_connections']);
+clientDbServices.add(['mysql', 'ps-single', 'mysql_global_status_max_used_connections']);
 clientDbServices.add(['postgresql', 'pgsql_pgs', 'pg_stat_database_xact_rollback']);
 clientDbServices.add(['mongodb', 'rs101', 'mongodb_connections']);
 
@@ -72,7 +72,7 @@ Scenario(
   'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-client-upgrade @post-settings-metrics-upgrade',
   async ({ I, grafanaAPI, inventoryAPI }) => {
     const metricName = 'mysql_performance_schema_memory_summary_current_bytes';
-    const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName('ps_pmm');
+    const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName('ps-single');
 
     await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: apiServiceDetails.service_name });
   },
