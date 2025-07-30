@@ -149,10 +149,12 @@ Scenario(
 Scenario(
   'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @post-external-upgrade @post-client-upgrade',
   async ({
-    I, queryAnalyticsPage, remoteInstancesHelper,
+    I, queryAnalyticsPage, remoteInstancesHelper, inventoryAPI,
   }) => {
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     queryAnalyticsPage.waitForLoaded();
+
+    console.log((await inventoryAPI.apiGetServices()).data);
 
     // Checking that Cluster filters are still in QAN after Upgrade
     for (const name of Object.keys(remoteInstancesHelper.upgradeServiceNames)) {
