@@ -1,12 +1,14 @@
 const { I } = inject();
 const assert = require('assert');
-const request = require('request');
+const axios = require('axios');
 const fs = require('fs');
-const targz = require('tar.gz');
+const { extract } = require('tar');
 const path = require('path');
 const { readdirSync } = require('fs');
+const { pipeline } = require('stream/promises'); 
+const { execSync } = require('child_process');
 
-const outputDir = `${process.cwd()}/tests/output/`;
+const outputDir = `${process.cwd()}/tests/output`;
 
 module.exports = {
   async createDump(serviceName, Qan = true) {
@@ -38,23 +40,29 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const targzFile = `${outputDir}/${uid}.tar.gz`;
     const destnDir = `${outputDir}/${uid}`;
+    const response = await axios.get(
+      `${process.env.PMM_UI_URL}dump/${uid}.tar.gz`,
+      {
+        headers,
+        responseType: 'stream',
+      },
+    );
 
-    return new Promise((resolve, reject) => {
-      request.get(`${process.env.PMM_UI_URL}dump/${uid}.tar.gz`, { headers }, (error, response, body) => {
-      }).pipe(fs.createWriteStream(targzFile))
-        .on('close', () => {
-          targz().extract(targzFile, destnDir);
-          resolve(true);
-        });
-    });
+    await pipeline(response.data, fs.createWriteStream(targzFile));
+    fs.mkdirSync(destnDir, { recursive: true });
+    await I.asyncWaitFor(async () => fs.existsSync(targzFile), 60);
+    await extract({ file: targzFile, cwd: destnDir });
+
+    return true;
   },
 
   async extractDump(uid, sftpDir) {
     const targzFile = `${sftpDir}/${uid}.tar.gz`;
     const destnDir = `${sftpDir}/${uid}`;
 
+    fs.mkdirSync(destnDir, { recursive: true });
     await I.asyncWaitFor(async () => fs.existsSync(targzFile), 60);
-    targz().extract(targzFile, destnDir);
+    await extract({ file: targzFile, cwd: destnDir });
   },
 
   async verifyDump(uid, sftDir) {

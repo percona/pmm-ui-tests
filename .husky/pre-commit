@@ -1,0 +1,2 @@
+npm run build:types
+npm run lint:all

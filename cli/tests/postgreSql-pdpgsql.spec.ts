@@ -9,7 +9,9 @@ const ipPort = '127.0.0.1:5432';
 let containerName: string;
 
 enum PgAgent {
+  // eslint-disable-next-line no-unused-vars
   PGSTATMONITOR_AGENT = 'postgresql_pgstatmonitor_agent',
+  // eslint-disable-next-line no-unused-vars
   PGSTATEMENTS_AGENT = 'postgresql_pgstatements_agent',
 }
 
@@ -144,10 +146,9 @@ test.describe('Percona Distribution for PostgreSQL CLI tests', async () => {
       const jsonList = JSON.parse((await cli.exec(`docker exec ${containerName} pmm-admin list --json`)).stdout);
       // eslint-disable-next-line max-len
       const serviceIds = jsonList.service.filter((s: { service_name: string; }) => s.service_name === serviceName).map((s: { service_id: never; }) => s.service_id);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       agentIds = jsonList.agent.filter((a: { agent_type: string; status: string; service_id: string | null }) => a.agent_type === 'AGENT_TYPE_POSTGRES_EXPORTER'
-       && a.status === 'RUNNING'
-       && serviceIds.includes(a.service_id)).map((a: { agent_id: string }) => a.agent_id);
+        && a.status === 'RUNNING'
+        && serviceIds.includes(a.service_id)).map((a: { agent_id: string }) => a.agent_id);
 
       expect(agentIds.length).toBeTruthy();
     }).toPass({

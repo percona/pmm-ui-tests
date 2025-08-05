@@ -488,7 +488,6 @@ module.exports = {
 
     await I.say(`Wait ${timeOutInSeconds} seconds for Metrics ${metricName} with filters as ${JSON.stringify(queryBy)} to stop being collected`);
 
-    /* eslint no-constant-condition: ["error", { "checkLoops": false }] */
     while (true) {
       // Main condition check: metric body is not empty
       const response = await this.getMetric(metricName, queryBy);

@@ -1,5 +1,4 @@
 class ReporterHelper extends Helper {
-  // eslint-disable-next-line no-underscore-dangle
   async _afterSuite(suite) {
     try {
       if (process.env.CI) {
@@ -42,17 +41,14 @@ class ReporterHelper extends Helper {
         }
 
         if (successUploadTests.length > 0) {
-          // eslint-disable-next-line no-console
           console.log(`Successfully uploaded test results for the tests: "${successUploadTests}" into test cycle: "${testCycleKey}".`);
         }
 
         if (failUploadTests.length > 0) {
-          // eslint-disable-next-line no-console
           console.log(`Error while uploading tests results: "${JSON.stringify(failUploadTests)}".`);
         }
       }
     } catch (e) {
-      // eslint-disable-next-line no-console
       console.log('Error while uploading tests results.');
     }
   }

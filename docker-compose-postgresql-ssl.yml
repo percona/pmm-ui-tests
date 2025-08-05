@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: ${POSTGRES_IMAGE:-postgres:13-alpine}
+    image: ${POSTGRES_IMAGE:-postgres:alpine}
     container_name: postgres_ssl
     command: >
       -c shared_preload_libraries=pg_stat_statements
