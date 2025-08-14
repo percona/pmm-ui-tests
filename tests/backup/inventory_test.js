@@ -40,7 +40,7 @@ const mongoConnectionReplica2 = {
   port: 27037,
 };
 
-let clientCredentialsFlags = gssapi.enabled === 'true'
+const clientCredentialsFlags = gssapi.enabled === 'true'
   ? gssapi.credentials_flags
   : `--username=${mongoConnection.username} --password=${mongoConnection.password}`;
 
@@ -71,12 +71,6 @@ BeforeSuite(async ({
   }
 
   I.say(`GSSAPI enabled: ${gssapi.enabled}`);
-
-  if (gssapi.enabled === 'true') {
-    clientCredentialsFlags = gssapi.credentials_flags;
-  } else {
-    clientCredentialsFlags = `--username=${mongoConnection.username} --password=${mongoConnection.password}`;
-  }
 
   I.say(`using flags: ${clientCredentialsFlags}`);
 

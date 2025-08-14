@@ -73,7 +73,7 @@ const users = {
 };
 
 const gssapi = {
-  enabled: process.env.GSSAPI_ENABLED === 'true' || 'false',
+  enabled: process.env.GSSAPI_ENABLED === 'true' ? 'true' : 'false',
   credentials_flags: '--username="pmm@PERCONATEST.COM" --password=password1 --authentication-mechanism=GSSAPI --authentication-database="$external"',
 };
 
