@@ -115,7 +115,7 @@ AfterSuite(async ({ I }) => {
   await I.mongoDisconnect();
 });
 
-Scenario.only(
+Scenario(
   'PMM-T691 - Verify message about no backups in inventory @backup @bm-mongo @pre-mongo-backup-upgrade',
   async ({
     I, backupInventoryPage,
