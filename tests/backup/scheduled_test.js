@@ -53,9 +53,15 @@ BeforeSuite(async ({
     port: 27027,
   });
 
-  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=${mongoCluster}`));
-  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=${mongoCluster}`));
-  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoNameWithoutCluster} --replication-set=rs`));
+  if (process.env.GSSAPI_ENABLED === 'true') {
+    I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username="pmm@PERCONATEST.COM" --password=password1 --authentication-mechanism=GSSAPI --authentication-database="$external" --host=rs101 --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
+    I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username="pmm@PERCONATEST.COM" --password=password1 --authentication-mechanism=GSSAPI --authentication-database="$external" --host=rs102 --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
+    I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username="pmm@PERCONATEST.COM" --password=password1 --authentication-mechanism=GSSAPI --authentication-database="$external" --host=rs103 --port=27017 --service-name=${mongoNameWithoutCluster} --replication-set=rs`));
+  } else {
+    I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=${mongoCluster}`));
+    I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=${mongoCluster}`));
+    I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoNameWithoutCluster} --replication-set=rs`));
+  }
 });
 
 Before(async ({

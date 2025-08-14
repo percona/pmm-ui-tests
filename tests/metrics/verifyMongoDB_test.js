@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { gssapi } = require('../helper/constants');
 
 Feature('MongoDB Metrics tests');
 
@@ -14,6 +15,10 @@ const mongo_test_user = {
   username: 'test_user',
   password: 'pass+',
 };
+
+const clientCredentialsFlags = gssapi.enabled
+  ? `--username=${mongo_test_user.username} --password=${mongo_test_user.password}`
+  : gssapi.credentials_flags;
 
 const telemetry = {
   collstats: 'mongodb_collector_scrape_time_collstats',
@@ -62,7 +67,7 @@ Scenario(
   'PMM-T1241 - Verify add mongoDB service with "+" in user password @mongodb-exporter',
   async ({ I, grafanaAPI }) => {
     await I.say(
-      await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --password=${mongo_test_user.password} --username='${mongo_test_user.username}' --service-name=${mongodb_service_name}`),
+      await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} --host=${containerName} --service-name=${mongodb_service_name}`),
     );
 
     await grafanaAPI.waitForMetric('mongodb_up', { type: 'service_name', value: mongodb_service_name }, 65);
@@ -72,7 +77,7 @@ Scenario(
 Scenario(
   'PMM-T1458 - Verify MongoDB exporter meta-metrics supporting @mongodb-exporter',
   async ({ I }) => {
-    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb --password=${connection.password} --username=${connection.username} --service-name=${mongodb_service_name} --enable-all-collectors`));
+    await I.say(await I.verifyCommand(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} --host=${containerName} --service-name=${mongodb_service_name} --enable-all-collectors`));
     let logs = '';
 
     await I.asyncWaitFor(async () => {

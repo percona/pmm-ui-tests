@@ -1,7 +1,10 @@
 const assert = require('assert');
 const moment = require('moment/moment');
 const faker = require('faker');
-const { SERVICE_TYPE } = require('../helper/constants');
+const {
+  SERVICE_TYPE,
+  gssapi,
+} = require('../helper/constants');
 
 const { locationsAPI } = inject();
 
@@ -63,14 +66,25 @@ BeforeSuite(async ({
     return;
   }
 
-  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
-  I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
-  I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName3} --replication-set=rs --cluster=rs`));
+  if (gssapi.enabled === 'true') {
+    I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username="pmm@PERCONATEST.COM" --password=password1 --authentication-mechanism=GSSAPI --authentication-database="$external" --host=rs101 --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
+    I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username="pmm@PERCONATEST.COM" --password=password1 --authentication-mechanism=GSSAPI --authentication-database="$external" --host=rs102 --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
+    I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username="pmm@PERCONATEST.COM" --password=password1 --authentication-mechanism=GSSAPI --authentication-database="$external" --host=rs103 --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
 
-  // Adding extra replica set for restore
-  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName} --replication-set=rs1 --cluster=rs1`));
-  I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName2} --replication-set=rs1 --cluster=rs1`));
-  I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName3} --replication-set=rs1 --cluster=rs1`));
+    // Adding extra replica set for restore
+    I.say(await I.verifyCommand(`docker exec rs201 pmm-admin add mongodb --username="pmm@PERCONATEST.COM" --password=password1 --authentication-mechanism=GSSAPI --authentication-database="$external" --host=rs201 --port=27017 --service-name=${mongoServiceName} --replication-set=rs1 --cluster=rs1`));
+    I.say(await I.verifyCommand(`docker exec rs202 pmm-admin add mongodb --username="pmm@PERCONATEST.COM" --password=password1 --authentication-mechanism=GSSAPI --authentication-database="$external" --host=rs202 --port=27017 --service-name=${mongoServiceName} --replication-set=rs1 --cluster=rs1`));
+    I.say(await I.verifyCommand(`docker exec rs203 pmm-admin add mongodb --username="pmm@PERCONATEST.COM" --password=password1 --authentication-mechanism=GSSAPI --authentication-database="$external" --host=rs203 --port=27017 --service-name=${mongoServiceName} --replication-set=rs1 --cluster=rs1`));
+  } else {
+    I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
+    I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
+    I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName3} --replication-set=rs --cluster=rs`));
+
+    // Adding extra replica set for restore
+    I.say(await I.verifyCommand(`docker exec rs201 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName} --replication-set=rs1 --cluster=rs1`));
+    I.say(await I.verifyCommand(`docker exec rs202 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName2} --replication-set=rs1 --cluster=rs1`));
+    I.say(await I.verifyCommand(`docker exec rs203 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName3} --replication-set=rs1 --cluster=rs1`));
+  }
 });
 
 Before(async ({
