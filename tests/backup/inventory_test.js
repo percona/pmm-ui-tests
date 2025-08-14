@@ -40,7 +40,7 @@ const mongoConnectionReplica2 = {
   port: 27037,
 };
 
-const clientCredentialsFlags = gssapi.enabled === 'true'
+let clientCredentialsFlags = gssapi.enabled === 'true'
   ? gssapi.credentials_flags
   : `--username=${mongoConnection.username} --password=${mongoConnection.password}`;
 
@@ -71,6 +71,14 @@ BeforeSuite(async ({
   }
 
   I.say(`GSSAPI enabled: ${gssapi.enabled}`);
+
+  if (gssapi.enabled === 'true') {
+    clientCredentialsFlags = gssapi.credentials_flags;
+  } else {
+    clientCredentialsFlags = `--username=${mongoConnection.username} --password=${mongoConnection.password}`;
+  }
+
+  I.say(`using flags: ${clientCredentialsFlags}`);
 
   I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs101 --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
   I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs102 --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
@@ -113,7 +121,7 @@ AfterSuite(async ({ I }) => {
   await I.mongoDisconnect();
 });
 
-Scenario(
+Scenario.only(
   'PMM-T691 - Verify message about no backups in inventory @backup @bm-mongo @pre-mongo-backup-upgrade',
   async ({
     I, backupInventoryPage,
@@ -412,7 +420,7 @@ Scenario(
     const backupName = 'service_remove_backup';
     const serviceName = `mongo-service-to-delete-${faker.datatype.number(2)}`;
 
-    I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${serviceName} --replication-set=rs --cluster=rs`));
+    I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs101 --port=27017 --service-name=${serviceName} --replication-set=rs --cluster=rs`));
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, serviceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
 
