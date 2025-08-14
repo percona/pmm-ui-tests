@@ -30,9 +30,9 @@ const frameworkConnection = {
   ...pmm_user_mongodb,
 };
 
-const clientCredentialsFlags = gssapi.enabled
-  ? `--username=${pmm_user_mongodb.username} --password=${pmm_user_mongodb.password}`
-  : gssapi.credentials_flags;
+const clientCredentialsFlags = gssapi.enabled === 'true'
+  ? gssapi.credentials_flags
+  : `--username=${pmm_user_mongodb.username} --password=${pmm_user_mongodb.password}`;
 
 const metrics = {
   collstats: 'mongodb_collstats_latencyStats_commands_latency',
