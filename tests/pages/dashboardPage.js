@@ -1243,7 +1243,7 @@ module.exports = {
       let retries = 0;
       let actualValue = 0;
 
-      const valueLocator = await page.locator(legendLocator);
+      const valueLocator = await page.locator(legendLocator).first();
 
       while (actualValue < expectedValue) {
         // eslint-disable-next-line no-plusplus
