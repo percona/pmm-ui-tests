@@ -68,10 +68,12 @@ Scenario(
 
     await I.say('Verify there is no "Error while loading library panels" errors on dashboard and no errors in grafana.log');
     I.wait(1);
-    let errorLogs = '';
+    let errorLogs;
 
-    if (process.env.SERVER_TYPE !== 'ami' && process.env.SERVER_TYPE !== 'ovf') {
+    if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && process.env.OVF_UPGRADE_TESTING_INSTANCE !== 'true') {
       errorLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/grafana.log | grep level=error');
+    } else {
+      errorLogs = await I.verifyCommand('cat /srv/logs/grafana.log | grep level=error || true');
     }
 
     const loadingLibraryErrorLine = errorLogs.split('\n')

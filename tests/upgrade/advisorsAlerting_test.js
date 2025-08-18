@@ -62,7 +62,7 @@ Scenario(
   },
 );
 
-Scenario.skip(
+Scenario(
   'Verify disabled advisor remain disabled after upgrade @post-advisors-alerting-upgrade',
   async ({
     I,

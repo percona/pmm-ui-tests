@@ -97,7 +97,7 @@ const remoteInstanceStatus = {
   },
 };
 
-let SERVER_HOST; let EXTERNAL_EXPORTER_HOST; let DB_CONFIG = {}; let AMI_SERVER;
+let SERVER_HOST; let EXTERNAL_EXPORTER_HOST; let DB_CONFIG = {};
 let PMM_SERVER_OVF_AMI_SETUP = 'false';
 
 DB_CONFIG = {
@@ -126,11 +126,6 @@ if (process.env.OVF_TEST === 'yes') {
   DB_CONFIG.POSTGRES_SERVER_PORT = '5433';
 }
 
-if (process.env.SERVER_TYPE === 'ami') {
-  AMI_SERVER = true;
-  console.log(`Client ip is: ${process.env.VM_IP}`);
-}
-
 module.exports = {
   remote_instance: {
     mysql: {
@@ -143,15 +138,15 @@ module.exports = {
         clusterName: 'mysql_clstr',
       },
       ps_8_0: {
-        host: AMI_SERVER === true ? process.env.VM_IP : 'ps_pmm_8.0',
-        port: AMI_SERVER === true ? '3317' : '3307',
+        host: 'ps_pmm_8.0',
+        port: '3307',
         username: 'msandbox',
         password: 'msandbox',
         clusterName: 'mysql_clstr',
       },
       ps_8_4: {
-        host: AMI_SERVER === true ? process.env.VM_IP : 'ps_pmm_8.4_1',
-        port: AMI_SERVER === true ? '33066' : '3306',
+        host: 'ps_pmm_8.4_1',
+        port: '3306',
         username: 'root',
         password: 'GRgrO9301RuF',
         clusterName: 'mysql_clstr',
@@ -247,7 +242,7 @@ module.exports = {
     },
     external: {
       redis: {
-        host: AMI_SERVER === true ? process.env.VM_IP : 'external_pmm',
+        host: 'external_pmm',
         port: '42200',
         clusterName: 'redis_external_exporter',
         environment: 'redis_external',

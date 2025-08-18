@@ -15,11 +15,9 @@ Scenario(
     I, addInstanceAPI,
   }) => {
     await addInstanceAPI.addExternalService(serviceName);
-    if (process.env.SERVER_TYPE !== 'ami') {
-      await I.verifyCommand(
-        `docker exec external_pmm pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name=${serviceName}-2`,
-      );
-    }
+    await I.verifyCommand(
+      `docker exec external_pmm pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name=${serviceName}-2`,
+    );
   },
 );
 
@@ -71,12 +69,10 @@ Scenario(
 
     await grafanaAPI.checkMetricExist(metricName);
     await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: serviceName });
-    if (process.env.SERVER_TYPE !== 'ami') {
-      await grafanaAPI.checkMetricExist(metricName, {
-        type: 'service_name',
-        value: 'pmm-ui-tests-redis-external-remote-2',
-      });
-    }
+    await grafanaAPI.checkMetricExist(metricName, {
+      type: 'service_name',
+      value: 'pmm-ui-tests-redis-external-remote-2',
+    });
 
     const response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
     const targets = response.data.data.activeTargets.find(
@@ -149,12 +145,10 @@ Scenario(
 Scenario(
   'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @post-external-upgrade @post-client-upgrade',
   async ({
-    I, queryAnalyticsPage, remoteInstancesHelper, inventoryAPI,
+    I, queryAnalyticsPage, remoteInstancesHelper,
   }) => {
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     queryAnalyticsPage.waitForLoaded();
-
-    console.log((await inventoryAPI.apiGetServices()).data);
 
     // Checking that Cluster filters are still in QAN after Upgrade
     for (const name of Object.keys(remoteInstancesHelper.upgradeServiceNames)) {
