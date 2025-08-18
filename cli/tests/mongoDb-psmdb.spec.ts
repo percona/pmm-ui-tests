@@ -1,11 +1,9 @@
 import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 import { removeMongoService } from '@root/helpers/pmm-admin';
+import { clientCredentialsFlags } from '@helpers/constants';
 
-const MONGO_USERNAME = 'pmm';
-const MONGO_PASSWORD = 'pmmpass';
-
-const replIpPort = '127.0.0.1:27017';
+const replIpPort = 'rs101:27017';
 const mongoPushMetricsServiceName = 'mongo_push_1';
 const mongoPullMetricsServiceName = 'mongo_pull_1';
 const mongoServiceName = 'mongo_service_1';
@@ -23,7 +21,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   });
 
   test('run pmm-admin add mongodb with metrics-mode push', async ({}) => {
-    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} --metrics-mode=push ${mongoPushMetricsServiceName} ${replIpPort}`);
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} --metrics-mode=push ${mongoPushMetricsServiceName} ${replIpPort}`);
     await output.assertSuccess();
     await output.outContains('MongoDB Service added');
 
@@ -31,7 +29,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   });
 
   test('run pmm-admin add mongodb with metrics-mode pull', async ({}) => {
-    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} --metrics-mode=pull ${mongoPullMetricsServiceName} ${replIpPort}`);
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} --metrics-mode=pull ${mongoPullMetricsServiceName} ${replIpPort}`);
     await output.assertSuccess();
     await output.outContains('MongoDB Service added');
 
@@ -39,12 +37,12 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   });
 
   test('run pmm-admin add mongodb again based on running instances to check if fails with error message exists', async ({}) => {
-    let output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} mongo_exists ${replIpPort}`);
+    let output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} mongo_exists ${replIpPort}`);
     await output.assertSuccess();
     await output.outContains('MongoDB Service added');
     await cli.exec('sleep 2');
 
-    output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} mongo_exists ${replIpPort}`);
+    output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} mongo_exists ${replIpPort}`);
     await output.exitCodeEquals(1);
     await output.outContains('already exists.');
 
@@ -56,7 +54,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
    */
   test("PMM-T160 User can't use both socket and address while using pmm-admin add mongodb", async ({}) => {
     const port = replIpPort.split(':')[1];
-    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} --socket=/tmp/mongodb-${port}.sock ${mongoServiceName} ${replIpPort}`);
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} --socket=/tmp/mongodb-${port}.sock ${mongoServiceName} ${replIpPort}`);
     await output.exitCodeEquals(1);
     await output.outContains('Socket and address cannot be specified together.');
   });
@@ -65,7 +63,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L148
    */
   test('PMM-T157 PMM-T161 Adding and removing MongoDB with specified socket for modb', async ({}) => {
-    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} --socket=/tmp/mongodb-27017.sock mongo_socket`);
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} --socket=/tmp/mongodb-27017.sock mongo_socket`);
     await output.assertSuccess();
     await output.outContains('MongoDB Service added');
     await cli.exec('sleep 2');
@@ -78,7 +76,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     const ip = replIpPort.split(':')[0];
     const port = replIpPort.split(':')[1];
 
-    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} --host=${ip} --port=${port} --service-name=${serviceName}`);
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} --host=${ip} --port=${port} --service-name=${serviceName}`);
     await output.assertSuccess();
     await output.outContains('MongoDB Service added');
 
@@ -92,7 +90,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
 
     await cli.exec(`docker exec ${containerName} pmm-admin remove mongodb ${serviceName} || true`);
 
-    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --username=${MONGO_USERNAME} --password=${MONGO_PASSWORD} --host=${ip} --agent-password=mypass --port=${port} --service-name=${serviceName}`);
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} --host=${ip} --agent-password=mypass --port=${port} --service-name=${serviceName}`);
     await output.assertSuccess();
     await output.outContains('MongoDB Service added');
 
