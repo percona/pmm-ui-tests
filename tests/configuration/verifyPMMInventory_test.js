@@ -240,7 +240,7 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T554 - Check that all agents have status "RUNNING" @inventory @nightly',
+  'PMM-T554 - Check that all agents have status "RUNNING" @inventory @nightly @gssapi-nightly',
   async ({ I, pmmInventoryPage, inventoryAPI }) => {
     await I.amOnPage(pmmInventoryPage.url);
     await I.waitForVisible(pmmInventoryPage.fields.showRowDetails, 10);
@@ -283,7 +283,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1226 - Verify Agents has process_exec_path option on Inventory page @inventory @nightly @exporters',
+  'PMM-T1226 - Verify Agents has process_exec_path option on Inventory page @inventory @nightly @gssapi-nightly @exporters',
   async ({ I, pmmInventoryPage, inventoryAPI }) => {
     I.amOnPage(pmmInventoryPage.url);
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pmm-server-postgresql');
@@ -591,7 +591,7 @@ Data(aws_instances).Scenario(
   },
 ).retry(1);
 
-Scenario('PMM-T2024 - Verify services list does not refresh to first page @inventory-fb @nightly', async ({ I, pmmInventoryPage }) => {
+Scenario('PMM-T2024 - Verify services list does not refresh to first page @inventory-fb @nightly @gssapi-nightly', async ({ I, pmmInventoryPage }) => {
   I.usePlaywrightTo('Mock Services List', async ({ page }) => {
     const mockedServices = { services: [] };
 

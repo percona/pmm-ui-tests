@@ -191,7 +191,7 @@ Scenario(
 ).retry(2);
 
 Scenario(
-  'PMM-T486 - Verify Public Address in PMM Settings @nightly',
+  'PMM-T486 - Verify Public Address in PMM Settings @nightly @gssapi-nightly',
   async ({
     I, pmmSettingsPage, settingsAPI, codeceptjsConfig,
   }) => {
@@ -272,7 +272,7 @@ Scenario('PMM-T1401 - Verify Percona Alerting wording in Settings @max-length @s
 });
 
 Scenario(
-  'PMM-T1328 - Verify public address is set automatically on Percona Platform page once connected to Portal @nightly',
+  'PMM-T1328 - Verify public address is set automatically on Percona Platform page once connected to Portal @nightly @gssapi-nightly',
   async ({
     I, pmmSettingsPage, portalAPI, perconaPlatformPage, settingsAPI,
   }) => {
@@ -340,7 +340,7 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T2004 - Verify Data Retention field in advanced settings @settings @nightly',
+  'PMM-T2004 - Verify Data Retention field in advanced settings @settings @nightly @gssapi-nightly  ',
   async ({
     I, pmmSettingsPage,
   }) => {

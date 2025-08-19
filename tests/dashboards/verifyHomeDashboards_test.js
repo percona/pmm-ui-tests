@@ -18,13 +18,15 @@ Before(async ({ I }) => {
 });
 
 Data(panels).Scenario(
-  'PMM-T1565 - Verify ability to access OS dashboards with correct filter setup from Home Dashboard @nightly @dashboards',
+  'PMM-T1565 - Verify ability to access OS dashboards with correct filter setup from Home Dashboard @nightly @gssapi-nightly @dashboards',
   async ({
     I, current, dashboardPage, homePage,
   }) => {
     const {
       panelName, dashboardType, dashboardName, dashboard,
     } = current;
+
+    console.log(`Job name is: ${process.env.JOB_NAME}`);
 
     await homePage.open();
 
