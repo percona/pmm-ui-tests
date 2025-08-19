@@ -8,6 +8,9 @@ const remoteInstanceStatus = {
     ps_8_0: {
       enabled: true,
     },
+    ps_8_4: {
+      enabled: true,
+    },
     ms_8_0_ssl: {
       enabled: false,
     },
@@ -51,6 +54,9 @@ const remoteInstanceStatus = {
       enabled: true,
     },
     aws_rds_8_0: {
+      enabled: true,
+    },
+    aws_rds_8_4: {
       enabled: true,
     },
     aws_rds_5_6: {
@@ -136,6 +142,13 @@ module.exports = {
         port: '3307',
         username: 'msandbox',
         password: 'msandbox',
+        clusterName: 'mysql_clstr',
+      },
+      ps_8_4: {
+        host: 'ps_pmm_8.4_1',
+        port: '3306',
+        username: 'root',
+        password: 'GRgrO9301RuF',
         clusterName: 'mysql_clstr',
       },
       ms_8_0_ssl: {
@@ -229,7 +242,7 @@ module.exports = {
     },
     external: {
       redis: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? EXTERNAL_EXPORTER_HOST : 'external_pmm'),
+        host: 'external_pmm',
         port: '42200',
         clusterName: 'redis_external_exporter',
         environment: 'redis_external',
@@ -249,16 +262,16 @@ module.exports = {
         port: 42001,
       },
       aws_rds_8_0: {
-        address: secret(process.env.REMOTE_AWS_MYSQL80_HOST),
-        username: secret(process.env.REMOTE_AWS_MYSQL80_USER),
-        password: secret(process.env.REMOTE_AWS_MYSQL80_PASSWORD),
+        address: process.env.REMOTE_AWS_MYSQL80_HOST,
+        username: process.env.REMOTE_AWS_MYSQL80_USER,
+        password: process.env.REMOTE_AWS_MYSQL80_PASSWORD,
         clusterName: 'aws_rds_mysql_8_0',
         port: 42001,
       },
       aws_rds_8_4: {
-        address: secret(process.env.PMM_QA_MYSQL_RDS_8_4_HOST),
-        username: secret(process.env.PMM_QA_MYSQL_RDS_8_4_USER),
-        password: secret(process.env.PMM_QA_MYSQL_RDS_8_4_PASSWORD),
+        address: process.env.PMM_QA_MYSQL_RDS_8_4_HOST,
+        username: process.env.PMM_QA_MYSQL_RDS_8_4_USER,
+        password: process.env.PMM_QA_MYSQL_RDS_8_4_PASSWORD,
         clusterName: 'aws_rds_mysql_8_4',
         port: 42001,
       },
@@ -452,7 +465,7 @@ module.exports = {
 
   // Used for Adding Remote Instance during Upgrade Tests runs for AMI and Docker via API
   instanceTypes: {
-    mysql: (remoteInstanceStatus.mysql.ps_8_0.enabled ? 'MySQL' : undefined),
+    mysql: (remoteInstanceStatus.mysql.ps_8_4.enabled ? 'MySQL' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'PostgreSQL' : undefined),
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'MongoDB' : undefined),
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'ProxySQL' : undefined),
@@ -531,7 +544,7 @@ module.exports = {
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'psmdb_upgrade_scervice' : undefined),
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_upgrade_service' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgres_upgrade_service' : undefined),
-    rds: (remoteInstanceStatus.aws.aws_rds_5_7.enabled ? 'mysql_rds_uprgade_service' : undefined),
+    rds: (remoteInstanceStatus.aws.aws_rds_8_4.enabled ? 'mysql_rds_uprgade_service' : undefined),
     rdsaurora: (remoteInstanceStatus.aurora.aurora2.enabled ? 'aurora_rds_upgrade_service' : undefined),
     postgresgc: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
   },
