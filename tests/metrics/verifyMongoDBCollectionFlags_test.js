@@ -30,7 +30,7 @@ const frameworkConnection = {
   ...pmm_user_mongodb,
 };
 
-const clientCredentialsFlags = gssapi.enabled === 'true'
+const clientCredentialsFlags = gssapi.enabled
   ? gssapi.credentials_flags
   : `--username=${pmm_user_mongodb.username} --password=${pmm_user_mongodb.password}`;
 

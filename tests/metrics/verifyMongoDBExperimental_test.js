@@ -10,7 +10,7 @@ let mongodb_service_name_ac;
 const containerName = 'rs101';
 
 BeforeSuite(async ({ I, inventoryAPI }) => {
-  const serviceNamePrefix = gssapi.enabled ? 'rs101_gssapi' : 'rs101';
+  const serviceNamePrefix = gssapi.enabled === 'true' ? 'rs101_gssapi' : 'rs101';
   const mongoService = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, serviceNamePrefix);
 
   mongodb_service_name_ac = mongoService.service_name;

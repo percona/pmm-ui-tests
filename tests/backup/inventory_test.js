@@ -40,7 +40,7 @@ const mongoConnectionReplica2 = {
   port: 27037,
 };
 
-const clientCredentialsFlags = gssapi.enabled === 'true'
+const clientCredentialsFlags = gssapi.enabled
   ? gssapi.credentials_flags
   : `--username=${mongoConnection.username} --password=${mongoConnection.password}`;
 

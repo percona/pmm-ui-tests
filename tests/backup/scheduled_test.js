@@ -18,7 +18,7 @@ const mysqlServiceName = 'mysql-with-backup2';
 const mongoServiceName = 'mongo-backup-schedule';
 const mongoServiceName2 = 'mongo-pitr-test';
 const mongoCluster = 'rs';
-const clientCredentialsFlags = gssapi.enabled === 'true'
+const clientCredentialsFlags = gssapi.enabled
   ? gssapi.credentials_flags
   : '--username=pmm --password=pmmpass';
 
