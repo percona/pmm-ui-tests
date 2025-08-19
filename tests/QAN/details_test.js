@@ -57,7 +57,7 @@ if (process.env.JOB_NAME.includes('gssapi')) {
 }
 
 Data(databaseEnvironments).Scenario(
-  'PMM-T13 - Check Example, Explain, Plan and Table tabs for supported DBs @qan',
+  'PMM-T13 - Check Example, Explain, Plan and Table tabs for supported DBs @qan @gssapi-nightly',
   async ({
     I, queryAnalyticsPage, current, inventoryAPI,
   }) => {
@@ -108,6 +108,18 @@ Scenario(
     queryAnalyticsPage.queryDetails.checkTab('Explain');
     queryAnalyticsPage.filters.selectContainFilter('pxc-dev');
     queryAnalyticsPage.data.searchByValue('');
+    queryAnalyticsPage.filters.selectFilterInGroup('mongodb', 'Service Type');
+    queryAnalyticsPage.data.searchByValue('UPDATE');
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.queryDetails.checkTab('Explain');
+  },
+);
+
+Scenario(
+  'PMM-T1790 - Verify that there is any no error on Explains after switching between queries from different DB servers @gssapi-nightly',
+  async ({
+    I, queryAnalyticsPage,
+  }) => {
     queryAnalyticsPage.filters.selectFilterInGroup('mongodb', 'Service Type');
     queryAnalyticsPage.data.searchByValue('UPDATE');
     queryAnalyticsPage.data.selectRow(1);

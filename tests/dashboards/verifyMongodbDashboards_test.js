@@ -7,7 +7,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T305 - Open the MongoDB Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  'PMM-T305 - Open the MongoDB Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards @gssapi-nightly',
   async ({ I, dashboardPage }) => {
     const url = I.buildUrlWithParams(dashboardPage.mongodbOverviewDashboard.url, {
       from: 'now-5m',
@@ -38,7 +38,7 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T1698 - Verify that Disk I/O and Swap Activity and Network Traffic panels have graphs if Node name contains dot symbol @nightly @dashboards',
+  'PMM-T1698 - Verify that Disk I/O and Swap Activity and Network Traffic panels have graphs if Node name contains dot symbol @nightly @dashboards @gssapi-nightly',
   async ({ I, dashboardPage }) => {
     const url = I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, {
       from: 'now-5m',
@@ -54,7 +54,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @mongodb-exporter @nightly',
+  'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @mongodb-exporter @nightly @gssapi-nightly',
   async ({
     I, dashboardPage, inventoryAPI, adminPage,
   }) => {
@@ -73,13 +73,18 @@ Scenario(
 ).retry(2);
 
 const fcvPanelTestData = () => {
+  const dashboards = ['dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl']
   const { dashboardPage } = inject();
 
-  return [dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, dashboardPage.mongoDbShardedClusterSummary.url];
+  if (!process.env.JOB_NAME.includes('gssapi')) {
+    dashboards.push(dashboardPage.mongoDbShardedClusterSummary.url);
+  }
+
+  return dashboards;
 };
 
 Data(fcvPanelTestData()).Scenario(
-  'PMM-T2035 - Verify MongoDb Cluster and MongoDB ReplSet dashboards has FCV panel @nightly @dashboards',
+  'PMM-T2035 - Verify MongoDb Cluster and MongoDB ReplSet dashboards has FCV panel @nightly @dashboards @gssapi-nightly',
   async ({ I, dashboardPage, current }) => {
     const url = I.buildUrlWithParams(current, {
       from: 'now-5m',
