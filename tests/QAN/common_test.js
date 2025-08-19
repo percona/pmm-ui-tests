@@ -8,7 +8,7 @@ Before(async ({ I, queryAnalyticsPage }) => {
 });
 
 Scenario(
-  'PMM-T269 - Verify QAN UI Elements are displayed @qan',
+  'PMM-T269 - Verify QAN UI Elements are displayed @qan @gssapi-nightly',
   async ({
     I, queryAnalyticsPage,
   }) => {
@@ -46,7 +46,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T186 - Verify values in overview and in details match @qan',
+  'PMM-T186 - Verify values in overview and in details match @qan @gssapi-nightly',
   async ({
     I, adminPage, queryAnalyticsPage,
   }) => {
