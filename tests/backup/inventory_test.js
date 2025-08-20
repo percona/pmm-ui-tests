@@ -1,7 +1,10 @@
 const assert = require('assert');
 const moment = require('moment/moment');
 const faker = require('faker');
-const { SERVICE_TYPE } = require('../helper/constants');
+const {
+  SERVICE_TYPE,
+  gssapi,
+} = require('../helper/constants');
 
 const { locationsAPI } = inject();
 
@@ -37,6 +40,10 @@ const mongoConnectionReplica2 = {
   port: 27037,
 };
 
+const clientCredentialsFlags = gssapi.enabled
+  ? gssapi.credentials_flags
+  : `--username=${mongoConnection.username} --password=${mongoConnection.password}`;
+
 Feature('BM: Backup Inventory');
 
 BeforeSuite(async ({
@@ -63,14 +70,18 @@ BeforeSuite(async ({
     return;
   }
 
-  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
-  I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
-  I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName3} --replication-set=rs --cluster=rs`));
+  I.say(`GSSAPI enabled: ${gssapi.enabled}`);
+
+  I.say(`using flags: ${clientCredentialsFlags}`);
+
+  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs101 --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
+  I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs102 --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
+  I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs103 --port=27017 --service-name=${mongoServiceName3} --replication-set=rs --cluster=rs`));
 
   // Adding extra replica set for restore
-  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName} --replication-set=rs1 --cluster=rs1`));
-  I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName2} --replication-set=rs1 --cluster=rs1`));
-  I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoExtraServiceName3} --replication-set=rs1 --cluster=rs1`));
+  I.say(await I.verifyCommand(`docker exec rs201 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs201 --port=27017 --service-name=${mongoExtraServiceName} --replication-set=rs1 --cluster=rs1`));
+  I.say(await I.verifyCommand(`docker exec rs202 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs202 --port=27017 --service-name=${mongoExtraServiceName2} --replication-set=rs1 --cluster=rs1`));
+  I.say(await I.verifyCommand(`docker exec rs203 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs203 --port=27017 --service-name=${mongoExtraServiceName3} --replication-set=rs1 --cluster=rs1`));
 });
 
 Before(async ({
@@ -403,7 +414,7 @@ Scenario(
     const backupName = 'service_remove_backup';
     const serviceName = `mongo-service-to-delete-${faker.datatype.number(2)}`;
 
-    I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${serviceName} --replication-set=rs --cluster=rs`));
+    I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs101 --port=27017 --service-name=${serviceName} --replication-set=rs --cluster=rs`));
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, serviceName);
     const artifactId = await backupAPI.startBackup(backupName, service_id, locationId);
 

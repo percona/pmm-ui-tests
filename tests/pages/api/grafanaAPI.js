@@ -491,7 +491,7 @@ module.exports = {
     /* eslint no-constant-condition: ["error", { "checkLoops": false }] */
     while (true) {
       // Main condition check: metric body is not empty
-      const response = await this.getMetric(metricName, queryBy);
+      const response = await this.getMetric(metricName, queryBy, 1);
 
       if (response.data.results.A.frames[0].data.values.length === 0) {
         return response;
