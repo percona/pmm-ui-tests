@@ -26,8 +26,6 @@ Data(panels).Scenario(
       panelName, dashboardType, dashboardName, dashboard,
     } = current;
 
-    console.log(`Job name is: ${process.env.JOB_NAME}`);
-
     await homePage.open();
 
     const expectedDashboard = dashboardPage[dashboard];

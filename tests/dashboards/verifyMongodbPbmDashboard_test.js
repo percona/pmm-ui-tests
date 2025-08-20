@@ -42,7 +42,6 @@ Data(backupTypes).Scenario('PMM-T2036 - Verify MongoDB PBM dashboard @nightly @g
   I.amOnPage(url);
   dashboardPage.waitForDashboardOpened();
   await dashboardPage.mongodbPBMDetailsDashboard.verifyBackupConfiguredValue('Yes');
-
   await dashboardPage.mongodbPBMDetailsDashboard.verifyPitrEnabledValue(current === 'BACKUP_MODE_PITR' ? 'Yes' : 'No');
   await dashboardPage.expandEachDashboardRow();
   await dashboardPage.verifyMetricsExistence(dashboardPage.mongodbPBMDetailsDashboard.metrics);
