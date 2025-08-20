@@ -17,8 +17,8 @@ const mongo_test_user = {
 };
 
 const clientCredentialsFlags = gssapi.enabled
-  ? `--username=${mongo_test_user.username} --password=${mongo_test_user.password}`
-  : gssapi.credentials_flags;
+  ? gssapi.credentials_flags
+  : `--username=${mongo_test_user.username} --password=${mongo_test_user.password}`;
 
 const telemetry = {
   collstats: 'mongodb_collector_scrape_time_collstats',
