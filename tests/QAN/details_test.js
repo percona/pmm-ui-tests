@@ -14,7 +14,7 @@ Before(async ({ I, queryAnalyticsPage }) => {
 });
 
 Scenario(
-  'Verify Details section tabs @qan @gssapi-nightly',
+  'Verify Details section tabs @qan',
   async ({
     I, queryAnalyticsPage,
   }) => {
@@ -28,7 +28,7 @@ Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T223 - Verify time metrics are AVG per query (not per second) @qan @gssapi-nightly',
+  'PMM-T223 - Verify time metrics are AVG per query (not per second) @qan',
   async ({
     I, queryAnalyticsPage,
   }) => {
@@ -44,7 +44,7 @@ Scenario(
 
 let databaseEnvironments;
 
-if (process.env.JOB_NAME.includes('gssapi')) {
+if (!!process.env.JOB_NAME && process.env.JOB_NAME.includes('gssapi')) {
   databaseEnvironments = [
     { serviceName: 'rs101_gssapi', queryTypes: ['db.students', 'db.runCommand', 'db.test'], cluster: 'replicaset' },
   ];

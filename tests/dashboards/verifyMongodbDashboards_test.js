@@ -73,11 +73,14 @@ Scenario(
 ).retry(2);
 
 const fcvPanelTestData = () => {
-  const dashboards = ['dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl']
   const { dashboardPage } = inject();
+  let dashboards = [
+    { url: dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, cluster: 'replicaset' },
+    { url: dashboardPage.mongoDbShardedClusterSummary.url, cluster: 'sharded' },
+  ];
 
-  if (!process.env.JOB_NAME.includes('gssapi')) {
-    dashboards.push(dashboardPage.mongoDbShardedClusterSummary.url);
+  if (!!process.env.JOB_NAME && process.env.JOB_NAME.includes('gssapi')) {
+    dashboards = dashboards.filter((item) => item.cluster !== 'sharded');
   }
 
   return dashboards;
@@ -86,16 +89,15 @@ const fcvPanelTestData = () => {
 Data(fcvPanelTestData()).Scenario(
   'PMM-T2035 - Verify MongoDb Cluster and MongoDB ReplSet dashboards has FCV panel @nightly @dashboards @gssapi-nightly',
   async ({ I, dashboardPage, current }) => {
-    const url = I.buildUrlWithParams(current, {
+    const url = I.buildUrlWithParams(current.url, {
       from: 'now-5m',
-      cluster: 'sharded',
+      cluster: current.cluster,
     });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     const fcvVersion = await I.grabTextFrom(dashboardPage.panelValueByTitle('Feature Compatibility Version'));
-    const mongodbVersion = process.env.PSMDB_VERSION;
-
+    const mongodbVersion = process.env.PSMDB_VERSION || '8.0';
     I.assertEqual(
       fcvVersion,
       mongodbVersion.split('.')[0],

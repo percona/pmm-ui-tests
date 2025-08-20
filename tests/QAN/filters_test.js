@@ -55,7 +55,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T172 - Verify that selecting a filter updates the table data and URL @qan @gssapi-nightly',
+  'PMM-T172 - Verify that selecting a filter updates the table data and URL @qan',
   async ({ I, queryAnalyticsPage }) => {
     const environmentName = 'pxc-dev';
 
@@ -110,7 +110,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T123 - Verify User is able to search for DB types, Env and Cluster @qan @gssapi-nightly',
+  'PMM-T123 - Verify User is able to search for DB types, Env and Cluster @qan',
   async ({ I, queryAnalyticsPage }) => {
     const filters = [
       'Environment',

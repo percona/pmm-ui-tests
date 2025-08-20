@@ -3,7 +3,7 @@ const { SERVICE_TYPE } = require('./helper/constants');
 
 const annotation = new DataTable(['annotationName', 'service', 'dashboard', 'service_type']);
 
-if (!process.env.JOB_NAME.includes('gssapi')) {
+if (!!process.env.JOB_NAME && !process.env.JOB_NAME.includes('gssapi')) {
   annotation.add(['annotation-for-postgres-server', 'pmm-server', dashboardPage.postgresqlInstanceSummaryDashboard.url, SERVICE_TYPE.POSTGRESQL]);
   annotation.add(['annotation-for-mongo', 'rs101', dashboardPage.mongoDbInstanceSummaryDashboard.clearUrl, SERVICE_TYPE.MONGODB]);
   annotation.add(['annotation-for-postgres', 'pgsql', dashboardPage.postgresqlInstanceSummaryDashboard.url, SERVICE_TYPE.POSTGRESQL]);
