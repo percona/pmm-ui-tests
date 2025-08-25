@@ -1,3 +1,5 @@
+const { isJenkinsGssapiJob } = require('../helper/constants');
+
 Feature('QAN details');
 
 const { adminPage } = inject();
@@ -44,7 +46,7 @@ Scenario(
 
 let databaseEnvironments;
 
-if (!!process.env.JOB_NAME && process.env.JOB_NAME.includes('gssapi')) {
+if (isJenkinsGssapiJob) {
   databaseEnvironments = [
     { serviceName: 'rs101_gssapi', queryTypes: ['db.students', 'db.runCommand', 'db.test'], cluster: 'replicaset' },
   ];

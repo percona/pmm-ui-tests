@@ -72,6 +72,8 @@ const users = {
   },
 };
 
+const isJenkinsGssapiJob = !!(!!process.env.JOB_NAME && process.env.JOB_NAME.includes('gssapi'));
+
 module.exports = {
   SERVICE_TYPE,
   NODE_STATUS,
@@ -81,4 +83,5 @@ module.exports = {
   DISCOVER_RDS,
   AGENT_TYPE,
   users,
+  isJenkinsGssapiJob,
 };

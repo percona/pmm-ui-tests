@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { isJenkinsGssapiJob } = require('../helper/constants');
 
 Feature('Query tests for QAN');
 
@@ -6,7 +7,7 @@ const services = [];
 
 services.push({ serviceName: 'rs101' });
 
-if (!!process.env.JOB_NAME && !process.env.JOB_NAME.includes('gssapi')) {
+if (!isJenkinsGssapiJob) {
   services.push({ serviceName: 'pdpgsql_pgsm_pmm' });
   services.push({ serviceName: 'pgsql_pgss_pmm' });
   services.push({ serviceName: 'ps_pmm' });

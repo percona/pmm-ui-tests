@@ -1,4 +1,4 @@
-const { SERVICE_TYPE } = require('../helper/constants');
+const { isJenkinsGssapiJob } = require('../helper/constants');
 
 Feature('Test Dashboards inside the MongoDB Folder');
 
@@ -78,7 +78,7 @@ const fcvPanelTestData = () => {
     { url: dashboardPage.mongoDbShardedClusterSummary.url, cluster: 'sharded' },
   ];
 
-  if (!!process.env.JOB_NAME && process.env.JOB_NAME.includes('gssapi')) {
+  if (isJenkinsGssapiJob) {
     dashboards = dashboards.filter((item) => item.cluster !== 'sharded');
   }
 
