@@ -72,6 +72,11 @@ const users = {
   },
 };
 
+const gssapi = {
+  enabled: process.env.GSSAPI_ENABLED === 'true',
+  credentials_flags: '--username="pmm@PERCONATEST.COM" --password=password1 --authentication-mechanism=GSSAPI --authentication-database="$external"',
+};
+
 const isJenkinsGssapiJob = !!(!!process.env.JOB_NAME && process.env.JOB_NAME.includes('gssapi'));
 
 module.exports = {
@@ -84,4 +89,5 @@ module.exports = {
   AGENT_TYPE,
   users,
   isJenkinsGssapiJob,
+  gssapi,
 };

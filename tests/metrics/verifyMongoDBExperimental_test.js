@@ -1,5 +1,8 @@
 const assert = require('assert');
-const { SERVICE_TYPE } = require('../helper/constants');
+const {
+  SERVICE_TYPE,
+  gssapi,
+} = require('../helper/constants');
 
 Feature('MongoDB Experimental Dashboards tests');
 
@@ -7,7 +10,8 @@ let mongodb_service_name_ac;
 const containerName = 'rs101';
 
 BeforeSuite(async ({ I, inventoryAPI }) => {
-  const mongoService = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, 'rs101');
+  const serviceNamePrefix = gssapi.enabled === 'true' ? 'rs101_gssapi' : 'rs101';
+  const mongoService = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, serviceNamePrefix);
 
   mongodb_service_name_ac = mongoService.service_name;
 

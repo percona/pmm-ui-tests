@@ -1,6 +1,9 @@
 const assert = require('assert');
 const moment = require('moment');
-const { SERVICE_TYPE } = require('../helper/constants');
+const {
+  SERVICE_TYPE,
+  gssapi,
+} = require('../helper/constants');
 
 const { scheduledPage } = inject();
 
@@ -15,6 +18,9 @@ const mysqlServiceName = 'mysql-with-backup2';
 const mongoServiceName = 'mongo-backup-schedule';
 const mongoServiceName2 = 'mongo-pitr-test';
 const mongoCluster = 'rs';
+const clientCredentialsFlags = gssapi.enabled
+  ? gssapi.credentials_flags
+  : '--username=pmm --password=pmmpass';
 
 const mongoNameWithoutCluster = 'mongo-schedule-no-cluster';
 const scheduleErrors = new DataTable(['mode', 'serviceName', 'error']);
@@ -53,9 +59,9 @@ BeforeSuite(async ({
     port: 27027,
   });
 
-  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=${mongoCluster}`));
-  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=${mongoCluster}`));
-  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb --username=pmm --password=pmmpass --port=27017 --service-name=${mongoNameWithoutCluster} --replication-set=rs`));
+  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs101 --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
+  I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs102 --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
+  I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs103 --port=27017 --service-name=${mongoNameWithoutCluster} --replication-set=rs`));
 });
 
 Before(async ({
