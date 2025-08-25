@@ -340,7 +340,7 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T2004 - Verify Data Retention field in advanced settings @settings @nightly',
+  'PMM-T2004 - Verify Data Retention field in advanced settings @settings @nightly @gssapi-nightly  ',
   async ({
     I, pmmSettingsPage,
   }) => {

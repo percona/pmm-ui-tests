@@ -74,7 +74,7 @@ Data(panels).Scenario(
 ).retry(1);
 
 Scenario(
-  'PMM-T2007 - Verify Monitored DB Services panel on home dashboard @nightly @dashboards',
+  'PMM-T2007 - Verify Monitored DB Services panel on home dashboard @nightly @dashboards @gssapi-nightly',
   async ({ I, inventoryAPI, dashboardPage }) => {
     const mysql = (await inventoryAPI.getServicesByType(SERVICE_TYPE.MYSQL)).data.mysql.length;
     const mongodb = (await inventoryAPI.getServicesByType(SERVICE_TYPE.MONGODB)).data.mongodb.length;

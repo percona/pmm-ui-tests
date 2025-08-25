@@ -1,4 +1,4 @@
-const { SERVICE_TYPE } = require('../helper/constants');
+const { isJenkinsGssapiJob } = require('../helper/constants');
 
 Feature('Test Dashboards inside the MongoDB Folder');
 
@@ -7,7 +7,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T305 - Open the MongoDB Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
+  'PMM-T305 - Open the MongoDB Instance Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards @gssapi-nightly',
   async ({ I, dashboardPage }) => {
     const url = I.buildUrlWithParams(dashboardPage.mongodbOverviewDashboard.url, {
       from: 'now-5m',
@@ -22,8 +22,7 @@ Scenario(
   },
 );
 
-// unskip after sharded cluster setup is available in the framework
-Scenario.skip(
+Scenario(
   'Open the MongoDB Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbClusterSummaryDashboard.url, {
@@ -38,7 +37,7 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T1698 - Verify that Disk I/O and Swap Activity and Network Traffic panels have graphs if Node name contains dot symbol @nightly @dashboards',
+  'PMM-T1698 - Verify that Disk I/O and Swap Activity and Network Traffic panels have graphs if Node name contains dot symbol @nightly @dashboards @gssapi-nightly',
   async ({ I, dashboardPage }) => {
     const url = I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, {
       from: 'now-5m',
@@ -54,7 +53,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @mongodb-exporter @nightly',
+  'PMM-T1333 - Verify MongoDB - MongoDB Collections Overview @mongodb-exporter @nightly @gssapi-nightly',
   async ({
     I, dashboardPage, inventoryAPI, adminPage,
   }) => {
@@ -74,23 +73,30 @@ Scenario(
 
 const fcvPanelTestData = () => {
   const { dashboardPage } = inject();
+  let dashboards = [
+    { url: dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, cluster: 'replicaset' },
+    { url: dashboardPage.mongoDbShardedClusterSummary.url, cluster: 'sharded' },
+  ];
 
-  return [dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, dashboardPage.mongoDbShardedClusterSummary.url];
+  if (isJenkinsGssapiJob) {
+    dashboards = dashboards.filter((item) => item.cluster !== 'sharded');
+  }
+
+  return dashboards;
 };
 
 Data(fcvPanelTestData()).Scenario(
-  'PMM-T2035 - Verify MongoDb Cluster and MongoDB ReplSet dashboards has FCV panel @nightly @dashboards',
+  'PMM-T2035 - Verify MongoDb Cluster and MongoDB ReplSet dashboards has FCV panel @nightly @dashboards @gssapi-nightly',
   async ({ I, dashboardPage, current }) => {
-    const url = I.buildUrlWithParams(current, {
+    const url = I.buildUrlWithParams(current.url, {
       from: 'now-5m',
-      cluster: 'sharded',
+      cluster: current.cluster,
     });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     const fcvVersion = await I.grabTextFrom(dashboardPage.panelValueByTitle('Feature Compatibility Version'));
-    const mongodbVersion = process.env.PSMDB_VERSION;
-
+    const mongodbVersion = process.env.PSMDB_VERSION || '8.0';
     I.assertEqual(
       fcvVersion,
       mongodbVersion.split('.')[0],
