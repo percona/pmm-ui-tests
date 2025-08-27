@@ -46,6 +46,8 @@ Scenario('Disable advisor before upgrade @pre-advisors-alerting-upgrade', async 
   I,
   advisorsPage,
 }) => {
+  console.log(`PMM Version before upgrade is: ${process.env.CLIENT_VERSION}`);
+  console.log(`PMM Version before upgrade is: ${parseInt(process.env.CLIENT_VERSION.replace(/\./g, ""), 10)}`);
   I.amOnPage(advisorsPage.urlConfiguration);
   I.waitForVisible(advisorsPage.elements.advisorsGroupHeader(groupName));
   I.click(advisorsPage.elements.advisorsGroupHeader(groupName));
