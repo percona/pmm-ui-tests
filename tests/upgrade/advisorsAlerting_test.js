@@ -6,6 +6,7 @@ const advisorName = 'Check for unsupported PostgreSQL';
 const groupName = 'Version Configuration';
 const ruleName = 'Alert Rule for upgrade';
 const checkName = 'MongoDB version check';
+const beforeUpgradePmmVersion = parseInt(process.env.CLIENT_VERSION.replace(/\./g, ""), 10)
 
 Before(async ({ I }) => {
   I.Authorize();
@@ -46,14 +47,14 @@ Scenario('Disable advisor before upgrade @pre-advisors-alerting-upgrade', async 
   I,
   advisorsPage,
 }) => {
-  console.log(`PMM Version before upgrade is: ${process.env.CLIENT_VERSION}`);
-  console.log(`PMM Version before upgrade is: ${parseInt(process.env.CLIENT_VERSION.replace(/\./g, ""), 10)}`);
-  I.amOnPage(advisorsPage.urlConfiguration);
-  I.waitForVisible(advisorsPage.elements.advisorsGroupHeader(groupName));
-  I.click(advisorsPage.elements.advisorsGroupHeader(groupName));
-  I.waitForVisible(advisorsPage.buttons.disableEnableCheck(checkName));
-  I.click(advisorsPage.buttons.disableEnableCheck(checkName));
-  I.seeTextEquals('Enable', advisorsPage.buttons.disableEnableCheck(checkName));
+  if (beforeUpgradePmmVersion > 340) {
+    I.amOnPage(advisorsPage.urlConfiguration);
+    I.waitForVisible(advisorsPage.elements.advisorsGroupHeader(groupName));
+    I.click(advisorsPage.elements.advisorsGroupHeader(groupName));
+    I.waitForVisible(advisorsPage.buttons.disableEnableCheck(checkName));
+    I.click(advisorsPage.buttons.disableEnableCheck(checkName));
+    I.seeTextEquals('Enable', advisorsPage.buttons.disableEnableCheck(checkName));
+  }
 });
 
 Scenario(
@@ -77,12 +78,14 @@ Scenario(
     I,
     advisorsPage,
   }) => {
-    I.amOnPage(advisorsPage.urlConfiguration);
-    I.waitForVisible(advisorsPage.elements.advisorsGroupHeader(groupName));
-    I.click(advisorsPage.elements.advisorsGroupHeader(groupName));
+    if (beforeUpgradePmmVersion > 340) {
+      I.amOnPage(advisorsPage.urlConfiguration);
+      I.waitForVisible(advisorsPage.elements.advisorsGroupHeader(groupName));
+      I.click(advisorsPage.elements.advisorsGroupHeader(groupName));
 
-    I.waitForVisible(advisorsPage.buttons.disableEnableCheck(checkName));
-    I.seeTextEquals('Enable', advisorsPage.buttons.disableEnableCheck(checkName));
+      I.waitForVisible(advisorsPage.buttons.disableEnableCheck(checkName));
+      I.seeTextEquals('Enable', advisorsPage.buttons.disableEnableCheck(checkName));
+    }
   },
 );
 
