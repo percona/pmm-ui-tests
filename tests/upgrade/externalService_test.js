@@ -127,7 +127,9 @@ Scenario(
 
 Scenario(
   'Verify Agents are Running and Metrics are being collected Post Upgrade (UI) [critical] @post-external-upgrade @post-client-upgrade',
-  async ({ I, grafanaAPI, remoteInstancesHelper }) => {
+  async ({ grafanaAPI, remoteInstancesHelper, inventoryAPI }) => {
+    console.log('Available services are:');
+    console.log(await inventoryAPI.apiGetServices());
     const metrics = Object.keys(remoteInstancesHelper.upgradeServiceMetricNames);
 
     for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
@@ -152,6 +154,7 @@ Scenario(
 
     // Checking that Cluster filters are still in QAN after Upgrade
     for (const name of Object.keys(remoteInstancesHelper.upgradeServiceNames)) {
+      console.log(`Name is: ${name}`);
       if (remoteInstancesHelper.qanFilters.includes(name)) {
         queryAnalyticsPage.waitForLoaded();
         I.waitForVisible(queryAnalyticsPage.filters.fields.filterByName(name), 30);

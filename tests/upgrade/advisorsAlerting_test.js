@@ -6,7 +6,7 @@ const advisorName = 'Check for unsupported PostgreSQL';
 const groupName = 'Version Configuration';
 const ruleName = 'Alert Rule for upgrade';
 const checkName = 'MongoDB version check';
-const beforeUpgradePmmVersion = parseInt(process.env.CLIENT_VERSION.replace(/\./g, ""), 10)
+const beforeUpgradePmmVersion = process.env.CLIENT_VERSION ? parseInt(process.env.CLIENT_VERSION.replace(/\./g, ''), 10) : 300;
 
 Before(async ({ I }) => {
   I.Authorize();
