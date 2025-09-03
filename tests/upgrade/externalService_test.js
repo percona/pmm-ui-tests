@@ -128,8 +128,6 @@ Scenario(
 Scenario(
   'Verify Agents are Running and Metrics are being collected Post Upgrade (UI) [critical] @post-external-upgrade @post-client-upgrade',
   async ({ grafanaAPI, remoteInstancesHelper, inventoryAPI }) => {
-    console.log('Available services are:');
-    console.log((await inventoryAPI.apiGetServices()).data.services);
     const metrics = Object.keys(remoteInstancesHelper.upgradeServiceMetricNames);
 
     for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {

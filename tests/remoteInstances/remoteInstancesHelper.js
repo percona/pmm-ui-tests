@@ -147,6 +147,7 @@ module.exports = {
       ps_8_4: {
         host: 'ps_pmm_8.4_1',
         port: '3306',
+        server_port: '3306',
         username: 'root',
         password: 'GRgrO9301RuF',
         clusterName: 'mysql_clstr',
@@ -542,7 +543,7 @@ module.exports = {
   upgradeServiceNames: {
     mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'mysql_upgrade_service' : undefined),
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'psmdb_upgrade_scervice' : undefined),
-    proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_upgrade_service' : undefined),
+    // proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_upgrade_service' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgres_upgrade_service' : undefined),
     rds: (remoteInstanceStatus.aws.aws_rds_8_4.enabled ? 'mysql_rds_uprgade_service' : undefined),
     rdsaurora: (remoteInstanceStatus.aurora.aurora2.enabled ? 'aurora_rds_upgrade_service' : undefined),
