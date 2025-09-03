@@ -330,7 +330,9 @@ module.exports = {
           cluster_name: 'mysqlaws_aurora2',
         },
         mysqlaurora3: {
+          username: process.env.PMM_QA_AURORA3_MYSQL_USER,
           address: process.env.PMM_QA_AURORA3_MYSQL_HOST,
+          port: process.env.PMM_QA_AURORA3_MYSQL_PORT,
           password: process.env.PMM_QA_AURORA3_MYSQL_PASSWORD,
           instance_id: 'pmm-qa-aurora3-mysql-instance-1',
           cluster_name: 'mysqlaws_aurora3',
@@ -543,7 +545,7 @@ module.exports = {
   upgradeServiceNames: {
     mysql: (remoteInstanceStatus.mysql.ps_5_7.enabled ? 'mysql_upgrade_service' : undefined),
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'psmdb_upgrade_scervice' : undefined),
-    // proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_upgrade_service' : undefined),
+    proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_upgrade_service' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgres_upgrade_service' : undefined),
     rds: (remoteInstanceStatus.aws.aws_rds_8_4.enabled ? 'mysql_rds_uprgade_service' : undefined),
     rdsaurora: (remoteInstanceStatus.aurora.aurora2.enabled ? 'aurora_rds_upgrade_service' : undefined),

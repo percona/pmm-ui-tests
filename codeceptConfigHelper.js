@@ -78,6 +78,7 @@ module.exports = {
     usersPage: './tests/pages/administration/usersPage.js',
     agentCli: './tests/pages/cliHelpers/agentCli.js',
     pmmUpgradePage: './tests/pages/pmmUpgradePage.js',
+    remoteInstancesFixture: './tests/fixtures/remoteInstancesFixture.js',
   },
   getChunks: (files) => {
     const dependentTests = files.filter((value) => /PMMSettings|ia|stt|backup|permissions|Azure/.test(value));
