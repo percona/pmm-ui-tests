@@ -99,6 +99,7 @@ class RemoteInstancesFixture {
         password: process.env.PMM_QA_AURORA3_MYSQL_PASSWORD,
         instance_id: 'pmm-qa-aurora3-mysql-instance-1',
         cluster: 'mysqlaws_aurora3',
+        port: 42001,
         service_upgrade_name: 'aurora_rds_upgrade_service',
         service_type: SERVICE_TYPE.MYSQL,
         upgrade_metric_name: 'mysql_global_status_max_used_connections',
