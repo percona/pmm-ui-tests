@@ -67,13 +67,13 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     // @ts-ignore
     await cli.exec(`docker run -d -p 83:8080 -p 447:8443 
     --name PMM-T226 -e PMM_DATA_RETENTION=48h -e PMM_ENABLE_UPDATES=false -e PMM_ENABLE_TELEMETRY=false  
-    -e PMM_METRICS_RESOLUTION=24h -e PMM_METRICS_RESOLUTION_LR=24h -e PMM_METRICS_RESOLUTION_MR=24h ${DOCKER_IMAGE}`);
+    -e PMM_METRICS_RESOLUTION=24h -e PMM_METRICS_RESOLUTION_LR=24h -e PMM_METRICS_RESOLUTION_MR=24h perconalab/pmm-server:3-dev-latest`);
     stopList.push('PMM-T226');
     removeList.push('PMM-T226');
     await waitForApiReady('127.0.0.1', 83);
     await (await cli.exec('docker ps | grep PMM-T226')).assertSuccess();
     await expect(async () => {
-      const out = await cli.exec('docker logs PMM-T226 2>&1 | grep -i "WARN"');
+      const out = await cli.exec('docker logs PMM-T226 2>&1 | grep -i "WARN" | grep -v "\"ssl_stapling\" ignored, issuer certificate not found for certificate"');
       await out.exitCodeEquals(1);
     }).toPass({
       // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
