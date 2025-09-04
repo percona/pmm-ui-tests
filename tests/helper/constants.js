@@ -84,7 +84,7 @@ const REMOTE_INSTANCE_TYPES = {
   PROXYSQL: 'ProxySQL',
   RDS: 'rds',
   RDS_AURORA: 'RDSAurora',
-  RDS_PGSQL_SSL: 'rds_pgsql_ssl',
+  RDS_PGSQL: 'rds_pgsql',
   PGSQL_GC: 'postgresGC',
 };
 

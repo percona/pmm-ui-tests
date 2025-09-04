@@ -31,8 +31,8 @@ module.exports = {
         return this.addPostgresql(serviceName, creds);
       case REMOTE_INSTANCE_TYPES.RDS:
         return this.addRDS(serviceName, creds);
-      case REMOTE_INSTANCE_TYPES.RDS_PGSQL_SSL:
-        return this.addRDSPgsqlSSL(serviceName, creds);
+      case REMOTE_INSTANCE_TYPES.RDS_PGSQL:
+        return this.addRDSPgsql(serviceName, creds);
       case REMOTE_INSTANCE_TYPES.RDS_AURORA:
         return this.addRDSAurora(serviceName, creds);
       case REMOTE_INSTANCE_TYPES.PGSQL_GC:
@@ -296,7 +296,7 @@ module.exports = {
     return resp.data;
   },
 
-  async addRDSPgsqlSSL(serviceName, connection = {}) {
+  async addRDSPgsql(serviceName, connection = {}) {
     const {
       port, username, password, address, cluster, aws_access_key, aws_secret_key, az, engine,
     } = connection;
@@ -315,16 +315,13 @@ module.exports = {
         isRDS: true,
         pmm_agent_id: 'pmm-server',
         port: port || remoteInstancesHelper.remote_instance.aws.aws_rds_8_4.port,
-        // qan_mysql_perfschema: true,
         qan_postgresql_pgstatements: true,
         rds_exporter: true,
         region: 'us-east-2',
         replication_set: 'rds_mysql_repl',
-        tls_skip_verify: true,
         disable_basic_metrics: false,
         disable_enhanced_metrics: false,
         disable_comments_parsing: true,
-        tls: true,
       },
     };
 
