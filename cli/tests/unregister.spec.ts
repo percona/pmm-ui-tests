@@ -88,6 +88,6 @@ test.describe('PMM Client "unregister" CLI tests', async () => {
   /* PMM-T1900 PMM3 Client pmm-admin unregister w/o force removes nodes */
   test('run pmm-admin status after unregister with --force', async ({}) => {
     const output = await cli.exec('sudo pmm-admin status');
-    await output.outContains('Connected        : false');
+    await output.outContains('Connected : false');
   });
 });
