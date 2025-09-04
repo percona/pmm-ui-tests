@@ -73,7 +73,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     await waitForApiReady('127.0.0.1', 83);
     await (await cli.exec('docker ps | grep PMM-T226')).assertSuccess();
     await expect(async () => {
-      const out = await cli.exec('docker logs PMM-T226 2>&1 | grep -i "WARN" | grep -v "\"ssl_stapling\" ignored, issuer certificate not found for certificate"');
+      const out = await cli.exec("docker logs PMM-T226 2>&1 | grep -i 'WARN' | grep -v '\"ssl_stapling\" ignored, issuer certificate not found for certificate'");
       await out.exitCodeEquals(1);
     }).toPass({
       // Probe, wait 1s, probe, wait 2s, probe, wait 2s, probe, wait 2s, probe, ....
