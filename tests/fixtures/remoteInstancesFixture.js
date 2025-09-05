@@ -90,7 +90,7 @@ class RemoteInstancesFixture {
         qanFilter: 'rds',
         az: 'us-east-2b',
         engine: DISCOVER_RDS.POSTGRESQL,
-        remote_instance_type: REMOTE_INSTANCE_TYPES.RDS_PGSQL_SSL,
+        remote_instance_type: REMOTE_INSTANCE_TYPES.RDS_PGSQL,
       },
       mysql_aurora_3: {
         name: 'mysql_aurora_3',
