@@ -16,7 +16,7 @@ services:
     volumes:
       - ./ssl:/certs
       - ./utils:/utils
-    entrypoint: sh -c "apt install -y openssl && openssl genrsa -out /certs/server.key 2048 && openssl req -new -key /certs/server.key -config /utils/external-pgsql-ssl-config.cnf -out /certs/server.csr && openssl x509 -req -in /certs/server.csr -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial -out /certs/server.crt -days 365 -extensions v3_req -extfile /utils/external-pgsql-ssl-config.cnf && chown 999 /certs/server.crt && chown 999 /certs/server.key"
+    entrypoint: sh -c "apt install -y openssl && openssl genrsa -out /certs/server.key 2048 && openssl req -new -key /certs/server.key -config /utils/external-pgsql-ssl-config.cnf -out /certs/server.csr && openssl x509 -req -in /certs/server.csr -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial -out /certs/server.crt -days 365 -extensions v3_req -extfile /utils/external-pgsql-ssl-config.cnf && chown 26 /certs/server.crt && chown 26 /certs/server.key"
 
   client-cert-generator:
     image: phusion/baseimage:focal-1.2.0
@@ -25,7 +25,7 @@ services:
     volumes:
       - ./ssl:/certs
       - ./utils:/utils
-    entrypoint: sh -c "apt install -y openssl && openssl genrsa -out /certs/client.key 2048 && openssl req -new -key /certs/client.key -subj '/CN=client' -out /certs/client.csr && openssl x509 -req -in /certs/client.csr -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial -out /certs/client.crt -days 365 -sha256 && chown 999 /certs/client.key && chown 999 /certs/client.crt && chown 999 /certs/ca.crt"
+    entrypoint: sh -c "apt install -y openssl && openssl genrsa -out /certs/client.key 2048 && openssl req -new -key /certs/client.key -subj '/CN=client' -out /certs/client.csr && openssl x509 -req -in /certs/client.csr -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial -out /certs/client.crt -days 365 -sha256 && chown 26 /certs/client.key && chown 26 /certs/client.crt && chown 26 /certs/ca.crt"
 
 
   external-postgres-ssl:
