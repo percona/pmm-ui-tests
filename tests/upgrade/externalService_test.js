@@ -27,6 +27,8 @@ Data(remoteUpgradeInstances).Scenario(
   async ({ addInstanceAPI, current, remoteInstancesFixture }) => {
     const remoteInstance = remoteInstancesFixture.getUpgradeRemoteServiceByName(current);
 
+    console.log(remoteInstance.address);
+
     await addInstanceAPI.apiAddInstance(
       remoteInstance.remote_instance_type,
       remoteInstance.service_upgrade_name,
