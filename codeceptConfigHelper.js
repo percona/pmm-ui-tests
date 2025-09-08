@@ -57,7 +57,7 @@ module.exports = {
     ruleTemplatesPage: './tests/ia/pages/ruleTemplatesPage.js',
     scheduledAPI: './tests/backup/pages/api/scheduledAPI.js',
     scheduledPage: './tests/backup/pages/scheduledPage.js',
-    searchDashboardsModal: './tests/dashboards/pages/searchDashboardsModal.js',
+    searchDashboardsModal: './tests/pages/dashboards/components/searchDashboardsModal.js',
     serverApi: './tests/pages/api/serverApi.js',
     serviceAccountsPage: './tests/pages/administration/serviceAccountsPage.js',
     silencesPage: './tests/ia/pages/silencesPage.js',

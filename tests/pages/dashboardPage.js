@@ -1,17 +1,18 @@
+/* eslint-disable import/no-useless-path-segments */
 const { I, adminPage } = inject();
 const assert = require('assert');
-const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu');
-const PmmHealthDashboard = require('../dashboards/pages/pmmHealthDashboard');
-const HomeDashboard = require('../dashboards/pages/homeDashboard');
-const MongodbShardedClusterSummary = require('../dashboards/pages/mongodbShardedClusterSummary');
-const PostgresqlTopQueriesDashboard = require('../dashboards/pages/postgresqlTopQueriesDashboard');
-const PostgresqlInstancesOverviewExtendedDashboard = require('../dashboards/pages/postgresqlInstancesOverviewExtendedDashboard');
-const MongodbPBMDetailsDashboard = require('../dashboards/pages/mongodbPBMDetailsDashboard');
-const PostgresqlInstanceOverviewDashboard = require('../dashboards/pages/postgresqlInstanceOverviewDashboard');
-const PostgresqlInstanceSummaryDashboard = require('../dashboards/pages/postgresqlInstanceSummaryDashboard');
-const PostgresqlCheckpointDashboard = require('../dashboards/pages/postgresqlCheckpointDashboard');
-const PostgresqlReplicationOverviewDashboard = require('../dashboards/pages/postgresqlReplicationOverviewDashboard');
-const PostgresqlPatroniDashboard = require('../dashboards/pages/postgresqlPatroniDashboard');
+const { DashboardPanelMenu } = require('./dashboards/components/DashboardPanelMenu');
+const PmmHealthDashboard = require('./dashboards/experimental/pmmHealthDashboard');
+const HomeDashboard = require('./dashboards/homeDashboard');
+const PostgresqlTopQueriesDashboard = require('./dashboards/pgsql/postgresqlTopQueriesDashboard');
+const PostgresqlInstancesOverviewExtendedDashboard = require('./dashboards/pgsql/postgresqlInstancesOverviewExtendedDashboard');
+const MongodbPBMDetailsDashboard = require('./dashboards/mongodb/mongodbPBMDetailsDashboard');
+const PostgresqlInstanceOverviewDashboard = require('./dashboards/pgsql/postgresqlInstanceOverviewDashboard');
+const PostgresqlInstanceSummaryDashboard = require('./dashboards/pgsql/postgresqlInstanceSummaryDashboard');
+const PostgresqlCheckpointDashboard = require('./dashboards/pgsql/postgresqlCheckpointDashboard');
+const PostgresqlReplicationOverviewDashboard = require('./dashboards/pgsql/postgresqlReplicationOverviewDashboard');
+const PostgresqlPatroniDashboard = require('./dashboards/pgsql/postgresqlPatroniDashboard');
+const MongodbShardedClusterSummary = require('../pages/dashboards/mongodb/mongodbShardedClusterSummary');
 const { locateOption } = require('../helper/locatorHelper');
 
 module.exports = {
@@ -358,35 +359,6 @@ module.exports = {
     ],
   },
   mongoDbShardedClusterSummary: MongodbShardedClusterSummary,
-  mongoDbClusterSummaryDashboard: {
-    url: 'graph/d/mongodb-cluster-summary/mongodb-cluster-summary',
-    metrics: [
-      'Unsharded DBs',
-      'Sharded DBs',
-      'Sharded Collections',
-      'Shards',
-      'Chunks',
-      'Balancer Enabled',
-      'Mongos Cursors',
-      'Chunks Balancer is running',
-      'Change Log Events',
-      'Operations Per Shard',
-      'Current Connections Per Shard',
-      'Cursors Per Shard',
-      'Replication Lag by Set',
-      'Oplog Range by Set',
-      'Amount of Collections in Shards',
-      'Size of Collections in Shards',
-      'QPS of Mongos Service',
-      'QPS of Services in Shard',
-      'QPS of Config Services',
-      'Amount of Indexes in Shards',
-      'Dynamic of Indexes',
-      'Total Connections',
-      'Current Connections Per Shard',
-      'Total Mongos Operations',
-    ],
-  },
   mongoDbInstanceSummaryDashboard: {
     url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
     clearUrl: 'graph/d/mongodb-instance-summary/mongodb-instance-summary',
