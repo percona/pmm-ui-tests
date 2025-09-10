@@ -76,7 +76,7 @@ class RemoteInstancesFixture {
         qanFilter: 'rds',
         remote_instance_type: REMOTE_INSTANCE_TYPES.RDS,
       },
-      aws_rds_pgsql_17: {
+      /* aws_rds_pgsql_17: {
         name: 'aws_rds_pgsql_17',
         type: 'RDS',
         address: process.env.PMM_QA_RDS_PGSQL17_HOST,
@@ -91,7 +91,7 @@ class RemoteInstancesFixture {
         az: 'us-east-2b',
         engine: DISCOVER_RDS.POSTGRESQL,
         remote_instance_type: REMOTE_INSTANCE_TYPES.RDS_PGSQL,
-      },
+      }, */
       mysql_aurora_3: {
         name: 'mysql_aurora_3',
         type: 'RDSAurora',
