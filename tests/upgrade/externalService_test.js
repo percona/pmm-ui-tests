@@ -97,7 +97,7 @@ Data(remoteUpgradeInstances).Scenario(
 );
 
 Data(remoteUpgradeInstances).Scenario(
-  'PMM-T9995 - Verify Agents are Running and Metrics are being collected Post Upgrade (API) [critical] @post-external-upgrade @post-client-upgrade',
+  'PMM-T9995 - Verify Agents are Running and Metrics are being collected Pre and Post Upgrade (API) [critical] @pre-external-upgrade @post-external-upgrade @post-client-upgrade',
   async ({ I, grafanaAPI, current }) => {
     const remoteInstance = remoteInstancesFixture.getUpgradeRemoteServiceByName(current);
 
