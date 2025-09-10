@@ -101,7 +101,7 @@ Data(remoteUpgradeInstances).Scenario(
   async ({ I, grafanaAPI, current }) => {
     const remoteInstance = remoteInstancesFixture.getUpgradeRemoteServiceByName(current);
 
-    await grafanaAPI.waitForMetric(remoteInstance.upgrade_metric_name, { type: 'node_name', value: remoteInstance.service_upgrade_name });
+    await grafanaAPI.waitForMetric(remoteInstance.upgrade_metric_name, { type: 'service_name', value: remoteInstance.service_upgrade_name });
   },
 );
 
