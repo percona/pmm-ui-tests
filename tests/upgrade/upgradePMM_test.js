@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { NODE_TYPE, SERVICE_TYPE } = require('../helper/constants');
+const { isOvFAmiJenkinsJob, SERVICE_TYPE } = require('../helper/constants');
 
 const { psMySql, dashboardPage, databaseChecksPage } = inject();
 
@@ -84,10 +84,12 @@ Scenario(
 ).retry(0);
 
 Scenario('PMM-T1647 - Verify pmm-server package doesn\'t exist @post-upgrade @pmm-upgrade', async ({ I }) => {
-  await I.amOnPage('');
-  const packages = await I.verifyCommand('docker exec pmm-server rpm -qa');
+  if (!isOvFAmiJenkinsJob) {
+    await I.amOnPage('');
+    const packages = await I.verifyCommand('docker exec pmm-server rpm -qa');
 
-  I.assertTrue(!packages.includes('pmm-server'), 'pmm-server package present in package list.');
+    I.assertTrue(!packages.includes('pmm-server'), 'pmm-server package present in package list.');
+  }
 });
 
 Scenario.skip(
