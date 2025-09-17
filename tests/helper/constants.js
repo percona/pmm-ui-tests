@@ -91,5 +91,6 @@ module.exports = {
   AGENT_TYPE,
   users,
   isJenkinsGssapiJob,
+  isOvFAmiJenkinsJob,
   gssapi,
 };
