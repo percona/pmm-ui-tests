@@ -79,6 +79,8 @@ const gssapi = {
 
 const isJenkinsGssapiJob = !!(!!process.env.JOB_NAME && process.env.JOB_NAME.includes('gssapi'));
 
+const isOvFAmiJenkinsJob = !!(!!process.env.JOB_NAME && (process.env.JOB_NAME.includes('ami') || process.env.JOB_NAME.includes('ovf')));
+
 module.exports = {
   SERVICE_TYPE,
   NODE_STATUS,
