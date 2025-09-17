@@ -84,6 +84,8 @@ Scenario(
 ).retry(0);
 
 Scenario('PMM-T1647 - Verify pmm-server package doesn\'t exist @post-upgrade @pmm-upgrade', async ({ I }) => {
+  console.log(process.env.JOB_NAME);
+  console.log(process.env.JOB_NAME.includes('ami') || process.env.JOB_NAME.includes('ovf'));
   if (!isOvFAmiJenkinsJob) {
     await I.amOnPage('');
     const packages = await I.verifyCommand('docker exec pmm-server rpm -qa');
