@@ -91,7 +91,6 @@ test.describe('-promscrape.maxScapeSize tests', async () => {
 
   test('@PMM-T1664 Verify default value for vm_agents -promscrape.maxScapeSize parameter pmm-client container', async ({}) => {
     await test.step('verify client docker logs for default value', async () => {
-      await cli.exec('sleep 10');
       const scrapeSizeLog = await cli.exec('docker logs pmm-client-scrape-interval 2>&1 | grep \'promscrape.maxScrapeSize.*vm_agent\' | tail -1');
       await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=\\"${defaultScrapeSize}MiB\\"`);
     });
@@ -110,7 +109,7 @@ test.describe('-promscrape.maxScapeSize tests', async () => {
     await test.step('verify variables from binary for VMAGENT_remoteWrite_maxDiskUsagePerURL value', async () => {
       await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:2443\' --server-insecure-tls 127.0.0.1')).assertSuccess();
       await cli.exec('sleep 10');
-      const scrapeSizeLog = await cli.exec('sudo cat /proc/$(pgrep -x vmagent | head -n1)/environ --show-nonprinting');
+      const scrapeSizeLog = await cli.exec('sudo cat /proc/$(pgrep -x vmagent | head -n3)/environ --show-nonprinting');
       await scrapeSizeLog.outContains('VMAGENT_remoteWrite_maxDiskUsagePerURL=52428800');
     });
   });
