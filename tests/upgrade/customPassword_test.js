@@ -25,6 +25,8 @@ Data(clientDbServices).Scenario(
     const { agent_id: pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
     let output;
 
+    console.log(await I.verifyCommand('docker ps -a'));
+
     switch (serviceType) {
       case SERVICE_TYPE.MYSQL:
         output = await I.verifyCommand(
