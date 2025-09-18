@@ -77,6 +77,17 @@ const gssapi = {
   credentials_flags: '--username="pmm@PERCONATEST.COM" --password=password1 --authentication-mechanism=GSSAPI --authentication-database="$external"',
 };
 
+const REMOTE_INSTANCE_TYPES = {
+  MYSQL: 'MySQL',
+  PGSQL: 'PostgreSQL',
+  MONGODB: 'MongoDB',
+  PROXYSQL: 'ProxySQL',
+  RDS: 'rds',
+  RDS_AURORA: 'RDSAurora',
+  RDS_PGSQL: 'rds_pgsql',
+  PGSQL_GC: 'postgresGC',
+};
+
 const isJenkinsGssapiJob = !!(!!process.env.JOB_NAME && process.env.JOB_NAME.includes('gssapi'));
 
 module.exports = {
@@ -90,4 +101,5 @@ module.exports = {
   users,
   isJenkinsGssapiJob,
   gssapi,
+  REMOTE_INSTANCE_TYPES,
 };

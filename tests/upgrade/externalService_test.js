@@ -1,61 +1,37 @@
 const assert = require('assert');
-const { NODE_TYPE } = require('../helper/constants');
+const remoteInstancesFixture = require('../fixtures/remoteInstancesFixture');
 
 Feature('PMM upgrade tests for external services');
-
-const serviceName = 'pmm-ui-tests-redis-external-remote';
 
 Before(async ({ I }) => {
   await I.Authorize();
 });
+
+const remoteUpgradeInstances = remoteInstancesFixture.getUpgradeRemoteServicesName();
+const redisServiceName = 'pmm-ui-tests-redis-external-remote';
 
 Scenario(
   'Adding Redis as external Service before Upgrade @pre-external-upgrade',
   async ({
     I, addInstanceAPI,
   }) => {
-    await addInstanceAPI.addExternalService(serviceName);
+    await addInstanceAPI.addExternalService(redisServiceName);
     await I.verifyCommand(
-      `docker exec external_pmm pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name=${serviceName}-2`,
+      `docker exec external_pmm pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name=${redisServiceName}-2`,
     );
   },
 );
 
-Scenario(
-  'Verify user can create Remote Instances before upgrade @pre-external-upgrade',
-  async ({ I, addInstanceAPI, remoteInstancesHelper }) => {
-    const aurora_details = {
-      add_node: {
-        node_name: remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.instance_id,
-        node_type: NODE_TYPE.REMOTE,
-      },
-      aws_access_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_access_key,
-      aws_secret_key: remoteInstancesHelper.remote_instance.aws.aurora.aws_secret_key,
-      address: remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.address,
-      service_name: remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.instance_id,
-      port: remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.port,
-      username: remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.username,
-      password: remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.password,
-      instance_id: remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.instance_id,
-      cluster: remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.cluster_name,
-    };
+Data(remoteUpgradeInstances).Scenario(
+  'PMM-T2074 - Verify user - can create Remote Instances before upgrade @pre-external-upgrade',
+  async ({ addInstanceAPI, current, remoteInstancesFixture }) => {
+    const remoteInstance = remoteInstancesFixture.getUpgradeRemoteServiceByName(current);
 
-    for (const type of Object.values(remoteInstancesHelper.instanceTypes)) {
-      if (type) {
-        if (type === 'RDSAurora') {
-          await addInstanceAPI.apiAddInstance(
-            type,
-            remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
-            aurora_details,
-          );
-        } else {
-          await addInstanceAPI.apiAddInstance(
-            type,
-            remoteInstancesHelper.upgradeServiceNames[type.toLowerCase()],
-          );
-        }
-      }
-    }
+    await addInstanceAPI.apiAddInstance(
+      remoteInstance.remote_instance_type,
+      remoteInstance.service_upgrade_name,
+      remoteInstance,
+    );
   },
 );
 
@@ -68,7 +44,7 @@ Scenario(
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     await grafanaAPI.checkMetricExist(metricName);
-    await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: serviceName });
+    await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: redisServiceName });
     await grafanaAPI.checkMetricExist(metricName, {
       type: 'service_name',
       value: 'pmm-ui-tests-redis-external-remote-2',
@@ -98,65 +74,43 @@ Scenario(
   },
 ).retry(2);
 
-Scenario(
-  'Verify Agents are RUNNING after Upgrade (API) [critical] @post-external-upgrade @post-client-upgrade',
-  async ({ inventoryAPI, remoteInstancesHelper }) => {
-    for (const service of Object.values(remoteInstancesHelper.serviceTypes)) {
-      if (service) {
-        await inventoryAPI.verifyServiceExistsAndHasRunningStatus(
-          service,
-          remoteInstancesHelper.upgradeServiceNames[service.service],
-        );
-      }
-    }
+Data(remoteUpgradeInstances).Scenario(
+  'PMM-T2073 - Verify Agents are RUNNING after Upgrade (API) [critical] @post-external-upgrade @post-client-upgrade',
+  async ({ inventoryAPI, current }) => {
+    const remoteInstance = remoteInstancesFixture.getUpgradeRemoteServiceByName(current);
+
+    await inventoryAPI.verifyServiceExistsAndHasRunningStatus(remoteInstance.service_type, remoteInstance.service_upgrade_name);
   },
 );
 
-Scenario(
-  'Verify Agents are RUNNING after Upgrade (UI) [critical] @post-external-upgrade @post-client-upgrade',
-  async ({ I, pmmInventoryPage, remoteInstancesHelper }) => {
-    for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
-      if (service) {
-        I.amOnPage(pmmInventoryPage.url);
-        await I.scrollPageToBottom();
-        await pmmInventoryPage.verifyAgentHasStatusRunning(service);
-      }
-    }
+Data(remoteUpgradeInstances).Scenario(
+  'PMM-T2072 - Verify Agents are RUNNING after Upgrade (UI) [critical] @post-external-upgrade @post-client-upgrade',
+  async ({ I, pmmInventoryPage, current }) => {
+    const remoteInstance = remoteInstancesFixture.getUpgradeRemoteServiceByName(current);
+
+    I.amOnPage(pmmInventoryPage.url);
+    I.scrollPageToBottom();
+    await pmmInventoryPage.verifyAgentHasStatusRunning(remoteInstance.service_upgrade_name);
   },
 );
 
-Scenario(
-  'Verify Agents are Running and Metrics are being collected Post Upgrade (UI) [critical] @post-external-upgrade @post-client-upgrade',
-  async ({ I, grafanaAPI, remoteInstancesHelper }) => {
-    const metrics = Object.keys(remoteInstancesHelper.upgradeServiceMetricNames);
+Data(remoteUpgradeInstances).Scenario(
+  'PMM-T2071 - Verify Agents are Running and Metrics are being collected Pre and Post Upgrade (API) [critical] @pre-external-upgrade @post-external-upgrade @post-client-upgrade',
+  async ({ I, grafanaAPI, current }) => {
+    const remoteInstance = remoteInstancesFixture.getUpgradeRemoteServiceByName(current);
 
-    for (const service of Object.values(remoteInstancesHelper.upgradeServiceNames)) {
-      if (service) {
-        if (metrics.includes(service)) {
-          const metricName = remoteInstancesHelper.upgradeServiceMetricNames[service];
-
-          await grafanaAPI.waitForMetric(metricName, { type: 'node_name', value: service });
-        }
-      }
-    }
+    await grafanaAPI.waitForMetric(remoteInstance.upgrade_metric_name, { type: 'service_name', value: remoteInstance.service_upgrade_name });
   },
 );
 
-Scenario(
-  'Verify QAN has specific filters for Remote Instances after Upgrade (UI) @post-external-upgrade @post-client-upgrade',
-  async ({
-    I, queryAnalyticsPage, remoteInstancesHelper,
-  }) => {
+Data(remoteUpgradeInstances).Scenario(
+  'PMM-T2070 - Verify QAN has specific filters for Remote Instances after Upgrade (UI) @post-external-upgrade @post-client-upgrade',
+  async ({ I, queryAnalyticsPage, current }) => {
+    const remoteInstance = remoteInstancesFixture.getUpgradeRemoteServiceByName(current);
+
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
     queryAnalyticsPage.waitForLoaded();
-
-    // Checking that Cluster filters are still in QAN after Upgrade
-    for (const name of Object.keys(remoteInstancesHelper.upgradeServiceNames)) {
-      if (remoteInstancesHelper.qanFilters.includes(name)) {
-        queryAnalyticsPage.waitForLoaded();
-        I.waitForVisible(queryAnalyticsPage.filters.fields.filterByName(name), 30);
-        I.seeElement(queryAnalyticsPage.filters.fields.filterByName(name));
-      }
-    }
+    queryAnalyticsPage.filters.filterBy(remoteInstance.qanFilter);
+    I.waitForVisible(queryAnalyticsPage.filters.fields.filterByName(remoteInstance.qanFilter));
   },
 );

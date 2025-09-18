@@ -25,14 +25,15 @@ Scenario(
 Scenario(
   'Open the MongoDB Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbClusterSummaryDashboard.url, {
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbShardedClusterSummary.url, {
       cluster: 'sharded',
       from: 'now-5m',
     }));
+
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
-    await dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbClusterSummaryDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbShardedClusterSummary.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
   },
 );
 

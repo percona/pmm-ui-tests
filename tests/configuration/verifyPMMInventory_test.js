@@ -240,7 +240,7 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T554 - Check that all agents have status "RUNNING" @inventory @nightly @gssapi-nightly',
+  'PMM-T554 - Check that all agents have status "RUNNING" @inventory @nightly @gssapi-nightly @pmm-migration',
   async ({ I, pmmInventoryPage, inventoryAPI }) => {
     await I.amOnPage(pmmInventoryPage.url);
     await I.waitForVisible(pmmInventoryPage.fields.showRowDetails, 10);
