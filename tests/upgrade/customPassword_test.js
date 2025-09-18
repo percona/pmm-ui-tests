@@ -30,6 +30,8 @@ Data(clientDbServices).Scenario(
       address = '127.0.0.1';
     }
 
+    console.log(await I.verifyCommand('docker ps -a'));
+
     switch (serviceType) {
       case SERVICE_TYPE.MYSQL:
         output = await I.verifyCommand(
