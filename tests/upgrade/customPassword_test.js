@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { SERVICE_TYPE } = require('../helper/constants');
+const { SERVICE_TYPE, isOvFAmiJenkinsJob} = require('../helper/constants');
 
 Feature('PMM upgrade tests for custom password');
 const { dashboardPage } = inject();
@@ -18,14 +18,17 @@ Data(clientDbServices).Scenario(
     const {
       serviceType, name, upgrade_service,
     } = current;
-    const {
+    let {
+      // eslint-disable-next-line prefer-const
       service_id, node_id, address, port,
     } = await inventoryAPI.getServiceDetailsByPartialName(name);
 
     const { agent_id: pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
     let output;
 
-    console.log(await I.verifyCommand('docker ps -a'));
+    if (isOvFAmiJenkinsJob) {
+      address = '127.0.0.1';
+    }
 
     switch (serviceType) {
       case SERVICE_TYPE.MYSQL:
