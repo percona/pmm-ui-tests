@@ -1,7 +1,7 @@
 const { isOvFAmiJenkinsJob } = require('../../helper/constants');
 
 const storageLocationConnection = {
-  endpoint: isOvFAmiJenkinsJob ? 'http://127.0.0.1:9001' : 'http://minio:9000',
+  endpoint: isOvFAmiJenkinsJob ? `http://${process.env.JENKINS_IP}:9001` : 'http://minio:9000',
   bucket_name: 'bcp',
   access_key: 'minio1234',
   secret_key: 'minio1234',
