@@ -49,6 +49,8 @@ Feature('BM: Backup Inventory');
 BeforeSuite(async ({
   I, locationsAPI, settingsAPI, inventoryAPI,
 }) => {
+  console.log(await I.verifyCommand('docker ps -a'));
+
   await settingsAPI.changeSettings({ backup: true });
   await locationsAPI.clearAllLocations(true);
   localStorageLocationId = await locationsAPI.createStorageLocation(
@@ -74,7 +76,7 @@ BeforeSuite(async ({
 
   I.say(`using flags: ${clientCredentialsFlags}`);
 
-  console.log(await I.verifyCommand('docker ps -a'));
+
 
   I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb ${clientCredentialsFlags} --host=${isOvFAmiJenkinsJob ? '127.0.0.1' : 'rs101'} --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
   I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb ${clientCredentialsFlags} --host=${isOvFAmiJenkinsJob ? '127.0.0.1' : 'rs102'} --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
