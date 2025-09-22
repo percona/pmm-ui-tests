@@ -3,7 +3,7 @@ const moment = require('moment/moment');
 const faker = require('faker');
 const {
   SERVICE_TYPE,
-  gssapi,
+  gssapi, isOvFAmiJenkinsJob,
 } = require('../helper/constants');
 
 const { locationsAPI } = inject();
@@ -74,14 +74,16 @@ BeforeSuite(async ({
 
   I.say(`using flags: ${clientCredentialsFlags}`);
 
-  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs101 --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
-  I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs102 --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
-  I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs103 --port=27017 --service-name=${mongoServiceName3} --replication-set=rs --cluster=rs`));
+  console.log(await I.verifyCommand('docker ps -a'));
+
+  I.say(await I.verifyCommand(`docker exec rs101 pmm-admin add mongodb ${clientCredentialsFlags} --host=${isOvFAmiJenkinsJob ? '127.0.0.1' : 'rs101'} --port=27017 --service-name=${mongoServiceName} --replication-set=rs --cluster=rs`));
+  I.say(await I.verifyCommand(`docker exec rs102 pmm-admin add mongodb ${clientCredentialsFlags} --host=${isOvFAmiJenkinsJob ? '127.0.0.1' : 'rs102'} --port=27017 --service-name=${mongoServiceName2} --replication-set=rs --cluster=rs`));
+  I.say(await I.verifyCommand(`docker exec rs103 pmm-admin add mongodb ${clientCredentialsFlags} --host=${isOvFAmiJenkinsJob ? '127.0.0.1' : 'rs103'} --port=27017 --service-name=${mongoServiceName3} --replication-set=rs --cluster=rs`));
 
   // Adding extra replica set for restore
-  I.say(await I.verifyCommand(`docker exec rs201 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs201 --port=27017 --service-name=${mongoExtraServiceName} --replication-set=rs1 --cluster=rs1`));
-  I.say(await I.verifyCommand(`docker exec rs202 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs202 --port=27017 --service-name=${mongoExtraServiceName2} --replication-set=rs1 --cluster=rs1`));
-  I.say(await I.verifyCommand(`docker exec rs203 pmm-admin add mongodb ${clientCredentialsFlags} --host=rs203 --port=27017 --service-name=${mongoExtraServiceName3} --replication-set=rs1 --cluster=rs1`));
+  I.say(await I.verifyCommand(`docker exec rs201 pmm-admin add mongodb ${clientCredentialsFlags} --host=${isOvFAmiJenkinsJob ? '127.0.0.1' : 'rs201'} --port=27017 --service-name=${mongoExtraServiceName} --replication-set=rs1 --cluster=rs1`));
+  I.say(await I.verifyCommand(`docker exec rs202 pmm-admin add mongodb ${clientCredentialsFlags} --host=${isOvFAmiJenkinsJob ? '127.0.0.1' : 'rs202'} --port=27017 --service-name=${mongoExtraServiceName2} --replication-set=rs1 --cluster=rs1`));
+  I.say(await I.verifyCommand(`docker exec rs203 pmm-admin add mongodb ${clientCredentialsFlags} --host=${isOvFAmiJenkinsJob ? '127.0.0.1' : 'rs203'} --port=27017 --service-name=${mongoExtraServiceName3} --replication-set=rs1 --cluster=rs1`));
 });
 
 Before(async ({
