@@ -1,4 +1,4 @@
-const { SERVICE_TYPE } = require('../helper/constants');
+const { SERVICE_TYPE, isOvFAmiJenkinsJob } = require('../helper/constants');
 
 const remoteInstanceStatus = {
   mysql: {
@@ -242,7 +242,7 @@ module.exports = {
     },
     external: {
       redis: {
-        host: 'external_pmm',
+        host: isOvFAmiJenkinsJob ? '127.0.0.1' : 'external_pmm',
         port: '42200',
         clusterName: 'redis_external_exporter',
         environment: 'redis_external',
