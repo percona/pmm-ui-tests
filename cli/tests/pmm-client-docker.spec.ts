@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 
 test.describe('PMM Client Docker CLI tests', async () => {
@@ -98,11 +98,45 @@ test.describe('-promscrape.maxScapeSize tests', async () => {
   });
 
   test('@PMM-T1664 Verify default value for vm_agents -promscrape.maxScapeSize parameter local pmm-client', async ({}) => {
-    await test.step('verify logs from binary for default value', async () => {
-      await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:1443\' --server-insecure-tls 127.0.0.1')).assertSuccess();
+    await test.step('verify variables from binary for VMAGENT_promscrape_maxScrapeSize value', async () => {
       await cli.exec('sleep 10');
-      const scrapeSizeLog = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1');
-      await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=${defaultScrapeSize}MiB`);
+      await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:1443\' --server-insecure-tls 127.0.0.1')).assertSuccess();
+      await expect(async () => {
+        const vmAgentOpts = await cli.exec('sudo cat /proc/$(pgrep -x vmagent | tail -n1)/environ --show-nonprinting');
+        await vmAgentOpts.outContains(`VMAGENT_promscrape_maxScrapeSize=${defaultScrapeSize}MiB`);
+      }).toPass({
+        timeout: 60_000,
+        intervals: [5_000],
+      });
+    });
+  });
+
+  test('@PMM-T1665 Verify custom value for vm_agents -promscrape.maxScapeSize parameter local pmm-client', async ({}) => {
+    await test.step('verify variables from binary for VMAGENT_promscrape_maxScrapeSize value', async () => {
+      await cli.exec('sleep 10');
+      await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:2443\' --server-insecure-tls 127.0.0.1')).assertSuccess();
+      await expect(async () => {
+        const vmAgentOpts = await cli.exec('sudo cat /proc/$(pgrep -x vmagent | tail -n1)/environ --show-nonprinting');
+        await vmAgentOpts.outContains('VMAGENT_promscrape_maxScrapeSize=128MiB');
+      }).toPass({
+        timeout: 60_000,
+        intervals: [5_000],
+      });
+    });
+  });
+
+  test('@PMM-T2056 Verify VMagent variable is passing from PMM server to clients', async ({}) => {
+    await test.step('verify variables from binary for VMAGENT_remoteWrite_maxDiskUsagePerURL value', async () => {
+      await cli.exec('sleep 10');
+      await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:2443\' --server-insecure-tls 127.0.0.1')).assertSuccess();
+
+      await expect(async () => {
+        const vmAgentOpts = await cli.exec('sudo cat /proc/$(pgrep -x vmagent | tail -n1)/environ --show-nonprinting');
+        await vmAgentOpts.outContains('VMAGENT_remoteWrite_maxDiskUsagePerURL=52428800');
+      }).toPass({
+        timeout: 60_000,
+        intervals: [5_000],
+      });
     });
   });
 

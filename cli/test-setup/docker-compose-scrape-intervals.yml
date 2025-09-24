@@ -50,6 +50,7 @@ services:
     environment:
       - PMM_DEBUG=1
       - PMM_PROMSCRAPE_MAX_SCRAPE_SIZE=128MiB
+      - VMAGENT_remoteWrite_maxDiskUsagePerURL=52428800
     networks:
       - scrape-interval
 
