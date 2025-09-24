@@ -111,7 +111,7 @@ test.describe('-promscrape.maxScapeSize tests', async () => {
     });
   });
 
-  test('@PMM-T1664 Verify custom value for vm_agents -promscrape.maxScapeSize parameter local pmm-client', async ({}) => {
+  test('@PMM-T1665 Verify custom value for vm_agents -promscrape.maxScapeSize parameter local pmm-client', async ({}) => {
     await test.step('verify variables from binary for VMAGENT_promscrape_maxScrapeSize value', async () => {
       await cli.exec('sleep 10');
       await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:2443\' --server-insecure-tls 127.0.0.1')).assertSuccess();

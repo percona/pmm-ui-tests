@@ -59,25 +59,6 @@ test.describe('PMM Server Configuration impacts on client tests', async () => {
     }).toPass({ intervals: [2_000], timeout: 60_000 });
   });
 
-  // FIXME: skipped until solve conflict with changing pmm-agent config in generic spec
-  test.skip('@PMM-T1665 Verify custom value for vm_agents -promscrape.maxScapeSize parameter for local client', async () => {
-    const customScrapeSize = '128';
-    const serverContainer = 'PMM-T1665-local';
-    await (await cli.exec(`docker run -d --restart always -p 280:8080 -p 2443:8443 --name ${serverContainer}
-      -e PMM_DEBUG=1 -e PMM_PROMSCRAPE_MAX_SCRAPE_SIZE=${customScrapeSize}MiB ${DOCKER_IMAGE}`)).assertSuccess();
-    stopList.push(serverContainer);
-    removeList.push(serverContainer);
-    await waitForApiReady('127.0.0.1', 280);
-    await (await cli.exec('sudo pmm-admin config node-name=pmm-t1665 --force \'--server-url=https://admin:admin@0.0.0.0:2443\' --server-insecure-tls')).assertSuccess();
-
-    await expect(async () => {
-      const scrapeSizeLog = await cli.exec('ps aux | grep -v \'grep\' | grep \'vm_agent\' | tail -1');
-      await scrapeSizeLog.outContains(`promscrape.maxScrapeSize=${customScrapeSize}MiB`);
-    }).toPass({ intervals: [2_000], timeout: 10_000 });
-    // TODO: move out to aftereach
-    await (await cli.exec('sudo pmm-admin config --force \'--server-url=https://admin:admin@0.0.0.0:443\' --server-insecure-tls 127.0.0.1 || true')).logError();
-  });
-
   test('@PMM-T1861 PMM does not honor the environment variables for VictoriaMetrics', async () => {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const search_maxQueryLen = '1';
