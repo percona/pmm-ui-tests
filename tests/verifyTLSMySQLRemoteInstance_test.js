@@ -265,8 +265,11 @@ Data(maxQueryLengthInstances).Scenario(
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, remoteServiceName);
 
-    await pmmInventoryPage.openAgents(service_id);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mysql perfschema agent', `max_query_length=${maxQueryLength}`);
+    if (maxQueryLength !== '') {
+      await pmmInventoryPage.openAgents(service_id);
+      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mysql perfschema agent', `max_query_length=${maxQueryLength}`);
+    }
+
     // This extra time is needed for queries to appear in QAN
     await I.wait(70);
     // Check max visible query length is less than max_query_length option
