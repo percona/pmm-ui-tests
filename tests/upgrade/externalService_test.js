@@ -14,6 +14,7 @@ Scenario(
   async ({
     I, addInstanceAPI,
   }) => {
+    console.log(await I.verifyCommand('docker ps -a'));
     await addInstanceAPI.addExternalService(serviceName);
     await I.verifyCommand(
       `docker exec external_pmm pmm-admin add external --listen-port=42200 --group="redis" --custom-labels="testing=redis" --service-name=${serviceName}-2`,
