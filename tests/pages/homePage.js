@@ -219,4 +219,8 @@ module.exports = {
       versionMinor,
     };
   },
+
+  async getPMMServerVersion() {
+    console.log(`PMM Version is: ${await I.grabTextFrom(this.fields.updateWidget.base.currentVersion)}`);
+  },
 };

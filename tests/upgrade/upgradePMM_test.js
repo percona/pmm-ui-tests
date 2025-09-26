@@ -39,14 +39,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 Scenario(
-  'Add AMI Instance ID @ami-upgrade',
-  async ({ amiInstanceAPI }) => {
-    await amiInstanceAPI.verifyAmazonInstanceId(process.env.AMI_INSTANCE_ID);
-  },
-);
-
-Scenario(
-  'PMM-T289 - Verify Whats New link is presented on Update Widget @ovf-upgrade @ami-upgrade @pre-upgrade @pmm-upgrade',
+  'PMM-T289 - Verify Whats New link is presented on Update Widget @pmm-upgrade',
   async ({ I, homePage }) => {
     const locators = homePage.getLocators(versionMinor);
 
@@ -64,7 +57,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T288 - Verify user can see Update widget before upgrade [critical] @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  'PMM-T288 - Verify user can see Update widget before upgrade [critical] @pmm-upgrade',
   async ({ I, homePage }) => {
     await I.stopMockingUpgrade();
     I.amOnPage(homePage.url);
@@ -73,7 +66,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T3 - Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ovf-upgrade @ami-upgrade  ',
+  'PMM-T3 - Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade',
   async ({ I, homePage }) => {
     await I.stopMockingUpgrade();
     I.amOnPage(homePage.url);
@@ -83,7 +76,7 @@ Scenario(
   },
 ).retry(0);
 
-Scenario('PMM-T1647 - Verify pmm-server package doesn\'t exist @post-upgrade @pmm-upgrade', async ({ I }) => {
+Scenario('PMM-T1647 - Verify pmm-server package doesn\'t exist @pmm-upgrade', async ({ I }) => {
   console.log(process.env.JOB_NAME);
   console.log(process.env.JOB_NAME.includes('ami') || process.env.JOB_NAME.includes('ovf'));
   console.log(isOvFAmiJenkinsJob);
@@ -96,9 +89,17 @@ Scenario('PMM-T1647 - Verify pmm-server package doesn\'t exist @post-upgrade @pm
 });
 
 Scenario.skip(
-  'Verify user can see Update widget [critical] @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  'Verify user can see Update widget [critical] @pmm-upgrade',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
     await homePage.verifyPostUpdateWidgetIsPresent();
+  },
+);
+
+Scenario(
+  'PMM-T9999 - Verify pmm server is upgraded to correct version @pmm-upgrade',
+  async ({ I, homePage }) => {
+    I.amOnPage(homePage.url);
+    await homePage.getPMMServerVersion();
   },
 );
