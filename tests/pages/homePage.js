@@ -221,7 +221,7 @@ module.exports = {
   },
 
   async getPMMServerVersion() {
-    I.waitForVisible(this.fields.updateWidget.base.currentVersion);
+    I.waitForVisible(this.fields.updateWidget.latest.currentVersion);
     console.log(`PMM Version is: ${await I.grabTextFrom(this.fields.updateWidget.latest.currentVersion)}`);
   },
 };
