@@ -220,10 +220,14 @@ module.exports = {
     };
   },
 
-  async getPMMServerVersion() {
-    I.wait(30);
-    I.refreshPage();
+  async verifyPMMServerVersion(expectedVersion) {
     I.waitForElement(this.fields.updateWidget.latest.currentVersion);
-    console.log(`PMM Version is: ${await I.grabTextFrom(this.fields.updateWidget.latest.currentVersion)}`);
+    const actualVersion = await I.grabTextFrom(this.fields.updateWidget.latest.currentVersion);
+
+    I.assertContain(
+      actualVersion,
+      expectedVersion,
+      'After upgrade version of PMM Server is not correct.',
+    );
   },
 };
