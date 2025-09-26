@@ -33,9 +33,9 @@ const { versionMinor, patchVersionDiff, majorVersionDiff } = getVersions();
 Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(1);
 
 Before(async ({ I, settingsAPI }) => {
-  await settingsAPI.changeSettings({ updates: true });
+  // await settingsAPI.changeSettings({ updates: true });
   await I.Authorize();
-  I.setRequestTimeout(60000);
+  // I.setRequestTimeout(60000);
 });
 
 Scenario(
