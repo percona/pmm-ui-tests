@@ -99,7 +99,8 @@ Scenario.skip(
 Scenario(
   'PMM-T9999 - Verify pmm server is upgraded to correct version @pmm-upgrade',
   async ({ I, homePage }) => {
-    I.amOnPage(homePage.url);
+    I.wait(60);
+    I.amOnPage('/');
     await homePage.getPMMServerVersion();
   },
 );
