@@ -242,7 +242,7 @@ module.exports = {
     },
     external: {
       redis: {
-        host: isOvFAmiJenkinsJob ? process.env.JENKINS_IP_2 : 'external_pmm',
+        host: 'external_pmm',
         port: '42200',
         clusterName: 'redis_external_exporter',
         environment: 'redis_external',
