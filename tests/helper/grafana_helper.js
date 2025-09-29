@@ -30,6 +30,7 @@ class Grafana extends Helper {
   }
 
   async Authorize(username = 'admin', password = process.env.ADMIN_PASSWORD, baseUrl = '') {
+    console.log(`Password is: ${password}`);
     const { Playwright, REST } = this.helpers;
     const basicAuthEncoded = await this.getAuth(username, password);
 
