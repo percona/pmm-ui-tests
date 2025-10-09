@@ -1,16 +1,7 @@
-const { BaseDashboard } = require('../baseDashboard');
-
-class MongodbInstancesCompareDashboard extends BaseDashboard {
+class MongodbInstancesCompareDashboard {
   constructor() {
-    super();
     this.url = 'graph/d/mongodb-instance-compare/mongodb-instances-compare';
-    this.metrics = (serviceNames) => this.#getMetrics(serviceNames);
-    this.failingMetrics = (serviceNames) => this.#getFailingMetrics(serviceNames);
-  }
-
-  #getMetrics(serviceNames) {
-    const responseMetrics = [];
-    const metrics = [
+    this.metrics = [
       'Service Info',
       'MongoDB Uptime',
       'Current QPS',
@@ -29,33 +20,6 @@ class MongodbInstancesCompareDashboard extends BaseDashboard {
       'Queued Operations',
       'Used Memory',
     ];
-
-    for (const serviceName of serviceNames) {
-      for (const metricName of metrics) {
-        responseMetrics.push(`${serviceName} - ${metricName}`);
-      }
-    }
-
-    return responseMetrics;
-  }
-
-  #getFailingMetrics(serviceNames) {
-    const responseMetrics = [];
-    const metrics = [
-      'Scan Ratios',
-    ];
-
-    for (const serviceName of serviceNames) {
-      for (const metricName of metrics) {
-        responseMetrics.push(`${serviceName} - ${metricName}`);
-      }
-    }
-
-    return responseMetrics;
-  }
-
-  async verifyDashboardHaveData(serviceName) {
-    await super.verifyData(this.metrics([serviceName]), this.failingMetrics([serviceName]));
   }
 }
 

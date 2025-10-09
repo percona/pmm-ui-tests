@@ -4,10 +4,6 @@
     "browser": true
   },
   "root": true,
-  "parserOptions": {
-    "ecmaVersion": "latest",
-    "sourceType": "module"
-  },
   "rules": {
     "comma-dangle": [
       "error",
