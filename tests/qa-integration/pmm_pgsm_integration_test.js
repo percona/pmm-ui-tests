@@ -1,5 +1,6 @@
 const { I } = inject();
 const assert = require('assert');
+const { faker } = require('@faker-js/faker');
 const {
   SERVICE_TYPE,
   CLI_AGENT_STATUS,
@@ -679,5 +680,46 @@ Scenario(
       grafanaAPI.waitForMetric(metric, { type: 'service_name', value: pgsm_service_name });
       grafanaAPI.waitForMetric(metric, { type: 'service_name', value: pgsm_service_name_socket });
     });
+  },
+);
+
+Scenario(
+  'PMM-T2081 - Verify disable examples for PG @pgsm-pmm-integration',
+  async ({
+    I, remoteInstancesPage, queryAnalyticsPage, inventoryAPI, pmmInventoryPage,
+  }) => {
+    const service = 'postgresql';
+    const nodeName = 'pmm-server';
+    const pgServiceName = `pg_disable_examples_${faker.lorem.word()}`;
+
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.openAddRemotePage(service);
+    remoteInstancesPage.selectNodeForRemoteInstance(nodeName);
+    I.fillField(remoteInstancesPage.fields.serviceName, pgServiceName);
+    I.fillField(remoteInstancesPage.fields.hostName, container_name);
+    I.fillField(remoteInstancesPage.fields.userName, connection.user);
+    I.fillField(remoteInstancesPage.fields.password, connection.password);
+    await remoteInstancesPage.createRemoteInstance(pgServiceName, { disableExamples: true });
+
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, pgServiceName);
+
+    await pmmInventoryPage.openAgents(service_id);
+    await pmmInventoryPage.checkAgentOtherDetailsSection('Qan postgresql pgstatmonitor agent', 'query_examples_disabled=true');
+
+    I.wait(90);
+
+    const url = I.buildUrlWithParams(queryAnalyticsPage.url, {
+      service_name: pgServiceName,
+      from: 'now-2m',
+    });
+
+    I.amOnPage(url);
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.searchByValue('SELECT pg_sleep($1)');
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.queryDetails.verifyNoExamples();
   },
 );

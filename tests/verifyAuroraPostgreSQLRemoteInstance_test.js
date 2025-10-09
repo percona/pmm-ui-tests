@@ -32,7 +32,7 @@ Data(instances).Scenario(
     I.clearField(remoteInstancesPage.fields.customAutoDiscoveryfield);
     I.fillField(remoteInstancesPage.fields.customAutoDiscoveryfield, '1');
 
-    remoteInstancesPage.createRemoteInstance(serviceName);
+    await remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
   },
 ).retry(1);
