@@ -69,7 +69,10 @@ Scenario(
 
     await grafanaAPI.checkMetricExist(metricName);
     await grafanaAPI.checkMetricExist(metricName, { type: 'node_name', value: serviceName });
-    await grafanaAPI.checkMetricExist(metricName, { type: 'service_name', value: 'pmm-ui-tests-redis-external-remote-2' });
+    await grafanaAPI.checkMetricExist(metricName, {
+      type: 'service_name',
+      value: 'pmm-ui-tests-redis-external-remote-2',
+    });
 
     const response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
     const targets = response.data.data.activeTargets.find(
@@ -83,7 +86,15 @@ Scenario(
       targets.scrapeUrl === expectedScrapeUrl,
       `Active Target for external service Post Upgrade has wrong Address value, value found is ${targets.scrapeUrl} and value expected was ${expectedScrapeUrl}`,
     );
-    assert.ok(targets.health === 'up', `Active Target for external service Post Upgrade health value is not up! value found ${targets.health}`);
+
+    await I.asyncWaitFor(async () => {
+      const response = await I.sendGetRequest('prometheus/api/v1/targets', headers);
+      const targets = response.data.data.activeTargets.find(
+        (o) => o.labels.external_group === 'redis-remote',
+      );
+
+      return targets.health === 'up';
+    }, 60, 'Active Target for external service Post Upgrade health value is not up!');
   },
 ).retry(2);
 

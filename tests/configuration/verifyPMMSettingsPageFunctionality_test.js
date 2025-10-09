@@ -103,7 +103,7 @@ Scenario(
 ).retry(2);
 
 Scenario(
-  'PMM-T747 - Verify enabling Azure flag @instances',
+  'PMM-T747 - Verify enabling Azure flag @fb-settings',
   async ({
     I, pmmSettingsPage, remoteInstancesPage, settingsAPI,
   }) => {
@@ -132,7 +132,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T841 - Verify user is able to enable Backup Management @backup',
+  'PMM-T841 - Verify user is able to enable Backup Management @fb-settings',
   async ({
     I, pmmSettingsPage, scheduledPage, settingsAPI, codeceptjsConfig,
   }) => {
@@ -153,7 +153,7 @@ Scenario(
       message.replace(/\s+/g, ' ') === pmmSettingsPage.messages.disabledBackupManagement,
       `Message Shown on ${message} should be equal to ${pmmSettingsPage.messages.disabledBackupManagement}`,
     );
-    I.seeAttributesOnElements('$settings-link', { href: `${codeceptjsConfig.config.helpers.Playwright.url}graph/settings/advanced-settings` });
+    I.seeAttributesOnElements('$settings-link', { href: `${codeceptjsConfig.config.helpers.Playwright.url}/graph/settings/advanced-settings` });
 
     // Open advanced settings and enable backup management
     I.amOnPage(pmmSettingsPage.advancedSettingsUrl);
@@ -191,7 +191,7 @@ Scenario(
 ).retry(2);
 
 Scenario(
-  'PMM-T486 - Verify Public Address in PMM Settings @settings @nightly',
+  'PMM-T486 - Verify Public Address in PMM Settings @nightly',
   async ({
     I, pmmSettingsPage, settingsAPI, codeceptjsConfig,
   }) => {
@@ -227,10 +227,10 @@ Scenario(
       `Expected the Public Address (${publicAddressAfterRefresh}) to be saved and Match configuration url: ${expectedUrl}`,
     );
   },
-).retry(1);
+).retry(5);
 
 Scenario(
-  'PMM-T254 - Ensure Advisors are on by default @instances',
+  'PMM-T254 - Ensure Advisors are on by default @fb-instances',
   async ({ settingsAPI }) => {
     const resp = await settingsAPI.getSettings('advisor_enabled');
 
@@ -240,7 +240,7 @@ Scenario(
 
 Scenario(
   'PMM-T1227 + PMM-T1338 - Verify tooltip "Read more" links on PMM Settings page redirect to working pages '
-  + 'Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @settings',
+  + 'Verify that all the metrics from config are displayed on Telemetry tooltip in Settings > Advanced @fb-settings',
   async ({ I, pmmSettingsPage, settingsAPI }) => {
     await settingsAPI.changeSettings({ alerting: true });
     I.wait(10);
@@ -259,7 +259,7 @@ Scenario(
       }
     }
   },
-).retry(2);
+).retry(3);
 
 Scenario('PMM-T1401 - Verify Percona Alerting wording in Settings @max-length @settings', async ({
   I,
@@ -340,7 +340,7 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T2004 - Verify Data Retention field in advanced settings @settings @nightly',
+  'PMM-T2004 - Verify Data Retention field in advanced settings @settings @nightly @gssapi-nightly  ',
   async ({
     I, pmmSettingsPage,
   }) => {

@@ -11,6 +11,7 @@ const PostgresqlInstanceOverviewDashboard = require('../dashboards/pages/postgre
 const PostgresqlInstanceSummaryDashboard = require('../dashboards/pages/postgresqlInstanceSummaryDashboard');
 const PostgresqlCheckpointDashboard = require('../dashboards/pages/postgresqlCheckpointDashboard');
 const PostgresqlReplicationOverviewDashboard = require('../dashboards/pages/postgresqlReplicationOverviewDashboard');
+const PostgresqlPatroniDashboard = require('../dashboards/pages/postgresqlPatroniDashboard');
 const { locateOption } = require('../helper/locatorHelper');
 const MongodbInstancesCompareDashboard = require('../dashboards/pages/mongodb/mongodbInstancesCompareDashboard');
 
@@ -310,6 +311,7 @@ module.exports = {
   postgresqlInstanceSummaryDashboard: PostgresqlInstanceSummaryDashboard,
   postgresqlCheckpointDashboard: PostgresqlCheckpointDashboard,
   postgresqlReplicationOverviewDashboard: PostgresqlReplicationOverviewDashboard,
+  postgresqlPatroniDashboard: PostgresqlPatroniDashboard,
   postgresqlInstanceCompareDashboard: {
     url: 'graph/d/postgresql-instance-compare/postgresql-instances-compare?orgId=1&from=now-5m&to=now',
     cleanUrl: 'graph/d/postgresql-instance-compare/postgresql-instances-compare',
@@ -950,7 +952,6 @@ module.exports = {
       'Oplog Buffer Capacity',
       'Oplog Operations',
       'Oplog GB/Hour',
-      'Oplog Window',
     ],
   },
 
@@ -1246,7 +1247,7 @@ module.exports = {
       let retries = 0;
       let actualValue = 0;
 
-      const valueLocator = await page.locator(legendLocator);
+      const valueLocator = await page.locator(legendLocator).first();
 
       while (actualValue < expectedValue) {
         // eslint-disable-next-line no-plusplus

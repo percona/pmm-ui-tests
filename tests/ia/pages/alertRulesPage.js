@@ -33,8 +33,8 @@ module.exports = {
     unathorizedMessage: '$unauthorized',
   },
   buttons: {
-    newAlertRule: '//a[contains(.,\'New alert rule\')]',
-    newAlertRuleFromTemplate: '//a[contains(.,\'New alert rule from template\')]',
+    newAlertRule: locate('a').withText('New alert rule'),
+    newAlertRuleFromTemplate: locate('a').withText('New alert rule from template'),
     saveAndExit: locate('//button[.="Save rule and exit"]'),
     editAlertRule: '//a[contains(@href, "/edit")]',
     editRuleOnView: '//span[text()="Edit"]',
@@ -127,6 +127,11 @@ module.exports = {
   openAlertRulesTab() {
     I.amOnPage(this.url);
     I.waitForVisible(this.buttons.newAlertRule, 30);
+  },
+
+  openAlertRuleFromTemplatePage() {
+    I.amOnPage(this.newRuleFromTemplateUrl);
+    I.waitForVisible(this.fields.templatesLoader, 30);
   },
 
   searchAndSelectResult(dropdownLabel, option) {

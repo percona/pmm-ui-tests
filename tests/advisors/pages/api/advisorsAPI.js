@@ -21,6 +21,32 @@ module.exports = {
     return resp.data.checks.map((check) => check.name);
   },
 
+  async getAdvisors() {
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+
+    const resp = await I.sendGetRequest('v1/advisors', headers);
+
+    assert.ok(
+      resp.status === 200,
+      `Failed to get Advisors. Response message is "${resp.data.message}"`,
+    );
+
+    return resp.data.advisors;
+  },
+
+  async getAdvisorCategory(expectedName) {
+    const resp = await this.getAdvisors();
+
+    return resp.find((advisor) => advisor.checks.some((check) => check.name === expectedName)).category;
+  },
+
+  async getAdvisorDetails(expectedName) {
+    const resp = await this.getAdvisors();
+    const advisors = resp.map((item) => item.checks).flat();
+
+    return advisors.find((advisor) => advisor.name === expectedName);
+  },
+
   async getSecurityChecksResults() {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 

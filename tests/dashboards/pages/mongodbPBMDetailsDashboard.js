@@ -2,16 +2,16 @@ class MongodbPBMDetailsDashboard {
   constructor() {
     this.url = 'graph/d/mongodb-pbm-details/mongodb-pbm-details';
     this.elements = {
-      backUpConfiguredValue: locate('//section[contains(@data-testid, "Backup Configured")]//span'),
-      pitrEnabledValue: locate('//section[contains(@data-testid, "PITR Enabled")]//span'),
+      backUpConfiguredValue: locate('//section[contains(@data-testid, "Backup Configured")]//div[@data-testid="data-testid panel content"]//span'),
+      pitrEnabledValue: locate('//section[contains(@data-testid, "PITR Enabled")]//div[@data-testid="data-testid panel content"]//span'),
       refresh: locate('//button[contains(@data-testid, "RefreshPicker run button")]'),
     };
     this.metrics = [
       'Backup Configured',
-      'Agent Status',
+      'Backup Agent Status',
       'PITR Enabled',
-      'Size Bytes',
-      'Duration',
+      'Backup Size',
+      'Backup Duration',
       'Backup history',
       'Last Successful Backup',
     ];
@@ -34,10 +34,10 @@ class MongodbPBMDetailsDashboard {
     I.waitForVisible(this.elements.pitrEnabledValue, 15);
     await I.asyncWaitFor(async () => {
       I.click(this.elements.refresh);
-      const value = await I.grabTextFrom(this.elements.pitrEnabledValue);
+      const actualValue = await I.grabTextFrom(this.elements.pitrEnabledValue);
 
-      return value === expectedValue;
-    }, 60);
+      return actualValue === expectedValue;
+    }, 60, 'Pitr backup value is not correct');
   }
 }
 

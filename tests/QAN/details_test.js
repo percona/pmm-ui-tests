@@ -1,3 +1,5 @@
+const { isJenkinsGssapiJob } = require('../helper/constants');
+
 Feature('QAN details');
 
 const { adminPage } = inject();
@@ -42,40 +44,54 @@ Scenario(
   },
 );
 
-const databaseEnvironments = [
-  // TODO: Unskip Percona Server when https://perconadev.atlassian.net/browse/PMM-13978 is finished.
-  // { dbType: 'PS', serviceName: 'ps_', queryTypes: ['SELECT', 'INSERT', 'DELETE', 'CREATE'] },
-  { dbType: 'PDPGSQL', serviceName: 'pdpgsql_', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', 'DELETE FROM', 'CREATE TABLE classes '] },
-  { dbType: 'PSMDB', serviceName: 'rs101', queryTypes: ['db.students', 'db.runCommand', 'db.test'] },
-];
+let databaseEnvironments;
+
+if (isJenkinsGssapiJob) {
+  databaseEnvironments = [
+    { serviceName: 'rs101_gssapi', queryTypes: ['db.students', 'db.runCommand', 'db.test'], cluster: 'replicaset' },
+  ];
+} else {
+  databaseEnvironments = [
+    { serviceName: 'ps_', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', 'DELETE FROM students', 'CREATE TABLE classes'], cluster: 'ps-single-dev-cluster' },
+    { serviceName: 'pdpgsql_pgsm_pmm_', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', 'DELETE FROM', 'CREATE TABLE classes '], cluster: '' },
+    { serviceName: 'rs101', queryTypes: ['db.students', 'db.runCommand', 'db.test'], cluster: 'replicaset' },
+  ];
+}
 
 Data(databaseEnvironments).Scenario(
-  'PMM-T13 - Check Example, Explain, Plan and Table tabs for supported DBs @qan',
+  'PMM-T13 - Check Example, Explain, Plan and Table tabs for supported DBs @qan @gssapi-nightly',
   async ({
     I, queryAnalyticsPage, current, inventoryAPI,
   }) => {
-    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName(current.serviceName);
+    const { service_name } = await inventoryAPI.getServiceDetailsByPartialDetails(
+      { cluster: current.cluster, service_name: current.serviceName },
+    );
 
     for (const query of current.queryTypes) {
       const parameters = { service_name, query };
 
-      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-3h', search: query, service_name }));
+      I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-6h', search: query, service_name }));
       queryAnalyticsPage.waitForLoaded();
       await queryAnalyticsPage.data.verifyQueriesDisplayed(parameters);
       queryAnalyticsPage.data.selectRow(1);
       queryAnalyticsPage.waitForLoaded();
-      await queryAnalyticsPage.queryDetails.verifyExamples(parameters);
+      if (current.serviceName !== 'pgsql_pgss_pmm_') {
+        // pg stat statement does not support examples.
+        await queryAnalyticsPage.queryDetails.verifyExamples(parameters);
+      }
 
-      if (current.dbType !== 'PDPGSQL') {
+      if (!current.serviceName.includes('pgsql_') && !query.includes('CREATE')) {
+        // Explain is not for PostgreSQL and also not available for CREATE operations
         await queryAnalyticsPage.queryDetails.verifyExplain(parameters);
       }
 
-      if (current.dbType === 'PDPGSQL' && !query.includes('CREATE')) {
+      if (current.serviceName.includes('pgsql_') && !query.includes('CREATE')) {
+        // Tables are not available for PostgreSQL and also not available for CREATE operations
         await queryAnalyticsPage.queryDetails.verifyTables(parameters);
+      }
 
-        if (query.includes('SELECT')) {
-          await queryAnalyticsPage.queryDetails.verifyPlan(parameters);
-        }
+      if (current.serviceName === 'pdpgsql_pgsm_pmm_' && query.includes('SELECT')) {
+        await queryAnalyticsPage.queryDetails.verifyPlan(parameters);
       }
     }
   },
@@ -94,6 +110,18 @@ Scenario(
     queryAnalyticsPage.queryDetails.checkTab('Explain');
     queryAnalyticsPage.filters.selectContainFilter('pxc-dev');
     queryAnalyticsPage.data.searchByValue('');
+    queryAnalyticsPage.filters.selectFilterInGroup('mongodb', 'Service Type');
+    queryAnalyticsPage.data.searchByValue('UPDATE');
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.queryDetails.checkTab('Explain');
+  },
+);
+
+Scenario(
+  'PMM-T1790 - Verify that there is any no error on Explains after switching between queries from different DB servers @gssapi-nightly',
+  async ({
+    I, queryAnalyticsPage,
+  }) => {
     queryAnalyticsPage.filters.selectFilterInGroup('mongodb', 'Service Type');
     queryAnalyticsPage.data.searchByValue('UPDATE');
     queryAnalyticsPage.data.selectRow(1);

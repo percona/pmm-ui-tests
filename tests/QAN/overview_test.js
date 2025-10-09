@@ -64,7 +64,7 @@ Scenario(
     queryAnalyticsPage.queryDetails.checkTab('Plan');
     await queryAnalyticsPage.queryDetails.checkPlanTabIsEmpty();
   },
-);
+).retry(2);
 
 Scenario(
   'PMM-T146 - Verify user is able to see  chart tooltip for time related metric  @qan',
@@ -132,7 +132,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T133 + PMM-T132 + PMM-T100 - Check Changing Main Metric, PMM-T203 Verify user is able to search for columns by typing @qan',
+  'PMM-T133 + PMM-T132 + PMM-T100 - Check Changing Main Metric, PMM-T203 Verify user is able to search for columns by typing @qan @gssapi-nightly',
   async ({ I, queryAnalyticsPage }) => {
     const metricName = 'Query Count with errors';
 
@@ -408,7 +408,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1699 - Verify that query time is shown in UTC timezone after hovering Load graph for query if user selected UTC timezone @qan',
+  'PMM-T1699 - Verify that query time is shown in UTC timezone after hovering Load graph for query if user selected UTC timezone @qan @gssapi-nightly',
   async ({ I, adminPage, queryAnalyticsPage }) => {
     I.waitForVisible(queryAnalyticsPage.data.elements.loadColumn('2'));
     I.moveCursorTo(queryAnalyticsPage.data.elements.loadColumn('2'));

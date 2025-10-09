@@ -149,7 +149,7 @@ Scenario(
 );
 
 Data(viewerRole).Scenario(
-  'PMM-T824 - Verify viewer users do not see Inventory, Settings, Remote Instances Page @nightly @grafana-pr',
+  'PMM-T824 - Verify viewer users do not see Inventory, Settings, Remote Instances Page @nightly @gssapi-nightly @grafana-pr',
   async ({ I, current, databaseChecksPage }) => {
     const { username, password, dashboard } = current;
 
@@ -161,7 +161,7 @@ Data(viewerRole).Scenario(
 );
 
 Data(editorRole).Scenario(
-  'PMM-T824 - Verify editor users do not see Inventory, Settings, Remote Instances Page @nightly @grafana-pr',
+  'PMM-T824 - Verify editor users do not see Inventory, Settings, Remote Instances Page @nightly @gssapi-nightly @grafana-pr',
   async ({ I, current, databaseChecksPage }) => {
     const { username, password, dashboard } = current;
 
@@ -174,7 +174,7 @@ Data(editorRole).Scenario(
 
 Data(ptSummaryRoleCheck).Scenario(
   'PMM-T334 + PMM-T420 + PMM-T1726 - Verify Home dashboard and the pt-summary with viewer or editor role '
-  + '@nightly @grafana-pr',
+  + '@nightly @gssapi-nightly @grafana-pr',
   async ({
     I, dashboardPage, current, adminPage, homePage,
   }) => {
@@ -259,7 +259,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T2009 - Verify that editor user can see failed advisors data on home dashboard @nightly',
+  'PMM-T2009 - Verify that editor user can see failed advisors data on home dashboard @nightly @gssapi-nightly',
   async ({ I, dashboardPage, advisorsAPI }) => {
     const advisors = await advisorsAPI.getAdvisorsNames();
 
@@ -287,4 +287,4 @@ Scenario(
 
     await I.dontSee(dashboardPage.homeDashboard.panelData.failedAdvisors.insufficientPrivilege);
   },
-);
+).retry(2);

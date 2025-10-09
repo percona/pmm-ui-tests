@@ -5,7 +5,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T506 Verify metrics on VictoriaMetrics dashboard @nightly @dashboards',
+  'PMM-T506 - Verify metrics on VictoriaMetrics dashboard @nightly @dashboards @gssapi-nightly',
   async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.victoriaMetricsDashboard.url);
     dashboardPage.waitForDashboardOpened();
@@ -16,7 +16,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T507 Verify metrics on VM Agents Overview Dashboard @nightly @dashboards',
+  'PMM-T507 Verify metrics on VM Agents Overview Dashboard @nightly @dashboards @gssapi-nightly',
   async ({ I, dashboardPage }) => {
     I.amOnPage(dashboardPage.victoriaMetricsAgentsOverviewDashboard.url);
     dashboardPage.waitForDashboardOpened();

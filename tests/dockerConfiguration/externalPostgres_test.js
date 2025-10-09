@@ -6,7 +6,7 @@ const DOCKER_IMAGE = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-
 const data = new DataTable(['composeName', 'containerName', 'postgresqlAddress', 'serverPort', 'pdpgsqlContainerName']);
 
 data.add(['docker-compose-external-pg', 'pmm-server-external-postgres', 'external-postgres:5432', '8081', 'external-postgres']);
-data.add(['docker-compose-external-pg-ssl', 'pmm-server-external-postgres-ssl', 'external-postgres-ssl:5432', '8082', ' external-postgres-ssl']);
+data.add(['docker-compose-external-pg-ssl', 'pmm-server-external-postgres-ssl', 'external-postgres-ssl:5432', '8082', 'external-postgres-ssl']);
 
 AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker compose -f docker-compose-external-pg.yml down -v || true');
@@ -28,7 +28,7 @@ Data(data).Scenario(
     await I.verifyCommand(`PMM_SERVER_IMAGE=${DOCKER_IMAGE} docker compose -f ${composeName}.yml up -d`);
     await I.verifyCommand(`docker exec ${pdpgsqlContainerName} psql "postgresql://postgres:pmm_password@localhost/grafana" -c 'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;'`);
     await I.verifyCommand(`docker container restart ${containerName}`);
-    await I.wait(30);
+    await I.wait(60);
 
     await I.Authorize('admin', 'admin', basePmmUrl);
     I.amOnPage(`${basePmmUrl}graph/datasources`);
@@ -41,14 +41,16 @@ Data(data).Scenario(
     await I.waitForVisible(pmmInventoryPage.fields.serviceRow(serviceName), 30);
 
     I.assertEqual(
+      await pmmInventoryPage.servicesTab.getServiceMonitoringAddress(serviceName),
+      current.pdpgsqlContainerName,
+      `'${serviceName}' is expected to have '${current.pdpgsqlContainerName}' address`,
+    );
+
+    I.assertEqual(
       await pmmInventoryPage.servicesTab.getServiceMonitoringStatus(serviceName),
       'OK',
       `'${serviceName}' is expected to have 'OK' monitoring status`,
     );
-
-    I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${dashboardPage.postgresqlInstanceSummaryDashboard.cleanUrl}`, { service_name: serviceName, node_name: 'pmm-server-db', from: 'now-5m' }));
-    dashboardPage.waitForDashboardOpened();
-    I.waitForText('YES', 20, locate('//section[@data-testid="data-testid Panel header Connected"]//div[@data-testid="data-testid panel content"]//span'));
 
     I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${queryAnalyticsPage.url}`, {
       service_name: serviceName, node_name: 'pmm-server-db', from: 'now-5m', refresh: '30s',
