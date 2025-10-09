@@ -15,8 +15,6 @@ const PostgresqlPatroniDashboard = require('../dashboards/pages/postgresqlPatron
 const { locateOption } = require('../helper/locatorHelper');
 const MongodbInstancesCompareDashboard = require('../dashboards/pages/mongodb/mongodbInstancesCompareDashboard');
 
-const formatElementId = (text) => text.toLowerCase().replace(/ /g, '_');
-
 module.exports = {
   // insert your locators and methods here
   // setting locators
