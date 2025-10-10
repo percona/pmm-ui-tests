@@ -11,7 +11,7 @@ const remoteUpgradeInstances = remoteInstancesFixture.getUpgradeRemoteServicesNa
 const redisServiceName = 'pmm-ui-tests-redis-external-remote';
 
 Scenario(
-  'Adding Redis as external Service before Upgrade @pre-external-upgrade',
+  'Adding Redis as external Service before Upgrade @pre-external-upgrade @pre-upgrade',
   async ({
     I, addInstanceAPI,
   }) => {
@@ -23,7 +23,7 @@ Scenario(
 );
 
 Data(remoteUpgradeInstances).Scenario(
-  'PMM-T2074 - Verify user - can create Remote Instances before upgrade @pre-external-upgrade',
+  'PMM-T2074 - Verify user - can create Remote Instances before upgrade @pre-external-upgrade @pre-upgrade',
   async ({ addInstanceAPI, current, remoteInstancesFixture }) => {
     const remoteInstance = remoteInstancesFixture.getUpgradeRemoteServiceByName(current);
 
@@ -36,7 +36,7 @@ Data(remoteUpgradeInstances).Scenario(
 );
 
 Scenario(
-  'Verify Redis as external Service Works After Upgrade @post-external-upgrade @post-client-upgrade',
+  'Verify Redis as external Service Works After Upgrade @post-external-upgrade @post-client-upgrade @post-upgrade',
   async ({
     I, grafanaAPI, remoteInstancesHelper,
   }) => {
@@ -75,7 +75,7 @@ Scenario(
 ).retry(2);
 
 Data(remoteUpgradeInstances).Scenario(
-  'PMM-T2073 - Verify Agents are RUNNING after Upgrade (API) [critical] @post-external-upgrade @post-client-upgrade',
+  'PMM-T2073 - Verify Agents are RUNNING after Upgrade (API) [critical] @post-external-upgrade @post-client-upgrade @post-upgrade',
   async ({ inventoryAPI, current }) => {
     const remoteInstance = remoteInstancesFixture.getUpgradeRemoteServiceByName(current);
 
@@ -84,7 +84,7 @@ Data(remoteUpgradeInstances).Scenario(
 );
 
 Data(remoteUpgradeInstances).Scenario(
-  'PMM-T2072 - Verify Agents are RUNNING after Upgrade (UI) [critical] @post-external-upgrade @post-client-upgrade',
+  'PMM-T2072 - Verify Agents are RUNNING after Upgrade (UI) [critical] @post-external-upgrade @post-client-upgrade @post-upgrade',
   async ({ I, pmmInventoryPage, current }) => {
     const remoteInstance = remoteInstancesFixture.getUpgradeRemoteServiceByName(current);
 
@@ -95,7 +95,7 @@ Data(remoteUpgradeInstances).Scenario(
 );
 
 Data(remoteUpgradeInstances).Scenario(
-  'PMM-T2071 - Verify Agents are Running and Metrics are being collected Pre and Post Upgrade (API) [critical] @pre-external-upgrade @post-external-upgrade @post-client-upgrade',
+  'PMM-T2071 - Verify Agents are Running and Metrics are being collected Pre and Post Upgrade (API) [critical] @pre-external-upgrade @post-external-upgrade @post-client-upgrade @pre-upgrade @post-upgrade',
   async ({ I, grafanaAPI, current }) => {
     const remoteInstance = remoteInstancesFixture.getUpgradeRemoteServiceByName(current);
 
@@ -104,7 +104,7 @@ Data(remoteUpgradeInstances).Scenario(
 );
 
 Data(remoteUpgradeInstances).Scenario(
-  'PMM-T2070 - Verify QAN has specific filters for Remote Instances after Upgrade (UI) @post-external-upgrade @post-client-upgrade',
+  'PMM-T2070 - Verify QAN has specific filters for Remote Instances after Upgrade (UI) @post-external-upgrade @post-client-upgrade @post-upgrade',
   async ({ I, queryAnalyticsPage, current }) => {
     const remoteInstance = remoteInstancesFixture.getUpgradeRemoteServiceByName(current);
 

@@ -13,7 +13,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T577 - Verify user is able to see IA alerts before upgrade @pre-advisors-alerting-upgrade',
+  'PMM-T577 - Verify user is able to see IA alerts before upgrade @pre-advisors-alerting-upgrade @pre-upgrade',
   async ({
     settingsAPI, rulesAPI, alertsAPI,
   }) => {
@@ -28,7 +28,7 @@ Scenario(
 );
 
 Scenario(
-  'Change advisors intervals before the upgrade @pre-advisors-alerting-upgrade',
+  'Change advisors intervals before the upgrade @pre-advisors-alerting-upgrade @pre-upgrade',
   async ({
     I,
     advisorsPage,
@@ -43,7 +43,7 @@ Scenario(
   },
 );
 
-Scenario('Disable advisor before upgrade @pre-advisors-alerting-upgrade', async ({
+Scenario('Disable advisor before upgrade @pre-advisors-alerting-upgrade @pre-upgrade', async ({
   I,
   advisorsPage,
 }) => {
@@ -58,7 +58,7 @@ Scenario('Disable advisor before upgrade @pre-advisors-alerting-upgrade', async 
 });
 
 Scenario(
-  'Verify advisors intervals remain the same after upgrade @post-advisors-alerting-upgrade',
+  'Verify advisors intervals remain the same after upgrade @post-advisors-alerting-upgrade @post-upgrade',
   async ({
     I,
     advisorsPage,
@@ -73,7 +73,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify disabled advisor remain disabled after upgrade @post-advisors-alerting-upgrade',
+  'Verify disabled advisor remain disabled after upgrade @post-advisors-alerting-upgrade @post-upgrade',
   async ({
     I,
     advisorsPage,
@@ -90,7 +90,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-advisors-alerting-upgrade',
+  'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-advisors-alerting-upgrade @pre-upgrade',
   async ({
     settingsAPI, rulesAPI, alertsAPI,
   }) => {
@@ -107,7 +107,7 @@ const standardInterval = '12';
 const frequentInterval = '2';
 
 Scenario(
-  'Set settings for intervals before the upgrade @pre-advisors-alerting-upgrade',
+  'Set settings for intervals before the upgrade @pre-advisors-alerting-upgrade @pre-upgrade',
   async ({
     I,
     pmmSettingsPage,
@@ -125,7 +125,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify settings for intervals remain the same after upgrade @post-advisors-alerting-upgrade',
+  'Verify settings for intervals remain the same after upgrade @post-advisors-alerting-upgrade @post-upgrade',
   async ({
     I,
     pmmSettingsPage,
@@ -140,7 +140,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T577 Verify user can see IA alerts after upgrade @post-advisors-alerting-upgrade',
+  'PMM-T577 Verify user can see IA alerts after upgrade @post-advisors-alerting-upgrade @post-upgrade',
   async ({
     I, alertsPage, alertsAPI,
   }) => {
@@ -157,7 +157,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T268 - Verify Failed check singlestats after upgrade from old versions @post-advisors-alerting-upgrade',
+  'PMM-T268 - Verify Failed check singlestats after upgrade from old versions @post-advisors-alerting-upgrade @post-upgrade',
   async ({
     I, homePage,
   }) => {

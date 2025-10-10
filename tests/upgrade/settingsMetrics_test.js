@@ -13,7 +13,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'Verify user is able to set custom Settings like Data_retention, Resolution @pre-settings-metrics-upgrade @pmm-upgrade',
+  'Verify user is able to set custom Settings like Data_retention, Resolution @pre-settings-metrics-upgrade @pmm-upgrade @pre-upgrade',
   async ({ settingsAPI, I }) => {
     const body = {
       telemetry_enabled: true,
@@ -69,7 +69,7 @@ Data(clientDbServices)
   );
 
 Scenario(
-  'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-client-upgrade @post-settings-metrics-upgrade',
+  'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-client-upgrade @post-settings-metrics-upgrade @post-upgrade',
   async ({ I, grafanaAPI, inventoryAPI }) => {
     const metricName = 'mysql_performance_schema_memory_summary_current_bytes';
     const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName('ps_pmm');
@@ -88,7 +88,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @post-client-upgrade @post-settings-metrics-upgrade',
+  'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @post-client-upgrade @post-settings-metrics-upgrade @post-upgrade',
   async ({ grafanaAPI, inventoryAPI, I }) => {
     const metricName = 'pg_stat_user_tables_analyze_count';
     const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName('pgsql_pgs');

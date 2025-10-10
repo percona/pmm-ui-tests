@@ -16,7 +16,7 @@ Before(async ({ I }) => {
 });
 
 Data(sslinstances).Scenario(
-  'PMM-T948 + PMM-T947 - Verify Adding Postgresql, MySQL, MongoDB SSL services remotely via API before upgrade @pre-ssl-upgrade',
+  'PMM-T948 + PMM-T947 - Verify Adding Postgresql, MySQL, MongoDB SSL services remotely via API before upgrade @pre-ssl-upgrade @pre-upgrade',
   async ({
     I, remoteInstancesPage, current, addInstanceAPI, inventoryAPI, credentials,
   }) => {
@@ -103,7 +103,7 @@ Data(sslinstances).Scenario(
 );
 
 Data(sslinstances).Scenario(
-  'Verify metrics from SSL instances on PMM-Server @post-ssl-upgrade',
+  'Verify metrics from SSL instances on PMM-Server @post-ssl-upgrade @post-upgrade',
   async ({
     I, current, grafanaAPI, inventoryAPI,
   }) => {
@@ -125,7 +125,7 @@ Data(sslinstances).Scenario(
 );
 
 Data(sslinstances).Scenario(
-  'Verify dashboard for SSL Instances and services after upgrade @post-ssl-upgrade',
+  'Verify dashboard for SSL Instances and services after upgrade @post-ssl-upgrade @post-upgrade',
   async ({
     I, dashboardPage, adminPage, current, inventoryAPI,
   }) => {
@@ -151,7 +151,7 @@ Data(sslinstances).Scenario(
 ).retry(1);
 
 Data(sslinstances).Scenario(
-  'Verify QAN after upgrade for SSL Instances added @post-ssl-upgrade',
+  'Verify QAN after upgrade for SSL Instances added @post-ssl-upgrade @post-upgrade',
   async ({
     I, queryAnalyticsPage, current, adminPage, inventoryAPI,
   }) => {

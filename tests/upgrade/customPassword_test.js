@@ -11,7 +11,7 @@ clientDbServices.add([SERVICE_TYPE.POSTGRESQL, 'pgsql_pgss_pmm', 'pg_stat_databa
 clientDbServices.add([SERVICE_TYPE.MONGODB, 'rs101', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongodb']);
 
 Data(clientDbServices).Scenario(
-  'Adding custom agent password, custom label before upgrade at service Level @pre-custom-password-upgrade',
+  'Adding custom agent password, custom label before upgrade at service Level @pre-custom-password-upgrade @pre-upgrade',
   async ({
     I, inventoryAPI, current, credentials,
   }) => {
@@ -47,7 +47,7 @@ Data(clientDbServices).Scenario(
 );
 
 Data(clientDbServices).Scenario(
-  'Verify if Agents added with custom password and custom label work as expected Post Upgrade @post-client-upgrade @post-custom-password-upgrade',
+  'Verify if Agents added with custom password and custom label work as expected Post Upgrade @post-client-upgrade @post-custom-password-upgrade @post-upgrade',
   async ({
     current, inventoryAPI, grafanaAPI,
   }) => {
@@ -65,7 +65,7 @@ Data(clientDbServices).Scenario(
 );
 
 Scenario(
-  'PMM-T1189 - verify user is able to change password after upgrade @post-custom-password-upgrade',
+  'PMM-T1189 - verify user is able to change password after upgrade @post-custom-password-upgrade @post-upgrade',
   async ({ I, homePage, profileAPI }) => {
     const newPass = process.env.NEW_ADMIN_PASSWORD || 'admin1';
 
