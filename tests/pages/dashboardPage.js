@@ -15,6 +15,7 @@ const PostgresqlPatroniDashboard = require('./dashboards/pgsql/postgresqlPatroni
 const MongodbShardedClusterSummary = require('../pages/dashboards/mongodb/mongodbShardedClusterSummary');
 const MySQLMyRocksDetailsDashboard = require('../pages/dashboards/mysql/mySQLMyRocksDetailsDashboard');
 const { locateOption } = require('../helper/locatorHelper');
+const MongodbInstancesCompareDashboard = require('../dashboards/pages/mongodb/mongodbInstancesCompareDashboard');
 
 module.exports = {
   // insert your locators and methods here
@@ -404,6 +405,7 @@ module.exports = {
       'MySQL Table Definition Cache',
     ],
   },
+  mongodbInstancesCompareDashboard: MongodbInstancesCompareDashboard,
   mysqlUserDetailsDashboard: {
     url: 'graph/d/mysql-user/mysql-user-details?orgId=1&refresh=1m&from=now-5m&to=now',
     clearUrl: 'graph/d/mysql-user/mysql-user-details',

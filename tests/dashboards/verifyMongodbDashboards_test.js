@@ -105,3 +105,29 @@ Data(fcvPanelTestData()).Scenario(
     );
   },
 );
+
+Scenario('PMM-T2003 - Verify that MongoDB Compare dashboard has Cluster, Replication, Node filters @nightly', async ({
+  I, dashboardPage, inventoryAPI,
+}) => {
+  const newClusterName = 'replicaset';
+  const newEnvironmentName = 'psmdb-dev';
+  const mongoServices = (await inventoryAPI.getServiceListDetailsByPartialDetails({ environment: newEnvironmentName }))
+    .map((service) => service.service_name);
+
+  I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbInstancesCompareDashboard.url, { from: 'now-5m' }));
+
+  dashboardPage.mongodbInstancesCompareDashboard.selectEnvironment(newEnvironmentName);
+  dashboardPage.mongodbInstancesCompareDashboard.verifyServicesInfoPanelDisplayed(mongoServices);
+  dashboardPage.mongodbInstancesCompareDashboard.unselectEnvironment();
+
+  dashboardPage.mongodbInstancesCompareDashboard.selectCluster(newClusterName);
+  dashboardPage.mongodbInstancesCompareDashboard.verifyServicesInfoPanelDisplayed(mongoServices);
+  dashboardPage.mongodbInstancesCompareDashboard.unselectCluster();
+
+  dashboardPage.mongodbInstancesCompareDashboard.selectReplicationSet('rs');
+  I.waitInUrl('&var-replication_set=rs', 2);
+  dashboardPage.mongodbInstancesCompareDashboard.unselectReplicationSet();
+
+  dashboardPage.mongodbInstancesCompareDashboard.selectNode([mongoServices[0]]);
+  dashboardPage.mongodbInstancesCompareDashboard.verifyServicesInfoPanelDisplayed([mongoServices[0]]);
+});
