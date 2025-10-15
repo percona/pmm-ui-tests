@@ -96,10 +96,10 @@ Scenario(
     queryAnalyticsPage.waitForLoaded();
     await queryAnalyticsPage.data.selectRow(2);
     I.click(queryAnalyticsPage.buttons.copyButton);
-    I.waitForVisible(I.getPopUpLocator(), 10);
+    I.waitForVisible(I.getSuccessPopUpLocator(), 10);
 
     const dateTime = moment().format('x');
-    const url = new URL(await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink));
+    const url = new URL(await I.getClipboardText());
     const toTimeFromUrl1 = url.searchParams.get('to');
 
     assert.ok(Math.abs(dateTime - toTimeFromUrl1) < 60000, 'Difference between moment time and first copied time must be less then one minute');
@@ -110,10 +110,10 @@ Scenario(
 
     I.waitForVisible(queryAnalyticsPage.buttons.copyButton);
     I.click(queryAnalyticsPage.buttons.copyButton);
-    I.waitForVisible(I.getPopUpLocator(), 10);
-    const url2 = new URL(await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink));
-    const toTimeFromUrl2 = url2.searchParams.get('to');
+    I.waitForVisible(I.getSuccessPopUpLocator(), 10);
 
+    const url2 = new URL(await I.getClipboardText());
+    const toTimeFromUrl2 = url2.searchParams.get('to');
     assert.ok(Math.abs(toTimeFromUrl1 - toTimeFromUrl2) < 120000, 'Difference between moment time and second copied time must be less then two minutes');
     assert.notEqual(toTimeFromUrl1, toTimeFromUrl2, 'TimeFromUrl2 must not be the same as timeFromUrl1');
 
@@ -191,9 +191,9 @@ Scenario(
     await I.click(queryAnalyticsPage.data.buttons.nextPage);
     await queryAnalyticsPage.data.selectRow(2);
     await I.click(queryAnalyticsPage.buttons.copyButton);
-    await I.waitForVisible(I.getPopUpLocator(), 10);
+    await I.waitForVisible(I.getSuccessPopUpLocator(), 10);
 
-    const url = await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink);
+    const url = await I.getClipboardText();
 
     await I.openNewTab({ viewport: { width: 1920, height: 1080 } });
     await I.amOnPage(url);
@@ -218,9 +218,9 @@ Scenario(
     queryAnalyticsPage.filters.selectFilter(environmentName);
     queryAnalyticsPage.waitForLoaded();
     I.click(queryAnalyticsPage.buttons.copyButton);
-    I.waitForVisible(I.getPopUpLocator(), 10);
+    I.waitForVisible(I.getSuccessPopUpLocator(), 10);
 
-    const url = await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink);
+    const url = await I.getClipboardText();
 
     I.openNewTab();
     I.amOnPage(url);

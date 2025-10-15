@@ -45,9 +45,12 @@ class BrowserHelper extends Helper {
     const { Playwright } = this.helpers;
     const { browserContext, page } = Playwright;
 
-    await browserContext.grantPermissions(['clipboard-read']);
+    await browserContext.grantPermissions(['clipboard-read', 'clipboard-write']);
+    const clipBoardText = await page.evaluate(() => navigator.clipboard.readText());
 
-    return await page.evaluate(() => navigator.clipboard.readText());
+    await page.evaluate(() => navigator.clipboard.writeText(''));
+
+    return clipBoardText;
   }
 
   async goBack() {
