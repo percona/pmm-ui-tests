@@ -58,6 +58,7 @@ Scenario(
   async ({
     I, dashboardPage, inventoryAPI, adminPage,
   }) => {
+    console.log((await inventoryAPI.apiGetServices()).data.services);
     const mongoService = await inventoryAPI.getServiceDetailsByPartialDetails({ cluster: 'replicaset', service_name: 'rs101' });
 
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbCollectionsOverview.clearUrl, {
