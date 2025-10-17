@@ -236,3 +236,16 @@ Scenario(
     await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
   },
 );
+
+Scenario(
+  'PMM-T2079 - Verify metrics on MySQL MyRocks Details Dashboard @dashboards @nightly',
+  async ({ I, dashboardPage }) => {
+    const url = I.buildUrlWithParams(dashboardPage.mySQLMyRocksDetailsDashboard.url, { from: 'now-5m' });
+
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    await dashboardPage.expandEachDashboardRow();
+    await dashboardPage.verifyMetricsExistence(dashboardPage.mySQLMyRocksDetailsDashboard.metrics);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
+  },
+);
