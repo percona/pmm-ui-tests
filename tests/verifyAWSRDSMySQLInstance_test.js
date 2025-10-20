@@ -158,9 +158,9 @@ Data(instances).Scenario(
     dashboardPage.waitForDashboardOpened();
     for (const key of Object.keys(filters)) {
       dashboardPage.expandFilters(key);
-      I.pressKey('Escape');
       I.click(dashboardPage.fields.openFiltersDropdownLocator(key));
       I.waitForVisible(dashboardPage.fields.filterDropdownValueLocator(filters[key]), 5);
+      I.pressKey('Escape');
     }
   },
 );
