@@ -160,6 +160,7 @@ Data(instances).Scenario(
       dashboardPage.expandFilters(key);
       I.click(dashboardPage.fields.openFiltersDropdownLocator(key));
       I.waitForVisible(dashboardPage.fields.filterDropdownValueLocator(filters[key]), 5);
+      I.pressKey('Escape');
     }
   },
 );
