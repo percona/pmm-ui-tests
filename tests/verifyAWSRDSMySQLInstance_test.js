@@ -45,7 +45,7 @@ Data(instances).Scenario(
     remoteInstancesPage.startMonitoringOfInstance(instanceIdToMonitor);
     remoteInstancesPage.verifyAddInstancePageOpened();
     await remoteInstancesPage.fillRemoteRDSFields(instanceIdToMonitor, nodeName);
-    remoteInstancesPage.createRemoteInstance(instanceIdToMonitor);
+    await remoteInstancesPage.createRemoteInstance(instanceIdToMonitor);
 
     // Waiting for metrics to start hitting for remotely added services
     I.wait(60);
@@ -85,7 +85,7 @@ Scenario.skip(
     remoteInstancesPage.startMonitoringOfInstance(instanceIdToMonitor);
     remoteInstancesPage.verifyAddInstancePageOpened();
     await remoteInstancesPage.fillRemoteRDSFields(instanceIdToMonitor, nodeName);
-    remoteInstancesPage.createRemoteInstance(instanceIdToMonitor);
+    await remoteInstancesPage.createRemoteInstance(instanceIdToMonitor);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(instanceIdToMonitor);
     await pmmInventoryPage.verifyNodeAgentHasRDSExporter(instanceIdToMonitor);
 

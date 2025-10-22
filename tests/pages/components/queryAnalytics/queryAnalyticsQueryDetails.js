@@ -107,6 +107,13 @@ class QueryAnalyticsQueryDetails {
     }
   }
 
+  verifyNoExamples() {
+    I.waitForVisible(this.buttons.tab('Examples'), 30);
+    I.click(this.buttons.tab('Examples'));
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(this.elements.noExamples, 30);
+  }
+
   async verifyExplain(parameters = {}) {
     I.waitForVisible(this.buttons.tab('Explain'), 30);
     I.click(this.buttons.tab('Explain'));

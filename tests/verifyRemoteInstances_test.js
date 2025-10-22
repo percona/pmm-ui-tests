@@ -1,5 +1,6 @@
 const assert = require('assert');
 const faker = require('faker');
+const { SERVICE_TYPE } = require('./helper/constants');
 
 const {
   remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage,
@@ -97,7 +98,7 @@ Data(instances).Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage(current.name);
     await remoteInstancesPage.fillRemoteFields(serviceName, nodeName);
-    remoteInstancesPage.createRemoteInstance(serviceName);
+    await remoteInstancesPage.createRemoteInstance(serviceName);
   },
 );
 
@@ -111,7 +112,7 @@ Data(instances).Scenario(
     remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
     remoteInstancesPage.openAddRemotePage(current.name);
     await remoteInstancesPage.fillRemoteFields(serviceName, nodeName);
-    remoteInstancesPage.createRemoteInstance(serviceName);
+    await remoteInstancesPage.createRemoteInstance(serviceName);
   },
 );
 
@@ -363,5 +364,43 @@ Scenario(
     await pmmInventoryPage.verifyAgentHasStatusRunning(remoteServiceName);
     // verify metric for client container node instance
     await grafanaAPI.checkMetricExist(metric, { type: 'service_name', value: remoteServiceName });
+  },
+);
+
+Scenario(
+  'PMM-T2080 - Verify disable examples for MySQL @fb-instances',
+  async ({
+    I, remoteInstancesPage, queryAnalyticsPage, inventoryAPI,
+  }) => {
+    const service = 'mysql';
+    const serviceName = remoteInstancesHelper.services[service];
+    const nodeName = 'pmm-server';
+    const psServiceName = `mysql_disable_examples_${faker.lorem.word()}`;
+
+    I.amOnPage(remoteInstancesPage.url);
+    remoteInstancesPage.waitUntilRemoteInstancesPageLoaded();
+    remoteInstancesPage.openAddRemotePage(service);
+    await remoteInstancesPage.fillRemoteFields(serviceName, nodeName, psServiceName);
+    await remoteInstancesPage.createRemoteInstance(psServiceName, { disableExamples: true });
+
+    const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, psServiceName);
+
+    await pmmInventoryPage.openAgents(service_id);
+    await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mysql perfschema agent', 'query_examples_disabled=true');
+
+    I.wait(90);
+
+    const url = I.buildUrlWithParams(queryAnalyticsPage.url, {
+      service_name: psServiceName,
+      from: 'now-2m',
+    });
+
+    I.amOnPage(url);
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.searchByValue('SHOW GLOBAL STATUS');
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.data.selectRow(1);
+    queryAnalyticsPage.waitForLoaded();
+    queryAnalyticsPage.queryDetails.verifyNoExamples();
   },
 );
