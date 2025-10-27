@@ -8,28 +8,50 @@ const args = process.argv.slice(2);
 const targetTag = args[0];
 
 if (!targetTag) {
-  console.error('Usage: node launchable-prepare.js <tag>');
-  console.error('Example: node launchable-prepare.js @bm-mongo');
+  console.error('Usage: node launchable-prepare.js <tag-or-regex>');
+  console.error('Examples:');
+  console.error('  node launchable-prepare.js @bm-mongo');
+  console.error('  node launchable-prepare.js "@bm-mongo|@bm-locations"');
   process.exit(1);
 }
 
 const testPattern = config.tests || 'tests/**/*_test.js';
 
-function findTestsWithTag(tag) {
+function findTestsWithTag(tagExpression) {
   // Find all test files using glob pattern
   const allTestFiles = glob.sync(testPattern, {
     cwd: process.cwd(),
     absolute: true,
   });
 
-  console.log(`Scanning ${allTestFiles.length} test files for tag: ${tag}`);
+  console.log(`Scanning ${allTestFiles.length} test files for expression: ${tagExpression}`);
 
-  // Filter files that contain the target tag
+  // Check if the expression is a regex (contains | or starts with ^ or has other regex chars)
+  const isRegex = tagExpression.includes('|') || tagExpression.startsWith('^') || /[()*+?.[\\\]]/.test(tagExpression);
+
+  let regex;
+
+  if (isRegex) {
+    try {
+      // Treat as regex pattern
+      regex = new RegExp(tagExpression);
+    } catch (err) {
+      console.warn(`Invalid regex pattern "${tagExpression}": ${err.message}`);
+      console.warn('Falling back to simple string match');
+      regex = null;
+    }
+  }
+
+  // Filter files that match the expression
   const matchingFiles = allTestFiles.filter((testFile) => {
     try {
       const content = fs.readFileSync(testFile, 'utf8');
 
-      return content.includes(tag);
+      if (regex) {
+        return regex.test(content);
+      }
+
+      return content.includes(tagExpression);
     } catch (err) {
       console.warn(`Could not read test file: ${testFile}`);
 
