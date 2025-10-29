@@ -129,7 +129,7 @@ exports.config = {
       'mocha-junit-reporter': {
         stdout: '-',
         options: {
-          mochaFile: './tests/output/result1.xml',
+          mochaFile: './tests/output/result.xml',
           antMode: true,
           outputs: true,
           jenkinsMode: true,
