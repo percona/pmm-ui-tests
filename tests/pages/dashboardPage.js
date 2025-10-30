@@ -1,13 +1,3 @@
-const ValkeyOverviewDashboard = require('../pages/dashboards/valkey/valkeyOverviewDashboard');
-const ValkeyClientsDashboard = require('../pages/dashboards/valkey/valkeyClientsDashboard');
-const ValkeyClusterDetailsDashboard = require('../pages/dashboards/valkey/valkeyClusterDetailsDashboard');
-const ValkeyCommandDetailDashboard = require('../pages/dashboards/valkey/valkeyCommandDetailDashboard');
-const ValkeyLoadDashboard = require('../pages/dashboards/valkey/valkeyLoadDashboard');
-const ValkeyMemoryDashboard = require('../pages/dashboards/valkey/valkeyMemoryDashboard');
-const ValkeyNetworkDashboard = require('../pages/dashboards/valkey/valkeyNetworkDashboard');
-const ValkeyPersistenceDetailsDashboard = require('../pages/dashboards/valkey/valkeyPersistenceDetailsDashboard');
-const ValkeyReplicationDashboard = require('../pages/dashboards/valkey/valkeyReplicationDashboard');
-const ValkeySlowlogDashboard = require('../pages/dashboards/valkey/valkeySlowlogDashboard');
 /* eslint-disable import/no-useless-path-segments */
 const { I, adminPage } = inject();
 const assert = require('assert');
@@ -26,19 +16,28 @@ const MongodbShardedClusterSummary = require('../pages/dashboards/mongodb/mongod
 const MySQLMyRocksDetailsDashboard = require('../pages/dashboards/mysql/mySQLMyRocksDetailsDashboard');
 const { locateOption } = require('../helper/locatorHelper');
 const MongodbInstancesCompareDashboard = require('../dashboards/pages/mongodb/mongodbInstancesCompareDashboard');
+const ValkeyOverviewDashboard = require('../pages/dashboards/valkey/valkeyOverviewDashboard');
+const ValkeyClientsDashboard = require('../pages/dashboards/valkey/valkeyClientsDashboard');
+const ValkeyClusterDetailsDashboard = require('../pages/dashboards/valkey/valkeyClusterDetailsDashboard');
+const ValkeyCommandDetailDashboard = require('../pages/dashboards/valkey/valkeyCommandDetailDashboard');
+const ValkeyLoadDashboard = require('../pages/dashboards/valkey/valkeyLoadDashboard');
+const ValkeyMemoryDashboard = require('../pages/dashboards/valkey/valkeyMemoryDashboard');
+const ValkeyNetworkDashboard = require('../pages/dashboards/valkey/valkeyNetworkDashboard');
+const ValkeyPersistenceDetailsDashboard = require('../pages/dashboards/valkey/valkeyPersistenceDetailsDashboard');
+const ValkeyReplicationDashboard = require('../pages/dashboards/valkey/valkeyReplicationDashboard');
+const ValkeySlowlogDashboard = require('../pages/dashboards/valkey/valkeySlowlogDashboard');
 
 module.exports = {
   // insert your locators and methods here
   // setting locators
-  slowQueriesText: locate(
-    '//section[contains(@data-testid, "Panel header Slow Queries") or contains(@data-testid, "Panel header Slow queries")]//div[@data-testid="TextPanel-converted-content"]',
-  ),
-  slowQueriesValue: locate(
-    '//section[contains(@data-testid, "Panel header Slow Queries") or contains(@data-testid, "Panel header Slow queries")]//div[@data-testid="TextPanel-converted-content"]//span',
-  ),
-  serviceNameDropdown: '//label[contains(text(), "Service Name")]/following-sibling::div',
-  serviceName: '//label[contains(text(), "Service Name")]/following-sibling::div',
-  serviceNameInput: '//input[@aria-controls="options-service_name"]',
+  slowQueriesText: locate('//section[contains(@data-testid, "Panel header Slow Queries") or contains(@data-testid, "Panel header Slow queries")]//div[@data-testid="TextPanel-converted-content"]'),
+  slowQueriesValue: locate('//section[contains(@data-testid, "Panel header Slow Queries") or contains(@data-testid, "Panel header Slow queries")]//div[@data-testid="TextPanel-converted-content"]//span'),
+  serviceNameDropdown:
+    '//label[contains(text(), "Service Name")]/following-sibling::div',
+  serviceName:
+    '//label[contains(text(), "Service Name")]/following-sibling::div',
+  serviceNameInput:
+    '//input[@aria-controls="options-service_name"]',
   toggleAllValues: '[aria-label="Toggle all values"]',
   panel: 'div[data-viz-panel-key]',
   systemUptimePanel: (nodeName) => `//div[@class="panel-title"]//h2[text()="${nodeName} - System Uptime"]`,
@@ -72,9 +71,15 @@ module.exports = {
     ],
   },
   advancedDataExplorationDashboard: {
-    url: 'graph/d/prometheus-advanced/advanced-data-exploration?orgId=1&refresh=1m&var-metric=go_gc_duration_seconds',
+    url:
+      'graph/d/prometheus-advanced/advanced-data-exploration?orgId=1&refresh=1m&var-metric=go_gc_duration_seconds',
     cleanUrl: 'graph/d/prometheus-advanced/advanced-data-exploration',
-    metrics: ['View Actual Metric Values (Gauge)', 'View Metric Rate of Change (Counter)', 'Metric Rates', 'Metric Data Table'],
+    metrics: [
+      'View Actual Metric Values (Gauge)',
+      'View Metric Rate of Change (Counter)',
+      'Metric Rates',
+      'Metric Data Table',
+    ],
   },
   prometheusDashboard: {
     url: 'graph/d/prometheus/prometheus',
@@ -205,8 +210,7 @@ module.exports = {
       imageRendererPluginLink: locate(I.useDataQA('data-testid Alert info')).find('.external-link'),
     },
     messages: {
-      imageRendererPlugin:
-        'Image renderer plugin not installedTo render a panel image, you must install the Image Renderer plugin. Please contact your PMM administrator to install the plugin.',
+      imageRendererPlugin: 'Image renderer plugin not installedTo render a panel image, you must install the Image Renderer plugin. Please contact your PMM administrator to install the plugin.',
     },
   },
   proxysqlInstanceSummaryDashboard: {
@@ -332,7 +336,13 @@ module.exports = {
   postgresqlInstanceCompareDashboard: {
     url: 'graph/d/postgresql-instance-compare/postgresql-instances-compare?orgId=1&from=now-5m&to=now',
     cleanUrl: 'graph/d/postgresql-instance-compare/postgresql-instances-compare',
-    metrics: ['Service Info', 'PostgreSQL Connections', 'Active Connections', 'Tuples', 'Transactions'],
+    metrics: [
+      'Service Info',
+      'PostgreSQL Connections',
+      'Active Connections',
+      'Tuples',
+      'Transactions',
+    ],
   },
   postgresqlInstanceOverviewDashboard: PostgresqlInstanceOverviewDashboard,
   mongodbPBMDetailsDashboard: MongodbPBMDetailsDashboard,
@@ -627,10 +637,10 @@ module.exports = {
       'Percentage of Open Table Definitions to Table Definition Cache',
     ],
     urlWithRDSFilter:
-      'graph/d/mysql-instance-overview/mysql-instances-overview?orgId=1&' +
-      'from=now-5m&to=now&refresh=1m&var-interval=$__auto_interval_interval&var-region=All&' +
-      'var-environment=All&var-cluster=rds57-cluster&var-replication_set=All&var-az=&' +
-      'var-node_type=All&var-node_model=&var-database=All&var-service_type=All&var-schema=All',
+      'graph/d/mysql-instance-overview/mysql-instances-overview?orgId=1&'
+      + 'from=now-5m&to=now&refresh=1m&var-interval=$__auto_interval_interval&var-region=All&'
+      + 'var-environment=All&var-cluster=rds57-cluster&var-replication_set=All&var-az=&'
+      + 'var-node_type=All&var-node_model=&var-database=All&var-service_type=All&var-schema=All',
   },
   mysqlInstancesCompareDashboard: {
     url: 'graph/d/mysql-instance-compare/mysql-instances-compare?orgId=1&refresh=1m&from=now-5m&to=now',
@@ -737,7 +747,14 @@ module.exports = {
   mysqlPXCGaleraNodesCompareDashboard: {
     url: 'graph/d/pxc-nodes-compare/pxc-galera-nodes-compare?orgId=1&refresh=1m',
     clearUrl: 'graph/d/pxc-nodes-compare/pxc-galera-nodes-compare',
-    metrics: ['Ready to Accept Queries', 'Local State', 'Desync Mode', 'Cluster Status', 'gcache Size', 'FC (normal traffic)'],
+    metrics: [
+      'Ready to Accept Queries',
+      'Local State',
+      'Desync Mode',
+      'Cluster Status',
+      'gcache Size',
+      'FC (normal traffic)',
+    ],
     tabs: [
       'Galera Replication Latency',
       'Galera Replication Queues',
@@ -1106,16 +1123,14 @@ module.exports = {
     panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
     postgreSQLServiceSummaryContent: locate('$pt-summary-fingerprint').withText('Detected PostgreSQL version:'),
     reportTitle: locate('$header-container').inside(locate('[class$="panel-container"]')),
-    reportTitleWithNA: locate('$header-container').inside(
-      locate('[class$="panel-container"]').withDescendant(
-        '//*[(text()="No data") or (text()="NO DATA") or (text()="N/A") or (text()="-") or (text() = "No Data")]',
-      ),
-    ),
-    reportTitleWithNoData: locate('$header-container').inside(
-      locate('[class$="panel-container"]').withDescendant(
-        '//*[contains(text(),"No data") or contains(text(), "NO DATA") or contains(text(),"N/A")) or (text()="-") or (text() = "No Data")]',
-      ),
-    ),
+    reportTitleWithNA:
+      locate('$header-container')
+        .inside(locate('[class$="panel-container"]')
+          .withDescendant('//*[(text()="No data") or (text()="NO DATA") or (text()="N/A") or (text()="-") or (text() = "No Data")]')),
+    reportTitleWithNoData:
+    locate('$header-container')
+      .inside(locate('[class$="panel-container"]')
+        .withDescendant('//*[contains(text(),"No data") or contains(text(), "NO DATA") or contains(text(),"N/A")) or (text()="-") or (text() = "No Data")]')),
     rootUser: '//div[contains(text(), "root")]',
     serviceSummary: I.useDataQA('data-testid dashboard-row-title-Service Summary'),
     timeRangePickerButton: I.useDataQA('data-testid TimePicker Open Button'),
@@ -1126,20 +1141,14 @@ module.exports = {
     openFiltersDropdownLocator: (filterName) => locate(`//label[contains(text(), "${filterName}")]/following-sibling::div`),
     filterDropdownOptionsLocator: (filterName) => locateOption(filterName),
     filterDropdownValueLocator: (filterValue) => locate('div').withAttr({ role: 'option' }).withText(filterValue),
-    filterSelectedValues: (filterName) =>
-      locate(
-        `//label[contains(text(), "${filterName}")]/following-sibling::div/div/div/div[contains(@class, "multi-value-container") or contains(@class, "singleValue")]`,
-      ),
+    filterSelectedValues: (filterName) => locate(`//label[contains(text(), "${filterName}")]/following-sibling::div/div/div/div[contains(@class, "multi-value-container") or contains(@class, "singleValue")]`),
     refreshIntervalPicker: I.useDataQA('data-testid RefreshPicker interval button'),
     refreshIntervalOption: (interval) => locate(`//*[@role="menuitemradio"]//span[text()="${interval}"]`),
     clickablePanel: (name) => locate('$header-container').withText(name).find('a'),
     dashboardTitle: (name) => locate('span').withText(name),
     metricPanelNa: (name) => `//section[@aria-label="${name}"]//span[text()="N/A"]`,
     loadingElement: locate('//div[@aria-label="Panel loading bar"]'),
-    multiSelect: (filterName) =>
-      locate(
-        `//label[contains(text(), "${filterName}")]/following-sibling::div//div[contains(@class,"grafana-select-multi-value-container")]`,
-      ),
+    multiSelect: (filterName) => locate(`//label[contains(text(), "${filterName}")]/following-sibling::div//div[contains(@class,"grafana-select-multi-value-container")]`),
   },
 
   async checkNavigationBar(text) {
@@ -1247,10 +1256,7 @@ module.exports = {
 
       while (actualValue < expectedValue) {
         // eslint-disable-next-line no-plusplus
-        if (retries++ > timeout)
-          throw new Error(
-            `Value in panel ${panelTitle} for ${serviceName} was never above ${expectedValue} and is ${actualValue}`,
-          );
+        if (retries++ > timeout) throw new Error(`Value in panel ${panelTitle} for ${serviceName} was never above ${expectedValue} and is ${actualValue}`);
 
         if (await valueLocator.isVisible()) {
           actualValue = await valueLocator.textContent();
@@ -1264,9 +1270,7 @@ module.exports = {
   },
 
   getColumnLegendMaxValue(panelTitle, serviceName) {
-    return locate(this.panelByTitle(panelTitle)).find(
-      `//button[contains(@title, '${serviceName}')]//ancestor::tr//td[position()='3']`,
-    );
+    return locate(this.panelByTitle(panelTitle)).find(`//button[contains(@title, '${serviceName}')]//ancestor::tr//td[position()='3']`);
   },
 
   async waitForAllGraphsToHaveData(timeout = 60) {
@@ -1315,9 +1319,9 @@ module.exports = {
 
     I.say(`Number of no data and N/A elements is = ${numberOfNAElements}`);
     I.say(`Number of all graph elements is = ${allGraphs}`);
-    if (allGraphs - numberOfNAElements > acceptableDataCount) {
+    if ((allGraphs - numberOfNAElements) > acceptableDataCount) {
       assert.equal(
-        allGraphs - numberOfNAElements <= acceptableDataCount,
+        (allGraphs - numberOfNAElements) <= acceptableDataCount,
         true,
         `Expected ${allGraphs} Elements without data but found ${numberOfNAElements} on Dashboard ${await I.grabCurrentUrl()}.`,
       );
@@ -1385,7 +1389,7 @@ module.exports = {
     const filterDropdownOptionsLocator = this.fields.filterDropdownOptionsLocator(filterValue);
     const dropdownLocator = this.fields.openFiltersDropdownLocator(filterName);
     const selectedFilterValue = await I.grabTextFrom(dropdownLocator);
-    const isMultiSelect = (await I.grabNumberOfVisibleElements(this.fields.multiSelect(filterName))) > 0;
+    const isMultiSelect = await I.grabNumberOfVisibleElements(this.fields.multiSelect(filterName)) > 0;
 
     // If there is only one value for a filter it is selected by default
     if (selectedFilterValue !== 'All' && selectedFilterValue === filterValue) {
@@ -1467,9 +1471,7 @@ module.exports = {
     }
 
     if (!queryText.includes(timeFrame)) {
-      throw new Error(
-        `Slow queries text (${queryText.replace('\n', '').trim()}) should contains expected time frame: ${timeFrame}`,
-      );
+      throw new Error(`Slow queries text (${queryText.replace('\n', '').trim()}) should contains expected time frame: ${timeFrame}`);
     }
   },
 };
