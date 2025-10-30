@@ -42,6 +42,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=pmm_password
       - POSTGRES_DB=grafana
+      - PMM_ENABLE_QAN_FOR_INTERNAL_POSTGRES=1
     volumes:
       - ./data:/var/lib/postgresql/data
       - ./ssl:/var/lib/postgresql/ssl
