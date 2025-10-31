@@ -1,6 +1,6 @@
 class ValkeyCommandDetailDashboard {
   constructor() {
-    this.url = 'graph/d/valkey-command-detail/valkey-redis-command-detail';
+    this.url = 'graph/d/valkey-command-details/valkey-redis-command-detail';
     this.metrics = [
       'All - Total Commands / sec',
       'valkey-primary-1-svc-* - Read and Write rate',
