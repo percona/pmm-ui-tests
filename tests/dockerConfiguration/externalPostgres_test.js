@@ -3,10 +3,10 @@ const { adminPage } = inject();
 Feature('Test PMM server with external PostgreSQL');
 
 const dockerImage = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-latest';
-const data = new DataTable(['ansibleName', 'postgresqlAddress']);
+const data = new DataTable(['ansibleName', 'postgresqlAddress', 'pdpgsqlContainerName']);
 
-// data.add(['external-pgsql', 'external-postgres:5432']);
-data.add(['external-pgsql-ssl', 'external-postgres-ssl:5432']);
+// data.add(['external-pgsql', 'external-postgres:5432', 'external-postgres']);
+data.add(['external-pgsql-ssl', 'external-postgres-ssl:5432', 'external-postgres-ssl']);
 
 After(async ({ I }) => {
   // await I.verifyCommand('docker stop external-postgres || true');
@@ -20,7 +20,9 @@ Data(data).Scenario(
   async ({
     I, pmmInventoryPage, current, queryAnalyticsPage,
   }) => {
-    const { postgresqlAddress, ansibleName } = current;
+    const {
+      postgresqlAddress, ansibleName, pdpgsqlContainerName,
+    } = current;
     const basePmmUrl = 'http://127.0.0.1:8082/';
     const serviceName = 'pmm-server-postgresql';
     const postgresDataSourceLocator = locate('div').withChild(locate('h2 > a').withText('PostgreSQL'));
@@ -40,8 +42,8 @@ Data(data).Scenario(
 
     I.assertEqual(
       await pmmInventoryPage.servicesTab.getServiceMonitoringAddress(serviceName),
-      current.pdpgsqlContainerName,
-      `'${serviceName}' is expected to have '${current.pdpgsqlContainerName}' address`,
+      pdpgsqlContainerName,
+      `'${serviceName}' is expected to have '${pdpgsqlContainerName}' address`,
     );
 
     I.assertEqual(
