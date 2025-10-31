@@ -30,7 +30,6 @@ Data(data).Scenario(
     const postgresDataSourceLocator = locate('div').withChild(locate('h2 > a').withText('PostgreSQL'));
 
     await I.verifyCommand(`ansible-playbook --connection=local --inventory 127.0.0.1, --limit 127.0.0.1 testdata/external-services/${ansibleName}.yml --extra-vars "pmm_server_image=${dockerImage}"`);
-    await I.wait(60);
 
     await I.Authorize('admin', 'admin', basePmmUrl);
     I.amOnPage(`${basePmmUrl}graph/datasources`);
