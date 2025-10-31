@@ -107,9 +107,9 @@
         creates: "/var/lib/docker/containers/external-postgres-ssl"
 
     - name: Wait until external-postgres-ssl is healthy
-      shell: docker inspect --format='{{ .State.Health.Status }}' external-postgres-ssl
+      shell: docker inspect --format='{{ .State.Status }}' external-postgres-ssl
       register: pg_health
-      until: "'healthy' in pg_health.stdout"
+      until: "'running' in pg_health.stdout"
       retries: 10
       delay: 10
 
