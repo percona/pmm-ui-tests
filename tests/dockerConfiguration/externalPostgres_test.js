@@ -51,14 +51,11 @@ Data(data).Scenario(
       'OK',
       `'${serviceName}' is expected to have 'OK' monitoring status`,
     );
-    console.log(`Url is: ${I.buildUrlWithParams(`${basePmmUrl}${queryAnalyticsPage.url}`, {
+    I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${queryAnalyticsPage.url}`, {
       service_name: serviceName, node_name: 'pmm-server-db', from: 'now-5m', refresh: '30s',
-    })}`);
-    // I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${queryAnalyticsPage.url}`, {
-    //   service_name: serviceName, node_name: 'pmm-server-db', from: 'now-5m', refresh: '30s',
-    // }));
-    // queryAnalyticsPage.waitForLoaded();
-    // I.waitForInvisible(queryAnalyticsPage.data.elements.noResultTableText, 480);
-    // I.assertTrue((await queryAnalyticsPage.data.getRowCount()) > 0, 'QAN does not have data!');
+    }));
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForInvisible(queryAnalyticsPage.data.elements.noResultTableText, 480);
+    I.assertTrue((await queryAnalyticsPage.data.getRowCount()) > 0, 'QAN does not have data!');
   },
 );
