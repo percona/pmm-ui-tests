@@ -127,6 +127,12 @@
       retries: 5
       delay: 5
 
+    - name: Enable pg_stat_statements extension in grafana database
+      shell: docker exec external-postgres-ssl psql -U postgres -d grafana -c "CREATE EXTENSION IF NOT EXISTS pg_stat_statements;"
+      register: pg_stat_statements_create
+      changed_when: "'CREATE EXTENSION' in pg_stat_statements_create.stdout"
+      failed_when: "'ERROR' in pg_stat_statements_create.stderr"
+
     - name: Start pmm-server-external-postgres-ssl container
       shell: >
         docker run -d --name pmm-server-external-postgres-ssl
