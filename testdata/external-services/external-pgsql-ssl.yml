@@ -17,6 +17,10 @@
       loop:
         - "{{ ssl_dir }}"
         - "{{ data_dir }}"
+    - name: Stop containers if already running
+      shell: |
+        docker stop external-postgres-ssl 
+        docker stop pmm-server-external-postgres-ssl
 
     - name: Install openssl package
       apt:
