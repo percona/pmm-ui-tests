@@ -34,6 +34,7 @@
       shell: |
         docker rm -f external-postgres-ssl 
         docker rm -f pmm-server-external-postgres-ssl
+        docker volume rm pmm-server-external-pg-ssl
       ignore_errors: true
 
     - name: Install openssl package
