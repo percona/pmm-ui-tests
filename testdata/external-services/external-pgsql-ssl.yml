@@ -152,14 +152,14 @@
         -e GF_DATABASE_CA_CERT_PATH=/etc/ssl/postgresql/ca.crt
         -e GF_DATABASE_CLIENT_KEY_PATH=/etc/ssl/postgresql/client.key
         -e GF_DATABASE_CLIENT_CERT_PATH=/etc/ssl/postgresql/client.crt
-        -e PMM_ENABLE_INTERNAL_PG_QAN=1
+        -e PMM_ENABLE_QAN_FOR_INTERNAL_POSTGRES=1
         -v pmm-server-external-pg-ssl:/srv
         -v {{ ssl_dir }}:/etc/ssl/postgresql
         {{ pmm_server_image }}
       args:
         creates: "/var/lib/docker/containers/pmm-server-external-postgres-ssl"
 
-    - name: Wait until external-postgres-ssl is healthy
+    - name: Wait until PMM Server is healthy
       shell: docker inspect --format='{{ "{{.State.Health.Status}}" }}' pmm-server-external-postgres-ssl
       register: pmm_server_health
       until: "'healthy' in pmm_server_health.stdout"
