@@ -152,7 +152,7 @@
         -e GF_DATABASE_CA_CERT_PATH=/etc/ssl/postgresql/ca.crt
         -e GF_DATABASE_CLIENT_KEY_PATH=/etc/ssl/postgresql/client.key
         -e GF_DATABASE_CLIENT_CERT_PATH=/etc/ssl/postgresql/client.crt
-        -e PMM_ENABLE_QAN_FOR_INTERNAL_POSTGRES=1
+        -e PMM_ENABLE_INTERNAL_PG_QAN=1
         -v pmm-server-external-pg-ssl:/srv
         -v {{ ssl_dir }}:/etc/ssl/postgresql
         {{ pmm_server_image }}
