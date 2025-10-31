@@ -9,6 +9,15 @@
     postgres_image: "{{ lookup('env', 'POSTGRES_IMAGE') | default('perconalab/percona-distribution-postgresql:17', true) }}"
     pmm_server_image: "{{ lookup('env', 'PMM_SERVER_IMAGE') | default('perconalab/pmm-server:3-dev-latest', true) }}"
   tasks:
+    - name: Remove existing ssl folder
+      file:
+      path: "{{ item }}"
+      state: absent
+      loop:
+        - "{{ ssl_dir }}"
+        - "{{ data_dir }}"
+      ignore_errors: true
+
     - name: Ensure ssl and utils dirs exist
       file:
         path: "{{ item }}"
