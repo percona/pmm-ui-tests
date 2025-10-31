@@ -8,7 +8,7 @@ const data = new DataTable(['ansibleName', 'containerName', 'postgresqlAddress',
 data.add(['external-pgsql', 'pmm-server-external-postgres', 'external-postgres:5432', '8081', 'external-postgres']);
 data.add(['external-pgsql-ssl', 'pmm-server-external-postgres-ssl', 'external-postgres-ssl:5432', '8082', 'external-postgres-ssl']);
 
-AfterSuite(async ({ I }) => {
+After(async ({ I }) => {
   await I.verifyCommand('docker stop external-postgres || true');
   await I.verifyCommand('docker stop pmm-server-external-postgres || true');
   await I.verifyCommand('docker stop external-postgres-ssl || true');
