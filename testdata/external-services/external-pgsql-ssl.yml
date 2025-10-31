@@ -127,6 +127,10 @@
       retries: 5
       delay: 5
 
+    - name: Wait 10 seconds for setup to finish
+      pause:
+        seconds: 10
+
     - name: Enable pg_stat_statements extension in grafana database
       shell: docker exec external-postgres-ssl psql -U postgres -d grafana -c "CREATE EXTENSION IF NOT EXISTS pg_stat_statements;"
       register: pg_stat_statements_create
