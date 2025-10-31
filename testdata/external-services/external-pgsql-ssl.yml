@@ -158,3 +158,10 @@
         {{ pmm_server_image }}
       args:
         creates: "/var/lib/docker/containers/pmm-server-external-postgres-ssl"
+
+    - name: Wait until external-postgres-ssl is healthy
+      shell: docker inspect --format='{{ "{{.State.Health.Status}}" }}' pmm-server-external-postgres-ssl
+      register: pg_health
+      until: "'healthy' in pg_health.stdout"
+      retries: 5
+      delay: 5
