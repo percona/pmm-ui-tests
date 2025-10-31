@@ -110,8 +110,8 @@
       shell: docker inspect --format='{{'{'}} .State.Status {{'}'}}' external-postgres-ssl
       register: pg_health
       until: "'running' in pg_health.stdout"
-      retries: 10
-      delay: 10
+      retries: 5
+      delay: 5
 
     - name: Start pmm-server-external-postgres-ssl container
       shell: >
