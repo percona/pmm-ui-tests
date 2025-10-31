@@ -11,8 +11,8 @@
   tasks:
     - name: Remove existing ssl folder
       file:
-      path: "{{ item }}"
-      state: absent
+        path: "{{ item }}"
+        state: absent
       loop:
         - "{{ ssl_dir }}"
         - "{{ data_dir }}"
