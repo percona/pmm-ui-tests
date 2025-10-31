@@ -5,7 +5,7 @@ Feature('Test PMM server with external PostgreSQL');
 const dockerImage = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-latest';
 const data = new DataTable(['ansibleName', 'containerName', 'postgresqlAddress', 'serverPort', 'pdpgsqlContainerName']);
 
-data.add(['external-pgsql', 'pmm-server-external-postgres', 'external-postgres:5432', '8081', 'external-postgres']);
+data.add(['external-pgsql', 'pmm-server-external-postgres', 'external-postgres:5432', '8082', 'external-postgres']);
 data.add(['external-pgsql-ssl', 'pmm-server-external-postgres-ssl', 'external-postgres-ssl:5432', '8082', 'external-postgres-ssl']);
 
 After(async ({ I }) => {
