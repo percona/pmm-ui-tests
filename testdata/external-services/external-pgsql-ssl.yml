@@ -161,7 +161,7 @@
 
     - name: Wait until external-postgres-ssl is healthy
       shell: docker inspect --format='{{ "{{.State.Health.Status}}" }}' pmm-server-external-postgres-ssl
-      register: pg_health
-      until: "'healthy' in pg_health.stdout"
+      register: pmm_server_health
+      until: "'healthy' in pmm_server_health.stdout"
       retries: 5
       delay: 5
