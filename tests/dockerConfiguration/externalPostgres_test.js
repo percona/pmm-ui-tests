@@ -9,10 +9,10 @@ const data = new DataTable(['ansibleName', 'containerName', 'postgresqlAddress',
 data.add(['external-pgsql-ssl', 'pmm-server-external-postgres-ssl', 'external-postgres-ssl:5432', '8082', 'external-postgres-ssl']);
 
 After(async ({ I }) => {
-  await I.verifyCommand('docker stop external-postgres || true');
-  await I.verifyCommand('docker stop pmm-server-external-postgres || true');
-  await I.verifyCommand('docker stop external-postgres-ssl || true');
-  await I.verifyCommand('docker stop pmm-server-external-postgres-ssl || true');
+  // await I.verifyCommand('docker stop external-postgres || true');
+  // await I.verifyCommand('docker stop pmm-server-external-postgres || true');
+  // await I.verifyCommand('docker stop external-postgres-ssl || true');
+  // await I.verifyCommand('docker stop pmm-server-external-postgres-ssl || true');
 });
 
 Data(data).Scenario(
@@ -53,7 +53,9 @@ Data(data).Scenario(
       'OK',
       `'${serviceName}' is expected to have 'OK' monitoring status`,
     );
-
+    console.log(`Url is: ${I.buildUrlWithParams(`${basePmmUrl}${queryAnalyticsPage.url}`, {
+      service_name: serviceName, node_name: 'pmm-server-db', from: 'now-5m', refresh: '30s',
+    })}`);
     // I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${queryAnalyticsPage.url}`, {
     //   service_name: serviceName, node_name: 'pmm-server-db', from: 'now-5m', refresh: '30s',
     // }));
