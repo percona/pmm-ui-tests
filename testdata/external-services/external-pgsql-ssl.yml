@@ -42,7 +42,7 @@
         creates: "{{ ssl_dir }}/server.key"
 
     - name: Generate server CSR
-      shell: "openssl req -new -key {{ ssl_dir }}/server.key -config {{ utils_dir }}/external-pgsql-ssl-config.cnf -out {{ ssl_dir }}/server.csr"
+      shell: "openssl req -new -key {{ ssl_dir }}/server.key -config ./external-pgsql-ssl-config.cnf -out {{ ssl_dir }}/server.csr"
       args:
         creates: "{{ ssl_dir }}/server.csr"
 
