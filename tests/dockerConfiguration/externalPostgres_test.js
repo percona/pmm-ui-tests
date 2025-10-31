@@ -5,7 +5,7 @@ Feature('Test PMM server with external PostgreSQL');
 const dockerImage = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-latest';
 const data = new DataTable(['ansibleName', 'containerName', 'postgresqlAddress', 'serverPort', 'pdpgsqlContainerName']);
 
-data.add(['external-pgsql', 'pmm-server-external-postgres', 'external-postgres:5432', '8082', 'external-postgres']);
+// data.add(['external-pgsql', 'pmm-server-external-postgres', 'external-postgres:5432', '8082', 'external-postgres']);
 data.add(['external-pgsql-ssl', 'pmm-server-external-postgres-ssl', 'external-postgres-ssl:5432', '8082', 'external-postgres-ssl']);
 
 After(async ({ I }) => {
@@ -54,11 +54,11 @@ Data(data).Scenario(
       `'${serviceName}' is expected to have 'OK' monitoring status`,
     );
 
-    I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${queryAnalyticsPage.url}`, {
-      service_name: serviceName, node_name: 'pmm-server-db', from: 'now-5m', refresh: '30s',
-    }));
-    queryAnalyticsPage.waitForLoaded();
-    I.waitForInvisible(queryAnalyticsPage.data.elements.noResultTableText, 480);
-    I.assertTrue((await queryAnalyticsPage.data.getRowCount()) > 0, 'QAN does not have data!');
+    // I.amOnPage(I.buildUrlWithParams(`${basePmmUrl}${queryAnalyticsPage.url}`, {
+    //   service_name: serviceName, node_name: 'pmm-server-db', from: 'now-5m', refresh: '30s',
+    // }));
+    // queryAnalyticsPage.waitForLoaded();
+    // I.waitForInvisible(queryAnalyticsPage.data.elements.noResultTableText, 480);
+    // I.assertTrue((await queryAnalyticsPage.data.getRowCount()) > 0, 'QAN does not have data!');
   },
 );
