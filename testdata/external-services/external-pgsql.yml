@@ -78,7 +78,7 @@
         -e GF_DATABASE_PASSWORD=pmm_password
         -e GF_DATABASE_HOST=external-postgres:5432
         -e GF_DATABASE_USER=postgres
-        -e PMM_ENABLE_QAN_FOR_INTERNAL_POSTGRES=1
+        -e PMM_ENABLE_INTERNAL_PG_QAN=1
         -v pmm-server-external-pg:/srv
         {{ pmm_server_image }}
       args:
