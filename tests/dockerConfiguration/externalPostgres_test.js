@@ -5,14 +5,16 @@ Feature('Test PMM server with external PostgreSQL');
 const dockerImage = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-latest';
 const data = new DataTable(['ansibleName', 'postgresqlAddress', 'pdpgsqlContainerName']);
 
-// data.add(['external-pgsql', 'external-postgres:5432', 'external-postgres']);
+data.add(['external-pgsql', 'external-postgres:5432', 'external-postgres']);
 data.add(['external-pgsql-ssl', 'external-postgres-ssl:5432', 'external-postgres-ssl']);
 
 After(async ({ I }) => {
-  // await I.verifyCommand('docker stop external-postgres || true');
-  // await I.verifyCommand('docker stop pmm-server-external-postgres || true');
-  // await I.verifyCommand('docker stop external-postgres-ssl || true');
-  // await I.verifyCommand('docker stop pmm-server-external-postgres-ssl || true');
+  await I.verifyCommand('docker stop external-postgres || true');
+  await I.verifyCommand('docker stop pmm-server-external-postgres || true');
+  await I.verifyCommand('docker volume rm pmm-server-external-pg || true');
+  await I.verifyCommand('docker stop external-postgres-ssl || true');
+  await I.verifyCommand('docker stop pmm-server-external-postgres-ssl || true');
+  await I.verifyCommand('docker volume rm pmm-server-external-pg-ssl || true');
 });
 
 Data(data).Scenario(
