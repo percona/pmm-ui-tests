@@ -3,7 +3,6 @@
   gather_facts: no
   vars:
     ssl_dir: "./ssl"
-    utils_dir: "./utils"
     data_dir: "./data"
     ca_subj: "/CN=CA"
     client_subj: "/CN=client"
@@ -17,7 +16,6 @@
         mode: '0755'
       loop:
         - "{{ ssl_dir }}"
-        - "{{ utils_dir }}"
         - "{{ data_dir }}"
 
     - name: Install openssl package
@@ -47,7 +45,7 @@
         creates: "{{ ssl_dir }}/server.csr"
 
     - name: Generate server certificate
-      shell: "openssl x509 -req -in {{ ssl_dir }}/server.csr -CA {{ ssl_dir }}/ca.crt -CAkey {{ ssl_dir }}/ca.key -CAcreateserial -out {{ ssl_dir }}/server.crt -days 365 -extensions v3_req -extfile {{ utils_dir }}/external-pgsql-ssl-config.cnf"
+      shell: "openssl x509 -req -in {{ ssl_dir }}/server.csr -CA {{ ssl_dir }}/ca.crt -CAkey {{ ssl_dir }}/ca.key -CAcreateserial -out {{ ssl_dir }}/server.crt -days 365 -extensions v3_req -extfile ./external-pgsql-ssl-config.cnf"
       args:
         creates: "{{ ssl_dir }}/server.crt"
 
