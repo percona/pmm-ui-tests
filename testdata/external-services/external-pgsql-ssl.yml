@@ -18,6 +18,10 @@
         - "{{ data_dir }}"
       ignore_errors: true
 
+    - name: Create pmm-qa network if not exist
+      shell: docker network create pmm-qa
+      ignore_errors: true
+
     - name: Ensure ssl and utils dirs exist
       file:
         path: "{{ item }}"
@@ -100,6 +104,7 @@
       shell: >
         docker run -d --name external-postgres-ssl
         --restart always
+        --network=pmm-qa
         -e POSTGRES_PASSWORD=pmm_password
         -e POSTGRES_DB=grafana
         -e PMM_ENABLE_QAN_FOR_INTERNAL_POSTGRES=1
@@ -126,6 +131,7 @@
       shell: >
         docker run -d --name pmm-server-external-postgres-ssl
         --restart always
+        --network=pmm-qa
         -p 8082:8080
         -p 8447:8443
         -e PMM_POSTGRES_DBNAME=grafana
