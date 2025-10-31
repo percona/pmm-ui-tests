@@ -79,7 +79,7 @@
         path: "{{ item.path }}"
         owner: "{{ item.owner }}"
         group: "{{ item.owner }}"
-        mode: '0640'
+        mode: '0600'
       loop:
         - { path: "{{ ssl_dir }}/ca.crt", owner: "1000" }
         - { path: "{{ ssl_dir }}/server.crt", owner: "26" }
