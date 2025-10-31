@@ -39,6 +39,11 @@
       args:
         creates: "{{ ssl_dir }}/server.key"
 
+    - name: Set permissions for server.key to 0600
+      file:
+        path: "{{ ssl_dir }}/server.key"
+        mode: '0600'
+
     - name: Generate server CSR
       shell: "openssl req -new -key {{ ssl_dir }}/server.key -config ./external-pgsql-ssl-config.cnf -out {{ ssl_dir }}/server.csr"
       args:
@@ -97,10 +102,9 @@
         creates: "/var/lib/docker/containers/external-postgres-ssl"
 
     - name: Wait until external-postgres-ssl is healthy
-      shell: >
-        docker inspect --format='{{json .State.Health.Status}}' external-postgres-ssl
+      shell: docker inspect --format='{{ .State.Health.Status }}' external-postgres-ssl
       register: pg_health
-      until: pg_health.stdout.find('healthy') != -1
+      until: "'healthy' in pg_health.stdout"
       retries: 10
       delay: 10
 
