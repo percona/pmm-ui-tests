@@ -15,7 +15,7 @@ const runContainerWithoutDataContainer = async (I) => {
 const runContainerWithPasswordVariable = async (I) => {
   await I.verifyCommand('mkdir $HOME/srvPassword/ || true');
   await I.verifyCommand('chmod -R 777 $HOME/srvPassword/ || true');
-  await I.verifyCommand(`docker run -v $HOME/srvPassword:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass -e -e PMM_ENABLE_INTERNAL_PG_QAN=1 --restart always --publish 8082:8080 --name pmm-server-password ${dockerVersion}`);
+  await I.verifyCommand(`docker run -v $HOME/srvPassword:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass -e PMM_ENABLE_INTERNAL_PG_QAN=1 --restart always --publish 8082:8080 --name pmm-server-password ${dockerVersion}`);
 };
 
 const runContainerWithPasswordVariableUpgrade = async (I) => {
