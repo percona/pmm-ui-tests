@@ -30,7 +30,7 @@ Data(data).Scenario(
     const postgresDataSourceLocator = locate('div').withChild(locate('h2 > a').withText('PostgreSQL'));
 
     console.log(await I.verifyCommand('ls /usr/bin/'));
-    const ansibleResult = await I.verifyCommand(`ansible-playbook --connection=local --inventory 127.0.0.1, --limit 127.0.0.1 testdata/external-services/${ansibleName}.yml --extra-vars "pmm_server_image=${dockerImage}" ansible_python_interpreter=/usr/bin/python3`);
+    const ansibleResult = await I.verifyCommand(`ansible-playbook --connection=local --inventory 127.0.0.1, --limit 127.0.0.1 testdata/external-services/${ansibleName}.yml --extra-vars "pmm_server_image=${dockerImage} ansible_python_interpreter=/usr/bin/python3"`);
 
     console.log(`Ansible result is: ${ansibleResult}`);
 
