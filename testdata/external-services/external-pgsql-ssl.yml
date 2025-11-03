@@ -100,6 +100,7 @@
         - { path: "{{ ssl_dir }}/server.key", owner: "26" }
         - { path: "{{ ssl_dir }}/client.key", owner: "1000" }
         - { path: "{{ ssl_dir }}/client.crt", owner: "1000" }
+      become: yes
 
     - name: Start external-postgres-ssl container
       shell: >
