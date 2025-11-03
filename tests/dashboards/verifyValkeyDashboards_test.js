@@ -102,7 +102,7 @@ Scenario('PMM-T2087 - Open the Valkey Memory dashboard and verify metrics @night
   dashboardPage.waitForDashboardOpened();
   await dashboardPage.expandEachDashboardRow();
   await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.ValkeyMemoryDashboard.metrics);
-  await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
+  await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
 });
 
 Scenario(
@@ -133,7 +133,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.ValkeyPersistenceDetailsDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
   },
 );
 
@@ -165,6 +165,6 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.ValkeySlowlogDashboard.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
   },
 );
