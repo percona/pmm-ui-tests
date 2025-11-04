@@ -109,6 +109,7 @@ class QueryAnalyticsData {
 
   async getRowCount() {
     for (let i = 0; i < 6; i++) {
+      I.waitForVisible(this.elements.queryRows.first(), 30);
       const numberOfElements = await I.grabNumberOfVisibleElements(this.elements.queryRows);
 
       if (numberOfElements > 1) {
