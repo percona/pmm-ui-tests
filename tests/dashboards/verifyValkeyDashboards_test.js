@@ -9,7 +9,8 @@ Feature('Valkey Dashboards').retry(1);
 
 BeforeSuite(async () => {
   const response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.VALKEY, 'valkey');
-  valkeyClusterName = response.cluster; // Ensure response shape matches.
+
+  valkeyClusterName = response.cluster;
 });
 
 Before(async ({ I }) => {
@@ -19,7 +20,7 @@ Before(async ({ I }) => {
 Scenario(
   'PMM-T2087 - Open the Valkey Overview dashboard and verify metrics @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-  assert.ok(valkeyClusterName, 'Valkey cluster name was not resolved in BeforeSuite');
+    assert.ok(valkeyClusterName, 'Valkey cluster name was not resolved in BeforeSuite');
     const url = I.buildUrlWithParams(dashboardPage.ValkeyOverviewDashboard.url, {
       cluster: valkeyClusterName,
       from: 'now-5m',
@@ -29,7 +30,6 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistencePartialMatch(dashboardPage.ValkeyOverviewDashboard.metrics);
-    // Placeholder count; adjust once we know expected number of panels with no data allowed
     await dashboardPage.verifyThereAreNoGraphsWithoutData(0);
   },
 );
@@ -42,6 +42,7 @@ Scenario(
       cluster: valkeyClusterName,
       from: 'now-5m',
     });
+
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
@@ -58,6 +59,7 @@ Scenario(
       cluster: valkeyClusterName,
       from: 'now-5m',
     });
+
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
@@ -74,6 +76,7 @@ Scenario(
       cluster: valkeyClusterName,
       from: 'now-5m',
     });
+
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
@@ -85,6 +88,7 @@ Scenario(
 Scenario('PMM-T2087 - Open the Valkey Load dashboard and verify metrics @nightly @dashboards', async ({ I, dashboardPage }) => {
   assert.ok(valkeyClusterName, 'Valkey cluster name was not resolved in BeforeSuite');
   const url = I.buildUrlWithParams(dashboardPage.ValkeyLoadDashboard.url, { cluster: valkeyClusterName, from: 'now-5m' });
+
   I.amOnPage(url);
   dashboardPage.waitForDashboardOpened();
   await dashboardPage.expandEachDashboardRow();
@@ -98,6 +102,7 @@ Scenario('PMM-T2087 - Open the Valkey Memory dashboard and verify metrics @night
     cluster: valkeyClusterName,
     from: 'now-5m',
   });
+
   I.amOnPage(url);
   dashboardPage.waitForDashboardOpened();
   await dashboardPage.expandEachDashboardRow();
@@ -113,6 +118,7 @@ Scenario(
       cluster: valkeyClusterName,
       from: 'now-5m',
     });
+
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
@@ -129,6 +135,7 @@ Scenario(
       cluster: valkeyClusterName,
       from: 'now-5m',
     });
+
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
@@ -145,6 +152,7 @@ Scenario(
       cluster: valkeyClusterName,
       from: 'now-5m',
     });
+
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
@@ -161,6 +169,7 @@ Scenario(
       cluster: valkeyClusterName,
       from: 'now-5m',
     });
+
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
