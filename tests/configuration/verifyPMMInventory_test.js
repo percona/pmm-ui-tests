@@ -349,7 +349,7 @@ Data(instances).Scenario(
     remoteInstancesPage.openAddRemotePage(current.name);
     const inputs = await remoteInstancesPage.fillRemoteFields(serviceName);
 
-    remoteInstancesPage.createRemoteInstance(serviceName);
+    await remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
 
     const newLabels = {
@@ -402,7 +402,7 @@ Scenario(
     remoteInstancesPage.verifyAddInstancePageOpened();
     const inputs = await remoteInstancesPage.fillRemoteRDSFields(serviceName, nodeName);
 
-    remoteInstancesPage.createRemoteInstance(serviceName);
+    await remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     const newLabels = {
       environment: `${inputs.environment} edited` || `${serviceName} environment edited`,
@@ -472,7 +472,7 @@ Scenario(
     I.seeInField(remoteInstancesPage.fields.serviceName, serviceName);
     const inputs = await remoteInstancesPage.fillRemoteRDSFields(serviceName, nodeName);
 
-    remoteInstancesPage.createRemoteInstance(serviceName);
+    await remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     const newLabels = {
       environment: `${inputs.environment} edited` || `${serviceName} environment edited`,

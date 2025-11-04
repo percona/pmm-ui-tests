@@ -130,6 +130,8 @@ exports.config = {
         stdout: '-',
         options: {
           mochaFile: './tests/output/result.xml',
+          antMode: true,
+          outputs: true,
           jenkinsMode: true,
         },
       },

@@ -108,6 +108,17 @@ class QueryAnalyticsData {
   }
 
   async getRowCount() {
+    for (let i = 0; i < 6; i++) {
+      const numberOfElements = await I.grabNumberOfVisibleElements(this.elements.queryRows);
+
+      if (numberOfElements > 1) {
+        break;
+      }
+
+      I.click(queryAnalyticsPage.buttons.refresh);
+      I.wait(10);
+    }
+
     I.waitForVisible(this.elements.queryRows, 30);
 
     // Subtract 1 because it includes TOTAL
@@ -140,6 +151,27 @@ class QueryAnalyticsData {
     I.click(this.fields.searchBy);
     I.fillField(this.fields.searchBy, value);
     I.pressKey('Enter');
+  }
+
+  click(value) {
+    I.waitForVisible(this.elements.queryRow(0), 30);
+    I.waitForVisible(this.fields.searchBy, 30);
+    I.wait(1);
+    I.clearField(this.fields.searchBy);
+    I.click(this.fields.searchBy);
+    I.fillField(this.fields.searchBy, value);
+  }
+
+  async getSearchValue() {
+    I.waitForVisible(this.fields.searchBy, 5);
+
+    return await I.grabAttributeFrom(this.fields.searchBy, 'value');
+  }
+
+  clearSearchValue() {
+    I.click(this.fields.searchBy);
+    I.wait(1);
+    I.clearField(this.fields.searchBy);
   }
 
   async getCountOfItems() {
