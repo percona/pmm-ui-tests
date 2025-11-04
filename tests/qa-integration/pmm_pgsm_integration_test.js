@@ -506,6 +506,7 @@ Scenario(
 
     I.amOnPage(url);
     queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(queryAnalyticsPage.data.elements.queryRows.first(), 30);
 
     const count = await queryAnalyticsPage.data.getRowCount();
 
