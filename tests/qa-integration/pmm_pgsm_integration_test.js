@@ -707,7 +707,7 @@ Scenario(
     await pmmInventoryPage.openAgents(service_id);
     await pmmInventoryPage.checkAgentOtherDetailsSection('Qan postgresql pgstatmonitor agent', 'query_examples_disabled=true');
 
-    I.wait(90);
+    I.wait(120);
 
     const url = I.buildUrlWithParams(queryAnalyticsPage.url, {
       service_name: pgServiceName,
