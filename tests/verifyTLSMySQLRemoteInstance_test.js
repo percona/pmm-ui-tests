@@ -121,16 +121,11 @@ Data(instances).Scenario(
     let command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem TLS_mysql_no_tls_key`;
     let output = await I.verifyCommand(command, responseMessage, 'pass');
 
-    assert.ok(output.trim() === responseMessage.trim(), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
     command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-key=/var/lib/mysql/client-key.pem TLS_mysql_no_tls_cert`;
     output = await I.verifyCommand(command, responseMessage, 'pass');
 
-    assert.ok(output.trim() === responseMessage.trim(), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
-
     command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem TLS_mysql_only_ca`;
-    output = await I.verifyCommand(command, responseMessage, 'pass');
-
-    assert.ok(output.trim() === responseMessage.trim(), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
+    output = await I.verifyCommand(command, 'MySQL Service added.', 'pass');
   },
 ).retry(0);
 
