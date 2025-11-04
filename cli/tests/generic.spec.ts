@@ -202,7 +202,8 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     await output.outContains('.zip created.');
     const zipName = output.getStdOutLines().find((item) => item.includes('.zip created.'))!
       .split(' ').at(0) ?? '';
-    expect(readZipFile(zipName), `Verify there are 47 files in ${zipName}`).toHaveLength(47);
+    const filesInZip = readZipFile(zipName);
+    expect(filesInZip, `Verify there are 47 files in ${zipName}.\n ${JSON.stringify(filesInZip, null, 2)}`).toHaveLength(47);
   });
 
   /**
