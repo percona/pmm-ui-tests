@@ -26,6 +26,7 @@ services:
       - PMM_CLICKHOUSE_USER=pmm
       - PMM_CLICKHOUSE_DATABASE=pmm
       - PMM_CLICKHOUSE_ADDR=external-clickhouse:9000
+      - PMM_ENABLE_INTERNAL_PG_QAN=1
 
   pmm-client:
     image: perconalab/pmm-client:3-dev-latest
