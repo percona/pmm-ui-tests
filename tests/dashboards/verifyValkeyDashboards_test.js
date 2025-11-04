@@ -11,6 +11,7 @@ BeforeSuite(async () => {
   const response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.VALKEY, 'valkey');
 
   valkeyClusterName = response.cluster;
+  assert.ok(valkeyClusterName, 'Valkey cluster name was not resolved in BeforeSuite');
 });
 
 Before(async ({ I }) => {
@@ -20,7 +21,6 @@ Before(async ({ I }) => {
 Scenario(
   'PMM-T2087 - Open the Valkey Overview dashboard and verify metrics @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    assert.ok(valkeyClusterName, 'Valkey cluster name was not resolved in BeforeSuite');
     const url = I.buildUrlWithParams(dashboardPage.ValkeyOverviewDashboard.url, {
       cluster: valkeyClusterName,
       from: 'now-5m',
@@ -37,7 +37,6 @@ Scenario(
 Scenario(
   'PMM-T2087 - Open the Valkey Clients dashboard and verify metrics @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    assert.ok(valkeyClusterName, 'Valkey cluster name was not resolved in BeforeSuite');
     const url = I.buildUrlWithParams(dashboardPage.ValkeyClientsDashboard.url, {
       cluster: valkeyClusterName,
       from: 'now-5m',
@@ -54,7 +53,6 @@ Scenario(
 Scenario(
   'PMM-T2087 - Open the Valkey Cluster Details dashboard and verify metrics @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    assert.ok(valkeyClusterName, 'Valkey cluster name was not resolved in BeforeSuite');
     const url = I.buildUrlWithParams(dashboardPage.ValkeyClusterDetailsDashboard.url, {
       cluster: valkeyClusterName,
       from: 'now-5m',
@@ -71,7 +69,6 @@ Scenario(
 Scenario(
   'PMM-T2087 - Open the Valkey Command Detail dashboard and verify metrics @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    assert.ok(valkeyClusterName, 'Valkey cluster name was not resolved in BeforeSuite');
     const url = I.buildUrlWithParams(dashboardPage.ValkeyCommandDetailDashboard.url, {
       cluster: valkeyClusterName,
       from: 'now-5m',
@@ -86,7 +83,6 @@ Scenario(
 );
 
 Scenario('PMM-T2087 - Open the Valkey Load dashboard and verify metrics @nightly @dashboards', async ({ I, dashboardPage }) => {
-  assert.ok(valkeyClusterName, 'Valkey cluster name was not resolved in BeforeSuite');
   const url = I.buildUrlWithParams(dashboardPage.ValkeyLoadDashboard.url, { cluster: valkeyClusterName, from: 'now-5m' });
 
   I.amOnPage(url);
@@ -97,7 +93,6 @@ Scenario('PMM-T2087 - Open the Valkey Load dashboard and verify metrics @nightly
 });
 
 Scenario('PMM-T2087 - Open the Valkey Memory dashboard and verify metrics @nightly @dashboards', async ({ I, dashboardPage }) => {
-  assert.ok(valkeyClusterName, 'Valkey cluster name was not resolved in BeforeSuite');
   const url = I.buildUrlWithParams(dashboardPage.ValkeyMemoryDashboard.url, {
     cluster: valkeyClusterName,
     from: 'now-5m',
@@ -113,7 +108,6 @@ Scenario('PMM-T2087 - Open the Valkey Memory dashboard and verify metrics @night
 Scenario(
   'PMM-T2087 - Open the Valkey Network dashboard and verify metrics @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    assert.ok(valkeyClusterName, 'Valkey cluster name was not resolved in BeforeSuite');
     const url = I.buildUrlWithParams(dashboardPage.ValkeyNetworkDashboard.url, {
       cluster: valkeyClusterName,
       from: 'now-5m',
@@ -130,7 +124,6 @@ Scenario(
 Scenario(
   'PMM-T2087 - Open the Valkey Persistence Details dashboard and verify metrics @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    assert.ok(valkeyClusterName, 'Valkey cluster name was not resolved in BeforeSuite');
     const url = I.buildUrlWithParams(dashboardPage.ValkeyPersistenceDetailsDashboard.url, {
       cluster: valkeyClusterName,
       from: 'now-5m',
@@ -147,7 +140,6 @@ Scenario(
 Scenario(
   'PMM-T2087 - Open the Valkey Replication dashboard and verify metrics @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    assert.ok(valkeyClusterName, 'Valkey cluster name was not resolved in BeforeSuite');
     const url = I.buildUrlWithParams(dashboardPage.ValkeyReplicationDashboard.url, {
       cluster: valkeyClusterName,
       from: 'now-5m',
@@ -164,7 +156,6 @@ Scenario(
 Scenario(
   'PMM-T2087 - Open the Valkey Slowlog dashboard and verify metrics @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    assert.ok(valkeyClusterName, 'Valkey cluster name was not resolved in BeforeSuite');
     const url = I.buildUrlWithParams(dashboardPage.ValkeySlowlogDashboard.url, {
       cluster: valkeyClusterName,
       from: 'now-5m',
