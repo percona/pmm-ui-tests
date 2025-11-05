@@ -138,7 +138,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     expect(output.getStdOutLines()[0], 'Verify "pmm" Database Exists').toEqual('pmm');
     expect(output.getStdOutLines()[1], 'Verify Clickhouse engine is "Atomic"').toEqual('Atomic');
     expect(output.getStdOutLines()[2], `Verify Clickhouse data_path is "${expectedPath}"`).toContain(expectedPath);
-    expect(output.getStdOutLines()[3], `Verify Clickhouse metadata_path contains "${expectedPath}"`).toContain(expectedPath);
+    expect(output.getStdOutLines()[3].startsWith('store'), 'Verify Clickhouse metadata_path is relative and starts with "store"').toBeTruthy();
   });
 
   test('PMM-T1862 Verify all processes in PMM server is running under non-root user', async ({}) => {
@@ -150,5 +150,13 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     const rootProcesses = processesUser.filter((processUser) => processUser.includes('root'));
 
     expect(rootProcesses, `Processes that does run as root are: ${rootProcesses}`).toHaveLength(0);
+  });
+
+  test('PMM-T2092 Verify there are no handlererror gathering metrics error in pmm-agent logs', async ({}) => {
+    const pmmAgentLogs = await cli.exec('docker exec pmm-server cat /srv/logs/pmm-agent.log | grep -i "handlererror gathering metrics:"');
+    expect.soft(pmmAgentLogs.stdout, 'Verify there are no handlererror gathering metrics error in pmm-agent logs')
+      .not.toContain('handlererror gathering metrics');
+    expect.soft(pmmAgentLogs.stdout, 'Verify there are no was collected before with the same name and label values error in pmm-agent logs')
+      .not.toContain('was collected before with the same name and label values');
   });
 });
