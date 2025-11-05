@@ -16,6 +16,16 @@ const MongodbShardedClusterSummary = require('../pages/dashboards/mongodb/mongod
 const MySQLMyRocksDetailsDashboard = require('../pages/dashboards/mysql/mySQLMyRocksDetailsDashboard');
 const { locateOption } = require('../helper/locatorHelper');
 const MongodbInstancesCompareDashboard = require('../dashboards/pages/mongodb/mongodbInstancesCompareDashboard');
+const ValkeyOverviewDashboard = require('../pages/dashboards/valkey/valkeyOverviewDashboard');
+const ValkeyClientsDashboard = require('../pages/dashboards/valkey/valkeyClientsDashboard');
+const ValkeyClusterDetailsDashboard = require('../pages/dashboards/valkey/valkeyClusterDetailsDashboard');
+const ValkeyCommandDetailDashboard = require('../pages/dashboards/valkey/valkeyCommandDetailDashboard');
+const ValkeyLoadDashboard = require('../pages/dashboards/valkey/valkeyLoadDashboard');
+const ValkeyMemoryDashboard = require('../pages/dashboards/valkey/valkeyMemoryDashboard');
+const ValkeyNetworkDashboard = require('../pages/dashboards/valkey/valkeyNetworkDashboard');
+const ValkeyPersistenceDetailsDashboard = require('../pages/dashboards/valkey/valkeyPersistenceDetailsDashboard');
+const ValkeyReplicationDashboard = require('../pages/dashboards/valkey/valkeyReplicationDashboard');
+const ValkeySlowlogDashboard = require('../pages/dashboards/valkey/valkeySlowlogDashboard');
 
 module.exports = {
   // insert your locators and methods here
@@ -308,6 +318,16 @@ module.exports = {
       'Maximum Galera Replication Latency',
     ],
   },
+  ValkeyOverviewDashboard: ValkeyOverviewDashboard,
+  ValkeyClientsDashboard: ValkeyClientsDashboard,
+  ValkeyClusterDetailsDashboard: ValkeyClusterDetailsDashboard,
+  ValkeyCommandDetailDashboard: ValkeyCommandDetailDashboard,
+  ValkeyLoadDashboard: ValkeyLoadDashboard,
+  ValkeyMemoryDashboard: ValkeyMemoryDashboard,
+  ValkeyNetworkDashboard: ValkeyNetworkDashboard,
+  ValkeyPersistenceDetailsDashboard: ValkeyPersistenceDetailsDashboard,
+  ValkeyReplicationDashboard: ValkeyReplicationDashboard,
+  ValkeySlowlogDashboard: ValkeySlowlogDashboard,
   mySQLMyRocksDetailsDashboard: MySQLMyRocksDetailsDashboard,
   postgresqlInstanceSummaryDashboard: PostgresqlInstanceSummaryDashboard,
   postgresqlCheckpointDashboard: PostgresqlCheckpointDashboard,
@@ -1189,6 +1209,19 @@ module.exports = {
   },
 
   graphsLocatorPartialMatch(metricName) {
+    // Support wildcard '*' in metricName to match any sequence of characters (for dynamic IDs).
+    // Build an XPath using contains() segments when wildcard is present for broader matching.
+    if (metricName.includes('*')) {
+      // Split on '*' and ensure all fixed fragments appear in order.
+      const parts = metricName.split('*').filter(Boolean);
+      // Start with panels
+      let xpath = "//section[contains(@data-testid,'Panel header')";
+      for (const p of parts) {
+        xpath += ` and contains(@data-testid,'${p}')`;
+      }
+      xpath += ']';
+      return locate(xpath);
+    }
     return locate(`[data-testid*="data-testid Panel header"][data-testid*="${metricName}"]`);
   },
 
