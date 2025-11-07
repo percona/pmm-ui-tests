@@ -5,6 +5,27 @@ Feature('QAN timerange').retry(1);
 
 Before(async ({ I, queryAnalyticsPage, codeceptjsConfig }) => {
   I.restartBrowser({ permissions: ['clipboard-read', 'clipboard-write'], origin: codeceptjsConfig.config.helpers.Playwright.url });
+  await I.usePlaywrightTo('Mock BE Responses', async ({ page }) => {
+    await page.route('**/v1/users/me', (route) => route.fulfill({
+      status: 200,
+      body: JSON.stringify({
+        user_id: 1,
+        product_tour_completed: true,
+        alerting_tour_completed: true,
+        snoozed_pmm_version: '',
+      }),
+    }));
+
+    await page.route('**/v1/server/updates?force=**', (route) => route.fulfill({
+      status: 200,
+      body: JSON.stringify({
+        installed: {},
+        latest: {},
+        update_available: false,
+      }),
+    }));
+  });
+
   await I.Authorize();
   I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
   queryAnalyticsPage.waitForLoaded();
