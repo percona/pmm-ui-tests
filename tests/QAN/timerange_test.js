@@ -3,7 +3,8 @@ const assert = require('assert');
 
 Feature('QAN timerange').retry(1);
 
-Before(async ({ I, queryAnalyticsPage }) => {
+Before(async ({ I, queryAnalyticsPage, codeceptjsConfig }) => {
+  I.restartBrowser({ permissions: ['clipboard-read', 'clipboard-write'], origin: codeceptjsConfig.config.helpers.Playwright.url });
   await I.Authorize();
   I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
   queryAnalyticsPage.waitForLoaded();
@@ -97,6 +98,30 @@ Scenario(
     await queryAnalyticsPage.data.selectRow(2);
     I.click(queryAnalyticsPage.buttons.copyButton);
     I.waitForVisible(I.getSuccessPopUpLocator(), 10);
+
+    const dateTime = moment().format('x');
+    const url = new URL(await I.usePlaywrightTo('Read Clipboard', async ({ page }) => await page.evaluate(async () => navigator.clipboard.readText())));
+    const toTimeFromUrl1 = url.searchParams.get('to');
+
+    assert.ok(Math.abs(dateTime - toTimeFromUrl1) < 60000, 'Difference between moment time and first copied time must be less then one minute');
+
+    I.wait(30);
+    I.refreshPage();
+    queryAnalyticsPage.waitForLoaded();
+
+    I.waitForVisible(queryAnalyticsPage.buttons.copyButton);
+    I.click(queryAnalyticsPage.buttons.copyButton);
+    I.waitForVisible(I.getSuccessPopUpLocator(), 10);
+    const url2 = new URL(await I.usePlaywrightTo('Read Clipboard', async ({ page }) => await page.evaluate(async () => navigator.clipboard.readText())));
+    const toTimeFromUrl2 = url2.searchParams.get('to');
+
+    assert.ok(Math.abs(toTimeFromUrl1 - toTimeFromUrl2) < 120000, 'Difference between moment time and second copied time must be less then two minutes');
+    assert.notEqual(toTimeFromUrl1, toTimeFromUrl2, 'TimeFromUrl2 must not be the same as timeFromUrl1');
+
+    I.openNewTab();
+    I.amOnPage(url.toString());
+    queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(queryAnalyticsPage.data.elements.selectedRowByNumber('2'));
   },
 );
 
@@ -137,15 +162,8 @@ Scenario(
     I.assertContain(url.split('to=')[1].replaceAll('%20', ' '), moment(to).toISOString(), 'Url does not contain selected to date time');
 
     I.click(queryAnalyticsPage.buttons.copyButton);
-    I.wait(1);
-    const clipboardNotAvailable = await I.grabNumberOfVisibleElements(queryAnalyticsPage.elements.clipboardLink);
-    let clipBoardUrl;
-
-    if (clipboardNotAvailable > 0) {
-      clipBoardUrl = await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink);
-    } else {
-      clipBoardUrl = await I.getClipboardText();
-    }
+    I.waitForVisible(I.getSuccessPopUpLocator(), 10);
+    const clipBoardUrl = await I.usePlaywrightTo('Read Clipboard', async ({ page }) => await page.evaluate(async () => navigator.clipboard.readText()));
 
     I.amOnPage(clipBoardUrl);
     queryAnalyticsPage.waitForLoaded();
@@ -169,7 +187,7 @@ Scenario(
     await I.click(queryAnalyticsPage.buttons.copyButton);
     await I.waitForVisible(I.getSuccessPopUpLocator(), 10);
 
-    const url = await I.getClipboardText();
+    const url = await I.usePlaywrightTo('Read Clipboard', async ({ page }) => await page.evaluate(async () => navigator.clipboard.readText()));
 
     await I.openNewTab({ viewport: { width: 1920, height: 1080 } });
     await I.amOnPage(url);
@@ -196,7 +214,7 @@ Scenario(
     I.click(queryAnalyticsPage.buttons.copyButton);
     I.waitForVisible(I.getSuccessPopUpLocator(), 10);
 
-    const url = await I.getClipboardText();
+    const url = await I.usePlaywrightTo('Read Clipboard', async ({ page }) => await page.evaluate(async () => navigator.clipboard.readText()));
 
     I.openNewTab();
     I.amOnPage(url);
