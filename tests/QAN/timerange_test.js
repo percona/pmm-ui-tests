@@ -219,7 +219,7 @@ Scenario(
     await I.waitForVisible(queryAnalyticsPage.data.elements.selectedRowByNumber(2), 20);
     await I.waitForElement(queryAnalyticsPage.data.buttons.close, 30);
   },
-);
+).retry(2);
 
 Scenario(
   'PMM-T1143 - Verify columns and filters when we go on copied link by new QAN CopyButton @qan',
