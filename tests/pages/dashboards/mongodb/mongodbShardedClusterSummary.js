@@ -14,7 +14,7 @@ class MongodbShardedClusterSummary {
       'Data distribution',
       'Command Operations',
       'Top Hottest Collections by Read',
-      'Query execution times',
+      'Operation Latencies',
       'Top Hottest Collections by Write',
       'Operations Per Shard',
       'MongoDB Versions',

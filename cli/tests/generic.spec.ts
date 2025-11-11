@@ -186,7 +186,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
   test('run pmm-admin summary --server-url with https and verify warning', async ({}) => {
     const output = await cli.exec('sudo pmm-admin summary --server-url=\'https://admin:admin@localhost\'');
     await output.assertSuccess();
-    await output.stderr.contains('certificate relies on legacy Common Name field, use SANs instead');
+    await output.stderr.contains('certificate signed by unknown authority');
     await output.outContains('.zip created.');
   });
 

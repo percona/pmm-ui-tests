@@ -5,7 +5,24 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
-// TODO: automate PMM-T672 mongodb after fix for https://perconadev.atlassian.net/browse/PMM-11406
+Scenario(
+  'PMM-T672 - Verify summary for MongoDB is displayed on Instance Summary dashboard @dashboards @nightly',
+  async ({
+    I, dashboardPage, inventoryAPI,
+  }) => {
+    const psmdb_service_response = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, 'rs101');
+    const url = I.buildUrlWithParams(
+      dashboardPage.mongoDbInstanceSummaryDashboard.url,
+      { service_name: psmdb_service_response.service_name, from: 'now-5m' },
+    );
+
+    I.amOnPage(url);
+    dashboardPage.waitForDashboardOpened();
+    I.waitForVisible(dashboardPage.fields.serviceSummary, 30);
+    I.click(dashboardPage.fields.serviceSummary);
+    I.waitForVisible(dashboardPage.fields.mongoDBServiceSummaryContent, 150);
+  },
+).retry(1);
 
 Scenario(
   'PMM-T671 + PMM-T666 + PMM-T672 - Verify summary for PS is displayed on Instance Summary dashboard @dashboards @nightly',

@@ -69,7 +69,7 @@ Data(instances).Scenario(
     I.clearField(remoteInstancesPage.fields.customAutoDiscoveryfield);
     I.fillField(remoteInstancesPage.fields.customAutoDiscoveryfield, '1');
 
-    remoteInstancesPage.createRemoteInstance(serviceName);
+    await remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, serviceName);
@@ -113,7 +113,7 @@ Data(instances).Scenario(
     assert.ok(grabbedHostname.startsWith(serviceName), `Hostname is incorrect: ${grabbedHostname}`);
     I.seeInField(remoteInstancesPage.fields.serviceName, serviceName);
     await remoteInstancesPage.fillRemoteRDSFields(serviceName, nodeName);
-    remoteInstancesPage.createRemoteInstance(serviceName);
+    await remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     // Skipping due to QAN Setup part on AWS
     // await pmmInventoryPage.verifyAgentHasStatusRunning(serviceName);
