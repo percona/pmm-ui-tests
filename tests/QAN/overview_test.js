@@ -62,7 +62,7 @@ Scenario(
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.queryDetails.checkTab('Plan');
-    await queryAnalyticsPage.queryDetails.checkPlanTabIsEmpty();
+    await queryAnalyticsPage.queryDetails.checkPlanTabIsNotEmpty();
   },
 ).retry(2);
 

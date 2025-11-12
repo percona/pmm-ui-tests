@@ -109,8 +109,26 @@ module.exports = {
       `Failed to getService. Response message is "${services.data.message}"`,
     );
 
-    return services.data.services
+    const foundServices = services.data.services
       .find((service) => Object.entries(details).every(([key, value]) => service[key].includes(value))) || null;
+
+    if (foundServices === null) {
+      throw new Error(`Service with details "${JSON.stringify(details)}" not found.`);
+    }
+
+    return foundServices;
+  },
+
+  async getServiceListDetailsByPartialDetails(details) {
+    const services = await this.apiGetServices();
+
+    assert.ok(
+      services.status === 200,
+      `Failed to getService. Response message is "${services.data.message}"`,
+    );
+
+    return services.data.services
+      .filter((service) => Object.entries(details).every(([key, value]) => service[key].includes(value))) || null;
   },
 
   async apiGetPMMAgentInfoByServiceId(serviceId, agentType = AGENT_TYPE.PMM_AGENT) {

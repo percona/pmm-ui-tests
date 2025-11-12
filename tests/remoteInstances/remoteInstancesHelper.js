@@ -147,6 +147,7 @@ module.exports = {
       ps_8_4: {
         host: 'ps_pmm_8.4_1',
         port: '3306',
+        server_port: '3306',
         username: 'root',
         password: 'GRgrO9301RuF',
         clusterName: 'mysql_clstr',
@@ -329,7 +330,9 @@ module.exports = {
           cluster_name: 'mysqlaws_aurora2',
         },
         mysqlaurora3: {
+          username: process.env.PMM_QA_AURORA3_MYSQL_USER,
           address: process.env.PMM_QA_AURORA3_MYSQL_HOST,
+          port: process.env.PMM_QA_AURORA3_MYSQL_PORT,
           password: process.env.PMM_QA_AURORA3_MYSQL_PASSWORD,
           instance_id: 'pmm-qa-aurora3-mysql-instance-1',
           cluster_name: 'mysqlaws_aurora3',

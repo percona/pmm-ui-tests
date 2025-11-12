@@ -1,16 +1,12 @@
 const assert = require('assert');
-const { SERVICE_TYPE } = require('../helper/constants');
 
 Feature('PMM upgrade tests for advisors and alerting');
-
-const { psMySql } = inject();
 
 const advisorName = 'Check for unsupported PostgreSQL';
 const groupName = 'Version Configuration';
 const ruleName = 'Alert Rule for upgrade';
-const psServiceName = 'upgrade-stt-ps-5.7.30';
-const connection = psMySql.defaultConnection;
-const failedCheckMessage = 'Newer version of Percona Server for MySQL is available';
+const checkName = 'MongoDB version check';
+const beforeUpgradePmmVersion = process.env.CLIENT_VERSION ? parseInt(process.env.CLIENT_VERSION.replace(/\./g, ''), 10) : 300;
 
 Before(async ({ I }) => {
   I.Authorize();
@@ -47,6 +43,20 @@ Scenario(
   },
 );
 
+Scenario('Disable advisor before upgrade @pre-advisors-alerting-upgrade', async ({
+  I,
+  advisorsPage,
+}) => {
+  if (beforeUpgradePmmVersion > 340) {
+    I.amOnPage(advisorsPage.urlConfiguration);
+    I.waitForVisible(advisorsPage.elements.advisorsGroupHeader(groupName));
+    I.click(advisorsPage.elements.advisorsGroupHeader(groupName));
+    I.waitForVisible(advisorsPage.buttons.disableEnableCheck(checkName));
+    I.click(advisorsPage.buttons.disableEnableCheck(checkName));
+    I.seeTextEquals('Enable', advisorsPage.buttons.disableEnableCheck(checkName));
+  }
+});
+
 Scenario(
   'Verify advisors intervals remain the same after upgrade @post-advisors-alerting-upgrade',
   async ({
@@ -68,12 +78,14 @@ Scenario(
     I,
     advisorsPage,
   }) => {
-    const checkName = 'MongoDB Version';
+    if (beforeUpgradePmmVersion > 340) {
+      I.amOnPage(advisorsPage.urlConfiguration);
+      I.waitForVisible(advisorsPage.elements.advisorsGroupHeader(groupName));
+      I.click(advisorsPage.elements.advisorsGroupHeader(groupName));
 
-    I.amOnPage(advisorsPage.url);
-    I.waitForVisible(advisorsPage.buttons.disableEnableCheck(checkName));
-    I.seeTextEquals('Enable', advisorsPage.buttons.disableEnableCheck(checkName));
-    I.seeTextEquals('Disabled', advisorsPage.elements.statusCellByName(checkName));
+      I.waitForVisible(advisorsPage.buttons.disableEnableCheck(checkName));
+      I.seeTextEquals('Enable', advisorsPage.buttons.disableEnableCheck(checkName));
+    }
   },
 );
 

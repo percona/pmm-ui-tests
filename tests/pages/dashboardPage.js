@@ -1,18 +1,31 @@
+/* eslint-disable import/no-useless-path-segments */
 const { I, adminPage } = inject();
 const assert = require('assert');
-const { DashboardPanelMenu } = require('../dashboards/pages/DashboardPanelMenu');
-const PmmHealthDashboard = require('../dashboards/pages/pmmHealthDashboard');
-const HomeDashboard = require('../dashboards/pages/homeDashboard');
-const MongodbShardedClusterSummary = require('../dashboards/pages/mongodbShardedClusterSummary');
-const PostgresqlTopQueriesDashboard = require('../dashboards/pages/postgresqlTopQueriesDashboard');
-const PostgresqlInstancesOverviewExtendedDashboard = require('../dashboards/pages/postgresqlInstancesOverviewExtendedDashboard');
-const MongodbPBMDetailsDashboard = require('../dashboards/pages/mongodbPBMDetailsDashboard');
-const PostgresqlInstanceOverviewDashboard = require('../dashboards/pages/postgresqlInstanceOverviewDashboard');
-const PostgresqlInstanceSummaryDashboard = require('../dashboards/pages/postgresqlInstanceSummaryDashboard');
-const PostgresqlCheckpointDashboard = require('../dashboards/pages/postgresqlCheckpointDashboard');
-const PostgresqlReplicationOverviewDashboard = require('../dashboards/pages/postgresqlReplicationOverviewDashboard');
-const PostgresqlPatroniDashboard = require('../dashboards/pages/postgresqlPatroniDashboard');
+const { DashboardPanelMenu } = require('./dashboards/components/DashboardPanelMenu');
+const PmmHealthDashboard = require('./dashboards/experimental/pmmHealthDashboard');
+const HomeDashboard = require('./dashboards/homeDashboard');
+const PostgresqlTopQueriesDashboard = require('./dashboards/pgsql/postgresqlTopQueriesDashboard');
+const PostgresqlInstancesOverviewExtendedDashboard = require('./dashboards/pgsql/postgresqlInstancesOverviewExtendedDashboard');
+const MongodbPBMDetailsDashboard = require('./dashboards/mongodb/mongodbPBMDetailsDashboard');
+const PostgresqlInstanceOverviewDashboard = require('./dashboards/pgsql/postgresqlInstanceOverviewDashboard');
+const PostgresqlInstanceSummaryDashboard = require('./dashboards/pgsql/postgresqlInstanceSummaryDashboard');
+const PostgresqlCheckpointDashboard = require('./dashboards/pgsql/postgresqlCheckpointDashboard');
+const PostgresqlReplicationOverviewDashboard = require('./dashboards/pgsql/postgresqlReplicationOverviewDashboard');
+const PostgresqlPatroniDashboard = require('./dashboards/pgsql/postgresqlPatroniDashboard');
+const MongodbShardedClusterSummary = require('../pages/dashboards/mongodb/mongodbShardedClusterSummary');
+const MySQLMyRocksDetailsDashboard = require('../pages/dashboards/mysql/mySQLMyRocksDetailsDashboard');
 const { locateOption } = require('../helper/locatorHelper');
+const MongodbInstancesCompareDashboard = require('../dashboards/pages/mongodb/mongodbInstancesCompareDashboard');
+const ValkeyOverviewDashboard = require('../pages/dashboards/valkey/valkeyOverviewDashboard');
+const ValkeyClientsDashboard = require('../pages/dashboards/valkey/valkeyClientsDashboard');
+const ValkeyClusterDetailsDashboard = require('../pages/dashboards/valkey/valkeyClusterDetailsDashboard');
+const ValkeyCommandDetailDashboard = require('../pages/dashboards/valkey/valkeyCommandDetailDashboard');
+const ValkeyLoadDashboard = require('../pages/dashboards/valkey/valkeyLoadDashboard');
+const ValkeyMemoryDashboard = require('../pages/dashboards/valkey/valkeyMemoryDashboard');
+const ValkeyNetworkDashboard = require('../pages/dashboards/valkey/valkeyNetworkDashboard');
+const ValkeyPersistenceDetailsDashboard = require('../pages/dashboards/valkey/valkeyPersistenceDetailsDashboard');
+const ValkeyReplicationDashboard = require('../pages/dashboards/valkey/valkeyReplicationDashboard');
+const ValkeySlowlogDashboard = require('../pages/dashboards/valkey/valkeySlowlogDashboard');
 
 module.exports = {
   // insert your locators and methods here
@@ -305,6 +318,17 @@ module.exports = {
       'Maximum Galera Replication Latency',
     ],
   },
+  ValkeyOverviewDashboard: ValkeyOverviewDashboard,
+  ValkeyClientsDashboard: ValkeyClientsDashboard,
+  ValkeyClusterDetailsDashboard: ValkeyClusterDetailsDashboard,
+  ValkeyCommandDetailDashboard: ValkeyCommandDetailDashboard,
+  ValkeyLoadDashboard: ValkeyLoadDashboard,
+  ValkeyMemoryDashboard: ValkeyMemoryDashboard,
+  ValkeyNetworkDashboard: ValkeyNetworkDashboard,
+  ValkeyPersistenceDetailsDashboard: ValkeyPersistenceDetailsDashboard,
+  ValkeyReplicationDashboard: ValkeyReplicationDashboard,
+  ValkeySlowlogDashboard: ValkeySlowlogDashboard,
+  mySQLMyRocksDetailsDashboard: MySQLMyRocksDetailsDashboard,
   postgresqlInstanceSummaryDashboard: PostgresqlInstanceSummaryDashboard,
   postgresqlCheckpointDashboard: PostgresqlCheckpointDashboard,
   postgresqlReplicationOverviewDashboard: PostgresqlReplicationOverviewDashboard,
@@ -358,35 +382,6 @@ module.exports = {
     ],
   },
   mongoDbShardedClusterSummary: MongodbShardedClusterSummary,
-  mongoDbClusterSummaryDashboard: {
-    url: 'graph/d/mongodb-cluster-summary/mongodb-cluster-summary',
-    metrics: [
-      'Unsharded DBs',
-      'Sharded DBs',
-      'Sharded Collections',
-      'Shards',
-      'Chunks',
-      'Balancer Enabled',
-      'Mongos Cursors',
-      'Chunks Balancer is running',
-      'Change Log Events',
-      'Operations Per Shard',
-      'Current Connections Per Shard',
-      'Cursors Per Shard',
-      'Replication Lag by Set',
-      'Oplog Range by Set',
-      'Amount of Collections in Shards',
-      'Size of Collections in Shards',
-      'QPS of Mongos Service',
-      'QPS of Services in Shard',
-      'QPS of Config Services',
-      'Amount of Indexes in Shards',
-      'Dynamic of Indexes',
-      'Total Connections',
-      'Current Connections Per Shard',
-      'Total Mongos Operations',
-    ],
-  },
   mongoDbInstanceSummaryDashboard: {
     url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary?orgId=1&refresh=1m&from=now-5m&to=now',
     clearUrl: 'graph/d/mongodb-instance-summary/mongodb-instance-summary',
@@ -430,6 +425,7 @@ module.exports = {
       'MySQL Table Definition Cache',
     ],
   },
+  mongodbInstancesCompareDashboard: MongodbInstancesCompareDashboard,
   mysqlUserDetailsDashboard: {
     url: 'graph/d/mysql-user/mysql-user-details?orgId=1&refresh=1m&from=now-5m&to=now',
     clearUrl: 'graph/d/mysql-user/mysql-user-details',
@@ -830,7 +826,7 @@ module.exports = {
       'Last Election',
       'Node States',
       'Top Hottest Collections by Read',
-      'Query execution times',
+      'Operation Latencies',
       'Top Hottest Collections by Write',
       'Query Efficiency',
       'Queued Operations',
@@ -1213,6 +1209,19 @@ module.exports = {
   },
 
   graphsLocatorPartialMatch(metricName) {
+    // Support wildcard '*' in metricName to match any sequence of characters (for dynamic IDs).
+    // Build an XPath using contains() segments when wildcard is present for broader matching.
+    if (metricName.includes('*')) {
+      // Split on '*' and ensure all fixed fragments appear in order.
+      const parts = metricName.split('*').filter(Boolean);
+      // Start with panels
+      let xpath = "//section[contains(@data-testid,'Panel header')";
+      for (const p of parts) {
+        xpath += ` and contains(@data-testid,'${p}')`;
+      }
+      xpath += ']';
+      return locate(xpath);
+    }
     return locate(`[data-testid*="data-testid Panel header"][data-testid*="${metricName}"]`);
   },
 

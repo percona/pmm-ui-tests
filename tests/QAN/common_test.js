@@ -121,19 +121,19 @@ Scenario(
     queryAnalyticsPage.waitForLoaded();
     await queryAnalyticsPage.data.changeMainMetric('Database');
     queryAnalyticsPage.changeSorting(2);
-    queryAnalyticsPage.filters.selectFilterInGroup('pmm-managed', 'Database');
+    queryAnalyticsPage.filters.selectFilterInGroup('postgres', 'Database');
     queryAnalyticsPage.addColumn('Bytes Sent');
     await adminPage.applyTimeRange('Last 1 hour');
-    queryAnalyticsPage.data.searchByValue('pmm-managed');
+    queryAnalyticsPage.data.searchByValue('postgres');
     queryAnalyticsPage.data.selectTotalRow();
     dashboardPage.selectRefreshTimeInterval('5s');
     queryAnalyticsPage.data.verifyMainMetric('Database');
     queryAnalyticsPage.data.verifySorting(2, 'asc');
-    await queryAnalyticsPage.filters.verifySelectedFilters('pmm-managed');
+    await queryAnalyticsPage.filters.verifySelectedFilters('postgres');
     queryAnalyticsPage.data.verifyColumnPresent('Bytes Sent');
     queryAnalyticsPage.queryDetails.waitForDetails();
     await adminPage.verifyTimeRange('Last 1 hour');
-    queryAnalyticsPage.data.verifySearchByValue('pmm-managed');
+    queryAnalyticsPage.data.verifySearchByValue('postgres');
     dashboardPage.selectRefreshTimeInterval('Off');
     queryAnalyticsPage.waitForLoaded();
   },

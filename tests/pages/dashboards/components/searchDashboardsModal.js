@@ -99,7 +99,7 @@ module.exports = {
       ],
     },
     queryAnalytics: {
-      name: 'Query Analytics',
+      name: 'QueryAnalytics',
       items: [
         'PMM Query Analytics',
       ],
@@ -109,6 +109,21 @@ module.exports = {
       items: [
         'Databases on Kubernetes - Summary',
         'Kubernetes Cluster Overview',
+      ],
+    },
+    valkey: {
+      name: 'Valkey',
+      items: [
+        'Valkey/Redis Clients',
+        'Valkey/Redis Cluster Details',
+        'Valkey/Redis Command Detail',
+        'Valkey/Redis Load',
+        'Valkey/Redis Memory',
+        'Valkey/Redis Network',
+        'Valkey/Redis Overview',
+        'Valkey/Redis Persistence Details',
+        'Valkey/Redis Replication',
+        'Valkey/Redis Slowlog',
       ],
     },
   },

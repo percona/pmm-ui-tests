@@ -71,7 +71,6 @@ module.exports = {
       mySqlInnoDbCompressionDetails: menuOption(ms, 'InnoDB compression', '/graph/d/mysql-innodb-compression/mysql-innodb-compression-details'),
 
       mySqlPerformanceSchemaDetails: menuOption(ms, 'Performance schema', '/graph/d/mysql-performance-schema/mysql-performance-schema-details'),
-      mySqlQueryResponseTimeDetails: menuOption(ms, 'Query response time', '/graph/d/mysql-queryresponsetime/mysql-query-response-time-details'),
       mysqlTableDetails: menuOption(ms, 'Table details', '/graph/d/mysql-table/mysql-table-details'),
       mySqlTokuDbDetails: menuOption(ms, 'TokuDB details', '/graph/d/mysql-tokudb/mysql-tokudb-details'),
     },

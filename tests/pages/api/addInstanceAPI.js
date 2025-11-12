@@ -1,4 +1,6 @@
-const { NODE_TYPE, DISCOVER_RDS } = require('../../helper/constants');
+const {
+  NODE_TYPE, DISCOVER_RDS, REMOTE_INSTANCE_TYPES,
+} = require('../../helper/constants');
 
 const {
   remoteInstancesHelper,
@@ -19,19 +21,21 @@ module.exports = {
    */
   async apiAddInstance(type, serviceName, creds = {}) {
     switch (type) {
-      case remoteInstancesHelper.instanceTypes.mongodb:
+      case REMOTE_INSTANCE_TYPES.MONGODB:
         return this.addMongodb(serviceName, creds);
-      case remoteInstancesHelper.instanceTypes.mysql:
+      case REMOTE_INSTANCE_TYPES.MYSQL:
         return this.addMysql(serviceName, creds);
-      case remoteInstancesHelper.instanceTypes.proxysql:
+      case REMOTE_INSTANCE_TYPES.PROXYSQL:
         return this.addProxysql(serviceName);
-      case remoteInstancesHelper.instanceTypes.postgresql:
+      case REMOTE_INSTANCE_TYPES.PGSQL:
         return this.addPostgresql(serviceName, creds);
-      case remoteInstancesHelper.instanceTypes.rds:
+      case REMOTE_INSTANCE_TYPES.RDS:
         return this.addRDS(serviceName, creds);
-      case remoteInstancesHelper.instanceTypes.rdsAurora:
-        return this.addRDS(serviceName, creds);
-      case remoteInstancesHelper.instanceTypes.postgresGC:
+      case REMOTE_INSTANCE_TYPES.RDS_PGSQL:
+        return this.addRDSPgsql(serviceName, creds);
+      case REMOTE_INSTANCE_TYPES.RDS_AURORA:
+        return this.addRDSAurora(serviceName, creds);
+      case REMOTE_INSTANCE_TYPES.PGSQL_GC:
         return await this.addPostgreSQLGC(serviceName);
       default:
         throw new Error('Unknown instance type');
@@ -284,6 +288,84 @@ module.exports = {
         disable_enhanced_metrics: false,
       },
     };
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/management/services', body, headers);
+
+    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring. \n ${JSON.stringify(resp.data, null, 2)}`);
+
+    return resp.data;
+  },
+
+  async addRDSPgsql(serviceName, connection = {}) {
+    const {
+      port, username, password, address, cluster, aws_access_key, aws_secret_key, az, engine,
+    } = connection;
+    const body = {
+      rds: {
+        address: address || remoteInstancesHelper.remote_instance.aws.aws_rds_8_4.address,
+        aws_access_key: aws_access_key || remoteInstancesHelper.remote_instance.aws.aws_access_key,
+        aws_secret_key: aws_secret_key || remoteInstancesHelper.remote_instance.aws.aws_secret_key,
+        service_name: serviceName,
+        username: username || remoteInstancesHelper.remote_instance.aws.aws_rds_8_4.username,
+        password: password || remoteInstancesHelper.remote_instance.aws.aws_rds_8_4.password,
+        az: az || 'us-east-2a',
+        cluster: cluster || remoteInstancesHelper.remote_instance.aws.aws_rds_8_4.clusterName,
+        engine: engine || DISCOVER_RDS.MYSQL,
+        instance_id: serviceName,
+        isRDS: true,
+        pmm_agent_id: 'pmm-server',
+        port: port || remoteInstancesHelper.remote_instance.aws.aws_rds_8_4.port,
+        qan_postgresql_pgstatements: true,
+        rds_exporter: true,
+        region: 'us-east-2',
+        replication_set: 'rds_mysql_repl',
+        disable_basic_metrics: false,
+        disable_enhanced_metrics: false,
+        disable_comments_parsing: true,
+      },
+    };
+
+    const headers = { Authorization: `Basic ${await I.getAuth()}` };
+    const resp = await I.sendPostRequest('v1/management/services', body, headers);
+
+    I.assertEqual(resp.status, 200, `Instance ${serviceName} was not added for monitoring. \n ${JSON.stringify(resp.data, null, 2)}`);
+
+    return resp.data;
+  },
+
+  async addRDSAurora(serviceName, connection = {}) {
+    const {
+      port, username, password, address, cluster, aws_access_key, aws_secret_key,
+    } = connection;
+    const body = {
+      rds: {
+        add_node: {
+          node_name: serviceName,
+          node_type: NODE_TYPE.REMOTE,
+        },
+        aws_access_key: aws_access_key || remoteInstancesHelper.remote_instance.aws.aurora.aws_access_key,
+        aws_secret_key: aws_secret_key || remoteInstancesHelper.remote_instance.aws.aurora.aws_secret_key,
+        address: address || remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.address,
+        service_name: serviceName,
+        port: port || remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.port,
+        username: username || remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.username,
+        password: password || remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.password,
+        instance_id: remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.instance_id,
+        cluster: cluster || remoteInstancesHelper.remote_instance.aws.aurora.mysqlaurora3.cluster_name,
+        region: 'us-east-2',
+        isRDS: true,
+        az: 'us-east-2a',
+        pmm_agent_id: 'pmm-server',
+        qan_mysql_perfschema: true,
+        rds_exporter: true,
+        engine: DISCOVER_RDS.MYSQL,
+        replication_set: 'rds_mysql_repl',
+        tls_skip_verify: true,
+        disable_basic_metrics: false,
+        disable_enhanced_metrics: false,
+      },
+    };
+
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
     const resp = await I.sendPostRequest('v1/management/services', body, headers);
 

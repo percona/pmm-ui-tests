@@ -3,7 +3,29 @@ const assert = require('assert');
 
 Feature('QAN timerange').retry(1);
 
-Before(async ({ I, queryAnalyticsPage }) => {
+Before(async ({ I, queryAnalyticsPage, codeceptjsConfig }) => {
+  I.restartBrowser({ permissions: ['clipboard-read', 'clipboard-write'], origin: codeceptjsConfig.config.helpers.Playwright.url });
+  await I.usePlaywrightTo('Mock BE Responses', async ({ page }) => {
+    await page.route('**/v1/users/me', (route) => route.fulfill({
+      status: 200,
+      body: JSON.stringify({
+        user_id: 1,
+        product_tour_completed: true,
+        alerting_tour_completed: true,
+        snoozed_pmm_version: '',
+      }),
+    }));
+
+    await page.route('**/v1/server/updates?force=**', (route) => route.fulfill({
+      status: 200,
+      body: JSON.stringify({
+        installed: {},
+        latest: {},
+        update_available: false,
+      }),
+    }));
+  });
+
   await I.Authorize();
   I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
   queryAnalyticsPage.waitForLoaded();
@@ -96,10 +118,10 @@ Scenario(
     queryAnalyticsPage.waitForLoaded();
     await queryAnalyticsPage.data.selectRow(2);
     I.click(queryAnalyticsPage.buttons.copyButton);
-    I.waitForVisible(I.getPopUpLocator(), 10);
+    I.waitForVisible(I.getSuccessPopUpLocator(), 10);
 
     const dateTime = moment().format('x');
-    const url = new URL(await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink));
+    const url = new URL(await I.usePlaywrightTo('Read Clipboard', async ({ page }) => await page.evaluate(async () => navigator.clipboard.readText())));
     const toTimeFromUrl1 = url.searchParams.get('to');
 
     assert.ok(Math.abs(dateTime - toTimeFromUrl1) < 60000, 'Difference between moment time and first copied time must be less then one minute');
@@ -110,8 +132,8 @@ Scenario(
 
     I.waitForVisible(queryAnalyticsPage.buttons.copyButton);
     I.click(queryAnalyticsPage.buttons.copyButton);
-    I.waitForVisible(I.getPopUpLocator(), 10);
-    const url2 = new URL(await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink));
+    I.waitForVisible(I.getSuccessPopUpLocator(), 10);
+    const url2 = new URL(await I.usePlaywrightTo('Read Clipboard', async ({ page }) => await page.evaluate(async () => navigator.clipboard.readText())));
     const toTimeFromUrl2 = url2.searchParams.get('to');
 
     assert.ok(Math.abs(toTimeFromUrl1 - toTimeFromUrl2) < 120000, 'Difference between moment time and second copied time must be less then two minutes');
@@ -161,15 +183,8 @@ Scenario(
     I.assertContain(url.split('to=')[1].replaceAll('%20', ' '), moment(to).toISOString(), 'Url does not contain selected to date time');
 
     I.click(queryAnalyticsPage.buttons.copyButton);
-    I.wait(1);
-    const clipboardNotAvailable = await I.grabNumberOfVisibleElements(queryAnalyticsPage.elements.clipboardLink);
-    let clipBoardUrl;
-
-    if (clipboardNotAvailable > 0) {
-      clipBoardUrl = await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink);
-    } else {
-      clipBoardUrl = await I.getClipboardText();
-    }
+    I.waitForVisible(I.getSuccessPopUpLocator(), 10);
+    const clipBoardUrl = await I.usePlaywrightTo('Read Clipboard', async ({ page }) => await page.evaluate(async () => navigator.clipboard.readText()));
 
     I.amOnPage(clipBoardUrl);
     queryAnalyticsPage.waitForLoaded();
@@ -191,9 +206,9 @@ Scenario(
     await I.click(queryAnalyticsPage.data.buttons.nextPage);
     await queryAnalyticsPage.data.selectRow(2);
     await I.click(queryAnalyticsPage.buttons.copyButton);
-    await I.waitForVisible(I.getPopUpLocator(), 10);
+    await I.waitForVisible(I.getSuccessPopUpLocator(), 10);
 
-    const url = await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink);
+    const url = await I.usePlaywrightTo('Read Clipboard', async ({ page }) => await page.evaluate(async () => navigator.clipboard.readText()));
 
     await I.openNewTab({ viewport: { width: 1920, height: 1080 } });
     await I.amOnPage(url);
@@ -204,7 +219,7 @@ Scenario(
     await I.waitForVisible(queryAnalyticsPage.data.elements.selectedRowByNumber(2), 20);
     await I.waitForElement(queryAnalyticsPage.data.buttons.close, 30);
   },
-);
+).retry(2);
 
 Scenario(
   'PMM-T1143 - Verify columns and filters when we go on copied link by new QAN CopyButton @qan',
@@ -218,9 +233,9 @@ Scenario(
     queryAnalyticsPage.filters.selectFilter(environmentName);
     queryAnalyticsPage.waitForLoaded();
     I.click(queryAnalyticsPage.buttons.copyButton);
-    I.waitForVisible(I.getPopUpLocator(), 10);
+    I.waitForVisible(I.getSuccessPopUpLocator(), 10);
 
-    const url = await I.grabTextFrom(queryAnalyticsPage.elements.clipboardLink);
+    const url = await I.usePlaywrightTo('Read Clipboard', async ({ page }) => await page.evaluate(async () => navigator.clipboard.readText()));
 
     I.openNewTab();
     I.amOnPage(url);

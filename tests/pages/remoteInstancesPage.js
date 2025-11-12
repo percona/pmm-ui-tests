@@ -198,6 +198,7 @@ module.exports = {
     cluster: '$cluster-text-input',
     customLabels: '$custom_labels-textarea-input',
     database: '$database-text-input',
+    disableQueryExamples: '$disable_query_examples-field-label',
     disableBasicMetrics: '//input[@id="input-disable_basic_metrics-id"]/following-sibling::*[2]',
     disableEnhancedMetrics: '//input[@id="input-disable_enhanced_metrics-id"]/following-sibling::*[2]',
     discoverBtn: '//div[contains(text(),\'Discover\')]',
@@ -403,7 +404,7 @@ module.exports = {
     }
   },
 
-  async fillRemoteFields(serviceName, nodeName = 'pmm-server') {
+  async fillRemoteFields(serviceName, nodeName = 'pmm-server', overrideServiceName = null) {
     let inputs;
     let port;
     let host;
@@ -448,7 +449,7 @@ module.exports = {
         I.fillField(this.fields.password, inputs.password);
         adminPage.customClearField(this.fields.portNumber);
         I.fillField(this.fields.portNumber, port);
-        I.fillField(this.fields.serviceName, srviceName);
+        I.fillField(this.fields.serviceName, overrideServiceName || srviceName);
         I.fillField(this.fields.environment, inputs.environment);
         I.fillField(this.fields.cluster, inputs.cluster);
         break;
@@ -618,7 +619,7 @@ module.exports = {
     return inputs;
   },
 
-  createRemoteInstance(serviceName) {
+  async createRemoteInstance(serviceName, options = {}) {
     I.waitForVisible(this.fields.skipTLSL, 30);
     I.checkOption(this.fields.skipTLSL);
     // eslint-disable-next-line default-case
@@ -638,10 +639,12 @@ module.exports = {
         break;
     }
 
-    this.clickAddInstanceAndWaitForSuccess();
-    I.waitForVisible(pmmInventoryPage.fields.serviceRow(serviceName), 30);
+    if (options.disableExamples) {
+      I.click(this.fields.disableQueryExamples);
+    }
 
-    return pmmInventoryPage;
+    await this.clickAddInstanceAndWaitForSuccess();
+    I.waitForVisible(pmmInventoryPage.fields.serviceRow(serviceName), 30);
   },
 
   async clickAddInstanceAndWaitForSuccess() {

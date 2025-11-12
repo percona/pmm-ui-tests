@@ -6,6 +6,7 @@ const SERVICE_TYPE = {
   PROXYSQL: 'SERVICE_TYPE_PROXYSQL_SERVICE',
   HAPROXY: 'SERVICE_TYPE_HAPROXY_SERVICE',
   EXTERNAL: 'SERVICE_TYPE_EXTERNAL_SERVICE',
+  VALKEY: 'SERVICE_TYPE_VALKEY_SERVICE',
 };
 
 const NODE_STATUS = {
@@ -77,6 +78,17 @@ const gssapi = {
   credentials_flags: '--username="pmm@PERCONATEST.COM" --password=password1 --authentication-mechanism=GSSAPI --authentication-database="$external"',
 };
 
+const REMOTE_INSTANCE_TYPES = {
+  MYSQL: 'MySQL',
+  PGSQL: 'PostgreSQL',
+  MONGODB: 'MongoDB',
+  PROXYSQL: 'ProxySQL',
+  RDS: 'rds',
+  RDS_AURORA: 'RDSAurora',
+  RDS_PGSQL: 'rds_pgsql',
+  PGSQL_GC: 'postgresGC',
+};
+
 const isJenkinsGssapiJob = !!(!!process.env.JOB_NAME && process.env.JOB_NAME.includes('gssapi'));
 
 const isOvFAmiJenkinsJob = !!(!!process.env.JOB_NAME && (process.env.JOB_NAME.includes('ami') || process.env.JOB_NAME.includes('ovf')));
@@ -93,4 +105,5 @@ module.exports = {
   isJenkinsGssapiJob,
   isOvFAmiJenkinsJob,
   gssapi,
+  REMOTE_INSTANCE_TYPES,
 };

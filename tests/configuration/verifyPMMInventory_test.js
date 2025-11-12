@@ -240,7 +240,7 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T554 - Check that all agents have status "RUNNING" @inventory @nightly @gssapi-nightly @ami-ovf-pre-upgrade @ami-ovf-post-upgrade',
+  'PMM-T554 - Check that all agents have status "RUNNING" @inventory @nightly @gssapi-nightly @ami-ovf-pre-upgrade @ami-ovf-post-upgrade @pmm-migration',
   async ({ I, pmmInventoryPage, inventoryAPI }) => {
     await I.amOnPage(pmmInventoryPage.url);
     await I.waitForVisible(pmmInventoryPage.fields.showRowDetails, 10);
@@ -249,7 +249,7 @@ Scenario(
     const allAgents = [];
 
     Object.values((await inventoryAPI.apiGetServices()).data).flat(Infinity).forEach((o) => {
-      allAgents.push(...o.agents);
+      allAgents.push(...o.agents.filter((agent) => agent.disabled === false));
     });
 
     const pmmAgents = allAgents.filter((o) => o.agent_type === 'pmm-agent');
@@ -349,7 +349,7 @@ Data(instances).Scenario(
     remoteInstancesPage.openAddRemotePage(current.name);
     const inputs = await remoteInstancesPage.fillRemoteFields(serviceName);
 
-    remoteInstancesPage.createRemoteInstance(serviceName);
+    await remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
 
     const newLabels = {
@@ -402,7 +402,7 @@ Scenario(
     remoteInstancesPage.verifyAddInstancePageOpened();
     const inputs = await remoteInstancesPage.fillRemoteRDSFields(serviceName, nodeName);
 
-    remoteInstancesPage.createRemoteInstance(serviceName);
+    await remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     const newLabels = {
       environment: `${inputs.environment} edited` || `${serviceName} environment edited`,
@@ -472,7 +472,7 @@ Scenario(
     I.seeInField(remoteInstancesPage.fields.serviceName, serviceName);
     const inputs = await remoteInstancesPage.fillRemoteRDSFields(serviceName, nodeName);
 
-    remoteInstancesPage.createRemoteInstance(serviceName);
+    await remoteInstancesPage.createRemoteInstance(serviceName);
     pmmInventoryPage.verifyRemoteServiceIsDisplayed(serviceName);
     const newLabels = {
       environment: `${inputs.environment} edited` || `${serviceName} environment edited`,

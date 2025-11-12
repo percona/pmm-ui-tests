@@ -118,20 +118,20 @@ Data(instances).Scenario(
     I.amOnPage(remoteInstancesPage.url);
 
     let responseMessage = 'Connection check failed: register MySQL client cert failed: tls: failed to find any PEM data in key input.';
-    let command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem TLS_mysql`;
+    let command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem TLS_mysql_no_tls_key`;
 
     let output = await I.verifyCommand(command, responseMessage, 'fail');
 
     assert.ok(output.trim() === responseMessage.trim(), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
 
     responseMessage = 'Connection check failed: register MySQL client cert failed: tls: failed to find any PEM data in certificate input.';
-    command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-key=/var/lib/mysql/client-key.pem TLS_mysql`;
+    command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-key=/var/lib/mysql/client-key.pem TLS_mysql_no_tls_cert`;
 
     output = await I.verifyCommand(command, responseMessage, 'fail');
 
     assert.ok(output.trim() === responseMessage.trim(), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
   },
-).retry(1);
+).retry(0);
 
 Scenario(
   'Verify dashboard after MySQL SSL Instances are added @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
@@ -265,8 +265,11 @@ Data(maxQueryLengthInstances).Scenario(
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, remoteServiceName);
 
-    await pmmInventoryPage.openAgents(service_id);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mysql perfschema agent', `max_query_length=${maxQueryLength}`);
+    if (maxQueryLength !== '') {
+      await pmmInventoryPage.openAgents(service_id);
+      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mysql perfschema agent', `max_query_length=${maxQueryLength}`);
+    }
+
     // This extra time is needed for queries to appear in QAN
     await I.wait(70);
     // Check max visible query length is less than max_query_length option

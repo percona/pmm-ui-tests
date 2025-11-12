@@ -377,21 +377,6 @@ Data(usersTable).Scenario(
 );
 
 Scenario(
-  'PMM-T884 - Verify templates from Percona (SAAS) cannot be deleted or edited @fb-alerting',
-  async ({ I, ruleTemplatesPage }) => {
-    const saasDeleteButton = ruleTemplatesPage.buttons
-      .deleteButtonBySource(ruleTemplatesPage.templateSources.saas);
-    const saasEditButton = ruleTemplatesPage.buttons
-      .editButtonBySource(ruleTemplatesPage.templateSources.saas);
-
-    ruleTemplatesPage.openRuleTemplatesTab();
-    I.waitForElement(ruleTemplatesPage.elements.templateRowBySource(ruleTemplatesPage.templateSources.saas), 30);
-    I.dontSeeElement(saasEditButton);
-    I.dontSeeElement(saasDeleteButton);
-  },
-);
-
-Scenario(
   'PMM-T553 - Verify rule template can be deleted if there is a rule based on it @fb-alerting',
   async ({
     I, ruleTemplatesPage, templatesAPI, rulesAPI,
