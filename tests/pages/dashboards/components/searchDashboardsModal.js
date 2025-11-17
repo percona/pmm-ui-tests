@@ -99,7 +99,7 @@ module.exports = {
       ],
     },
     queryAnalytics: {
-      name: 'QueryAnalytics',
+      name: 'Query Analytics',
       items: [
         'PMM Query Analytics',
       ],
