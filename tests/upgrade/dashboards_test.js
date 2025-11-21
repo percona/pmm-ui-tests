@@ -106,16 +106,13 @@ Scenario(
 Scenario(
   'PMM-T1091 - Verify PMM Dashboards folders are correct @post-dashboards-upgrade',
   async ({
-    I, searchDashboardsModal, grafanaAPI, homePage, dashboardPage,
+    I, searchDashboardsModal,
   }) => {
+    I.amOnPage(searchDashboardsModal.url);
+
+    searchDashboardsModal.waitForOpened();
     const foldersNames = Object.values(searchDashboardsModal.folders).map((folder) => folder.name);
-
-    await homePage.open();
-    I.click(locate('a').withText('Dashboards'));
-
-    const actualFolders = (await searchDashboardsModal.getFoldersList())
-      // these folders verified in dedicated test.
-      .filter((value) => value !== 'Starred' && value !== grafanaAPI.customFolderName);
+    const actualFolders = (await searchDashboardsModal.getFoldersList());
 
     I.assertDeepMembers(actualFolders, foldersNames);
   },

@@ -826,7 +826,7 @@ module.exports = {
       'Last Election',
       'Node States',
       'Top Hottest Collections by Read',
-      'Query execution times',
+      'Operation Latencies',
       'Top Hottest Collections by Write',
       'Query Efficiency',
       'Queued Operations',
