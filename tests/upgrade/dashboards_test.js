@@ -103,7 +103,7 @@ Scenario(
   },
 );
 
-Scenario.skip(
+Scenario(
   'PMM-T1091 - Verify PMM Dashboards folders are correct @post-dashboards-upgrade',
   async ({
     I, searchDashboardsModal,
