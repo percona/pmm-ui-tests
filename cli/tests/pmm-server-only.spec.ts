@@ -102,7 +102,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     removeList.push(containerName);
     await waitForApiReady('127.0.0.1', httpPort);
     // TODO: implement file creation to remove repo dependency
-    const curlCmd = 'curl -o /srv/prometheus/prometheus.base.yml https://raw.githubusercontent.com/percona/pmm-qa/main/pmm-tests/broken_prometheus.base.yml';
+    const curlCmd = 'cp ./test-data/broken_prometheus.base.yml /srv/prometheus/prometheus.base.yml';
     await (await cli.exec(`docker exec ${containerName} ${curlCmd}`)).assertSuccess();
     await cli.exec(`docker restart ${containerName}`);
 
