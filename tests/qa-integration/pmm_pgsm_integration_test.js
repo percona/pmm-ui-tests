@@ -59,7 +59,7 @@ BeforeSuite(async ({ I, inventoryAPI }) => {
 
   assert.ok(dockerCheck.includes('pdpgsql_'), 'pdpgsql docker container should exist. please run pmm-framework with --database pdpgsql');
   container_name = dockerCheck.trim();
-
+  console.log(container_name);
 });
 
 Before(async ({ I }) => {
