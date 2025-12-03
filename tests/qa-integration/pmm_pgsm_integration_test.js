@@ -641,7 +641,8 @@ Scenario(
     await I.verifyCommand(`docker exec ${container_name} true > pmm-agent.log`);
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
     I.wait(defaultValue);
-    let log = await I.verifyCommand(`docker exec ${container_name} tail -n100 pmm-agent.log`);
+    const logLocation = await I.verifyCommand(`docker exec ${container_name} find / -name pmm-agent.log`);
+    let log = await I.verifyCommand(`docker exec ${container_name} tail -n100 ${logLocation}`);
 
     assert.ok(
       !log.includes('non default bucket time value is not supported, status changed to WAITING'),
