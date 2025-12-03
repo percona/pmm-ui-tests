@@ -8,7 +8,7 @@ const {
 
 const connection = {
   host: '127.0.0.1',
-  port: 5447,
+  port: 5432,
   user: 'postgres',
   password: 'pass+this',
   database: 'postgres',
