@@ -50,8 +50,7 @@ Feature('PMM + PGSM Integration Scenarios');
 BeforeSuite(async ({ I, inventoryAPI }) => {
   const pgsm_service = await inventoryAPI.getServiceDetailsByPartialName('pdpgsql_');
   const socket_service = await inventoryAPI.getServiceDetailsByPartialName('socket_pdpgsql_');
-  console.log(pgsm_service);
-  console.log(socket_service);
+
   pgsm_service_name = pgsm_service.service_name;
   pgsm_service_name_socket = socket_service.service_name;
 
