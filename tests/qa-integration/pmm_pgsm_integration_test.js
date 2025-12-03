@@ -59,6 +59,7 @@ BeforeSuite(async ({ I, inventoryAPI }) => {
 
   assert.ok(dockerCheck.includes('pdpgsql_'), 'pdpgsql docker container should exist. please run pmm-framework with --database pdpgsql');
   container_name = dockerCheck.trim();
+
 });
 
 Before(async ({ I }) => {
@@ -653,7 +654,7 @@ Scenario(
     output = await I.pgExecuteQueryOnDemand('SELECT * FROM pg_settings WHERE name=\'pg_stat_monitor.pgsm_bucket_time\';', connection);
     assert.equal(output.rows[0].setting, alteredValue, `The value of 'pg_stat_monitor.pgsm_bucket_time' should be equal to ${alteredValue}`);
     I.wait(alteredValue);
-    log = await I.verifyCommand(`docker exec ${container_name} tail -n100 pmm-agent.log`);
+    log = await I.verifyCommand(`docker exec ${container_name} tail -n100 ${logLocation}`);
 
     assert.ok(
       log.includes('non default bucket time value is not supported, status changed to WAITING'),
