@@ -249,7 +249,9 @@ Scenario(
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
-    const log = await I.verifyCommand(`docker exec ${container_name} cat pmm-agent.log`);
+    const logLocation = await I.verifyCommand(`docker exec ${container_name} find / -name pmm-agent.log`);
+    console.log(logLocation);
+    const log = await I.verifyCommand(`docker exec ${container_name} cat ${logLocation}`);
 
     I.assertFalse(
       log.includes('Error opening connection to database \(postgres'),
