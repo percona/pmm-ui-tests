@@ -250,7 +250,6 @@ Scenario(
     await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
     const logLocation = await I.verifyCommand(`docker exec ${container_name} find / -name pmm-agent.log`);
-    console.log(logLocation);
     const log = await I.verifyCommand(`docker exec ${container_name} cat ${logLocation}`);
 
     I.assertFalse(
