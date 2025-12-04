@@ -111,7 +111,7 @@ Scenario(
 Scenario(
   'PMM-T2051 - Verify PostgreSQL Replication Overview dashboard @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    const url = I.buildUrlWithParams(dashboardPage.postgresqlReplicationOverviewDashboard.url, { from: 'now-5m' });
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlReplicationOverviewDashboard.url, { from: 'now-1h' });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
