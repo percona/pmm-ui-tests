@@ -59,7 +59,6 @@ BeforeSuite(async ({ I, inventoryAPI }) => {
 
   assert.ok(dockerCheck.includes('pdpgsql_'), 'pdpgsql docker container should exist. please run pmm-framework with --database pdpgsql');
   container_name = dockerCheck.trim();
-  console.log(container_name);
 });
 
 Before(async ({ I }) => {
@@ -717,7 +716,7 @@ Scenario(
       service_name: pgServiceName,
       from: 'now-2m',
     });
-    console.log(url)
+
     I.amOnPage(url);
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.searchByValue('SELECT version()');
