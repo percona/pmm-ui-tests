@@ -717,7 +717,7 @@ Scenario(
       service_name: pgServiceName,
       from: 'now-2m',
     });
-
+    console.log(url)
     I.amOnPage(url);
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.searchByValue('SELECT pg_sleep($1)');
