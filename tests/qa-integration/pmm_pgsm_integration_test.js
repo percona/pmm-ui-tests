@@ -720,7 +720,7 @@ Scenario(
     console.log(url)
     I.amOnPage(url);
     queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.data.searchByValue('SELECT pg_sleep($1)');
+    queryAnalyticsPage.data.searchByValue('SELECT version()');
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();
