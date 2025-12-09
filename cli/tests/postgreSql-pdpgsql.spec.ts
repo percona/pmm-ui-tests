@@ -29,7 +29,7 @@ const waitForAgentRunning = async (agentName = PgAgent.PGSTATMONITOR_AGENT) => {
 
 test.describe('Percona Distribution for PostgreSQL CLI tests', async () => {
   test.beforeAll(async ({}) => {
-    const result = await cli.exec('docker ps --format \'{{.Names}}\' | grep \'^pdpgsql_pgsm_pmm_\'');
+    const result = await cli.exec('docker ps --format \'{{.Names}}\' | grep \'^pdpgsql_pmm_\'');
     await result.outContains('pdpgsql_pgsm_pmm', 'PDPGSQL docker container should exist. please run pmm-framework with --database pdpgsql');
     containerName = result.stdout.trim();
     // const output = await cli.exec(`sudo pmm-admin add postgresql --query-source=pgstatmonitor --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} prerequisite ${ipPort}`);
