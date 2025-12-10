@@ -133,7 +133,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests', async () => {
   test('PMM-T1829 Verify turning off autodiscovery database for PostgreSQL', async ({}) => {
     const serviceName = 'autodiscovery_pg';
     await test.step('add pg with --agent-password for monitoring', async () => {
-      const output = await cli.exec(`docker exec ${containerName} pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --agent-password=mypass --auto-discovery-limit=2 ${serviceName} ${ipPort}`);
+      const output = await cli.exec(`docker exec ${containerName} pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --agent-password=mypass --auto-discovery-limit=1 ${serviceName} ${ipPort}`);
       await output.assertSuccess();
       await output.outContains('PostgreSQL Service added.');
     });
