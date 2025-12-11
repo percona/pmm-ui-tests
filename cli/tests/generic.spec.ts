@@ -4,7 +4,7 @@ import { readZipFile } from '@helpers/zip-helper';
 
 const PGSQL_USER = 'postgres';
 const PGSQL_PASSWORD = 'pass+this';
-const ipPort = '127.0.0.1:5447';
+const ipPort = async () => ((await cli.exec('docker ps')).stdout.includes('pdpgsql_pmm_') ? '127.0.0.1:5432' : '127.0.0.1:5447');
 
 test.describe('PMM Client "Generic" CLI tests', async () => {
   test.beforeAll(async ({}) => {
@@ -486,7 +486,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L375
    */
   test('Check that pmm-managed database encoding is UTF8', async ({}) => {
-    const [ipAddress, port] = ipPort.split(':');
+    const [ipAddress, port] = (await ipPort()).split(':');
     const output = await cli.exec(
       `export PGPASSWORD=${PGSQL_PASSWORD}; psql -h ${ipAddress} -p ${port} -U ${PGSQL_USER} -d template1 -c 'SHOW SERVER_ENCODING' | grep UTF8`,
     );
@@ -497,7 +497,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L379
    */
   test('Check that template1 database encoding is UTF8', async ({}) => {
-    const [ipAddress, port] = ipPort.split(':');
+    const [ipAddress, port] = (await ipPort()).split(':');
     const output = await cli.exec(
       `export PGPASSWORD=${PGSQL_PASSWORD}; psql -h ${ipAddress} -p ${port} -U ${PGSQL_USER} -d template1 -c 'SHOW SERVER_ENCODING' | grep UTF8`,
     );
