@@ -1,18 +1,23 @@
 import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
-import { removeMongoService } from '@root/helpers/pmm-admin';
+import { getPmmAdminMinorVersion, removeMongoService } from '@root/helpers/pmm-admin';
 import { clientCredentialsFlags } from '@helpers/constants';
+import { faker } from '@faker-js/faker';
 
 const replIpPort = 'rs101:27017';
+const ip = replIpPort.split(':')[0];
+const port = replIpPort.split(':')[1];
 const mongoPushMetricsServiceName = 'mongo_push_1';
 const mongoPullMetricsServiceName = 'mongo_pull_1';
 const mongoServiceName = 'mongo_service_1';
 const containerName = 'rs101';
+let adminVersion: number;
 
 test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   test.beforeAll(async ({}) => {
     const result = await cli.exec(`docker ps | grep ${containerName} | awk '{print $NF}'`);
     await result.outContains(containerName, 'PSMDB rs101 docker container should exist. please run pmm-framework with --database psmdb,SETUP_TYPE=pss');
+    adminVersion = await getPmmAdminMinorVersion(containerName);
   });
 
   test('run pmm-admin', async ({}) => {
@@ -53,7 +58,6 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/modb-tests.bats#L108
    */
   test("PMM-T160 User can't use both socket and address while using pmm-admin add mongodb", async ({}) => {
-    const port = replIpPort.split(':')[1];
     const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} --socket=/tmp/mongodb-${port}.sock ${mongoServiceName} ${replIpPort}`);
     await output.exitCodeEquals(1);
     await output.outContains('Socket and address cannot be specified together.');
@@ -73,8 +77,6 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
 
   test('run pmm-admin add and remove mongodb based on running instances using service-name, port, username and password labels', async ({}) => {
     const serviceName = 'mongo_host_port';
-    const ip = replIpPort.split(':')[0];
-    const port = replIpPort.split(':')[1];
 
     const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} --host=${ip} --port=${port} --service-name=${serviceName}`);
     await output.assertSuccess();
@@ -85,9 +87,6 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
 
   test('PMM-T964 run pmm-admin add mongodb with --agent-password flag', async ({}) => {
     const serviceName = 'mongo_agent_password';
-    const ip = replIpPort.split(':')[0];
-    const port = replIpPort.split(':')[1];
-
     await cli.exec(`docker exec ${containerName} pmm-admin remove mongodb ${serviceName} || true`);
 
     const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} --host=${ip} --agent-password=mypass --port=${port} --service-name=${serviceName}`);
@@ -103,6 +102,31 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     });
 
     await removeMongoService(containerName, serviceName);
+  });
+
+  test('PMM-T2128 verify environment variable passed using --agent-env-vars parameter from pmm agent to mongodb_exporter', async ({}) => {
+    test.skip(adminVersion < 6, 'This test is relevant for pmm-client version 3.6.0 and above');
+
+    const serviceName = `mongo_agent_env_vars_${faker.number.int(100)}`;
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} --host=${ip} --agent-env-vars="KRB5_CLIENT_KTNAME" --port=${port} --service-name=${serviceName}`);
+    await output.assertSuccess();
+
+    await expect(async () => {
+      const mongodbExporterPid = await cli.exec(`docker exec ${containerName} pgrep -f mongodb_exporter | tail -n1`);
+      const vmAgentOpts = await cli.exec(`docker exec ${containerName} cat /proc/${mongodbExporterPid.getStdOutLines()[0]}/environ`);
+      await vmAgentOpts.outContains('KRB5_CLIENT_KTNAME=/keytabs/mongodb.keytab');
+    }).toPass({
+      timeout: 60_000,
+      intervals: [5_000],
+    });
+  });
+
+  test('PMM-T2129 verify validation for --agent-env-vars parameter when adding mondogb for monitoring', async ({}) => {
+    test.skip(adminVersion < 6, 'This test is relevant for pmm-client version 3.6.0 and above');
+
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} --agent-env-vars="TEST=123" --service-name=test`);
+    await output.exitCodeEquals(1);
+    await output.outContains('invalid environment variable name: TEST=123 (must match [A-Z_][A-Z0-9_]*)');
   });
 
   test('PMM-T2005 verify PBM Agent health status metric is correct', async ({}) => {

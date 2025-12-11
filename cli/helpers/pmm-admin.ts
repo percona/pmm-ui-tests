@@ -24,3 +24,11 @@ export const removeMongoService = async (containerName: string, serviceName: str
     await output.outContains('Service removed.');
   });
 };
+
+export const getPmmAdminMinorVersion = async (containerName: string) => {
+  return test.step('get pmm admin version', async () => {
+    const output = JSON.parse((await cli.exec(`docker exec ${containerName} pmm-admin --version --json`)).stdout);
+
+    return Number(output.Version.split('-')[0].split('.')[1]);
+  });
+};
