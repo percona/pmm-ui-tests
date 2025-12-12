@@ -53,7 +53,7 @@ if (isJenkinsGssapiJob) {
 } else {
   databaseEnvironments = [
     { serviceName: 'ps_', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', 'DELETE FROM students', 'CREATE TABLE classes'], cluster: 'ps-single-dev-cluster' },
-    { serviceName: 'pdpgsql_pgsm_pmm_', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', 'DELETE FROM', 'CREATE TABLE classes '], cluster: '' },
+    { serviceName: 'pdpgsql_', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', 'DELETE FROM', 'CREATE TABLE classes '], cluster: '' },
     { serviceName: 'rs101', queryTypes: ['db.students', 'db.runCommand', 'db.test'], cluster: 'replicaset' },
   ];
 }
@@ -90,7 +90,7 @@ Data(databaseEnvironments).Scenario(
         await queryAnalyticsPage.queryDetails.verifyTables(parameters);
       }
 
-      if (current.serviceName === 'pdpgsql_pgsm_pmm_' && query.includes('SELECT')) {
+      if (current.serviceName === 'pdpgsql_' && query.includes('SELECT')) {
         await queryAnalyticsPage.queryDetails.verifyPlan(parameters);
       }
     }

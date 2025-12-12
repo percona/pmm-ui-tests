@@ -29,7 +29,7 @@ Data(filters).Scenario(
   async ({
     I, current, queryAnalyticsPage,
   }) => {
-    queryAnalyticsPage.filters.selectContainFilter('pdpgsql_pgsm_pmm');
+    queryAnalyticsPage.filters.selectContainFilter('pdpgsql_');
     I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
     queryAnalyticsPage.filters.selectFilterInGroup(current.filterToApply, 'Command Type');
     queryAnalyticsPage.data.searchByValue(current.searchValue);

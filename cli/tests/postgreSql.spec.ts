@@ -3,15 +3,15 @@ import * as cli from '@helpers/cli-helper';
 
 const PGSQL_USER = 'postgres';
 const PGSQL_PASSWORD = 'pass+this';
-const ipPort = '127.0.0.1:5447';
+const ipPort = async () => ((await cli.exec('docker ps')).stdout.includes('pdpgsql_pmm_') ? '127.0.0.1:5432' : '127.0.0.1:5447');
 
 test.describe('PMM Client CLI tests for PostgreSQL Data Base', async () => {
   test.beforeAll(async ({}) => {
-    const result = await cli.exec('docker ps | grep pdpgsql_pgsm_pmm | awk \'{print $NF}\'');
-    await result.outContains('pdpgsql_pgsm_pmm', 'PDPGSQL docker container should exist. please run pmm-framework with --database pdpgsql');
+    const result = await cli.exec('docker ps | grep pdpgsql_pmm | awk \'{print $NF}\'');
+    await result.outContains('pdpgsql_pmm', 'PDPGSQL docker container should exist. please run pmm-framework with --database pdpgsql');
     const result1 = await cli.exec('sudo pmm-admin status');
     await result1.outContains('Running', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
-    const output = await cli.exec(`sudo pmm-admin add postgresql --query-source=pgstatmonitor --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} prerequisite ${ipPort}`);
+    const output = await cli.exec(`sudo pmm-admin add postgresql --query-source=pgstatmonitor --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} prerequisite ${await ipPort()}`);
     await output.assertSuccess();
   });
 

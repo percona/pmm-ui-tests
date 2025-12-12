@@ -8,7 +8,7 @@ const services = [];
 services.push({ serviceName: 'rs101' });
 
 if (!isJenkinsGssapiJob) {
-  services.push({ serviceName: 'pdpgsql_pgsm_pmm' });
+  services.push({ serviceName: 'pdpgsql_' });
   services.push({ serviceName: 'pgsql_pgss_pmm' });
   services.push({ serviceName: 'ps_pmm' });
   services.push({ serviceName: 'ms-single' });
