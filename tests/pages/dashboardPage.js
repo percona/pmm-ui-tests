@@ -1147,7 +1147,7 @@ module.exports = {
     clickablePanel: (name) => locate('$header-container').withText(name).find('a'),
     dashboardTitle: (name) => locate('span').withText(name),
     metricPanelNa: (name) => `//section[@aria-label="${name}"]//span[text()="N/A"]`,
-    loadingElement: locate('//div[@aria-label="Panel loading bar"]'),
+    loadingElement: '[aria-label="Panel loading bar"]',
     multiSelect: (filterName) => locate(`//label[contains(text(), "${filterName}")]/following-sibling::div//div[contains(@class,"grafana-select-multi-value-container")]`),
   },
 
