@@ -1341,28 +1341,24 @@ module.exports = {
   },
 
   async expandEachDashboardRow() {
-    await I.usePlaywrightTo('expanding collapsed rows', async ({ page }) => {
-      const getCollapsedRowsLocators = async () => await page.locator(this.fields.collapsedDashboardRow).all();
-      let collapsedRowsLocators = await getCollapsedRowsLocators();
+    let collapsedRows = await I.grabNumberOfVisibleElements(this.fields.collapsedDashboardRow);
+    let maxTries = 20;
 
-      while (collapsedRowsLocators.length > 0) {
-        await page.keyboard.press('End');
-        await collapsedRowsLocators[0].scrollIntoViewIfNeeded();
-        await collapsedRowsLocators[0].click();
-        collapsedRowsLocators.shift();
-
-        collapsedRowsLocators = await getCollapsedRowsLocators();
-      }
-    });
+    while (collapsedRows > 0 && maxTries > 0) {
+      I.pressKey('End');
+      I.click(locate(this.fields.collapsedDashboardRow).first());
+      I.wait(1);
+      collapsedRows = await I.grabNumberOfVisibleElements(this.fields.collapsedDashboardRow);
+      // eslint-disable-next-line no-plusplus
+      maxTries--;
+    }
   },
 
   async expandDashboardRow(rowName) {
-    await I.usePlaywrightTo('Expand collapsed row', async ({ page }) => {
-      const rowLocator = await page.locator(this.fields.collapsedDashboardRowByName(rowName));
+    const rowLocator = this.fields.collapsedDashboardRowByName(rowName);
 
-      await rowLocator.scrollIntoViewIfNeeded();
-      await rowLocator.click();
-    });
+    I.scrollTo(rowLocator);
+    I.click(rowLocator);
   },
 
   waitForDashboardOpened() {

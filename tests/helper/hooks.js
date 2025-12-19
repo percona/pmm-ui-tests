@@ -1,30 +1,63 @@
 const { event, container } = require('codeceptjs');
 
-// Guard to avoid registering listeners multiple times per worker/process (causes multiple waits in same tests)
-if (!global.__pmmGrafanaIframeHookRegistered) {
-  global.__pmmGrafanaIframeHookRegistered = true;
+let hooksRegistered = false;
 
-  module.exports = function () {
-    // Switch to iframe only after amOnPage completes
-    event.dispatcher.on(event.step.after, async (step) => {
-      if (!step || step.name !== 'amOnPage') return;
+module.exports = function pmmGrafanaIframeHook() {
+  // Prevent double-registration per worker
+  if (hooksRegistered) return;
 
-      const helper = container.helpers('Playwright');
+  hooksRegistered = true;
 
-      // Reset to main context to avoid nested frame chains
+  const helper = container.helpers('Playwright');
+  const grafanaIframe = '#grafana-iframe';
+
+  /**
+   * Switches execution context to the Grafana iframe.
+   * Ensures the page is loaded and the iframe is visible before switching.
+   */
+  const switchToGrafana = async () => {
+    try {
+      // Reset to main frame first
       await helper.switchTo();
-      await helper.waitForVisible('#grafana-iframe', 30);
-      await helper.switchTo('#grafana-iframe');
-      console.log('Switched to grafana iframe');
-    });
+      if (helper.page) {
+        await helper.page.waitForLoadState('domcontentloaded');
+      }
 
-    // Switch back to main context after each scenario
-    event.dispatcher.on(event.test.after, async () => {
-      const helper = container.helpers('Playwright');
-
-      await helper.switchTo();
-    });
+      await helper.waitForVisible(grafanaIframe, 60);
+      await helper.switchTo(grafanaIframe);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(`[Hooks] Error switching to Grafana iframe: ${e.message}`);
+    }
   };
-} else {
-  module.exports = function () {};
-}
+
+  /**
+   * Resets execution context to the main frame.
+   */
+  const resetContext = async () => {
+    try {
+      await helper.switchTo();
+    } catch (e) {
+      // Ignore errors if browser is already closed or context is invalid
+    }
+  };
+
+  // Reset context at the start and end of each test to avoid frame nesting issues
+  event.dispatcher.on(event.test.started, resetContext);
+  event.dispatcher.on(event.test.after, resetContext);
+
+  // Patch _afterStep to automatically switch to Grafana iframe after navigation
+  // eslint-disable-next-line no-underscore-dangle
+  const originalAfterStep = helper._afterStep;
+
+  // eslint-disable-next-line no-underscore-dangle
+  helper._afterStep = async function pmmAfterStep(step) {
+    if (originalAfterStep) {
+      await originalAfterStep.call(this, step);
+    }
+
+    if (step.name === 'amOnPage') {
+      await switchToGrafana();
+    }
+  };
+};

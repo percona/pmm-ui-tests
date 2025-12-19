@@ -1,5 +1,6 @@
 const { Agent } = require('https');
 const { pageObjects, getChunks } = require('./codeceptConfigHelper');
+const bootstrapHook = require('./tests/helper/hooks.js');
 
 require('dotenv').config();
 
@@ -138,7 +139,7 @@ exports.config = {
       },
     },
   },
-  bootstrap: require('./tests/helper/hooks.js'),
+  bootstrap: bootstrapHook,
   teardown: null,
   hooks: [],
   gherkin: {},
