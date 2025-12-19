@@ -4,11 +4,11 @@ class ValkeyOverviewDashboard {
     this.metrics = [
       'Min Uptime',
       'Total Connected/Blocked Clients',
-      'All - Cumulative Read and Write rate',
-      'Top 5 Max Latency - last 10s',
-      'Avg Latency',
+      'All - Cumulative Read and Write Rate',
+      'Top 5 Commands by Latency (Last 10s)',
+      'Average Latency',
       'Total Memory Usage',
-      'Cumulative network I/O',
+      'Cumulative Network I/O',
     ];
   }
 }
