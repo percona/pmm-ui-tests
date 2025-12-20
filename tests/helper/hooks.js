@@ -233,16 +233,23 @@ module.exports = function pmmGrafanaIframeHook() {
   };
 
   /**
-   * Patches waitForValue to correctly handle FrameLocator context.
-   * Standard implementation uses waitForFunction which doesn't work with FrameLocator.
-   */
+
+     * Patches waitForValue to correctly handle FrameLocator context.
+
+     * Standard implementation uses waitForFunction which doesn't work with FrameLocator.
+
+     */
+
   const originalWaitForValue = helper.waitForValue;
 
   helper.waitForValue = async function pmmWaitForValue(field, value, sec = null) {
-    if (helper.context) {
+    if (this.context) {
       const waitTimeout = sec ? sec * 1000 : helper.options.waitForTimeout;
+
       const selector = getSelector(field);
-      const locator = helper.context.locator(selector).first();
+
+      const locator = this.context.locator(selector).first();
+
       const startTime = Date.now();
 
       while (Date.now() - startTime < waitTimeout) {
@@ -260,9 +267,34 @@ module.exports = function pmmGrafanaIframeHook() {
   };
 
   /**
-   * Patches usePlaywrightTo to pass the active context (iframe) as 'page'
-   * if it exists. This allows usePlaywrightTo to work transparently inside iframes.
-   */
+
+     * Patches moveCursorTo to correctly handle FrameLocator context.
+
+     * Standard implementation may use page.mouse which doesn't work with FrameLocator.
+
+     */
+
+  const originalMoveCursorTo = helper.moveCursorTo;
+
+  helper.moveCursorTo = async function pmmMoveCursorTo(locator, offsetX = 0, offsetY = 0) {
+    if (this.context) {
+      const element = this.context.locator(getSelector(locator)).first();
+
+      await element.evaluate((el) => el.scrollIntoView({ block: 'center', inline: 'center' })).catch(() => {});
+      await element.hover({ position: { x: offsetX, y: offsetY }, force: true });
+
+      return;
+    }
+
+    return originalMoveCursorTo.call(this, locator, offsetX, offsetY);
+  }; /**
+
+     * Patches usePlaywrightTo to pass the active context (iframe) as 'page'
+
+     * if it exists. This allows usePlaywrightTo to work transparently inside iframes.
+
+     */
+
   const originalUsePlaywrightTo = helper.usePlaywrightTo;
 
   helper.usePlaywrightTo = async function pmmUsePlaywrightTo(description, fn) {
@@ -270,13 +302,23 @@ module.exports = function pmmGrafanaIframeHook() {
       return originalUsePlaywrightTo.call(this, description, async (args) => {
         if (helper.context) {
           // Override page with the current context (iframe)
+
           // eslint-disable-next-line no-param-reassign
+
           args.page = helper.context;
 
           // Polyfill evaluate if missing (FrameLocator)
+
           if (!args.page.evaluate) {
-            // eslint-disable-next-line no-param-reassign
-            args.page.evaluate = async (func, arg) => args.page.locator('body').evaluate(func, arg);
+            Object.defineProperty(args.page, 'evaluate', {
+
+              value: async (func, arg) => args.page.locator('body').evaluate(func, arg),
+
+              writable: true,
+
+              configurable: true,
+
+            });
           }
         }
 
