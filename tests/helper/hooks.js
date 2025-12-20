@@ -61,7 +61,7 @@ module.exports = function pmmGrafanaIframeHook() {
       await originalAfterStep.call(this, step);
     }
 
-    if (['amOnPage', 'switchToNextTab', 'switchToPreviousTab'].includes(step.name)) {
+    if (['amOnPage', 'switchToNextTab', 'switchToPreviousTab', 'refreshPage'].includes(step.name)) {
       await switchToGrafana();
     }
   };
@@ -95,6 +95,11 @@ module.exports = function pmmGrafanaIframeHook() {
 
       if (selector.startsWith('{css:') && selector.endsWith('}')) {
         return selector.substring(5, selector.length - 1).trim();
+      }
+
+      // Handle Custom Locator plugin strategy ($)
+      if (selector.startsWith('$')) {
+        return `[data-testid="${selector.substring(1)}"]`;
       }
     }
 
@@ -179,6 +184,7 @@ module.exports = function pmmGrafanaIframeHook() {
 
     return originalWaitForDetached.call(this, locator, sec);
   };
+
 
   /**
    * Patches usePlaywrightTo to pass the active context (iframe) as 'page'
