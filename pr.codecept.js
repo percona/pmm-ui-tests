@@ -18,6 +18,7 @@ exports.config = {
       restart: true,
       show: false,
       trace: true,
+      keepTraceForPassedTests: false,
       browser: 'chromium',
       windowSize: '1920x1080',
       timeout: 20000,

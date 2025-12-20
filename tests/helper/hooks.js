@@ -56,9 +56,44 @@ module.exports = function pmmGrafanaIframeHook() {
       await originalAfterStep.call(this, step);
     }
 
-    if (step.name === 'amOnPage') {
+    if (['amOnPage', 'switchToNextTab', 'switchToPreviousTab'].includes(step.name)) {
       await switchToGrafana();
     }
+  };
+
+  /**
+   * Helper function to extract valid Playwright selector from CodeceptJS locator
+   */
+  const getSelector = (locator) => {
+    let selector = locator;
+
+    if (typeof locator === 'object') {
+      if (locator.xpath) {
+        selector = `xpath=${locator.xpath}`;
+      } else if (locator.css) {
+        selector = locator.css;
+      } else if (locator.value && locator.type) {
+        // Handle cases where it's a Locator instance but properties are internal
+        if (locator.type === 'xpath') selector = `xpath=${locator.value}`;
+        else if (locator.type === 'css') selector = locator.value;
+        else selector = locator.value;
+      } else {
+        selector = locator.toString();
+      }
+    }
+
+    if (typeof selector === 'string') {
+      // Handle stringified CodeceptJS locators (e.g., "{xpath: //...}")
+      if (selector.startsWith('{xpath:') && selector.endsWith('}')) {
+        return `xpath=${selector.substring(7, selector.length - 1).trim()}`;
+      }
+
+      if (selector.startsWith('{css:') && selector.endsWith('}')) {
+        return selector.substring(5, selector.length - 1).trim();
+      }
+    }
+
+    return selector;
   };
 
   /**
@@ -70,8 +105,9 @@ module.exports = function pmmGrafanaIframeHook() {
 
   helper.grabTextFrom = async function pmmGrabTextFrom(locator) {
     if (helper.context) {
+      const selector = getSelector(locator);
       // Use the context (iframe) directly to find the element
-      const element = helper.context.locator(locator).first();
+      const element = helper.context.locator(selector).first();
 
       return element.textContent();
     }
@@ -80,18 +116,39 @@ module.exports = function pmmGrafanaIframeHook() {
   };
 
   /**
+   * Patches grabTextFromAll to explicitly use the helper context if available.
+   */
+  const originalGrabTextFromAll = helper.grabTextFromAll;
+
+  helper.grabTextFromAll = async function pmmGrabTextFromAll(locator) {
+    if (helper.context) {
+      const selector = getSelector(locator);
+      const elements = helper.context.locator(selector);
+
+      return elements.allTextContents();
+    }
+
+    return originalGrabTextFromAll.call(this, locator);
+  };
+
+  /**
    * Patches waitForText to avoid using waitForFunction on FrameLocator
    * when specific context locator is provided.
    */
   const originalWaitForText = helper.waitForText;
+
   helper.waitForText = async function pmmWaitForText(text, sec = null, context = null) {
     if (helper.context && context) {
       const waitTimeout = sec ? sec * 1000 : helper.options.waitForTimeout;
+      const selector = getSelector(context);
       // Use native Playwright text filtering which works with FrameLocator
-      const element = helper.context.locator(context).filter({ hasText: text }).first();
+      const element = helper.context.locator(selector).filter({ hasText: text }).first();
+
       await element.waitFor({ state: 'visible', timeout: waitTimeout });
+
       return;
     }
+
     return originalWaitForText.call(this, text, sec, context);
   };
 
@@ -100,21 +157,21 @@ module.exports = function pmmGrafanaIframeHook() {
    * Standard implementation uses waitForFunction which doesn't work with FrameLocator.
    */
   const originalWaitForDetached = helper.waitForDetached;
+
   helper.waitForDetached = async function pmmWaitForDetached(locator, sec = null) {
     if (helper.context) {
       const waitTimeout = sec ? sec * 1000 : helper.options.waitForTimeout;
-      // Convert CodeceptJS locator to Playwright locator if needed
-      // but simpler to just let Playwright handle the string directly
-      // as it supports XPath auto-detection
-      const locatorString = typeof locator === 'object' ? (locator.xpath || locator.css || locator.toString()) : locator;
-      
+      const selector = getSelector(locator);
+
       try {
-        await helper.context.locator(locatorString).first().waitFor({ state: 'detached', timeout: waitTimeout });
+        await helper.context.locator(selector).first().waitFor({ state: 'detached', timeout: waitTimeout });
+
         return;
       } catch (e) {
         // Fallback to original if simple locator fails (though it likely won't)
       }
     }
+
     return originalWaitForDetached.call(this, locator, sec);
   };
 
@@ -123,6 +180,7 @@ module.exports = function pmmGrafanaIframeHook() {
    * if it exists. This allows usePlaywrightTo to work transparently inside iframes.
    */
   const originalUsePlaywrightTo = helper.usePlaywrightTo;
+
   helper.usePlaywrightTo = async function pmmUsePlaywrightTo(description, fn) {
     if (originalUsePlaywrightTo) {
       return originalUsePlaywrightTo.call(this, description, async (args) => {
@@ -131,6 +189,7 @@ module.exports = function pmmGrafanaIframeHook() {
           // eslint-disable-next-line no-param-reassign
           args.page = helper.context;
         }
+
         return fn(args);
       });
     }
