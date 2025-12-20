@@ -25,6 +25,10 @@ module.exports = function pmmGrafanaIframeHook() {
 
       await helper.waitForVisible(grafanaIframe, 60);
       await helper.switchTo(grafanaIframe);
+
+      if (helper.page) {
+        helper.context = helper.page.frameLocator(grafanaIframe);
+      }
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(`[Hooks] Error switching to Grafana iframe: ${e.message}`);
@@ -37,13 +41,14 @@ module.exports = function pmmGrafanaIframeHook() {
   const resetContext = async () => {
     try {
       await helper.switchTo();
+      helper.context = null;
     } catch (e) {
       // Ignore errors if browser is already closed or context is invalid
     }
   };
 
   // Reset context at the start and end of each test to avoid frame nesting issues
-  event.dispatcher.on(event.test.started, resetContext);
+  event.dispatcher.on(event.test.before, resetContext);
   event.dispatcher.on(event.test.after, resetContext);
 
   // Patch _afterStep to automatically switch to Grafana iframe after navigation
