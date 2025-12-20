@@ -40,6 +40,15 @@ module.exports = function pmmGrafanaIframeHook() {
    */
   const resetContext = async () => {
     try {
+      if (helper.browserContext) {
+        const pages = helper.browserContext.pages();
+
+        if (pages.length > 0) {
+          // eslint-disable-next-line
+          helper.page = pages[0];
+        }
+      }
+
       await helper.switchTo();
       helper.context = null;
     } catch (e) {
@@ -50,6 +59,34 @@ module.exports = function pmmGrafanaIframeHook() {
   // Reset context at the start and end of each test to avoid frame nesting issues
   event.dispatcher.on(event.test.before, resetContext);
   event.dispatcher.on(event.test.after, resetContext);
+
+  /**
+   * Patches navigation methods to always reset context to the main frame first.
+   * This prevents "is not a function" errors when the helper is focused on an iframe.
+   */
+  const originalAmOnPage = helper.amOnPage;
+
+  helper.amOnPage = async function pmmAmOnPage(...args) {
+    await resetContext();
+
+    return originalAmOnPage.call(this, ...args);
+  };
+
+  const originalRefreshPage = helper.refreshPage;
+
+  helper.refreshPage = async function pmmRefreshPage(...args) {
+    await resetContext();
+
+    return originalRefreshPage.call(this, ...args);
+  };
+
+  const originalOpenNewTab = helper.openNewTab;
+
+  helper.openNewTab = async function pmmOpenNewTab(...args) {
+    await resetContext();
+
+    return originalOpenNewTab.call(this, ...args);
+  };
 
   // Patch _afterStep to automatically switch to Grafana iframe after navigation
   // eslint-disable-next-line no-underscore-dangle
