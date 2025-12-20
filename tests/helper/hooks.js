@@ -76,9 +76,11 @@ module.exports = function pmmGrafanaIframeHook() {
   helper.pressKey = async function pmmPressKey(key) {
     const getPage = () => {
       if (helper.page && helper.page.keyboard) return helper.page;
+
       if (helper.browserContext && helper.browserContext.pages().length > 0) {
         return helper.browserContext.pages()[0];
       }
+
       return helper.page;
     };
 
@@ -230,6 +232,32 @@ module.exports = function pmmGrafanaIframeHook() {
     return originalWaitForDetached.call(this, locator, sec);
   };
 
+  /**
+   * Patches waitForValue to correctly handle FrameLocator context.
+   * Standard implementation uses waitForFunction which doesn't work with FrameLocator.
+   */
+  const originalWaitForValue = helper.waitForValue;
+
+  helper.waitForValue = async function pmmWaitForValue(field, value, sec = null) {
+    if (helper.context) {
+      const waitTimeout = sec ? sec * 1000 : helper.options.waitForTimeout;
+      const selector = getSelector(field);
+      const locator = helper.context.locator(selector).first();
+      const startTime = Date.now();
+
+      while (Date.now() - startTime < waitTimeout) {
+        const val = await locator.inputValue().catch(() => '');
+
+        if (val.includes(value)) return;
+
+        await new Promise((r) => setTimeout(r, 100));
+      }
+
+      throw new Error(`Wait for value "${value}" failed for field ${field}`);
+    }
+
+    return originalWaitForValue.call(this, field, value, sec);
+  };
 
   /**
    * Patches usePlaywrightTo to pass the active context (iframe) as 'page'
@@ -244,6 +272,12 @@ module.exports = function pmmGrafanaIframeHook() {
           // Override page with the current context (iframe)
           // eslint-disable-next-line no-param-reassign
           args.page = helper.context;
+
+          // Polyfill evaluate if missing (FrameLocator)
+          if (!args.page.evaluate) {
+            // eslint-disable-next-line no-param-reassign
+            args.page.evaluate = async (func, arg) => args.page.locator('body').evaluate(func, arg);
+          }
         }
 
         return fn(args);
