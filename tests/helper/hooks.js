@@ -60,4 +60,79 @@ module.exports = function pmmGrafanaIframeHook() {
       await switchToGrafana();
     }
   };
+
+  /**
+   * Patches grabTextFrom to explicitly use the helper context if available.
+   * This fixes a specific issue in CodeceptJS Playwright helper where grabTextFrom
+   * uses this.page.textContent() directly, ignoring the active frame context.
+   */
+  const originalGrabTextFrom = helper.grabTextFrom;
+
+  helper.grabTextFrom = async function pmmGrabTextFrom(locator) {
+    if (helper.context) {
+      // Use the context (iframe) directly to find the element
+      const element = helper.context.locator(locator).first();
+
+      return element.textContent();
+    }
+
+    return originalGrabTextFrom.call(this, locator);
+  };
+
+  /**
+   * Patches waitForText to avoid using waitForFunction on FrameLocator
+   * when specific context locator is provided.
+   */
+  const originalWaitForText = helper.waitForText;
+  helper.waitForText = async function pmmWaitForText(text, sec = null, context = null) {
+    if (helper.context && context) {
+      const waitTimeout = sec ? sec * 1000 : helper.options.waitForTimeout;
+      // Use native Playwright text filtering which works with FrameLocator
+      const element = helper.context.locator(context).filter({ hasText: text }).first();
+      await element.waitFor({ state: 'visible', timeout: waitTimeout });
+      return;
+    }
+    return originalWaitForText.call(this, text, sec, context);
+  };
+
+  /**
+   * Patches waitForDetached to correctly handle XPath locators in FrameLocator context.
+   * Standard implementation uses waitForFunction which doesn't work with FrameLocator.
+   */
+  const originalWaitForDetached = helper.waitForDetached;
+  helper.waitForDetached = async function pmmWaitForDetached(locator, sec = null) {
+    if (helper.context) {
+      const waitTimeout = sec ? sec * 1000 : helper.options.waitForTimeout;
+      // Convert CodeceptJS locator to Playwright locator if needed
+      // but simpler to just let Playwright handle the string directly
+      // as it supports XPath auto-detection
+      const locatorString = typeof locator === 'object' ? (locator.xpath || locator.css || locator.toString()) : locator;
+      
+      try {
+        await helper.context.locator(locatorString).first().waitFor({ state: 'detached', timeout: waitTimeout });
+        return;
+      } catch (e) {
+        // Fallback to original if simple locator fails (though it likely won't)
+      }
+    }
+    return originalWaitForDetached.call(this, locator, sec);
+  };
+
+  /**
+   * Patches usePlaywrightTo to pass the active context (iframe) as 'page'
+   * if it exists. This allows usePlaywrightTo to work transparently inside iframes.
+   */
+  const originalUsePlaywrightTo = helper.usePlaywrightTo;
+  helper.usePlaywrightTo = async function pmmUsePlaywrightTo(description, fn) {
+    if (originalUsePlaywrightTo) {
+      return originalUsePlaywrightTo.call(this, description, async (args) => {
+        if (helper.context) {
+          // Override page with the current context (iframe)
+          // eslint-disable-next-line no-param-reassign
+          args.page = helper.context;
+        }
+        return fn(args);
+      });
+    }
+  };
 };

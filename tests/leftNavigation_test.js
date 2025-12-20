@@ -59,6 +59,7 @@ Scenario(
   async ({ I, homePage, serverApi }) => {
     await homePage.open();
 
+    I.switchTo();
     I.waitForVisible(homePage.buttons.pmmHelp);
     I.click(homePage.buttons.pmmHelp);
 
