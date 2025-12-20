@@ -67,6 +67,51 @@ module.exports = function pmmGrafanaIframeHook() {
   };
 
   /**
+   * Patches pressKey to always use the main page's keyboard.
+   * This is necessary because helper.context is set to a FrameLocator for iframes,
+   * which does not support keyboard methods, causing pressKey to fail.
+   */
+  const originalPressKey = helper.pressKey;
+
+  helper.pressKey = async function pmmPressKey(key) {
+    const getPage = () => {
+      if (helper.page && helper.page.keyboard) return helper.page;
+      if (helper.browserContext && helper.browserContext.pages().length > 0) {
+        return helper.browserContext.pages()[0];
+      }
+      return helper.page;
+    };
+
+    const page = getPage();
+
+    if (helper.context && page && page.keyboard) {
+      const modifiers = ['Control', 'Command', 'Alt', 'Shift', 'Meta'];
+
+      if (Array.isArray(key) && key.length === 2 && modifiers.includes(key[0])) {
+        await page.keyboard.down(key[0]);
+        await page.keyboard.press(key[1]);
+        await page.keyboard.up(key[0]);
+
+        return;
+      }
+
+      if (Array.isArray(key)) {
+        for (const k of key) {
+          await helper.pressKey(k);
+        }
+
+        return;
+      }
+
+      await page.keyboard.press(key);
+
+      return;
+    }
+
+    return originalPressKey.call(this, key);
+  };
+
+  /**
    * Helper function to extract valid Playwright selector from CodeceptJS locator
    */
   const getSelector = (locator) => {
