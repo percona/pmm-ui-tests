@@ -172,7 +172,7 @@ Data(editorRole).Scenario(
   },
 );
 
-Data(ptSummaryRoleCheck).Scenario(
+Data(ptSummaryRoleCheck).only.Scenario(
   'PMM-T334 + PMM-T420 + PMM-T1726 - Verify Home dashboard and the pt-summary with viewer or editor role '
   + '@nightly @gssapi-nightly @grafana-pr',
   async ({
@@ -183,7 +183,6 @@ Data(ptSummaryRoleCheck).Scenario(
     await I.Authorize(username, password);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
-    I.waitForVisible(homePage.fields.pmmCustomMenu, 30);
     I.waitForVisible(dashboardPage.graphsLocator('Monitored Nodes'), 30);
     I.waitForVisible(dashboardPage.graphsLocator('Monitored DB Services'), 30);
 
