@@ -53,7 +53,7 @@ if (isJenkinsGssapiJob) {
 } else {
   databaseEnvironments = [
     { serviceName: 'ps_', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', 'DELETE FROM students', 'CREATE TABLE classes'], cluster: 'ps-single-dev-cluster' },
-    { serviceName: 'pdpgsql_', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', 'DELETE FROM', 'CREATE TABLE classes '], cluster: '' },
+    { serviceName: 'pdpgsql_pmm_17', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', 'DELETE FROM', 'CREATE TABLE classes '], cluster: '' },
     { serviceName: 'rs101', queryTypes: ['db.students', 'db.runCommand', 'db.test'], cluster: 'replicaset' },
   ];
 }
