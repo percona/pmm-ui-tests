@@ -1,125 +1,118 @@
+/* eslint-disable func-names */
+/* eslint-disable no-underscore-dangle */
 const { event, container } = require('codeceptjs');
 
-let hooksRegistered = false;
+function getSelector(locator) {
+  let selector = locator;
 
-module.exports = function pmmGrafanaIframeHook() {
-  // Prevent double-registration per worker
-  if (hooksRegistered) return;
+  if (typeof locator === 'object') {
+    if (locator.xpath) {
+      selector = `xpath=${locator.xpath}`;
+    } else if (locator.css) {
+      selector = locator.css;
+    } else if (locator.value && locator.type) {
+      if (locator.type === 'xpath') {
+        selector = `xpath=${locator.value}`;
+      } else if (locator.type === 'css') {
+        selector = locator.value;
+      } else {
+        selector = locator.value;
+      }
+    } else {
+      selector = locator.toString();
+    }
+  }
 
-  hooksRegistered = true;
+  if (typeof selector === 'string') {
+    if (selector.startsWith('{xpath:') && selector.endsWith('}')) {
+      return `xpath=${selector.substring(7, selector.length - 1).trim()}`;
+    }
 
-  const helper = container.helpers('Playwright');
+    if (selector.startsWith('{css:') && selector.endsWith('}')) {
+      return selector.substring(5, selector.length - 1).trim();
+    }
+
+    if (selector.startsWith('$')) {
+      return `[data-testid="${selector.substring(1)}"]`;
+    }
+  }
+
+  return selector;
+}
+
+async function switchToGrafana(helper) {
   const grafanaIframe = '#grafana-iframe';
 
-  /**
-   * Switches execution context to the Grafana iframe.
-   * Ensures the page is loaded and the iframe is visible before switching.
-   */
-  const switchToGrafana = async () => {
-    try {
-      // Reset to main frame first
-      await helper.switchTo();
-      if (helper.page) {
-        await helper.page.waitForLoadState('domcontentloaded');
-      }
+  await helper.switchTo();
+  if (helper.page) await helper.page.waitForLoadState('domcontentloaded');
 
-      await helper.waitForVisible(grafanaIframe, 60);
-      await helper.switchTo(grafanaIframe);
+  await helper.waitForVisible(grafanaIframe, 60);
+  await helper.switchTo(grafanaIframe);
 
-      if (helper.page) {
-        helper.context = helper.page.frameLocator(grafanaIframe);
-      }
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(`[Hooks] Error switching to Grafana iframe: ${e.message}`);
-    }
+  if (helper.page) helper.context = helper.page.frameLocator(grafanaIframe);
+}
+
+async function resetContext(helper) {
+  if (helper.browserContext) {
+    const pages = helper.browserContext.pages();
+
+    if (pages.length > 0) [helper.page] = pages;
+  }
+
+  await helper.switchTo();
+  helper.context = null;
+}
+
+function applyOverride(helper, methodName, wrapperFunction) {
+  const originalMethod = helper[methodName];
+
+  helper[methodName] = async function pmmMethodWrapper(...args) {
+    return wrapperFunction.apply(this, [originalMethod, ...args]);
   };
+}
 
-  /**
-   * Resets execution context to the main frame.
-   */
-  const resetContext = async () => {
-    try {
+function applyContextOverride(helper, methodName, contextAction) {
+  applyOverride(helper, methodName, async function (original, ...args) {
+    if (helper.context) return contextAction.apply(this, args);
+
+    return original.apply(this, args);
+  });
+}
+
+module.exports = function pmmGrafanaIframeHook() {
+  const helper = container.helpers('Playwright');
+  const navigationMethods = ['amOnPage', 'refreshPage', 'openNewTab', 'switchToNextTab', 'switchToPreviousTab'];
+  const noIframeMethods = ['openNewTab'];
+  const noIframeUrls = ['login', 'help', 'updates'];
+
+  navigationMethods.forEach((methodName) => {
+    applyOverride(helper, methodName, async function (original, ...args) {
+      await resetContext(helper);
+      await original.apply(this, args);
+
+      if (methodName === 'amOnPage' && noIframeUrls.some((url) => args[0].includes(url))) return;
+
+      if (noIframeMethods.includes(methodName)) return;
+
+      await switchToGrafana(helper);
+    });
+  });
+  applyOverride(helper, 'pressKey', async function (original, key) {
+    function getPage() {
+      if (helper.page && helper.page.keyboard) return helper.page;
+
       if (helper.browserContext) {
         const pages = helper.browserContext.pages();
 
         if (pages.length > 0) {
-          // eslint-disable-next-line
-          helper.page = pages[0];
+          const [firstPage] = pages;
+
+          return firstPage;
         }
       }
 
-      await helper.switchTo();
-      helper.context = null;
-    } catch (e) {
-      // Ignore errors if browser is already closed or context is invalid
-    }
-  };
-
-  // Reset context at the start and end of each test to avoid frame nesting issues
-  event.dispatcher.on(event.test.before, resetContext);
-  event.dispatcher.on(event.test.after, resetContext);
-
-  /**
-   * Patches navigation methods to always reset context to the main frame first.
-   * This prevents "is not a function" errors when the helper is focused on an iframe.
-   */
-  const originalAmOnPage = helper.amOnPage;
-
-  helper.amOnPage = async function pmmAmOnPage(...args) {
-    await resetContext();
-
-    return originalAmOnPage.call(this, ...args);
-  };
-
-  const originalRefreshPage = helper.refreshPage;
-
-  helper.refreshPage = async function pmmRefreshPage(...args) {
-    await resetContext();
-
-    return originalRefreshPage.call(this, ...args);
-  };
-
-  const originalOpenNewTab = helper.openNewTab;
-
-  helper.openNewTab = async function pmmOpenNewTab(...args) {
-    await resetContext();
-
-    return originalOpenNewTab.call(this, ...args);
-  };
-
-  // Patch _afterStep to automatically switch to Grafana iframe after navigation
-  // eslint-disable-next-line no-underscore-dangle
-  const originalAfterStep = helper._afterStep;
-
-  // eslint-disable-next-line no-underscore-dangle
-  helper._afterStep = async function pmmAfterStep(step) {
-    if (originalAfterStep) {
-      await originalAfterStep.call(this, step);
-    }
-
-    if (['amOnPage', 'switchToNextTab', 'switchToPreviousTab', 'refreshPage'].includes(step.name)) {
-      await switchToGrafana();
-    }
-  };
-
-  /**
-   * Patches pressKey to always use the main page's keyboard.
-   * This is necessary because helper.context is set to a FrameLocator for iframes,
-   * which does not support keyboard methods, causing pressKey to fail.
-   */
-  const originalPressKey = helper.pressKey;
-
-  helper.pressKey = async function pmmPressKey(key) {
-    const getPage = () => {
-      if (helper.page && helper.page.keyboard) return helper.page;
-
-      if (helper.browserContext && helper.browserContext.pages().length > 0) {
-        return helper.browserContext.pages()[0];
-      }
-
       return helper.page;
-    };
+    }
 
     const page = getPage();
 
@@ -130,237 +123,75 @@ module.exports = function pmmGrafanaIframeHook() {
         await page.keyboard.down(key[0]);
         await page.keyboard.press(key[1]);
         await page.keyboard.up(key[0]);
-
-        return;
-      }
-
-      if (Array.isArray(key)) {
-        for (const k of key) {
-          await helper.pressKey(k);
+      } else if (Array.isArray(key)) {
+        for (const keyItem of key) {
+          await helper.pressKey(keyItem);
         }
-
-        return;
-      }
-
-      await page.keyboard.press(key);
-
-      return;
-    }
-
-    return originalPressKey.call(this, key);
-  };
-
-  /**
-   * Helper function to extract valid Playwright selector from CodeceptJS locator
-   */
-  const getSelector = (locator) => {
-    let selector = locator;
-
-    if (typeof locator === 'object') {
-      if (locator.xpath) {
-        selector = `xpath=${locator.xpath}`;
-      } else if (locator.css) {
-        selector = locator.css;
-      } else if (locator.value && locator.type) {
-        // Handle cases where it's a Locator instance but properties are internal
-        if (locator.type === 'xpath') selector = `xpath=${locator.value}`;
-        else if (locator.type === 'css') selector = locator.value;
-        else selector = locator.value;
       } else {
-        selector = locator.toString();
+        await page.keyboard.press(key);
       }
-    }
-
-    if (typeof selector === 'string') {
-      // Handle stringified CodeceptJS locators (e.g., "{xpath: //...}")
-      if (selector.startsWith('{xpath:') && selector.endsWith('}')) {
-        return `xpath=${selector.substring(7, selector.length - 1).trim()}`;
-      }
-
-      if (selector.startsWith('{css:') && selector.endsWith('}')) {
-        return selector.substring(5, selector.length - 1).trim();
-      }
-
-      // Handle Custom Locator plugin strategy ($)
-      if (selector.startsWith('$')) {
-        return `[data-testid="${selector.substring(1)}"]`;
-      }
-    }
-
-    return selector;
-  };
-
-  /**
-   * Patches grabTextFrom to explicitly use the helper context if available.
-   * This fixes a specific issue in CodeceptJS Playwright helper where grabTextFrom
-   * uses this.page.textContent() directly, ignoring the active frame context.
-   */
-  const originalGrabTextFrom = helper.grabTextFrom;
-
-  helper.grabTextFrom = async function pmmGrabTextFrom(locator) {
-    if (helper.context) {
-      const selector = getSelector(locator);
-      // Use the context (iframe) directly to find the element
-      const element = helper.context.locator(selector).first();
-
-      return element.textContent();
-    }
-
-    return originalGrabTextFrom.call(this, locator);
-  };
-
-  /**
-   * Patches grabTextFromAll to explicitly use the helper context if available.
-   */
-  const originalGrabTextFromAll = helper.grabTextFromAll;
-
-  helper.grabTextFromAll = async function pmmGrabTextFromAll(locator) {
-    if (helper.context) {
-      const selector = getSelector(locator);
-      const elements = helper.context.locator(selector);
-
-      return elements.allTextContents();
-    }
-
-    return originalGrabTextFromAll.call(this, locator);
-  };
-
-  /**
-   * Patches waitForText to avoid using waitForFunction on FrameLocator
-   * when specific context locator is provided.
-   */
-  const originalWaitForText = helper.waitForText;
-
-  helper.waitForText = async function pmmWaitForText(text, sec = null, context = null) {
-    if (helper.context && context) {
-      const waitTimeout = sec ? sec * 1000 : helper.options.waitForTimeout;
-      const selector = getSelector(context);
-      // Use native Playwright text filtering which works with FrameLocator
-      const element = helper.context.locator(selector).filter({ hasText: text }).first();
-
-      await element.waitFor({ state: 'visible', timeout: waitTimeout });
 
       return;
     }
 
-    return originalWaitForText.call(this, text, sec, context);
-  };
+    await original.call(this, key);
+  });
+  applyContextOverride(helper, 'grabTextFrom', async (locator) => helper.context.locator(getSelector(locator)).first().textContent());
+  applyContextOverride(helper, 'grabTextFromAll', async (locator) => helper.context.locator(getSelector(locator)).allTextContents());
+  applyContextOverride(helper, 'waitForText', async (text, seconds = null, context = null) => {
+    await helper.context.locator(getSelector(context)).filter({ hasText: text }).first().waitFor({
+      state: 'visible',
+      timeout: seconds ? seconds * 1000 : helper.options.waitForTimeout,
+    });
+  });
+  applyContextOverride(helper, 'waitForDetached', async (locator, seconds = null) => {
+    await helper.context
+      .locator(getSelector(locator))
+      .first()
+      .waitFor({ state: 'detached', timeout: seconds ? seconds * 1000 : helper.options.waitForTimeout });
+  });
+  applyContextOverride(helper, 'waitForValue', async (field, value, seconds = null) => {
+    const waitTimeout = seconds ? seconds * 1000 : helper.options.waitForTimeout;
+    const locator = helper.context.locator(getSelector(field)).first();
+    const startTime = Date.now();
 
-  /**
-   * Patches waitForDetached to correctly handle XPath locators in FrameLocator context.
-   * Standard implementation uses waitForFunction which doesn't work with FrameLocator.
-   */
-  const originalWaitForDetached = helper.waitForDetached;
+    while (Date.now() < startTime + waitTimeout) {
+      const inputValue = await locator.inputValue().catch(() => '');
 
-  helper.waitForDetached = async function pmmWaitForDetached(locator, sec = null) {
-    if (helper.context) {
-      const waitTimeout = sec ? sec * 1000 : helper.options.waitForTimeout;
-      const selector = getSelector(locator);
+      if (inputValue.includes(value)) return;
 
-      try {
-        await helper.context.locator(selector).first().waitFor({ state: 'detached', timeout: waitTimeout });
-
-        return;
-      } catch (e) {
-        // Fallback to original if simple locator fails (though it likely won't)
-      }
+      await new Promise((resolve) => { setTimeout(resolve, 100); });
     }
+    throw new Error(`Wait for value "${value}" failed for field ${field}`);
+  });
+  applyContextOverride(helper, 'moveCursorTo', async (locator, offsetX = 0, offsetY = 0) => {
+    const element = helper.context.locator(getSelector(locator)).first();
 
-    return originalWaitForDetached.call(this, locator, sec);
-  };
+    await element.evaluate((elementInstance) => {
+      elementInstance.scrollIntoView({ block: 'center', inline: 'center' });
+    });
+    await element.hover({ position: { x: offsetX, y: offsetY }, force: true });
+  });
+  applyOverride(helper, 'usePlaywrightTo', async function (original, description, callback) {
+    return original.call(this, description, async (args) => {
+      if (helper.context) {
+        args.page = helper.context;
 
-  /**
-
-     * Patches waitForValue to correctly handle FrameLocator context.
-
-     * Standard implementation uses waitForFunction which doesn't work with FrameLocator.
-
-     */
-
-  const originalWaitForValue = helper.waitForValue;
-
-  helper.waitForValue = async function pmmWaitForValue(field, value, sec = null) {
-    if (this.context) {
-      const waitTimeout = sec ? sec * 1000 : helper.options.waitForTimeout;
-
-      const selector = getSelector(field);
-
-      const locator = this.context.locator(selector).first();
-
-      const startTime = Date.now();
-
-      while (Date.now() - startTime < waitTimeout) {
-        const val = await locator.inputValue().catch(() => '');
-
-        if (val.includes(value)) return;
-
-        await new Promise((r) => setTimeout(r, 100));
-      }
-
-      throw new Error(`Wait for value "${value}" failed for field ${field}`);
-    }
-
-    return originalWaitForValue.call(this, field, value, sec);
-  };
-
-  /**
-
-     * Patches moveCursorTo to correctly handle FrameLocator context.
-
-     * Standard implementation may use page.mouse which doesn't work with FrameLocator.
-
-     */
-
-  const originalMoveCursorTo = helper.moveCursorTo;
-
-  helper.moveCursorTo = async function pmmMoveCursorTo(locator, offsetX = 0, offsetY = 0) {
-    if (this.context) {
-      const element = this.context.locator(getSelector(locator)).first();
-
-      await element.evaluate((el) => el.scrollIntoView({ block: 'center', inline: 'center' })).catch(() => {});
-      await element.hover({ position: { x: offsetX, y: offsetY }, force: true });
-
-      return;
-    }
-
-    return originalMoveCursorTo.call(this, locator, offsetX, offsetY);
-  }; /**
-
-     * Patches usePlaywrightTo to pass the active context (iframe) as 'page'
-
-     * if it exists. This allows usePlaywrightTo to work transparently inside iframes.
-
-     */
-
-  const originalUsePlaywrightTo = helper.usePlaywrightTo;
-
-  helper.usePlaywrightTo = async function pmmUsePlaywrightTo(description, fn) {
-    if (originalUsePlaywrightTo) {
-      return originalUsePlaywrightTo.call(this, description, async (args) => {
-        if (helper.context) {
-          // Override page with the current context (iframe)
-
-          // eslint-disable-next-line no-param-reassign
-
-          args.page = helper.context;
-
-          // Polyfill evaluate if missing (FrameLocator)
-
-          if (!args.page.evaluate) {
-            Object.defineProperty(args.page, 'evaluate', {
-
-              value: async (func, arg) => args.page.locator('body').evaluate(func, arg),
-
-              writable: true,
-
-              configurable: true,
-
-            });
-          }
+        if (!args.page.evaluate) {
+          Object.defineProperty(args.page, 'evaluate', {
+            async value(functionToExecute, argument) {
+              return args.page.locator('body').evaluate(functionToExecute, argument);
+            },
+            writable: true,
+            configurable: true,
+          });
         }
+      }
 
-        return fn(args);
-      });
-    }
-  };
+      return callback(args);
+    });
+  });
+
+  event.dispatcher.on(event.test.before, resetContext.bind(null, helper));
+  event.dispatcher.on(event.test.after, resetContext.bind(null, helper));
 };

@@ -36,6 +36,8 @@ module.exports = {
       I.click(this.fields.skipButton);
     }
 
+    I.amOnPage(homePage.url);
+
     I.waitInUrl(homePage.landingUrl);
   },
 
