@@ -295,7 +295,7 @@ class Grafana extends Helper {
 
     await Playwright.page.locator(dropdownLocator).first().waitFor({ state: 'attached', timeout: 5000 });
     await Playwright.page.locator(dropdownLocator).first().click();
-    await Playwright.page.waitForTimeout(500);
+    await Playwright.wait(0.5);
 
     const optionLocator = Playwright.page.locator('div[role="option"]  span');
 
@@ -310,10 +310,11 @@ class Grafana extends Helper {
 
   async isElementDisplayed(locator, timeoutInSeconds = 60) {
     const { Playwright } = this.helpers;
-    const elementLocator = Playwright.page.locator(locate(locator).toXPath());
+    const context = Playwright.context || Playwright.page;
+    const elementLocator = context.locator(locate(locator).toXPath());
 
     for (let i = 0; i < timeoutInSeconds; i++) {
-      await Playwright.page.waitForTimeout(1000);
+      await Playwright.wait(1);
 
       if (await elementLocator.first().isVisible()) {
         return true;
