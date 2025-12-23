@@ -5,6 +5,8 @@ const { event, container } = require('codeceptjs');
 function getSelector(locator) {
   let selector = locator;
 
+  if (!locator) return null;
+
   if (typeof locator === 'object') {
     if (locator.xpath) {
       selector = `xpath=${locator.xpath}`;
@@ -139,7 +141,7 @@ module.exports = function pmmGrafanaIframeHook() {
   applyContextOverride(helper, 'grabTextFrom', async (locator) => helper.context.locator(getSelector(locator)).first().textContent());
   applyContextOverride(helper, 'grabTextFromAll', async (locator) => helper.context.locator(getSelector(locator)).allTextContents());
   applyContextOverride(helper, 'waitForText', async (text, seconds = null, context = null) => {
-    await helper.context.locator(getSelector(context)).filter({ hasText: text }).first().waitFor({
+    await helper.context.locator(getSelector(context) || 'body').filter({ hasText: text }).first().waitFor({
       state: 'visible',
       timeout: seconds ? seconds * 1000 : helper.options.waitForTimeout,
     });
