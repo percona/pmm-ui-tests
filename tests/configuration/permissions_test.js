@@ -183,7 +183,6 @@ Data(ptSummaryRoleCheck).Scenario(
     await I.Authorize(username, password);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
-    I.waitForVisible(homePage.fields.pmmCustomMenu, 30);
     I.waitForVisible(dashboardPage.graphsLocator('Monitored Nodes'), 30);
     I.waitForVisible(dashboardPage.graphsLocator('Monitored DB Services'), 30);
 

@@ -34,6 +34,7 @@ module.exports = {
     failedChecksPanelInfo: '[aria-label="Advisors check panel"] i',
     newsPanelTitleSelector: dashboardPage.graphsLocator('Percona News'),
     pmmCustomMenu: locate('[data-toggle="dropdown"]').withText('PMM'),
+    metricTitle: '$header-container',
     servicesButton: locate('span').withText('Services'),
     newsPanelContentSelector:
       locate('.panel-content').inside('[aria-label="Percona News panel"]'),
@@ -83,7 +84,7 @@ module.exports = {
     },
   },
   buttons: {
-    pmmHelp: locate('button').withAttr({ 'aria-label': 'Help' }),
+    pmmHelp: '$navitem-help-list-item',
     pmmLogs: locate('//a[@href="/logs.zip"]'),
   },
   upgradeMilestones: [
@@ -102,7 +103,7 @@ module.exports = {
 
   async open() {
     I.amOnPage(this.url);
-    I.waitForElement(this.fields.dashboardHeaderLocator, 60);
+    I.waitForElement(this.fields.metricTitle, 60);
   },
 
   async openLeftMenu() {
