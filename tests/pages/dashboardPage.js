@@ -824,7 +824,7 @@ module.exports = {
       'Nodes',
       'DBs',
       'Last Election',
-      'Node States',
+      'Member States',
       'Top Hottest Collections by Read',
       'Operation Latencies',
       'Top Hottest Collections by Write',

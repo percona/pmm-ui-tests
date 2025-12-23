@@ -22,7 +22,7 @@ Before(async ({ I }) => {
 Scenario(
   'PMM-T2050 - Verify PostgreSQL Instance Summary Dashboard @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName('pdpgsql_pmm_');
+    const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pdpgsql_pmm_', 'patroni');
     const url = I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.url, { service_name, from: 'now-1h' });
 
     I.amOnPage(url);
