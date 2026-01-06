@@ -33,7 +33,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.mongoDbShardedClusterSummary.metrics);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData(18);
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(9);
   },
 );
 
