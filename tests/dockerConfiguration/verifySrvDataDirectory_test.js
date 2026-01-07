@@ -171,7 +171,6 @@ Scenario(
     });
     await I.waitForVisible('//h1[text()="Percona Monitoring and Management"]');
     await I.unAuthorize();
-    await I.refreshPage();
     await I.waitInUrl(loginPage.url);
     await I.Authorize('admin', 'newpass', basePmmUrl);
     await I.wait(1);
