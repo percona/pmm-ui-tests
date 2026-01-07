@@ -170,17 +170,17 @@ Scenario(
     });
     await I.waitForVisible('//h1[text()="Percona Monitoring and Management"]');
     await I.unAuthorize();
-    await I.amOnPage(loginPage.url);
+    await I.amOnPage(basePmmUrl + loginPage.url);
     await I.Authorize('admin', 'newpass', basePmmUrl);
     await I.wait(1);
-    await I.amOnPage(homePage.url);
+    await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
     await I.verifyCommand('docker exec -t pmm-server-password change-admin-password anotherpass');
     await I.unAuthorize();
-    await I.amOnPage(loginPage.url);
+    await I.amOnPage(basePmmUrl + loginPage.url);
     await I.Authorize('admin', 'anotherpass', basePmmUrl);
     await I.wait(5);
-    await I.amOnPage(homePage.url);
+    await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
   },
 );
