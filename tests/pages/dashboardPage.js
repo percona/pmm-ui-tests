@@ -1266,7 +1266,7 @@ module.exports = {
           actualValue = await valueLocator.textContent();
         }
 
-        await page.waitForTimeout(1000);
+        await new Promise((resolve) => { setTimeout(resolve, 1000); });
 
         if (actualValue >= expectedValue) return;
       }
