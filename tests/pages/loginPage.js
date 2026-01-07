@@ -26,7 +26,11 @@ module.exports = {
     I.seeElement(this.fields.passwordInput);
     I.fillField(this.fields.passwordInput, password);
     I.click(this.fields.loginButton);
-    I.waitInUrl(homePage.landingUrl);
+    await I.waitForFunction(() => {
+      const url = window.location.href;
+
+      return url.includes('help') || url.includes('home-dashboard');
+    }, 60);
   },
 
 };

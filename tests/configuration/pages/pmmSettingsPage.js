@@ -462,6 +462,7 @@ module.exports = {
     I.fillField(this.fields.publicAddressInput, address);
     I.click(this.fields.advancedButton);
     I.verifyPopUpMessage(this.messages.successPopUpMessage);
+    I.refreshPage();
   },
 
   clearPublicAddress() {

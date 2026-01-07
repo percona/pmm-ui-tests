@@ -166,7 +166,9 @@ Scenario(
     assert.ok(!logs.includes('Configuration warning: unknown environment variable "GF_SECURITY_ADMIN_PASSWORD=newpass".'));
 
     await I.Authorize('admin', 'admin', basePmmUrl);
-    await I.amOnPage(basePmmUrl + homePage.url);
+    await I.usePlaywrightTo('Navigate to Dashboard expecting Login redirect', async ({ page }) => {
+      await page.goto(basePmmUrl + homePage.url);
+    });
     await I.waitForVisible('//h1[text()="Percona Monitoring and Management"]');
     await I.unAuthorize();
     await I.refreshPage();
