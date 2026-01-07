@@ -140,6 +140,14 @@ module.exports = function pmmGrafanaIframeHook() {
   });
   applyContextOverride(helper, 'grabTextFrom', async (locator) => helper.context.locator(getSelector(locator)).first().textContent());
   applyContextOverride(helper, 'grabTextFromAll', async (locator) => helper.context.locator(getSelector(locator)).allTextContents());
+  applyContextOverride(helper, 'seeTextEquals', async (text, context = null) => {
+    const selector = getSelector(context) || 'body';
+    const actualText = await helper.context.locator(selector).first().textContent();
+
+    if (actualText !== text) {
+      throw new Error(`Expected text to be "${text}", but found "${actualText}"`);
+    }
+  });
   applyContextOverride(helper, 'waitForText', async (text, seconds = null, context = null) => {
     await helper.context.locator(getSelector(context) || 'body').filter({ hasText: text }).first().waitFor({
       state: 'visible',
