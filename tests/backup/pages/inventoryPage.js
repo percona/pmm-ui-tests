@@ -96,10 +96,15 @@ module.exports = {
     I.waitForVisible(this.elements.backupStatusFailureIconByName(backupName), 120);
   },
 
-  openDeleteBackupModal(backupName) {
+  async openDeleteBackupModal(backupName) {
     I.waitForVisible(this.buttons.actionsMenuByName(backupName), 10);
     I.click(this.buttons.actionsMenuByName(backupName));
-    I.waitForVisible(this.buttons.deleteByName(backupName), 2);
+
+    if (!(await I.isElementDisplayed(this.buttons.deleteByName(backupName), 2))) {
+      I.click(this.buttons.actionsMenuByName(backupName));
+    }
+
+    I.waitForVisible(this.buttons.deleteByName(backupName), 10);
     I.click(this.buttons.deleteByName(backupName));
     I.waitForVisible(this.elements.forceDeleteLabel, 20);
   },
