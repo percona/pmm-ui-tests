@@ -55,10 +55,11 @@ class Grafana extends Helper {
     }
 
     cookies.forEach((cookie) => {
+      const urlToParse = baseUrl || config.config.helpers.Playwright.url;
       const parsedCookie = {
         name: cookie.split('=')[0],
         value: cookie.split('=')[1].split(';')[0],
-        domain: config.config.helpers.Playwright.url.replace(/[^.\d]/g, ''),
+        domain: new URL(urlToParse).hostname,
         path: '/',
       };
 

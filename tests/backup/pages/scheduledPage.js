@@ -98,7 +98,7 @@ module.exports = {
   clearRetentionField() {
     // clearField method doesn't work for this field
     I.usePlaywrightTo('clear field', async ({ page }) => {
-      await page.fill(I.useDataQA('retention-number-input'), '');
+      await page.locator(I.useDataQA('retention-number-input')).fill('');
     });
   },
 

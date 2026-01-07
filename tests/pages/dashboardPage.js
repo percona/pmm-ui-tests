@@ -318,16 +318,16 @@ module.exports = {
       'Maximum Galera Replication Latency',
     ],
   },
-  ValkeyOverviewDashboard: ValkeyOverviewDashboard,
-  ValkeyClientsDashboard: ValkeyClientsDashboard,
-  ValkeyClusterDetailsDashboard: ValkeyClusterDetailsDashboard,
-  ValkeyCommandDetailDashboard: ValkeyCommandDetailDashboard,
-  ValkeyLoadDashboard: ValkeyLoadDashboard,
-  ValkeyMemoryDashboard: ValkeyMemoryDashboard,
-  ValkeyNetworkDashboard: ValkeyNetworkDashboard,
-  ValkeyPersistenceDetailsDashboard: ValkeyPersistenceDetailsDashboard,
-  ValkeyReplicationDashboard: ValkeyReplicationDashboard,
-  ValkeySlowlogDashboard: ValkeySlowlogDashboard,
+  valkeyOverviewDashboard: ValkeyOverviewDashboard,
+  valkeyClientsDashboard: ValkeyClientsDashboard,
+  valkeyClusterDetailsDashboard: ValkeyClusterDetailsDashboard,
+  valkeyCommandDetailDashboard: ValkeyCommandDetailDashboard,
+  valkeyLoadDashboard: ValkeyLoadDashboard,
+  valkeyMemoryDashboard: ValkeyMemoryDashboard,
+  valkeyNetworkDashboard: ValkeyNetworkDashboard,
+  valkeyPersistenceDetailsDashboard: ValkeyPersistenceDetailsDashboard,
+  valkeyReplicationDashboard: ValkeyReplicationDashboard,
+  valkeySlowlogDashboard: ValkeySlowlogDashboard,
   mySQLMyRocksDetailsDashboard: MySQLMyRocksDetailsDashboard,
   postgresqlInstanceSummaryDashboard: PostgresqlInstanceSummaryDashboard,
   postgresqlCheckpointDashboard: PostgresqlCheckpointDashboard,
@@ -1215,13 +1215,17 @@ module.exports = {
       // Split on '*' and ensure all fixed fragments appear in order.
       const parts = metricName.split('*').filter(Boolean);
       // Start with panels
-      let xpath = "//section[contains(@data-testid,'Panel header')";
+      let xpath = '//section[contains(@data-testid,\'Panel header\')';
+
       for (const p of parts) {
         xpath += ` and contains(@data-testid,'${p}')`;
       }
+
       xpath += ']';
+
       return locate(xpath);
     }
+
     return locate(`[data-testid*="data-testid Panel header"][data-testid*="${metricName}"]`);
   },
 
