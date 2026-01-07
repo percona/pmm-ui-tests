@@ -26,18 +26,6 @@ module.exports = {
     I.seeElement(this.fields.passwordInput);
     I.fillField(this.fields.passwordInput, password);
     I.click(this.fields.loginButton);
-
-    // BUG: system message on success for changed password is gone before the next line executed
-    // eslint-disable-next-line no-undef
-    await tryTo(() => I.verifyPopUpMessage(this.messages.loginSuccess, 5));
-
-    if ((await I.grabCurrentUrl()).includes(this.url)) {
-      I.seeElement(this.fields.skipButton);
-      I.click(this.fields.skipButton);
-    }
-
-    I.amOnPage(homePage.url);
-
     I.waitInUrl(homePage.landingUrl);
   },
 

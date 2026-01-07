@@ -85,7 +85,7 @@ module.exports = function pmmGrafanaIframeHook() {
   const helper = container.helpers('Playwright');
   const navigationMethods = ['amOnPage', 'refreshPage', 'openNewTab', 'switchToNextTab', 'switchToPreviousTab'];
   const noIframeMethods = ['openNewTab'];
-  const noIframeUrls = ['login', 'help', 'updates'];
+  const noIframeUrls = ['login', 'logout', 'help', 'updates'];
 
   navigationMethods.forEach((methodName) => {
     applyOverride(helper, methodName, async function (original, ...args) {
@@ -165,6 +165,20 @@ module.exports = function pmmGrafanaIframeHook() {
       await new Promise((resolve) => { setTimeout(resolve, 100); });
     }
     throw new Error(`Wait for value "${value}" failed for field ${field}`);
+  });
+  applyContextOverride(helper, 'waitForEnabled', async (locator, seconds = null) => {
+    const waitTimeout = seconds ? seconds * 1000 : helper.options.waitForTimeout;
+    const element = helper.context.locator(getSelector(locator)).first();
+    const startTime = Date.now();
+
+    await element.waitFor({ state: 'attached', timeout: waitTimeout });
+
+    while (Date.now() < startTime + waitTimeout) {
+      if (await element.isEnabled()) return;
+
+      await new Promise((resolve) => { setTimeout(resolve, 100); });
+    }
+    throw new Error(`Element ${locator} was not enabled after ${seconds} seconds`);
   });
   applyContextOverride(helper, 'moveCursorTo', async (locator, offsetX = 0, offsetY = 0) => {
     const element = helper.context.locator(getSelector(locator)).first();
