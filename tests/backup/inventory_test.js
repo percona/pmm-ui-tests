@@ -344,9 +344,9 @@ Scenario(
     const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
 
     backupInventoryPage.openDeleteBackupModal(backupName);
-    I.seeTextEquals(backupInventoryPage.messages.confirmDeleteText(artifactName), backupInventoryPage.elements.modalHeader);
-    I.seeTextEquals(backupInventoryPage.messages.forceDeleteLabelText, backupInventoryPage.elements.forceDeleteLabel);
-    I.seeTextEquals(backupInventoryPage.messages.modalHeaderText, backupInventoryPage.elements.modalHeader);
+    I.waitForText(backupInventoryPage.messages.confirmDeleteText(artifactName), 10, backupInventoryPage.elements.modalHeader);
+    I.waitForText(backupInventoryPage.messages.forceDeleteLabelText, 10, backupInventoryPage.elements.forceDeleteLabel);
+    I.waitForText(backupInventoryPage.messages.modalHeaderText, 10, backupInventoryPage.elements.modalHeader);
 
     I.seeCheckboxIsChecked(backupInventoryPage.buttons.forceDeleteCheckbox);
 
