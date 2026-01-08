@@ -6,7 +6,7 @@ const PmmHealthDashboard = require('./dashboards/experimental/pmmHealthDashboard
 const HomeDashboard = require('./dashboards/homeDashboard');
 const PostgresqlTopQueriesDashboard = require('./dashboards/pgsql/postgresqlTopQueriesDashboard');
 const PostgresqlInstancesOverviewExtendedDashboard = require('./dashboards/pgsql/postgresqlInstancesOverviewExtendedDashboard');
-const MongodbPBMDetailsDashboard = require('./dashboards/mongodb/mongodbPBMDetailsDashboard');
+const MongodbBackupDetailsDashboard = require('./dashboards/mongodb/mongodbBackupDetailsDashboard');
 const PostgresqlInstanceOverviewDashboard = require('./dashboards/pgsql/postgresqlInstanceOverviewDashboard');
 const PostgresqlInstanceSummaryDashboard = require('./dashboards/pgsql/postgresqlInstanceSummaryDashboard');
 const PostgresqlCheckpointDashboard = require('./dashboards/pgsql/postgresqlCheckpointDashboard');
@@ -345,7 +345,7 @@ module.exports = {
     ],
   },
   postgresqlInstanceOverviewDashboard: PostgresqlInstanceOverviewDashboard,
-  mongodbPBMDetailsDashboard: MongodbPBMDetailsDashboard,
+  mongodbBackupDetailsDashboard: MongodbBackupDetailsDashboard,
   mongodbOverviewDashboard: {
     url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary',
     metrics: [
