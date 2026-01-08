@@ -7,6 +7,9 @@ Feature('Encryption');
 
 BeforeSuite(async ({ I }) => {
   await I.verifyCommand('docker compose -f docker-compose-encryption.yml up -d');
+});
+
+Before(async ({ I }) => {
   await I.Authorize();
 });
 

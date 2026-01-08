@@ -198,9 +198,7 @@ Scenario(
     queryAnalyticsPage.filters.selectContainFilter(serviceName);
     queryAnalyticsPage.data.waitForNewItemsCount(count);
     queryAnalyticsPage.filters.selectFilterInGroup(db2, section);
-    await within(queryAnalyticsPage.data.root, () => {
-      I.waitForText('No queries available for this combination of filters', 30);
-    });
+    I.waitForText('No queries available for this combination of filters', 30);
   },
 ).retry(2);
 

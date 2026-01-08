@@ -35,14 +35,12 @@ Scenario('PMM-T84 - Verify Section Tabs and Metrics Section Elements [critical] 
   I.amOnPage(pmmSettingsPage.url);
   await pmmSettingsPage.waitForPmmSettingsPageLoaded();
 
-  await within(pmmSettingsPage.fields.tabContent, () => {
-    I.waitForElement(pmmSettingsPage.fields.metricsResolutionLabel, 30);
-    I.see('Metrics resolution, sec', pmmSettingsPage.fields.metricsResolutionLabel);
-    I.seeElement(pmmSettingsPage.fields.metricsResolutionRadio);
-    I.seeElement(pmmSettingsPage.fields.lowInput);
-    I.seeElement(pmmSettingsPage.fields.mediumInput);
-    I.seeElement(pmmSettingsPage.fields.highInput);
-  });
+  I.waitForElement(pmmSettingsPage.fields.metricsResolutionLabel, 30);
+  I.see('Metrics resolution, sec', pmmSettingsPage.fields.metricsResolutionLabel);
+  I.seeElement(pmmSettingsPage.fields.metricsResolutionRadio);
+  I.seeElement(pmmSettingsPage.fields.lowInput);
+  I.seeElement(pmmSettingsPage.fields.mediumInput);
+  I.seeElement(pmmSettingsPage.fields.highInput);
 });
 
 Scenario('PMM-T85 - Verify SSH Key Section Elements @settings @grafana-pr', async ({ I, pmmSettingsPage }) => {
@@ -105,7 +103,7 @@ Scenario('PMM-T1866 - Verify if public address has an port assigned and followin
   I.wait(5);
   // clearField and customClearField methods doesn't work for this field
   I.usePlaywrightTo('clear field', async ({ page }) => {
-    await page.fill(I.useDataQA('retention-number-input'), '');
+    await page.locator(I.useDataQA('retention-number-input')).fill('');
   });
   I.fillField(pmmSettingsPage.fields.dataRetentionInput, '1');
   I.click(pmmSettingsPage.fields.applyButton);

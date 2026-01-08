@@ -418,9 +418,9 @@ module.exports = {
 
   updateServiceLabels(serviceParameters) {
     I.usePlaywrightTo('clear fields', async ({ page }) => {
-      await page.fill(I.useDataQA('environment-text-input'), serviceParameters.environment);
-      await page.fill(I.useDataQA('replication_set-text-input'), serviceParameters.replicationSet);
-      await page.fill(I.useDataQA('cluster-text-input'), serviceParameters.cluster);
+      await page.locator(I.useDataQA('environment-text-input')).fill(serviceParameters.environment);
+      await page.locator(I.useDataQA('replication_set-text-input')).fill(serviceParameters.replicationSet);
+      await page.locator(I.useDataQA('cluster-text-input')).fill(serviceParameters.cluster);
     });
 
     this.saveAndConfirm();

@@ -650,9 +650,19 @@ module.exports = {
   async clickAddInstanceAndWaitForSuccess() {
     I.waitForVisible(this.fields.addService, 30);
 
-    await I.usePlaywrightTo('click Add service and wait for response', async ({ page }) => {
+    await I.usePlaywrightTo('click Add service and wait for response', async (args) => {
+      let pageObject = args.page;
+
+      if (args.browserContext) {
+        const pages = args.browserContext.pages();
+
+        if (pages.length > 0) {
+          [pageObject] = pages;
+        }
+      }
+
       await Promise.all([
-        page.waitForResponse(
+        pageObject.waitForResponse(
           async (response) => {
             if (response.url().includes('v1/management/services')) {
               if (response.status() === 200) {
@@ -666,7 +676,7 @@ module.exports = {
           },
           { timeout: 5000 },
         ),
-        page.click(this.fields.addService),
+        args.page.locator(this.fields.addService).click(),
       ]);
     });
   },
