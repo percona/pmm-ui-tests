@@ -57,7 +57,7 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', async () 
     stopList.push('PMM-T225');
     removeList.push('PMM-T225');
     // @ts-ignore
-    await out.outContains('Configuration warning: unknown environment variable \\"PMM_DATA_TENTION=48\\".');
+    await out.outContains('Configuration warning: unknown environment variable PMM_DATA_TENTION=48.');
   });
 
   /**
