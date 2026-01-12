@@ -138,11 +138,26 @@ module.exports = function pmmGrafanaIframeHook() {
 
     await original.call(this, key);
   });
+  applyOverride(helper, 'switchTo', async function (original, locator) {
+    await original.apply(this, [locator]);
+
+    if (!locator) {
+      helper.context = null;
+
+      return;
+    }
+
+    helper.context = helper.page.frameLocator(locator);
+  });
   applyContextOverride(helper, 'grabTextFrom', async (locator) => helper.context.locator(getSelector(locator)).first().textContent());
   applyContextOverride(helper, 'grabTextFromAll', async (locator) => helper.context.locator(getSelector(locator)).allTextContents());
   applyContextOverride(helper, 'seeTextEquals', async (text, context = null) => {
     const selector = getSelector(context) || 'body';
-    const actualText = await helper.context.locator(selector).first().textContent();
+    let actualText = await helper.context.locator(selector).first().textContent();
+
+    if (actualText) {
+      actualText = actualText.replace(/\u00a0/g, ' ');
+    }
 
     if (actualText !== text) {
       throw new Error(`Expected text to be "${text}", but found "${actualText}"`);

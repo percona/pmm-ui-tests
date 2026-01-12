@@ -18,7 +18,7 @@ const formatElementId = (text) => text.toLowerCase().replace(/ /g, '-');
 function LeftMenu(name, path, menuOptions) {
   this.headingLocator = locate(`ul[aria-label="${name}"]`).find('a').withText(name);
   this.menuLocator = `ul[aria-label="${name}"]`;
-  this.locator = `//a[@aria-label="${name}"] | //button[@aria-label="${name}"]`;
+  this.locator = `$navitem-${name.toLowerCase()}`;
   this.menu = {
     heading: new MenuOption(name, name, this.headingLocator, path),
   };

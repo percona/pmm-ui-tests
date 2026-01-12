@@ -34,7 +34,7 @@ module.exports = {
     },
   ),
   systemNode: new LeftMenu(
-    'Operating System (OS)',
+    'System',
     '/graph/d/node-instance-overview/',
     {
       nodeOverview: menuOption(sy, 'Overview', '/graph/d/node-instance-overview/nodes-overview'),
@@ -76,7 +76,7 @@ module.exports = {
     },
   ),
   mongoDb: new LeftMenu(
-    'MongoDB',
+    'Mongo',
     '/graph/d/mongodb-instance-overview/mongodb-instances-overview',
     {
       mongoDbInstanceOverview: menuOption(mo, 'Overview', '/graph/d/mongodb-instance-overview/mongodb-instances-overview'),
@@ -96,7 +96,7 @@ module.exports = {
     },
   ),
   postgreSql: new LeftMenu(
-    'PostgreSQL',
+    'Postgre',
     '/graph/d/postgresql-instance-overview/postgresql-instances-overview',
     {
       postgreSqlOverview: menuOption(ps, 'Overview', '/graph/d/postgresql-instance-overview/postgresql-instances-overview'),
@@ -106,10 +106,10 @@ module.exports = {
   proxySql: new LeftMenu('ProxySQL', '/graph/d/proxysql-instance-summary/proxysql-instance-summary'),
   haProxy: new LeftMenu('HAProxy', '/graph/d/haproxy-instance-summary/haproxy-instance-summary'),
 
-  queryAnalytics: new LeftMenu('Query Analytics (QAN)', '/graph/d/pmm-qan/pmm-query-analytics'),
+  queryAnalytics: new LeftMenu('Qan', '/graph/d/pmm-qan/pmm-query-analytics'),
   explore: new LeftMenu('Explore', '/graph/explore'),
   alerting: new LeftMenu(
-    'Alerting',
+    'Alerts',
     '/graph/alerting/alerts',
     {
       alertRules: menuOption(al, 'Alert rules', '/graph/alerting/list'),
@@ -131,7 +131,7 @@ module.exports = {
     },
   ),
   backups: new LeftMenu(
-    'Backup',
+    'Backups',
     '/graph/backup/inventory',
     {
       allBackups: menuOption(bm, 'All Backups', '/graph/backup/inventory'),
