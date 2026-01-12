@@ -8,13 +8,13 @@ const {
 module.exports = {
   tabNames: {
     firedAlerts: 'Fired alerts',
-    ruleTemplates: 'Alert rule templates',
+    ruleTemplates: 'Percona Alert Templates',
     alertRules: 'Alert rules',
     contactPoints: 'Contact points',
     notificationPolicies: 'Notification policies',
     silences: 'Silences',
     alertGroups: 'Alert groups',
-    admin: 'Settings',
+    admin: 'Alert settings',
   },
   elements: {
     noData: locate('$table-no-data').find('h1'),
@@ -22,7 +22,7 @@ module.exports = {
     itemsShown: '$pagination-items-inverval',
     rowInTable: locate('$table-tbody').find('tr'),
     // tab: (tabName) => locate('[role="tablist"] a').withAttr({ 'aria-label': `Tab ${tabName}` }),
-    tab: (tabName) => locate(I.useDataQA('data-testid Nav menu item')).withText(tabName),
+    tab: (tabName) => locate(`//span[text()="${tabName}"]`),
     table: '$table-tbody',
     disabledIa: '$empty-block',
     settingsLink: '$settings-link',
@@ -42,8 +42,7 @@ module.exports = {
   },
   messages: {
     itemsShown: (leftNumber, rightNumber, totalItems) => `Showing ${leftNumber}-${rightNumber} of ${totalItems} items`,
-    disabledIa: 'Percona Alerting is disabled. You can enable it in  \n'
-      + 'PMM Settings.',
+    disabledIa: 'Percona Alerting is disabled. You can enable it in  PMM Settings.',
   },
 
   /**
@@ -52,8 +51,10 @@ module.exports = {
    * @param  {} tabUrl - expected url in tab
    */
   async openAndVerifyTab(tabName, tabElement, tabUrl) {
+    I.switchTo();
     I.waitForVisible(this.elements.tab(tabName), 30);
     I.click(this.elements.tab(tabName));
+    I.switchTo('#grafana-iframe');
     I.waitForVisible(tabElement, 10);
     I.seeInCurrentUrl(tabUrl);
     //
