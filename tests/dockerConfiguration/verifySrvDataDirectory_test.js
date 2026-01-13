@@ -164,23 +164,23 @@ Scenario(
     const logs = await I.verifyCommand('docker logs pmm-server-password');
 
     assert.ok(!logs.includes('Configuration warning: unknown environment variable "GF_SECURITY_ADMIN_PASSWORD=newpass".'));
-
     await I.Authorize('admin', 'admin', basePmmUrl);
-    await I.amOnPage(basePmmUrl + homePage.url);
+    await I.usePlaywrightTo('Navigate to Dashboard expecting Login redirect', async ({ page }) => {
+      await page.goto(basePmmUrl + homePage.url);
+    });
     await I.waitForVisible('//h1[text()="Percona Monitoring and Management"]');
     await I.unAuthorize();
-    await I.refreshPage();
-    await I.waitInUrl(loginPage.url);
+    await I.amOnPage(basePmmUrl + loginPage.url);
     await I.Authorize('admin', 'newpass', basePmmUrl);
     await I.wait(1);
-    await I.refreshPage();
+    await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
     await I.verifyCommand('docker exec -t pmm-server-password change-admin-password anotherpass');
     await I.unAuthorize();
-    await I.waitInUrl(loginPage.url);
+    await I.amOnPage(basePmmUrl + loginPage.url);
     await I.Authorize('admin', 'anotherpass', basePmmUrl);
     await I.wait(5);
-    await I.refreshPage();
+    await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
   },
 );

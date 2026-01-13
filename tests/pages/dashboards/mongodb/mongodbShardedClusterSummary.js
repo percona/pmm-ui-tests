@@ -9,7 +9,7 @@ class MongodbShardedClusterSummary {
       'Draining Shards',
       'DBs',
       'Balancer Enabled',
-      'Total amount of Chunks',
+      'Chunks',
       'Last Election',
       'Data distribution',
       'Command Operations',
@@ -39,7 +39,6 @@ class MongodbShardedClusterSummary {
       'Oplog Range by Shard',
       'Flow Control',
       'Oplog GB/Hour',
-      'Nodes Overview',
     ];
   }
 }

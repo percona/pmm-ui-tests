@@ -178,6 +178,7 @@ Scenario(
 
     if (pmmVersion >= 36 || pmmVersion === undefined) {
       I.amOnPage(homePage.url);
+      I.switchTo();
       I.waitForVisible(leftNavMenu.backups.locator, 30);
       I.assertEqual(settingEndpointResponse, true);
       I.amOnPage(pmmSettingsPage.advancedSettingsUrl);

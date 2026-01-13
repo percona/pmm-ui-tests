@@ -1,19 +1,22 @@
-class MongodbPBMDetailsDashboard {
+class MongodbBackupDetailsDashboard {
   constructor() {
-    this.url = 'graph/d/mongodb-pbm-details/mongodb-pbm-details';
+    this.url = 'graph/d/mongodb-backup-details/mongodb-backup-details';
     this.elements = {
       backUpConfiguredValue: locate('//section[contains(@data-testid, "Backup Configured")]//div[@data-testid="data-testid panel content"]//span'),
-      pitrEnabledValue: locate('//section[contains(@data-testid, "PITR Enabled")]//div[@data-testid="data-testid panel content"]//span'),
+      pitrEnabledValue: locate('//section[contains(@data-testid, "PITR Status")]//div[@data-testid="data-testid panel content"]//span'),
       refresh: locate('//button[contains(@data-testid, "RefreshPicker run button")]'),
     };
     this.metrics = [
       'Backup Configured',
-      'Backup Agent Status',
-      'PITR Enabled',
-      'Backup Size',
-      'Backup Duration',
-      'Backup history',
+      'PITR Status',
+      'Backup Agents',
       'Last Successful Backup',
+      'Backup Agent Summary',
+      'Backup Agent Status',
+      'Backup agent status over time',
+      'Backup history',
+      'Backup Sizes',
+      'Backup Duration',
     ];
   }
 
@@ -41,5 +44,5 @@ class MongodbPBMDetailsDashboard {
   }
 }
 
-module.exports = new MongodbPBMDetailsDashboard();
-module.exports.MongodbPBMDetailsDashboard = MongodbPBMDetailsDashboard;
+module.exports = new MongodbBackupDetailsDashboard();
+module.exports.MongodbBackupDetailsDashboard = MongodbBackupDetailsDashboard;

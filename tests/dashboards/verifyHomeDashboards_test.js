@@ -52,10 +52,6 @@ Data(panels).Scenario(
     // Wait for tab to open
     I.wait(2);
     I.switchToNextTab();
-    // need to skip PMM tour modal window due to new tab opening
-    await dashboardPage.clickUpgradeModal();
-    await dashboardPage.clickSkipPmmTour();
-
     I.waitForElement(dashboardPage.fields.dashboardTitle(dashboardName), 60);
     I.seeInCurrentUrl(expectedDashboard.clearUrl);
 

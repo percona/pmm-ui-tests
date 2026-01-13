@@ -146,7 +146,7 @@ module.exports = {
       },
       microsoftAzureMonitoring: {
         iconLocator: locate('$advanced-azure-discover').find('[class$="-Icon"]').as('Microsoft Azure monitoring tooltip'),
-        text: 'Option to enable/disable Microsoft Azure DB instanced discovery and monitoring',
+        text: 'Option to enable/disable Microsoft Azure DB instanced  discovery and monitoring',
         link: links.microsoftAzureMonitoringDocs,
       },
     },
@@ -569,10 +569,8 @@ module.exports = {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
     // setting tooltip for telemetry in accordance with API call
-    this.tooltips.advancedSettings.telemetry.text = `${'Option to send usage data back to Percona to let us make our product better.\n'
-    + '\n'
-    + 'We gather and send the following information to Percona:\n'
-    + '\n'}${(await settingsAPI.getSettings('telemetry_summaries')).join('\n').replace(/\s{2,}/g, ' ')}`;
+    this.tooltips.advancedSettings.telemetry.text = `${'Option to send usage data back to Percona to let us make our product better.'
+    + 'We gather and send the following information to Percona:'}${(await settingsAPI.getSettings('telemetry_summaries')).join('').replace(/\s{2,}/g, ' ')}`;
 
     return [
       {

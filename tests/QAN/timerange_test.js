@@ -4,7 +4,11 @@ const assert = require('assert');
 Feature('QAN timerange').retry(1);
 
 Before(async ({ I, queryAnalyticsPage, codeceptjsConfig }) => {
-  I.restartBrowser({ permissions: ['clipboard-read', 'clipboard-write'], origin: codeceptjsConfig.config.helpers.Playwright.url });
+  await I.usePlaywrightTo('Grant Permissions', async ({ browserContext }) => {
+    await browserContext.grantPermissions(['clipboard-read', 'clipboard-write'], {
+      origin: codeceptjsConfig.config.helpers.Playwright.url,
+    });
+  });
   await I.usePlaywrightTo('Mock BE Responses', async ({ page }) => {
     await page.route('**/v1/users/me', (route) => route.fulfill({
       status: 200,
