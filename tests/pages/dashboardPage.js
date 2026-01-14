@@ -30,8 +30,8 @@ const ValkeySlowlogDashboard = require('../pages/dashboards/valkey/valkeySlowlog
 module.exports = {
   // insert your locators and methods here
   // setting locators
-  slowQueriesText: locate('//section[contains(@data-testid, "Panel header Slow Queries") or contains(@data-testid, "Panel header Slow queries")]//div[@data-testid="TextPanel-converted-content"]'),
-  slowQueriesValue: locate('//section[contains(@data-testid, "Panel header Slow Queries") or contains(@data-testid, "Panel header Slow queries")]//div[@data-testid="TextPanel-converted-content"]//span'),
+  slowQueriesText: locate('//section[contains(@data-testid, "Panel header Slow")]//div[contains(@data-testid, "panel content")]'),
+  slowQueriesValue: locate('//section[contains(@data-testid, "Panel header Slow")]//div[contains(@data-testid, "panel content")]//span'),
   serviceNameDropdown:
     '//label[contains(text(), "Service Name")]/following-sibling::div',
   serviceName:
@@ -821,7 +821,7 @@ module.exports = {
     cleanUrl: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary',
     metrics: [
       'Feature Compatibility Version',
-      'Nodes',
+      'Members',
       'DBs',
       'Last Election',
       'Member States',
@@ -1462,6 +1462,7 @@ module.exports = {
   },
 
   async verifySlowQueriesPanel(timeFrame) {
+    I.click(this.fields.refresh);
     I.waitForVisible(this.slowQueriesText);
     const queryCount = await I.grabTextFrom(this.slowQueriesValue);
     const queryText = await I.grabTextFrom(this.slowQueriesText);

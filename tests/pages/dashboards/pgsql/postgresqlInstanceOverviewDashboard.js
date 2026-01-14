@@ -4,12 +4,12 @@ class PostgresqlInstanceOverviewDashboard {
   constructor() {
     this.url = 'graph/d/postgresql-instance-overview/postgresql-instances-overview';
     this.metrics = [
-      'Databases Monitored',
-      'Executed Queries',
-      'Slow Queries',
-      'Execution Time',
-      'Transactions per Second',
-      'Lowest Uptime (top 3)',
+      'Databases monitored',
+      'Executed queries',
+      'Slow queries',
+      'Execution time',
+      'Transactions per second',
+      'Lowest uptime (top 3)',
       'Queries',
     ];
   }

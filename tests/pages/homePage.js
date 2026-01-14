@@ -35,6 +35,8 @@ module.exports = {
     newsPanelTitleSelector: dashboardPage.graphsLocator('Percona News'),
     pmmCustomMenu: locate('[data-toggle="dropdown"]').withText('PMM'),
     metricTitle: '$header-container',
+    inventoryButton: '$navitem-inventory',
+    mysqlButton: '$navitem-mysql',
     servicesButton: locate('span').withText('Services'),
     newsPanelContentSelector:
       locate('.panel-content').inside('[aria-label="Percona News panel"]'),
