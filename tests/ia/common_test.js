@@ -23,7 +23,7 @@ Scenario(
   },
 );
 
-Scenario.only(
+Scenario(
   'PMM-T481 + PMM-T620 + PMM-T776 - Verify IA tab bar, '
   + 'Verify after reloading the page user is on the same IA tab, '
   + 'Verify that user is able to see valid HTML Title on alerts page @fb-alerting',
