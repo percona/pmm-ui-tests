@@ -14,7 +14,7 @@ const connection = {
 const mysql_service_name_ac = 'mysql_service';
 
 BeforeSuite(async ({ I, inventoryAPI }) => {
-  const psService = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'ps-');
+  const psService = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, 'ps_');
 
   connection.port = psService.port;
 
