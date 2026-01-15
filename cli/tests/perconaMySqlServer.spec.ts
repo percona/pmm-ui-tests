@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 import { removeMySQLService } from '@root/helpers/pmm-admin';
 
-const MYSQL_USER = 'msandbox';
-const MYSQL_PASSWORD = 'msandbox';
+const MYSQL_USER = 'root';
+const MYSQL_PASSWORD = 'GRgrO9301RuF';
 const ipPort = '127.0.0.1:3306';
 let containerName: string;
 
