@@ -4,7 +4,7 @@ import { removeMySQLService } from '@root/helpers/pmm-admin';
 
 const MYSQL_USER = 'msandbox';
 const MYSQL_PASSWORD = 'msandbox';
-const ipPort = '127.0.0.1:3307';
+const ipPort = '127.0.0.1:3306';
 let containerName: string;
 
 test.describe('PMM Client CLI tests for Percona Server Database', async () => {
