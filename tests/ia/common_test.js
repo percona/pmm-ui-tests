@@ -40,8 +40,7 @@ Scenario(
     I.wait(10);
     // PMM-T776
     const verifyTitle = (page) => {
-      // https://perconadev.atlassian.net/browse/PMM-14695 - Bug in PMM - title is duplicated will fail again when fixed
-      I.seeTitleEquals(`${page} - Percona Monitoring and Management - Percona Monitoring and Management`);
+      I.seeTitleEquals(`${page} - Percona Monitoring and Management`);
     };
 
     verifyTitle('Fired alerts');
