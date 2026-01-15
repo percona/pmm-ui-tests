@@ -81,15 +81,15 @@ Scenario(
 Scenario(
   'PMM-T1351 + PMM-T1350 - Verify that MySQL exporter cannot be added by pmm-admin add mysql with --log-level=fatal @not-ui-pipeline @exporters',
   async ({
-    I, inventoryAPI, dashboardPage,
+    I, inventoryAPI, dashboardPage, credentials,
   }) => {
     I.amOnPage(dashboardPage.mysqlInstanceSummaryDashboard.url);
     dashboardPage.waitForDashboardOpened();
     // adding service which will be used to verify various inventory addition commands
-    await I.say(await I.verifyCommand(`docker exec ${connection.container_name} pmm-admin add mysql --port=${connection.port} --agent-password='testing' --password=${connection.password} --username=${connection.username} --port=${connection.port} --query-source=slowlog --log-level=fatal --service-name=${mysql_service_name_ac}`, 'pmm-admin: error: --log-level must be one of "debug","info","warn","error" but got "fatal"', 'fail'));
+    await I.say(await I.verifyCommand(`docker exec ${connection.container_name} pmm-admin add mysql --port=${connection.port} --agent-password='testing' --password=${credentials.perconaServer.root.password} --username=${credentials.perconaServer.root.username} --port=${connection.port} --query-source=slowlog --log-level=fatal --service-name=${mysql_service_name_ac}`, 'pmm-admin: error: --log-level must be one of "debug","info","warn","error" but got "fatal"', 'fail'));
 
     // adding service which will be used to verify various inventory addition commands
-    await I.say(await I.verifyCommand(`docker exec ${connection.container_name} pmm-admin add mysql --port=${connection.port} --agent-password='testing' --password=${connection.password} --username=${connection.username} --port=${connection.port} --query-source=slowlog --service-name=${mysql_service_name_ac}`));
+    await I.say(await I.verifyCommand(`docker exec ${connection.container_name} pmm-admin add mysql --port=${connection.port} --agent-password='testing' --password=${credentials.perconaServer.root.password} --username=${credentials.perconaServer.root.username} --port=${connection.port} --query-source=slowlog --service-name=${mysql_service_name_ac}`));
 
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, mysql_service_name_ac);
     const pmm_agent_id = (await I.verifyCommand(`docker exec ${connection.container_name} pmm-admin status | grep "Agent ID" | awk -F " " '{print $4}'`)).trim();
