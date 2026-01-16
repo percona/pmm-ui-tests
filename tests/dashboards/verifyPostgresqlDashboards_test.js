@@ -70,7 +70,7 @@ Scenario(
   'PMM-T2044 - Verify PostgreSQL Top Queries Dashboard metrics @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     const { service_name } = await inventoryAPI.getServiceDetailsByRegex('pdpgsql_pmm_.*_1$');
-    const url = I.buildUrlWithParams(dashboardPage.postgresqlTopQueriesDashboard.url, { from: 'now-5m', service_name });
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlTopQueriesDashboard.url, { from: 'now-12h', service_name });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();

@@ -30,6 +30,7 @@ class QueryAnalyticsData {
       tooltip: '.overview-column-tooltip',
       noResultTableText: locate('$table-no-data').find('h1'),
       selectedRowByNumber: (rowNumber) => locate(`div.tr-${rowNumber}.selected-overview-row`),
+      selectedRowQueryText: locate('//div[contains(@class, "selected-overview-row")]//div[@role="cell" and position()=2]'),
       selectedMainMetric: () => this.elements.mainMetricsContainer.find('.ant-select-selection-item'),
       mainMetricsContainer: locate(I.useDataQA('group-by')),
       mainMetricFromDropdown: (metricName) => locate('.ant-select-item-option-content').withText(metricName),
@@ -98,6 +99,12 @@ class QueryAnalyticsData {
     I.waitForElement(this.elements.queryRowQueryText(rowNumber), timeout);
 
     return await I.grabTextFrom(this.elements.queryRowQueryText(rowNumber));
+  }
+
+  async getSelectedRowQueryText(timeout = 60) {
+    I.waitForElement(this.elements.selectedRowQueryText, timeout);
+
+    return await I.grabTextFrom(this.elements.selectedRowQueryText);
   }
 
   async verifyRowCount(expectedRowCount) {
