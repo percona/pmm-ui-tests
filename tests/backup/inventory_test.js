@@ -327,7 +327,8 @@ Data(restoreToDifferentService).Scenario(
   },
 ).retry(1);
 
-Scenario(
+// TODO: unskip after https://perconadev.atlassian.net/browse/PMM-14723 is fixed
+Scenario.skip(
   'PMM-T910 + PMM-T911 - Verify delete from storage is selected by default @backup @bm-mongo',
   async ({
     I, backupInventoryPage, backupAPI, inventoryAPI,

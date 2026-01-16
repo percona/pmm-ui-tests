@@ -824,7 +824,6 @@ module.exports = {
       'Members',
       'DBs',
       'Last Election',
-      'Member States',
       'Top Hottest Collections by Read',
       'Operation Latencies',
       'Top Hottest Collections by Write',
@@ -837,6 +836,7 @@ module.exports = {
       'Replication Lag',
       'Oplog Recovery Window',
       'Flow Control',
+      'Member States',
       'Nodes Overview',
       'CPU Usage',
       'CPU Saturation and Max Core Usage',
@@ -1122,14 +1122,14 @@ module.exports = {
       '//span[contains(text(),"No Data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
     postgreSQLServiceSummaryContent: locate('$pt-summary-fingerprint').withText('Detected PostgreSQL version:'),
-    reportTitle: locate('$header-container').inside(locate('[class$="panel-container"]')),
+    reportTitle: locate('$header-container').inside(locate('[class*="panel-container"]')),
     reportTitleWithNA:
       locate('$header-container')
-        .inside(locate('[class$="panel-container"]')
+        .inside(locate('[class*="panel-container"]')
           .withDescendant('//*[(text()="No data") or (text()="NO DATA") or (text()="N/A") or (text()="-") or (text() = "No Data")]')),
     reportTitleWithNoData:
     locate('$header-container')
-      .inside(locate('[class$="panel-container"]')
+      .inside(locate('[class*="panel-container"]')
         .withDescendant('//*[contains(text(),"No data") or contains(text(), "NO DATA") or contains(text(),"N/A")) or (text()="-") or (text() = "No Data")]')),
     rootUser: '//div[contains(text(), "root")]',
     serviceSummary: I.useDataQA('data-testid dashboard-row-title-Service Summary'),
