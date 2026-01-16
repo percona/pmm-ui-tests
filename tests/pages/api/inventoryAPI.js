@@ -101,6 +101,22 @@ module.exports = {
       .find((service) => service.service_name.startsWith(serviceName));
   },
 
+  async getServiceDetailsByRegex(regexPattern) {
+    const service = await this.apiGetServices();
+
+    assert.ok(
+      service.status === 200,
+      `Failed to getService. Response message is "${service.data.message}"`,
+    );
+
+    const regex = new RegExp(regexPattern);
+
+    return service
+      .data
+      .services
+      .find((service) => regex.test(service.service_name));
+  },
+
   async getServiceDetailsByPartialDetails(details) {
     const services = await this.apiGetServices();
 

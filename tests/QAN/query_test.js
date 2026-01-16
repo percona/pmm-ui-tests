@@ -24,7 +24,13 @@ Data(services).Scenario(
   async ({
     I, queryAnalyticsPage, inventoryAPI, current,
   }) => {
-    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName(current.serviceName);
+    let service_name;
+
+    if (current.serviceName === 'pdpgsql_') {
+      service_name = (await inventoryAPI.getServiceDetailsByRegex('pdpgsql_pmm_.*_1$')).service_name;
+    } else {
+      service_name = (await inventoryAPI.getServiceDetailsByStartsWithName(current.serviceName)).service_name;
+    }
 
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-120m', to: 'now' }));
 

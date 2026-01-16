@@ -63,9 +63,15 @@ Data(databaseEnvironments).Scenario(
   async ({
     I, queryAnalyticsPage, current, inventoryAPI,
   }) => {
-    const { service_name } = await inventoryAPI.getServiceDetailsByPartialDetails(
-      { cluster: current.cluster, service_name: current.serviceName },
-    );
+    let service_name;
+
+    if (current.serviceName === 'pdpgsql_') {
+      service_name = (await inventoryAPI.getServiceDetailsByRegex('pdpgsql_pmm_.*_1$')).service_name;
+    } else {
+      service_name = (await inventoryAPI.getServiceDetailsByPartialDetails(
+        { cluster: current.cluster, service_name: current.serviceName },
+      )).service_name;
+    }
 
     for (const query of current.queryTypes) {
       const parameters = { service_name, query };
