@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 
-const MYSQL_USER = 'msandbox';
-const MYSQL_PASSWORD = 'msandbox';
+const MYSQL_USER = 'root';
+const MYSQL_PASSWORD = 'GRgrO9301RuF';
 let mysqlHosts: string[];
-const ipPort = '127.0.0.1:3318';
+const ipPort = '127.0.0.1:3306';
 
 const grepServicesCmd = (serviceName: string) => {
   return `sudo  pmm-admin list | grep "MySQL" | grep "${serviceName}" | awk -F" " '{print $2}'`;
@@ -99,7 +99,7 @@ test.describe('PMM Client CLI tests for MySQL', async () => {
     for (const host of mysqlHosts) {
       const mysqlPort = host.split(':')[1];
       const mysqlSocketPort = Number(mysqlPort) - 10;
-      const output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} --socket=/tmp/mysql_sandbox${mysqlSocketPort}.sock --service-name=mysql_socket${n++}`);
+      const output = await cli.exec(`sudo pmm-admin add mysql --query-source=perfschema --username=${MYSQL_USER} --password=${MYSQL_PASSWORD} --socket=/tmp/mysql-sockets/1/mysql.sock --service-name=mysql_socket${n++}`);
       await output.assertSuccess();
       await output.outContains('MySQL Service added.');
     }
