@@ -11,7 +11,7 @@ if (!isJenkinsGssapiJob) {
   services.push({ serviceName: 'pdpgsql_' });
   services.push({ serviceName: 'pgsql_pgss_pmm' });
   services.push({ serviceName: 'ps_pmm' });
-  services.push({ serviceName: 'ms-single' });
+  services.push({ serviceName: 'mysql_pmm_' });
   services.push({ serviceName: 'pxc_node__1' });
 }
 
