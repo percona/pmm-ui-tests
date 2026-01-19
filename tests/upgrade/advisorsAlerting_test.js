@@ -146,12 +146,13 @@ Scenario(
   }) => {
     const alertName = 'PostgreSQL too many connections (pmm-server-postgresql)';
 
-    await alertsAPI.waitForAlerts(60, 1);
+    I.amOnPage(alertsPage.url);
+
+    await alertsAPI.waitForAlerts(120, 1);
     const alerts = await alertsAPI.getAlertsList();
 
     assert.ok(alerts[0].annotations.summary === alertName, `Didn't find alert with name ${alertName}`);
 
-    I.amOnPage(alertsPage.url);
     I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
   },
 );
