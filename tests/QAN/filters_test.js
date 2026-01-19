@@ -73,7 +73,7 @@ Scenario(
   'PMM-T126 - Verify user is able to Reset All filters @qan',
   async ({ I, queryAnalyticsPage }) => {
     const environmentName1 = 'pxc-dev';
-    const environmentName2 = 'dev';
+    const environmentName2 = 'ps-dev';
 
     const countBefore = await queryAnalyticsPage.data.getCountOfItems();
 
@@ -96,7 +96,7 @@ Scenario(
   'PMM-T125 - Verify user is able to Show only selected filter values and Show All filter values @qan',
   async ({ I, queryAnalyticsPage }) => {
     const environmentName1 = 'pxc-dev';
-    const environmentName2 = 'dev';
+    const environmentName2 = 'ps-dev';
 
     queryAnalyticsPage.filters.selectFilter(environmentName1);
     queryAnalyticsPage.filters.selectFilter(environmentName2);
@@ -152,7 +152,7 @@ Scenario(
   'PMM-T191 - Verify Reset All and Show Selected filters @qan',
   async ({ I, queryAnalyticsPage }) => {
     const environmentName1 = 'pxc-dev';
-    const environmentName2 = 'dev';
+    const environmentName2 = 'ps-dev';
 
     await queryAnalyticsPage.filters.selectFilter(environmentName1);
     await queryAnalyticsPage.filters.selectFilter(environmentName2);

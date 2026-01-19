@@ -22,7 +22,7 @@ Before(async ({ I }) => {
 Scenario(
   'PMM-T2050 - Verify PostgreSQL Instance Summary Dashboard @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    const { service_name } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pdpgsql_pmm_', 'patroni');
+    const { service_name } = await inventoryAPI.getServiceDetailsByRegex('pdpgsql_pmm_.*_1$');
     const url = I.buildUrlWithParams(dashboardPage.postgresqlInstanceSummaryDashboard.url, { service_name, from: 'now-1h' });
 
     I.amOnPage(url);
@@ -69,8 +69,8 @@ Scenario(
 Scenario(
   'PMM-T2044 - Verify PostgreSQL Top Queries Dashboard metrics @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName('pdpgsql_');
-    const url = I.buildUrlWithParams(dashboardPage.postgresqlTopQueriesDashboard.url, { from: 'now-5m', service_name });
+    const { service_name } = await inventoryAPI.getServiceDetailsByRegex('pdpgsql_pmm_.*_1$');
+    const url = I.buildUrlWithParams(dashboardPage.postgresqlTopQueriesDashboard.url, { from: 'now-12h', service_name });
 
     I.amOnPage(url);
     dashboardPage.waitForDashboardOpened();
@@ -83,7 +83,7 @@ Scenario(
 Scenario(
   'PMM-T2048 - Verify PostgreSQL Instances Overview Extended metrics @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName('pdpgsql_');
+    const { service_name } = await inventoryAPI.getServiceDetailsByRegex('pdpgsql_pmm_.*_1$');
     const url = I.buildUrlWithParams(dashboardPage.postgresqlInstancesOverviewExtendedDashboard.url, { from: 'now-30m', service_name });
 
     I.amOnPage(url);
