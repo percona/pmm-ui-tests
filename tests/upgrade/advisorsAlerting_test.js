@@ -19,13 +19,23 @@ Before(async ({ I }) => {
 Scenario(
   'PMM-T577 - Verify user is able to see IA alerts before upgrade @pre-advisors-alerting-upgrade',
   async ({
-    settingsAPI, rulesAPI, alertsAPI,
+    settingsAPI, rulesAPI, alertsAPI, inventoryAPI,
   }) => {
+    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName('pgsql_pgss_pmm_');
+
     await settingsAPI.changeSettings({ alerting: true });
     await rulesAPI.removeAllAlertRules(true);
     const ruleFolder = 'PostgreSQL';
 
-    await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
+    await rulesAPI.createAlertRule({
+      ruleName,
+      filters: [{
+        label: 'service_name',
+        regexp: service_name,
+        type: 'FILTER_TYPE_MATCH',
+      }],
+    }, ruleFolder);
+
     // Wait for alert to appear
     await alertsAPI.waitForAlerts(60, 1);
   },
