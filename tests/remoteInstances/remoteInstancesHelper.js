@@ -133,9 +133,9 @@ module.exports = {
       },
       ps_8_0: {
         host: 'ps_pmm_8.0',
-        port: '3307',
-        username: 'msandbox',
-        password: 'msandbox',
+        port: '3306',
+        username: 'root',
+        password: 'GRgrO9301RuF',
         clusterName: 'mysql_clstr',
       },
       ms_8_0_ssl: {
