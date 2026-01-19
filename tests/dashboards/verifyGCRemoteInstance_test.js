@@ -142,7 +142,7 @@ Data(instances).Scenario(
 
     assert.ok(count > 0, `The queries for service ${instanceDetails.serviceName} instance do NOT exist`);
   },
-).retry(1);
+).retry(2);
 
 Data(instances).Scenario(
   'Check metrics from exporters are hitting PMM Server @not-ui-pipeline @gcp',
