@@ -22,8 +22,7 @@ Scenario(
   },
 );
 
-// TODO: unskip after https://perconadev.atlassian.net/browse/PMM-14749 is fixed
-Scenario.skip(
+Scenario(
   'Open the MongoDB Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbShardedClusterSummary.url, {
