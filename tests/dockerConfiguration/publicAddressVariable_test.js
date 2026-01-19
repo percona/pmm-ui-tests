@@ -87,6 +87,7 @@ Scenario(
     await I.amOnPage(basePmmUrl + pmmSettingsPage.advancedSettingsUrl);
     await I.waitForVisible(pmmSettingsPage.fields.publicAddressInput, 30);
     await pmmSettingsPage.clearPublicAddress();
+    await I.wait(10);
     await pmmSettingsPage.addPublicAddress('127.0.0.1');
     const setPublicAddress = await I.grabValueFrom(pmmSettingsPage.fields.publicAddressInput);
 
