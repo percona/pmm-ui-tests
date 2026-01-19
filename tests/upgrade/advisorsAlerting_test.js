@@ -151,6 +151,8 @@ Scenario(
     await alertsAPI.waitForAlerts(120, 1);
     const alerts = await alertsAPI.getAlertsList();
 
+    console.log(alerts);
+
     assert.ok(alerts[0].annotations.summary === alertName, `Didn't find alert with name ${alertName}`);
 
     I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
