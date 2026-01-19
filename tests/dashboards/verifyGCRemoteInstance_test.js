@@ -134,10 +134,10 @@ Data(instances).Scenario(
 
     const instanceDetails = getInstance(instance);
 
-    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m', service_name: instanceDetails.serviceName }));
     queryAnalyticsPage.waitForLoaded();
-    await queryAnalyticsPage.filters.selectFilter(instanceDetails.serviceName);
-    queryAnalyticsPage.waitForLoaded();
+    // await queryAnalyticsPage.filters.selectFilter(instanceDetails.serviceName);
+    // queryAnalyticsPage.waitForLoaded();
     const count = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(count > 0, `The queries for service ${instanceDetails.serviceName} instance do NOT exist`);
