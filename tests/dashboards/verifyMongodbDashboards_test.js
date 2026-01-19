@@ -22,7 +22,8 @@ Scenario(
   },
 );
 
-Scenario(
+// TODO: unskip after https://perconadev.atlassian.net/browse/PMM-14749 is fixed
+Scenario.skip(
   'Open the MongoDB Cluster Summary Dashboard and verify Metrics are present and graphs are displayed @nightly @dashboards',
   async ({ I, dashboardPage }) => {
     I.amOnPage(I.buildUrlWithParams(dashboardPage.mongoDbShardedClusterSummary.url, {
@@ -98,6 +99,7 @@ Data(fcvPanelTestData()).Scenario(
     dashboardPage.waitForDashboardOpened();
     const fcvVersion = await I.grabTextFrom(dashboardPage.panelValueByTitle('Feature Compatibility Version'));
     const mongodbVersion = process.env.PSMDB_VERSION || '8.0';
+
     I.assertEqual(
       fcvVersion,
       mongodbVersion.split('.')[0],
