@@ -1,4 +1,4 @@
-const { isJenkinsGssapiJob } = require('../helper/constants');
+const { isJenkinsGssapiJob } = require('./helper/constants');
 
 Feature('Test Dashboards inside the MongoDB Folder');
 
