@@ -1,7 +1,7 @@
 const { dashboardPage, homePage } = inject();
 const assert = require('assert');
-const { SERVICE_TYPE } = require('../helper/constants');
-const { locateOptions } = require('../helper/locatorHelper');
+const { SERVICE_TYPE } = require('./helper/constants');
+const { locateOptions } = require('./helper/locatorHelper');
 
 const {
   inventoryAPI,
