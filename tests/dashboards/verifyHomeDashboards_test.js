@@ -27,7 +27,7 @@ Data(panels).Scenario(
     } = current;
 
     I.amOnPage(I.buildUrlWithParams(dashboardPage.homeDashboard.url, { from: 'now-12h' }));
-    I.waitForElement(this.fields.metricTitle, 60);
+    I.waitForElement(dashboardPage.fields.metricTitle, 60);
 
     const expectedDashboard = dashboardPage[dashboard];
 
