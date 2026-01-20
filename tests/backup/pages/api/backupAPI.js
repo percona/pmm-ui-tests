@@ -55,6 +55,31 @@ module.exports = {
     throw new Error(`Backup was not finished for schedule: ${scheduleName} in ${timeout} seconds`);
   },
 
+  
+  async waitForBackupArtifact(serviceName, backupNamePrefix = null, timeout = 120) {
+    for (let i = 0; i < timeout / 2; i++) {
+      const artifacts = await this.getArtifactsList();
+
+      if (artifacts) {
+        const found = artifacts.find((a) => {
+          const isServiceMatch = a.service_name === serviceName;
+          const isSuccess = a.status === 'BACKUP_STATUS_SUCCESS';
+          const isNameMatch = backupNamePrefix ? a.name.startsWith(backupNamePrefix) : true;
+
+          return isServiceMatch && isSuccess && isNameMatch;
+        });
+
+        if (found) return true;
+      }
+
+      I.wait(2);
+    }
+
+    throw new Error(
+      `Backup artifact for ${serviceName} (prefix: ${backupNamePrefix}) not found or not successful in ${timeout}s`,
+    );
+  },
+
   // getArtifactByName returns artifact object by name
   async getArtifactByName(artifactName) {
     if (!artifactName) throw new Error('artifactName can not be undefined or null');

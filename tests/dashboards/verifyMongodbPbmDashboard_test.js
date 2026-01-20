@@ -31,7 +31,7 @@ Data(backupTypes).Scenario('PMM-T2036 - Verify MongoDB PBM dashboard @nightly @g
   };
 
   await scheduledAPI.createScheduledBackup(snapshotSchedule);
-  await backupAPI.waitForBackupFinish(null, `test_schedule_pbm_${current}`, 90);
+  await backupAPI.waitForBackupArtifact(service.service_name, `test_schedule_pbm_${current}`);
 
   // Test
   const url = I.buildUrlWithParams(dashboardPage.mongodbBackupDetailsDashboard.url, {
