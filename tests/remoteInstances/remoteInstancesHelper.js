@@ -98,7 +98,7 @@ DB_CONFIG = {
   MYSQL_SERVER_PORT: '3306',
   MYSQL_HOST_SERVER_PORT: '3309',
   POSTGRES_SERVER_PORT: '5432',
-  POSTGRES_HOST_SERVER_PORT: '5433',
+  POSTGRES_HOST_SERVER_PORT: '5432',
   MONGODB_SERVER_PORT: '27017',
   PROXYSQL_SERVER_PORT: '6033',
 };
@@ -185,7 +185,7 @@ module.exports = {
         clusterName: 'pgsql_clstr',
       },
       pdpgsql_17: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'pdpgsql_pgsm_pmm_17'),
+        host: PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'pdpgsql_pmm_17_1',
         server_port: DB_CONFIG.POSTGRES_SERVER_PORT,
         host_server_port: DB_CONFIG.POSTGRES_HOST_SERVER_PORT,
         username: 'pmm',
