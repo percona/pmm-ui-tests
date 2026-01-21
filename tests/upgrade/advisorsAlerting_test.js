@@ -19,9 +19,10 @@ Scenario(
   }) => {
     await settingsAPI.changeSettings({ alerting: true });
     await rulesAPI.removeAllAlertRules(true);
-    const ruleFolder = 'PostgreSQL';
+    const ruleFolder = 'MySQL';
 
-    await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
+    await rulesAPI.createAlertRule({ ruleName, filters: [{ label: 'node_name', regexp: 'pmm-server', type: 'FILTER_TYPE_MATCH' }] }, ruleFolder, 'pmm_node_high_cpu_load');
+
     // Wait for alert to appear
     await alertsAPI.waitForAlerts(60, 1);
   },
@@ -144,7 +145,7 @@ Scenario(
   async ({
     I, alertsPage, alertsAPI,
   }) => {
-    const alertName = 'PostgreSQL too many connections (pmm-server-postgresql)';
+    const alertName = 'Node high CPU load (pmm-server)';
 
     I.amOnPage(alertsPage.url);
 
