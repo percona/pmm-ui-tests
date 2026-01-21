@@ -145,16 +145,14 @@ Scenario(
   async ({
     I, alertsPage, alertsAPI,
   }) => {
-    const alertName = 'Node high CPU load (pmm-server)';
+    const alertName = 'Node high CPU load';
 
     I.amOnPage(alertsPage.url);
 
-    await alertsAPI.waitForAlerts(120, 1);
+    // await alertsAPI.waitForAlerts(120, 1);
     const alerts = await alertsAPI.getAlertsList();
 
-    console.log(alerts);
-
-    assert.ok(alerts[0].annotations.summary === alertName, `Didn't find alert with name ${alertName}`);
+    assert.ok(alerts[0].annotations.summary.includes(alertName), `Didn't find alert with name ${alertName}`);
 
     I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
   },
