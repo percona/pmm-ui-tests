@@ -19,22 +19,13 @@ Before(async ({ I }) => {
 Scenario(
   'PMM-T577 - Verify user is able to see IA alerts before upgrade @pre-advisors-alerting-upgrade',
   async ({
-    settingsAPI, rulesAPI, alertsAPI, inventoryAPI,
+    settingsAPI, rulesAPI, alertsAPI,
   }) => {
-    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName('pgsql_pgss_pmm_');
-
     await settingsAPI.changeSettings({ alerting: true });
     await rulesAPI.removeAllAlertRules(true);
-    const ruleFolder = 'PostgreSQL';
+    const ruleFolder = 'Insight';
 
-    await rulesAPI.createAlertRule({
-      ruleName,
-      filters: [{
-        label: 'service_name',
-        regexp: service_name,
-        type: 'FILTER_TYPE_MATCH',
-      }],
-    }, ruleFolder);
+    await rulesAPI.createAlertRule({ ruleName, filters: [{ label: 'node_name', regexp: 'pmm-server', type: 'FILTER_TYPE_MATCH' }] }, ruleFolder, 'pmm_node_high_cpu_load');
 
     // Wait for alert to appear
     await alertsAPI.waitForAlerts(60, 1);
@@ -143,7 +134,7 @@ Scenario(
   async ({
     I, alertsPage, alertsAPI,
   }) => {
-    const alertName = 'PostgreSQL too many connections (pmm-server-postgresql)';
+    const alertName = 'Node high CPU load (pmm-server)';
 
     await alertsAPI.waitForAlerts(60, 1);
     const alerts = await alertsAPI.getAlertsList();
