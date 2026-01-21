@@ -37,6 +37,8 @@ module.exports = {
     };
     const resp = await I.sendPostRequest('v1/alerting/rules', body, headers);
 
+    console.log(resp.data);
+
     assert.ok(
       resp.status === 200,
       `Failed to create alert rule with "${ruleName}". Response message is "${resp.data.message}"`,
