@@ -11,7 +11,7 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 Scenario('PMM-T1879 - Verify that product tour dialog is displayed after check later button pressed. @grafana-pr', async ({ I, homePage }) => {
-  await I.amOnPage('');
+  await I.amOnPage('/pmm-ui/graph');
   await I.waitForElement(homePage.productTour.laterButton);
   await I.click(homePage.productTour.laterButton);
   await I.refreshPage();
@@ -19,7 +19,7 @@ Scenario('PMM-T1879 - Verify that product tour dialog is displayed after check l
 }).config('Playwright', { waitForNavigation: 'load' });
 
 Scenario('PMM-T1880 - Verify that product tour dialog is displayed after closing @grafana-pr', async ({ I, homePage }) => {
-  await I.amOnPage('');
+  await I.amOnPage('/pmm-ui/graph');
   await I.waitForElement(homePage.productTour.closeButton);
   await I.click(homePage.productTour.closeButton);
   await I.refreshPage();
@@ -27,7 +27,7 @@ Scenario('PMM-T1880 - Verify that product tour dialog is displayed after closing
 }).config('Playwright', { waitForNavigation: 'load' });
 
 Scenario('PMM-T1881 - Verify that product tour dialog contains all the components. @grafana-pr', async ({ I, homePage }) => {
-  await I.amOnPage('');
+  await I.amOnPage('/pmm-ui/graph');
   await I.waitForElement(homePage.productTour.startTourButton);
   await I.click(homePage.productTour.startTourButton);
   await homePage.productTour.verifyProductTourSteps();
@@ -36,7 +36,7 @@ Scenario('PMM-T1881 - Verify that product tour dialog contains all the component
 
 Scenario('PMM-T1882 - Verify that product tour dialog is not displayed after skipping @grafana-pr', async ({ I, homePage }) => {
   await I.enableProductTour(true);
-  await I.amOnPage('');
+  await I.amOnPage('/pmm-ui/graph');
 
   await I.waitForElement(homePage.productTour.skipButton);
   await I.click(homePage.productTour.skipButton);
