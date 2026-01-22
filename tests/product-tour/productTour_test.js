@@ -8,6 +8,11 @@ Before(async ({ I, settingsAPI }) => {
   // todo: it would be better to disable updates once PMM-13608 is fixed
   // snooze update modal
   await settingsAPI.setTourOptions(false, true, '3.2.0');
+  await I.disablePmmCompatPlugin();
+});
+
+After(async ({ I }) => {
+  await I.enablePmmCompatPlugin();
 });
 
 Scenario('PMM-T1879 - Verify that product tour dialog is displayed after check later button pressed. @grafana-pr', async ({ I, homePage }) => {

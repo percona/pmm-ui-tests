@@ -325,6 +325,53 @@ class Grafana extends Helper {
 
     return false;
   }
+
+  async dismissTourIfVisible() {
+    const { Playwright } = this.helpers;
+
+    const tourModalTitle = Playwright.page.locator('//h2[text()="Welcome to Percona Monitoring and Management (PMM)"]');
+
+    if (await tourModalTitle.isVisible()) {
+      await Playwright.page.click('//span[text()="Check later"]');
+    }
+  }
+
+  async disablePmmCompatPlugin() {
+    const { Playwright } = this.helpers;
+
+    await Playwright.page.goto(`${process.env.PMM_UI_URL}pmm-ui/graph/plugins/pmm-compat-app`);
+
+    await Playwright.page.waitForLoadState('domcontentloaded');
+    await this.dismissTourIfVisible();
+
+    const disableButtonXPath = '//button[text()="Disable"]';
+
+    const disableButton = Playwright.page.locator(disableButtonXPath);
+
+    // It might be already disabled
+    if (await disableButton.isVisible()) {
+      await disableButton.scrollIntoViewIfNeeded();
+      await disableButton.click();
+    }
+  }
+
+  async enablePmmCompatPlugin() {
+    const { Playwright } = this.helpers;
+
+    await Playwright.page.goto(`${process.env.PMM_UI_URL}pmm-ui/graph/plugins/pmm-compat-app`);
+
+    await this.dismissTourIfVisible();
+
+    const enableButtonXPath = '//button[text()="Enable"]';
+
+    const enableButton = Playwright.page.locator(enableButtonXPath);
+
+    // It might be already enabled
+    if (await enableButton.isVisible()) {
+      await enableButton.scrollIntoViewIfNeeded();
+      await enableButton.click();
+    }
+  }
 }
 
 module.exports = Grafana;
