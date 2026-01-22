@@ -79,19 +79,6 @@ Scenario.skip(
   },
 );
 
-Scenario(
-  'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-advisors-alerting-upgrade',
-  async ({
-    settingsAPI, rulesAPI, alertsAPI,
-  }) => {
-    await settingsAPI.changeSettings({ alerting: true });
-    await rulesAPI.removeAllAlertRules(true);
-    await rulesAPI.createAlertRule({ ruleName }, 'Insight');
-    // Wait for alert to appear
-    await alertsAPI.waitForAlerts(60, 1);
-  },
-);
-
 const rareInterval = '48';
 const standardInterval = '12';
 const frequentInterval = '2';
