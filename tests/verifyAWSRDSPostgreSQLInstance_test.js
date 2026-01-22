@@ -151,7 +151,7 @@ Data(instances).Scenario(
 
     // Wait 10 seconds before test to start getting metrics
     I.wait(10);
-    I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceOverviewDashboard.cleanUrl, {
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.postgresqlInstanceOverviewDashboard.url, {
       node_name: serviceName,
       from: 'now-5m',
     }));
