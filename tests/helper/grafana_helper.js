@@ -351,6 +351,7 @@ class Grafana extends Helper {
     if (await disableButton.isVisible()) {
       await disableButton.scrollIntoViewIfNeeded();
       await disableButton.click();
+      await Playwright.page.reload();
     }
   }
 
@@ -370,6 +371,7 @@ class Grafana extends Helper {
     if (await enableButton.isVisible()) {
       await enableButton.scrollIntoViewIfNeeded();
       await enableButton.click();
+      await Playwright.page.reload();
     }
   }
 }
