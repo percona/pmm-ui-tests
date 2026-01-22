@@ -7,8 +7,8 @@ Before(async ({ I, settingsAPI }) => {
   await I.sendGetRequest('v1/users/me', { Authorization: `Basic ${await I.getAuth()}` });
   // todo: it would be better to disable updates once PMM-13608 is fixed
   // snooze update modal
-  await settingsAPI.setTourOptions(false, true, '3.2.0');
   await I.disablePmmCompatPlugin();
+  await settingsAPI.setTourOptions(false, true, '3.2.0');
 });
 
 After(async ({ I }) => {
