@@ -326,52 +326,23 @@ class Grafana extends Helper {
     return false;
   }
 
-  async dismissTourIfVisible() {
-    const { Playwright } = this.helpers;
-
-    if (await Playwright.page.getByText('Welcome to Percona Monitoring and Management (PMM)').isVisible()) {
-      await Playwright.page.click('//span[text()="Check later"]');
-    }
-  }
-
-  async disablePmmCompatPlugin() {
+  async switchPmmCompatPluginState(state) {
     const { Playwright } = this.helpers;
     const baseUrl = Playwright.config.url;
 
     await Playwright.page.goto(`${baseUrl}/pmm-ui/graph/plugins/pmm-compat-app`);
+    const enableDisableButton = Playwright.page.frameLocator('#grafana-iframe').locator('//span[text()="Disable" or text()="Enable"]');
 
-    await Playwright.page.waitForLoadState('domcontentloaded');
-    await this.dismissTourIfVisible();
+    // Wait for page title
+    await enableDisableButton.waitFor({ state: 'visible', timeout: 10000 });
+    const textContent = await enableDisableButton.textContent();
 
-    const disableButtonXPath = '//button[text()="Disable"]';
-
-    const disableButton = Playwright.page.locator(disableButtonXPath);
-
-    // It might be already disabled
-    if (await disableButton.isVisible()) {
-      await disableButton.scrollIntoViewIfNeeded();
-      await disableButton.click();
-      await Playwright.page.reload();
-    }
-  }
-
-  async enablePmmCompatPlugin() {
-    const { Playwright } = this.helpers;
-    const baseUrl = Playwright.config.url;
-
-    await Playwright.page.goto(`${baseUrl}/pmm-ui/graph/plugins/pmm-compat-app`);
-
-    await this.dismissTourIfVisible();
-
-    const enableButtonXPath = '//button[text()="Enable"]';
-
-    const enableButton = Playwright.page.locator(enableButtonXPath);
-
-    // It might be already enabled
-    if (await enableButton.isVisible()) {
-      await enableButton.scrollIntoViewIfNeeded();
-      await enableButton.click();
-      await Playwright.page.reload();
+    if (state === true) {
+      if (textContent === 'Enable') {
+        await enableDisableButton.click();
+      }
+    } else if (textContent === 'Disable') {
+      await enableDisableButton.click();
     }
   }
 }
