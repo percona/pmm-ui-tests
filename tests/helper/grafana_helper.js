@@ -329,9 +329,7 @@ class Grafana extends Helper {
   async dismissTourIfVisible() {
     const { Playwright } = this.helpers;
 
-    const tourModalTitle = Playwright.page.locator('//h2[text()="Welcome to Percona Monitoring and Management (PMM)"]');
-
-    if (await tourModalTitle.isVisible()) {
+    if (await Playwright.page.getByText('Welcome to Percona Monitoring and Management (PMM)').isVisible()) {
       await Playwright.page.click('//span[text()="Check later"]');
     }
   }
