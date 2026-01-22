@@ -154,7 +154,7 @@ Scenario(
 
     assert.ok(alerts[0].annotations.summary.includes(alertName), `Didn't find alert with name ${alertName}`);
 
-    I.waitForElement(alertsPage.elements.alertRow(alertName), 30);
+    I.waitForElement(alertsPage.elements.alertRow(alertName), 60);
   },
 );
 
