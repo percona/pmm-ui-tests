@@ -37,7 +37,7 @@ module.exports = {
     };
     const resp = await I.sendPostRequest('v1/alerting/rules', body, headers);
 
-    console.log(resp.data);
+    console.log(body);
 
     assert.ok(
       resp.status === 200,
