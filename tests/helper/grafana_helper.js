@@ -344,6 +344,8 @@ class Grafana extends Helper {
     } else if (textContent === 'Disable') {
       await enableDisableButton.click();
     }
+
+    await Playwright.page.reload({ waitUntil: 'networkidle0' });
   }
 }
 

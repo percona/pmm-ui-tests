@@ -18,7 +18,6 @@ After(async ({ I, settingsAPI }) => {
 });
 
 Scenario('PMM-T1879 - Verify that product tour dialog is displayed after check later button pressed. @grafana-pr', async ({ I, homePage }) => {
-  // await I.switchPmmCompatPluginState(false);
   await I.amOnPage('/pmm-ui/graph');
   await I.waitForElement(homePage.productTour.laterButton);
   await I.click(homePage.productTour.laterButton);
