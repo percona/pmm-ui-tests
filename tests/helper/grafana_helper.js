@@ -338,8 +338,9 @@ class Grafana extends Helper {
 
   async disablePmmCompatPlugin() {
     const { Playwright } = this.helpers;
+    const baseUrl = Playwright.config.url;
 
-    await Playwright.page.goto(`${process.env.PMM_UI_URL}pmm-ui/graph/plugins/pmm-compat-app`);
+    await Playwright.page.goto(`${baseUrl}/pmm-ui/graph/plugins/pmm-compat-app`);
 
     await Playwright.page.waitForLoadState('domcontentloaded');
     await this.dismissTourIfVisible();
@@ -357,8 +358,9 @@ class Grafana extends Helper {
 
   async enablePmmCompatPlugin() {
     const { Playwright } = this.helpers;
+    const baseUrl = Playwright.config.url;
 
-    await Playwright.page.goto(`${process.env.PMM_UI_URL}pmm-ui/graph/plugins/pmm-compat-app`);
+    await Playwright.page.goto(`${baseUrl}/pmm-ui/graph/plugins/pmm-compat-app`);
 
     await this.dismissTourIfVisible();
 
