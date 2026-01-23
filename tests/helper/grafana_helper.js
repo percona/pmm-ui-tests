@@ -345,7 +345,9 @@ class Grafana extends Helper {
       await enableDisableButton.click();
     }
 
+    // Wait for the button to be visible again
     await Playwright.page.reload({ waitUntil: 'networkidle0' });
+    await enableDisableButton.waitFor({ state: 'visible', timeout: 10000 });
   }
 }
 
