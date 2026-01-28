@@ -11,8 +11,7 @@ module.exports = {
         'DB Cluster Summary',
         'Databases Overview',
         'Environments Overview (Designed for PMM)',
-        'MongoDB Cluster Summary (Old)',
-        'MongoDB ReplSet Summary (Old)',
+        'PMM HA Health Overview',
         'Patroni Details',
         'PMM Health',
         'PostgreSQL Checkpoints, Buffers and WAL Usage',
@@ -34,10 +33,7 @@ module.exports = {
     },
     k8sExperimental: {
       name: 'Kubernetes (experimental)',
-      items: [
-        'Databases on Kubernetes - Summary',
-        'Kubernetes Cluster Overview',
-      ],
+      items: ['Databases on Kubernetes - Summary', 'Kubernetes Cluster Overview'],
     },
     mongoDb: {
       name: 'MongoDB',
@@ -99,17 +95,11 @@ module.exports = {
     },
     postgreSql: {
       name: 'PostgreSQL',
-      items: [
-        'PostgreSQL Instance Summary',
-        'PostgreSQL Instances Compare',
-        'PostgreSQL Instances Overview',
-      ],
+      items: ['PostgreSQL Instance Summary', 'PostgreSQL Instances Compare', 'PostgreSQL Instances Overview'],
     },
     queryAnalytics: {
       name: 'Query Analytics',
-      items: [
-        'PMM Query Analytics',
-      ],
+      items: ['PMM Query Analytics'],
     },
     valkey: {
       name: 'Valkey',
@@ -135,8 +125,10 @@ module.exports = {
     expandedFolderLocator: (folderName) => locate(`[aria-label="Collapse folder ${folderName}"]`),
     folderItemLocator: (itemName) => I.useDataQA(`data-testid browse dashboards row ${itemName}`),
     folderItemLocatorExpand: (itemName) => locate(I.useDataQA(`data-testid browse dashboards row ${itemName}`)).find('button'),
-    folderItemWithTagLocator: (itemName, tag) => locate(I.useDataQA(`data-testid browse dashboards row ${itemName}`))
-      .find('[aria-label="Tags"] li').withText(tag),
+    folderItemWithTagLocator: (itemName, tag) =>
+      locate(I.useDataQA(`data-testid browse dashboards row ${itemName}`))
+        .find('[aria-label="Tags"] li')
+        .withText(tag),
     itemLocator: (itemName) => locate(I.useDataQA(`data-testid Dashboard search item ${itemName}`)),
     closeButton: locate('button[aria-label="Close search"]').as('Close button'),
     folderRowLocator: locate('[data-testid^="data-testid browse dashboards row "]'),
@@ -155,9 +147,7 @@ module.exports = {
   async getFoldersList() {
     I.waitForVisible(this.fields.folderItemLocator(this.folders.insight.name), 10);
 
-    const text = await I.grabTextFromAll(
-      this.fields.folderRowLocator,
-    );
+    const text = await I.grabTextFromAll(this.fields.folderRowLocator);
 
     return text.map((elem) => elem.split('|')[0]);
   },
