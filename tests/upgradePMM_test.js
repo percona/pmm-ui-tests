@@ -105,9 +105,9 @@ BeforeSuite(async ({ I, codeceptjsConfig, credentials }) => {
   // Init data for Backup Management test
   if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && process.env.OVF_UPGRADE_TESTING_INSTANCE !== 'true') {
     const replicaPrimary = await I.getMongoClient({
-      username: credentials.mongoReplicaPrimaryForBackups.username,
-      password: credentials.mongoReplicaPrimaryForBackups.password,
-      port: credentials.mongoReplicaPrimaryForBackups.port,
+      username: codeceptjsConfig.config.helpers.MongoDBHelper.username,
+      password: codeceptjsConfig.config.helpers.MongoDBHelper.password,
+      port: (process.env.AMI_UPGRADE_TESTING_INSTANCE === 'true' || process.env.OVF_UPGRADE_TESTING_INSTANCE === 'true' ? remoteInstancesHelper.remote_instance.mongodb.psmdb_4_2.port : codeceptjsConfig.config.helpers.MongoDBHelper.port),
     });
 
     try {
