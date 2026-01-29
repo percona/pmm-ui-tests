@@ -12,7 +12,7 @@ Scenario(
   async ({
     I, dashboardPage, adminPage, inventoryAPI,
   }) => {
-    console.log((await inventoryAPI.apiGetServices()).data.flat());
+    console.log((await inventoryAPI.apiGetServices()).data);
     const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'rs101')).service_name;
     let url = I.buildUrlWithParams(dashboardPage.mongoDbInstanceOverview.url, {
       from: 'now-5m',
@@ -48,6 +48,7 @@ Scenario(
   async ({
     I, queryAnalyticsPage, inventoryAPI,
   }) => {
+    console.log((await inventoryAPI.apiGetServices()).data);
     const clientServiceName = (await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MONGODB, 'rs101')).service_name;
 
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-30m', to: 'now-10m', service_name: clientServiceName }));
