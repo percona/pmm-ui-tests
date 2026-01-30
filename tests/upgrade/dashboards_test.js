@@ -29,7 +29,7 @@ Scenario(
     await grafanaAPI.starDashboard(resp.id);
     await grafanaAPI.setHomeDashboard(resp.id);
 
-    I.amOnPage('');
+    I.amOnPage('pmm-ui/graph/');
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.verifyMetricsExistence([additionalPanelName]);
     I.seeInCurrentUrl(grafanaAPI.customDashboardName);
