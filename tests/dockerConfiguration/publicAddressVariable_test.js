@@ -27,7 +27,7 @@ const runContainerWithPublicAddressVariableUpgrade = async (I, publicAddress) =>
   await I.wait(30);
 };
 
-After(async ({ I }) => {
+After(async ({ I, portalAPI }) => {
   await I.verifyCommand('docker stop pmm-server-public-address');
   await I.verifyCommand('docker rm pmm-server-public-address');
 });

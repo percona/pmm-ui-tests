@@ -13,6 +13,10 @@ const constants = {
     issuerUrl: process.env.OAUTH_ISSUER_URL || '',
     token: `SSWS ${process.env.OKTA_TOKEN}`,
   },
+  portal: {
+    url: process.env.PORTAL_BASE_URL || 'https://portal-dev.percona.com',
+    credentialsFile: 'portalCredentials',
+  },
 };
 
 export default constants;

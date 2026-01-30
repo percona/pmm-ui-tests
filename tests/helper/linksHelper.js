@@ -6,6 +6,8 @@ module.exports = {
   privacyPolicy: 'https://per.co.na/pmm/platform-privacy',
   forgotPassword: 'https://okta.percona.com/signin/forgot-password',
   imageRendererPlugin: 'https://per.co.na/share_png',
+  portalProfile: 'https://portal.percona.com/profile',
+  portalDevProfile: 'https://platform-dev.percona.com/profile',
   metricsResolutionDocs: 'https://per.co.na/metrics_resolution',
   dataRetentionDocs: 'https://per.co.na/data_retention',
   telemetryDocs: 'https://per.co.na/telemetry',

@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit",
     "report": "playwright show-report",
     "e2e:rbac": "playwright test --config=playwright.config.ts -g '@rbac'",
+    "e2e:portal": "playwright test --config=playwright.config.ts -g '@portal'",
     "e2e:all": "playwright test --config=playwright.config.ts"
   },
   "dependencies": {

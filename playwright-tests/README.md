@@ -27,15 +27,21 @@ this is it! tests are good to go on specified PMM server.
   run `bash -x testdata/backup-management/mongodb/setup-replica-and-pbm-local.sh`.
   This will launch docker compose with PMM Server, PMM Client, and set up replica set with 3 Percona MongoDB instance
 
+* **[Setup local environment for Portal tests](./docs/setup-env-portal.md)**  
+
 * **Run tests upon remote PMM server:**  
   set desired instance URL in _**"PMM_UI_URL"**_ local environment variable    
   ex: create `.env` file with the following line `PMM_UI_URL=http://myPmmServer.com`
 
 ### Running tests:
 Execute command in the **playwright-tests** folder   
-
+     
+    Note! since portal tests require spcial setup, all tests are split 
+    into 2 "projects": Chromium(without setup) and Portal(with setup). 
+    Run tests without project flag or "--project=Chromium" will run portal setup 
 * run all tests: `npx playwright test`
 * run a single test file: `npx playwright test --projet=Cromium access-control.spec.ts`
+* run Portal tests: `npx playwright test --projet=Portal -g @portal`
 * run a set of test files: `npx playwright test tests/todo-page/ tests/landing-page/`
 * run files that have **my-spec** or **my-spec-2** in the file name: `npx playwright test --project=Chromium my-spec my-spec-2`
 * run desired [groups/tags](https://playwright.dev/docs/test-annotations#tag-tests): `npx playwright test --grep @rbac`
@@ -71,6 +77,10 @@ Full list of arguments available on [Playwright docs](https://playwright.dev/doc
     @inventory-pre-upgrade    Inventory tests executed BEFORE the upgrade
     @inventory-post-upgrade   Inventory tests executed AFTER the upgrade
     @not-ui-pipeline          ???
+    @portal                   Integration tests between PMM and Percona Portal
+    @pre-pmm-portal-upgrade   tests executed BEFORE the upgrade
+    @post-pmm-portal-upgrade  tests executed AFTER the upgrade
+    @pmm-portal-upgrade       ???
     @rbac                     User roles and access restrictions tests
     @rbac-pre-upgrade         User roles tests executed BEFORE the upgrade
     @rbac-post-upgrade        User rolestests executed AFTER the upgrade
