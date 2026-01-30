@@ -6,7 +6,7 @@ const PmmHealthDashboard = require('./dashboards/experimental/pmmHealthDashboard
 const HomeDashboard = require('./dashboards/homeDashboard');
 const PostgresqlTopQueriesDashboard = require('./dashboards/pgsql/postgresqlTopQueriesDashboard');
 const PostgresqlInstancesOverviewExtendedDashboard = require('./dashboards/pgsql/postgresqlInstancesOverviewExtendedDashboard');
-const MongodbPBMDetailsDashboard = require('./dashboards/mongodb/mongodbPBMDetailsDashboard');
+const MongodbBackupDetailsDashboard = require('./dashboards/mongodb/mongodbBackupDetailsDashboard');
 const PostgresqlInstanceOverviewDashboard = require('./dashboards/pgsql/postgresqlInstanceOverviewDashboard');
 const PostgresqlInstanceSummaryDashboard = require('./dashboards/pgsql/postgresqlInstanceSummaryDashboard');
 const PostgresqlCheckpointDashboard = require('./dashboards/pgsql/postgresqlCheckpointDashboard');
@@ -30,8 +30,8 @@ const ValkeySlowlogDashboard = require('../pages/dashboards/valkey/valkeySlowlog
 module.exports = {
   // insert your locators and methods here
   // setting locators
-  slowQueriesText: locate('//section[contains(@data-testid, "Panel header Slow Queries") or contains(@data-testid, "Panel header Slow queries")]//div[@data-testid="TextPanel-converted-content"]'),
-  slowQueriesValue: locate('//section[contains(@data-testid, "Panel header Slow Queries") or contains(@data-testid, "Panel header Slow queries")]//div[@data-testid="TextPanel-converted-content"]//span'),
+  slowQueriesText: locate('//section[contains(@data-testid, "Panel header Slow")]//div[contains(@data-testid, "panel content")]'),
+  slowQueriesValue: locate('//section[contains(@data-testid, "Panel header Slow")]//div[contains(@data-testid, "panel content")]//span'),
   serviceNameDropdown:
     '//label[contains(text(), "Service Name")]/following-sibling::div',
   serviceName:
@@ -318,16 +318,16 @@ module.exports = {
       'Maximum Galera Replication Latency',
     ],
   },
-  ValkeyOverviewDashboard: ValkeyOverviewDashboard,
-  ValkeyClientsDashboard: ValkeyClientsDashboard,
-  ValkeyClusterDetailsDashboard: ValkeyClusterDetailsDashboard,
-  ValkeyCommandDetailDashboard: ValkeyCommandDetailDashboard,
-  ValkeyLoadDashboard: ValkeyLoadDashboard,
-  ValkeyMemoryDashboard: ValkeyMemoryDashboard,
-  ValkeyNetworkDashboard: ValkeyNetworkDashboard,
-  ValkeyPersistenceDetailsDashboard: ValkeyPersistenceDetailsDashboard,
-  ValkeyReplicationDashboard: ValkeyReplicationDashboard,
-  ValkeySlowlogDashboard: ValkeySlowlogDashboard,
+  valkeyOverviewDashboard: ValkeyOverviewDashboard,
+  valkeyClientsDashboard: ValkeyClientsDashboard,
+  valkeyClusterDetailsDashboard: ValkeyClusterDetailsDashboard,
+  valkeyCommandDetailDashboard: ValkeyCommandDetailDashboard,
+  valkeyLoadDashboard: ValkeyLoadDashboard,
+  valkeyMemoryDashboard: ValkeyMemoryDashboard,
+  valkeyNetworkDashboard: ValkeyNetworkDashboard,
+  valkeyPersistenceDetailsDashboard: ValkeyPersistenceDetailsDashboard,
+  valkeyReplicationDashboard: ValkeyReplicationDashboard,
+  valkeySlowlogDashboard: ValkeySlowlogDashboard,
   mySQLMyRocksDetailsDashboard: MySQLMyRocksDetailsDashboard,
   postgresqlInstanceSummaryDashboard: PostgresqlInstanceSummaryDashboard,
   postgresqlCheckpointDashboard: PostgresqlCheckpointDashboard,
@@ -345,7 +345,7 @@ module.exports = {
     ],
   },
   postgresqlInstanceOverviewDashboard: PostgresqlInstanceOverviewDashboard,
-  mongodbPBMDetailsDashboard: MongodbPBMDetailsDashboard,
+  mongodbBackupDetailsDashboard: MongodbBackupDetailsDashboard,
   mongodbOverviewDashboard: {
     url: 'graph/d/mongodb-instance-summary/mongodb-instance-summary',
     metrics: [
@@ -821,10 +821,9 @@ module.exports = {
     cleanUrl: 'graph/d/mongodb-replicaset-summary/mongodb-replset-summary',
     metrics: [
       'Feature Compatibility Version',
-      'Nodes',
+      'Members',
       'DBs',
       'Last Election',
-      'Node States',
       'Top Hottest Collections by Read',
       'Operation Latencies',
       'Top Hottest Collections by Write',
@@ -837,6 +836,7 @@ module.exports = {
       'Replication Lag',
       'Oplog Recovery Window',
       'Flow Control',
+      'Member States',
       'Nodes Overview',
       'CPU Usage',
       'CPU Saturation and Max Core Usage',
@@ -1122,14 +1122,14 @@ module.exports = {
       '//span[contains(text(),"No Data")]//ancestor::div[contains(@class,"panel-container")]//span[contains(@class,"panel-title-text")]',
     panelLoading: locate('div').withAttr({ class: 'panel-loading' }),
     postgreSQLServiceSummaryContent: locate('$pt-summary-fingerprint').withText('Detected PostgreSQL version:'),
-    reportTitle: locate('$header-container').inside(locate('[class$="panel-container"]')),
+    reportTitle: locate('$header-container').inside(locate('[class*="panel-container"]')),
     reportTitleWithNA:
       locate('$header-container')
-        .inside(locate('[class$="panel-container"]')
+        .inside(locate('[class*="panel-container"]')
           .withDescendant('//*[(text()="No data") or (text()="NO DATA") or (text()="N/A") or (text()="-") or (text() = "No Data")]')),
     reportTitleWithNoData:
     locate('$header-container')
-      .inside(locate('[class$="panel-container"]')
+      .inside(locate('[class*="panel-container"]')
         .withDescendant('//*[contains(text(),"No data") or contains(text(), "NO DATA") or contains(text(),"N/A")) or (text()="-") or (text() = "No Data")]')),
     rootUser: '//div[contains(text(), "root")]',
     serviceSummary: I.useDataQA('data-testid dashboard-row-title-Service Summary'),
@@ -1215,13 +1215,17 @@ module.exports = {
       // Split on '*' and ensure all fixed fragments appear in order.
       const parts = metricName.split('*').filter(Boolean);
       // Start with panels
-      let xpath = "//section[contains(@data-testid,'Panel header')";
+      let xpath = '//section[contains(@data-testid,\'Panel header\')';
+
       for (const p of parts) {
         xpath += ` and contains(@data-testid,'${p}')`;
       }
+
       xpath += ']';
+
       return locate(xpath);
     }
+
     return locate(`[data-testid*="data-testid Panel header"][data-testid*="${metricName}"]`);
   },
 
@@ -1262,7 +1266,7 @@ module.exports = {
           actualValue = await valueLocator.textContent();
         }
 
-        await page.waitForTimeout(1000);
+        await new Promise((resolve) => { setTimeout(resolve, 1000); });
 
         if (actualValue >= expectedValue) return;
       }
@@ -1341,28 +1345,24 @@ module.exports = {
   },
 
   async expandEachDashboardRow() {
-    await I.usePlaywrightTo('expanding collapsed rows', async ({ page }) => {
-      const getCollapsedRowsLocators = async () => await page.locator(this.fields.collapsedDashboardRow).all();
-      let collapsedRowsLocators = await getCollapsedRowsLocators();
+    let collapsedRows = await I.grabNumberOfVisibleElements(this.fields.collapsedDashboardRow);
+    let maxTries = 20;
 
-      while (collapsedRowsLocators.length > 0) {
-        await page.keyboard.press('End');
-        await collapsedRowsLocators[0].scrollIntoViewIfNeeded();
-        await collapsedRowsLocators[0].click();
-        collapsedRowsLocators.shift();
-
-        collapsedRowsLocators = await getCollapsedRowsLocators();
-      }
-    });
+    while (collapsedRows > 0 && maxTries > 0) {
+      I.pressKey('End');
+      I.click(locate(this.fields.collapsedDashboardRow).first());
+      I.wait(1);
+      collapsedRows = await I.grabNumberOfVisibleElements(this.fields.collapsedDashboardRow);
+      // eslint-disable-next-line no-plusplus
+      maxTries--;
+    }
   },
 
   async expandDashboardRow(rowName) {
-    await I.usePlaywrightTo('Expand collapsed row', async ({ page }) => {
-      const rowLocator = await page.locator(this.fields.collapsedDashboardRowByName(rowName));
+    const rowLocator = this.fields.collapsedDashboardRowByName(rowName);
 
-      await rowLocator.scrollIntoViewIfNeeded();
-      await rowLocator.click();
-    });
+    I.scrollTo(rowLocator);
+    I.click(rowLocator);
   },
 
   waitForDashboardOpened() {
@@ -1462,6 +1462,7 @@ module.exports = {
   },
 
   async verifySlowQueriesPanel(timeFrame) {
+    I.click(this.fields.refresh);
     I.waitForVisible(this.slowQueriesText);
     const queryCount = await I.grabTextFrom(this.slowQueriesValue);
     const queryText = await I.grabTextFrom(this.slowQueriesText);

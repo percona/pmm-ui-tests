@@ -6,7 +6,6 @@ on:
   pull_request:
     branches:
       - main
-      - v3
 
 jobs:
   lint:
@@ -22,13 +21,13 @@ jobs:
     - name: Run lint:tests
       run: npm run lint:tests
 
-  e2e_fb_tests:
-    name: e2e FB tests
-    uses: percona/pmm-qa/.github/workflows/e2e-codeceptjs-matrix.yml@v3
+  e2e_matrix_tests:
+    name: e2e matrix tests
+    uses: percona/pmm-qa/.github/workflows/e2e-codeceptjs-matrix.yml@main
     with:
       sha: 'null'
       pmm_ui_tests_branch: ${{ github.head_ref }}
-      pmm_qa_branch: 'v3'
+      pmm_qa_branch: 'main'
       pmm_server_image: 'perconalab/pmm-server:3-dev-latest'
       pmm_client_image: 'perconalab/pmm-client:3-dev-latest'
       pmm_client_version: '3-dev-latest'

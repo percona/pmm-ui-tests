@@ -26,17 +26,11 @@ module.exports = {
     I.seeElement(this.fields.passwordInput);
     I.fillField(this.fields.passwordInput, password);
     I.click(this.fields.loginButton);
+    await I.waitForFunction(() => {
+      const url = window.location.href;
 
-    // BUG: system message on success for changed password is gone before the next line executed
-    // eslint-disable-next-line no-undef
-    await tryTo(() => I.verifyPopUpMessage(this.messages.loginSuccess, 5));
-
-    if ((await I.grabCurrentUrl()).includes(this.url)) {
-      I.seeElement(this.fields.skipButton);
-      I.click(this.fields.skipButton);
-    }
-
-    I.waitInUrl(homePage.landingUrl);
+      return url.includes('help') || url.includes('home-dashboard');
+    }, 60);
   },
 
 };

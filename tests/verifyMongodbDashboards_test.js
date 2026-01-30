@@ -1,4 +1,4 @@
-const { isJenkinsGssapiJob } = require('../helper/constants');
+const { isJenkinsGssapiJob } = require('./helper/constants');
 
 Feature('Test Dashboards inside the MongoDB Folder');
 
@@ -98,6 +98,7 @@ Data(fcvPanelTestData()).Scenario(
     dashboardPage.waitForDashboardOpened();
     const fcvVersion = await I.grabTextFrom(dashboardPage.panelValueByTitle('Feature Compatibility Version'));
     const mongodbVersion = process.env.PSMDB_VERSION || '8.0';
+
     I.assertEqual(
       fcvVersion,
       mongodbVersion.split('.')[0],

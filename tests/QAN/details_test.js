@@ -53,7 +53,7 @@ if (isJenkinsGssapiJob) {
 } else {
   databaseEnvironments = [
     { serviceName: 'ps_', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', 'DELETE FROM students', 'CREATE TABLE classes'], cluster: 'ps-single-dev-cluster' },
-    { serviceName: 'pdpgsql_pgsm_pmm_', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', 'DELETE FROM', 'CREATE TABLE classes '], cluster: '' },
+    { serviceName: 'pdpgsql_', queryTypes: ['SELECT s.first_name', 'INSERT INTO classes', 'DELETE FROM', 'CREATE TABLE classes '], cluster: '' },
     { serviceName: 'rs101', queryTypes: ['db.students', 'db.runCommand', 'db.test'], cluster: 'replicaset' },
   ];
 }
@@ -63,9 +63,15 @@ Data(databaseEnvironments).Scenario(
   async ({
     I, queryAnalyticsPage, current, inventoryAPI,
   }) => {
-    const { service_name } = await inventoryAPI.getServiceDetailsByPartialDetails(
-      { cluster: current.cluster, service_name: current.serviceName },
-    );
+    let service_name;
+
+    if (current.serviceName === 'pdpgsql_') {
+      service_name = (await inventoryAPI.getServiceDetailsByRegex('pdpgsql_pmm_.*_1$')).service_name;
+    } else {
+      service_name = (await inventoryAPI.getServiceDetailsByPartialDetails(
+        { cluster: current.cluster, service_name: current.serviceName },
+      )).service_name;
+    }
 
     for (const query of current.queryTypes) {
       const parameters = { service_name, query };
@@ -90,7 +96,7 @@ Data(databaseEnvironments).Scenario(
         await queryAnalyticsPage.queryDetails.verifyTables(parameters);
       }
 
-      if (current.serviceName === 'pdpgsql_pgsm_pmm_' && query.includes('SELECT')) {
+      if (current.serviceName === 'pdpgsql_' && query.includes('SELECT')) {
         await queryAnalyticsPage.queryDetails.verifyPlan(parameters);
       }
     }

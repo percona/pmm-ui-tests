@@ -10,12 +10,12 @@ class ValkeyClientsDashboard {
       'valkey-replica-6-svc-* - Connected/Blocked Clients',
       'Config Max Clients',
       'Evicted Clients',
-      'valkey-primary-1-svc-* - client Buffers',
-      'valkey-primary-2-svc-* - client Buffers',
-      'valkey-primary-3-svc-* - client Buffers',
-      'valkey-replica-4-svc-* - client Buffers',
-      'valkey-replica-5-svc-* - client Buffers',
-      'valkey-replica-6-svc-* - client Buffers',
+      'valkey-primary-1-svc-* - Client Buffers',
+      'valkey-primary-2-svc-* - Client Buffers',
+      'valkey-primary-3-svc-* - Client Buffers',
+      'valkey-replica-4-svc-* - Client Buffers',
+      'valkey-replica-5-svc-* - Client Buffers',
+      'valkey-replica-6-svc-* - Client Buffers',
     ];
   }
 }

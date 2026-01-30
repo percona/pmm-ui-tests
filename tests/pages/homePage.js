@@ -10,7 +10,7 @@ module.exports = {
   // setting locators
   url: 'graph/d/pmm-home/home-dashboard?orgId=1&refresh=1m&from=now-5m&to=now',
   cleanUrl: 'graph/d/pmm-home/home-dashboard',
-  landingUrl: 'graph/d/pmm-home/home-dashboard',
+  landingUrl: 'help',
   genericOauthUrl: 'graph/login/generic_oauth',
   requestEnd: '/v1/Updates/Check',
   elements: {
@@ -34,6 +34,9 @@ module.exports = {
     failedChecksPanelInfo: '[aria-label="Advisors check panel"] i',
     newsPanelTitleSelector: dashboardPage.graphsLocator('Percona News'),
     pmmCustomMenu: locate('[data-toggle="dropdown"]').withText('PMM'),
+    metricTitle: '$header-container',
+    inventoryButton: '$navitem-inventory',
+    mysqlButton: '$navitem-mysql',
     servicesButton: locate('span').withText('Services'),
     newsPanelContentSelector:
       locate('.panel-content').inside('[aria-label="Percona News panel"]'),
@@ -83,7 +86,7 @@ module.exports = {
     },
   },
   buttons: {
-    pmmHelp: locate('button').withAttr({ 'aria-label': 'Help' }),
+    pmmHelp: '$navitem-help-list-item',
     pmmLogs: locate('//a[@href="/logs.zip"]'),
   },
   upgradeMilestones: [
@@ -102,7 +105,7 @@ module.exports = {
 
   async open() {
     I.amOnPage(this.url);
-    I.waitForElement(this.fields.dashboardHeaderLocator, 60);
+    I.waitForElement(this.fields.metricTitle, 60);
   },
 
   async openLeftMenu() {

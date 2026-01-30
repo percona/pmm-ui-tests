@@ -26,7 +26,8 @@ Data(panels).Scenario(
       panelName, dashboardType, dashboardName, dashboard,
     } = current;
 
-    await homePage.open();
+    I.amOnPage(I.buildUrlWithParams(dashboardPage.homeDashboard.url, { from: 'now-12h' }));
+    I.waitForElement(dashboardPage.fields.metricTitle, 60);
 
     const expectedDashboard = dashboardPage[dashboard];
 
@@ -52,10 +53,6 @@ Data(panels).Scenario(
     // Wait for tab to open
     I.wait(2);
     I.switchToNextTab();
-    // need to skip PMM tour modal window due to new tab opening
-    await dashboardPage.clickUpgradeModal();
-    await dashboardPage.clickSkipPmmTour();
-
     I.waitForElement(dashboardPage.fields.dashboardTitle(dashboardName), 60);
     I.seeInCurrentUrl(expectedDashboard.clearUrl);
 

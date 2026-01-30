@@ -183,7 +183,6 @@ Data(ptSummaryRoleCheck).Scenario(
     await I.Authorize(username, password);
     I.amOnPage(homePage.url);
     I.waitForVisible(homePage.fields.checksPanelSelector, 30);
-    I.waitForVisible(homePage.fields.pmmCustomMenu, 30);
     I.waitForVisible(dashboardPage.graphsLocator('Monitored Nodes'), 30);
     I.waitForVisible(dashboardPage.graphsLocator('Monitored DB Services'), 30);
 
@@ -260,10 +259,7 @@ Scenario(
 
 Scenario(
   'PMM-T2009 - Verify that editor user can see failed advisors data on home dashboard @nightly @gssapi-nightly',
-  async ({ I, dashboardPage, advisorsAPI }) => {
-    const advisors = await advisorsAPI.getAdvisorsNames();
-
-    await advisorsAPI.startSecurityChecks(advisors);
+  async ({ I, dashboardPage }) => {
     await I.Authorize(users.editor.username, users.editor.password);
 
     await I.asyncWaitFor(async () => {

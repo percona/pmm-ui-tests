@@ -124,7 +124,7 @@ Scenario(
 
     const artifactName = await I.grabTextFrom(backupInventoryPage.elements.artifactName(backupName));
 
-    backupInventoryPage.openDeleteBackupModal(backupName);
+    await backupInventoryPage.openDeleteBackupModal(backupName);
     I.seeTextEquals(backupInventoryPage.messages.confirmDeleteText(artifactName), 'h4');
     I.seeTextEquals(backupInventoryPage.messages.forceDeleteLabelText, backupInventoryPage.elements.forceDeleteLabel);
     I.seeTextEquals(backupInventoryPage.messages.modalHeaderText, backupInventoryPage.elements.modalHeader);

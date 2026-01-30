@@ -25,6 +25,17 @@ Feature('Left Navigation menu tests').retry(1);
 
 Before(async ({ I }) => {
   await I.Authorize();
+  await I.usePlaywrightTo('Mock Updates for Help Menu', async ({ page }) => {
+    await page.route('**/v1/server/updates?force=**', (route) => route.fulfill({
+      status: 200,
+      body: JSON.stringify({
+        last_check: new Date().toISOString(),
+        installed: { timestamp: new Date().toISOString() },
+        latest: { timestamp: new Date().toISOString() },
+        update_available: false,
+      }),
+    }));
+  });
 });
 /**
 Data(sidebar).Scenario(
@@ -57,11 +68,7 @@ xScenario(
 Scenario(
   'PMM-T1830 - Verify downloading server diagnostics logs @menu',
   async ({ I, homePage, serverApi }) => {
-    await homePage.open();
-
-    I.waitForVisible(homePage.buttons.pmmHelp);
-    I.click(homePage.buttons.pmmHelp);
-
+    I.amOnPage('pmm-ui/help');
     const path = await I.downloadFile(homePage.buttons.pmmLogs);
 
     await I.seeEntriesInZip(path, ['pmm-agent.yaml', 'pmm-managed.log', 'pmm-agent.log']);

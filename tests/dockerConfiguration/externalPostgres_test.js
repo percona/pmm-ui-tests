@@ -34,9 +34,7 @@ Data(data).Scenario(
     await I.Authorize('admin', 'admin', basePmmUrl);
     I.amOnPage(`${basePmmUrl}graph/datasources`);
     I.waitForVisible(postgresDataSourceLocator, 30);
-    I.seeTextEquals(`${'PostgreSQL\n'
-      + '|\n'}${
-      postgresqlAddress}`, locate(postgresDataSourceLocator).find('//div[2]'));
+    I.seeTextEquals(`${'PostgreSQL|'}${postgresqlAddress}`, locate(postgresDataSourceLocator).find('//div[2]'));
 
     I.amOnPage(`${basePmmUrl}${pmmInventoryPage.url}`);
     await I.waitForVisible(pmmInventoryPage.fields.serviceRow(serviceName), 30);

@@ -29,8 +29,8 @@ const waitForAgentRunning = async (agentName = PgAgent.PGSTATMONITOR_AGENT) => {
 
 test.describe('Percona Distribution for PostgreSQL CLI tests', async () => {
   test.beforeAll(async ({}) => {
-    const result = await cli.exec('docker ps --format \'{{.Names}}\' | grep \'^pdpgsql_pgsm_pmm_\'');
-    await result.outContains('pdpgsql_pgsm_pmm', 'PDPGSQL docker container should exist. please run pmm-framework with --database pdpgsql');
+    const result = await cli.exec('docker ps --format \'{{.Names}}\' | grep \'^pdpgsql_pmm_\'');
+    await result.outContains('pdpgsql_pmm', 'PDPGSQL docker container should exist. please run pmm-framework with --database pdpgsql');
     containerName = result.stdout.trim();
     // const output = await cli.exec(`sudo pmm-admin add postgresql --query-source=pgstatmonitor --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} prerequisite ${ipPort}`);
     // await output.assertSuccess();
@@ -133,7 +133,7 @@ test.describe('Percona Distribution for PostgreSQL CLI tests', async () => {
   test('PMM-T1829 Verify turning off autodiscovery database for PostgreSQL', async ({}) => {
     const serviceName = 'autodiscovery_pg';
     await test.step('add pg with --agent-password for monitoring', async () => {
-      const output = await cli.exec(`docker exec ${containerName} pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --agent-password=mypass --auto-discovery-limit=2 ${serviceName} ${ipPort}`);
+      const output = await cli.exec(`docker exec ${containerName} pmm-admin add postgresql --username=${PGSQL_USER} --password=${PGSQL_PASSWORD} --agent-password=mypass --auto-discovery-limit=1 ${serviceName} ${ipPort}`);
       await output.assertSuccess();
       await output.outContains('PostgreSQL Service added.');
     });

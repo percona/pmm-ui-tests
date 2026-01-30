@@ -55,10 +55,11 @@ class Grafana extends Helper {
     }
 
     cookies.forEach((cookie) => {
+      const urlToParse = baseUrl || config.config.helpers.Playwright.url;
       const parsedCookie = {
         name: cookie.split('=')[0],
         value: cookie.split('=')[1].split(';')[0],
-        domain: config.config.helpers.Playwright.url.replace(/[^.\d]/g, ''),
+        domain: new URL(urlToParse).hostname,
         path: '/',
       };
 
@@ -291,13 +292,14 @@ class Grafana extends Helper {
 
   async selectGrafanaDropdownOption(dropdownName, optionText) {
     const { Playwright } = this.helpers;
+    const context = Playwright.context || Playwright.page;
     const dropdownLocator = `//label[text()="${dropdownName}"]/ancestor::*[(self::span) or (self::div and @data-testid="data-testid template variable")]//*[contains(@data-testid, "-input")]`;
 
-    await Playwright.page.locator(dropdownLocator).first().waitFor({ state: 'attached', timeout: 5000 });
-    await Playwright.page.locator(dropdownLocator).first().click();
-    await Playwright.page.waitForTimeout(500);
+    await context.locator(dropdownLocator).first().waitFor({ state: 'attached', timeout: 5000 });
+    await context.locator(dropdownLocator).first().click();
+    await Playwright.wait(0.5);
 
-    const optionLocator = Playwright.page.locator('div[role="option"]  span');
+    const optionLocator = context.locator('div[role="option"]  span');
 
     for (let i = 0; i < await optionLocator.count(); i++) {
       if ((await optionLocator.nth(i).textContent()) === optionText) {
@@ -305,15 +307,16 @@ class Grafana extends Helper {
       }
     }
 
-    await Playwright.page.keyboard.press('Escape');
+    await context.locator('body').press('Escape');
   }
 
   async isElementDisplayed(locator, timeoutInSeconds = 60) {
     const { Playwright } = this.helpers;
-    const elementLocator = Playwright.page.locator(locate(locator).toXPath());
+    const context = Playwright.context || Playwright.page;
+    const elementLocator = context.locator(locate(locator).toXPath());
 
     for (let i = 0; i < timeoutInSeconds; i++) {
-      await Playwright.page.waitForTimeout(1000);
+      await Playwright.wait(1);
 
       if (await elementLocator.first().isVisible()) {
         return true;

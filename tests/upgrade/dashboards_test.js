@@ -62,7 +62,7 @@ Scenario(
 Scenario(
   'PMM-T391 + PMM-T1818 - Verify that custom home dashboard stays as home dashboard after upgrade @post-dashboards-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
-    I.amOnPage('');
+    I.amOnPage('/pmm-ui/');
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.verifyMetricsExistence([grafanaAPI.customPanelName]);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
@@ -112,6 +112,8 @@ Scenario.skip(
 
     searchDashboardsModal.waitForOpened();
     const foldersNames = Object.values(searchDashboardsModal.folders).map((folder) => folder.name);
+
+    foldersNames.push('auto-test-folder');
     const actualFolders = (await searchDashboardsModal.getFoldersList());
 
     I.assertDeepMembers(actualFolders, foldersNames);

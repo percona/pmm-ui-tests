@@ -31,19 +31,19 @@ Data(backupTypes).Scenario('PMM-T2036 - Verify MongoDB PBM dashboard @nightly @g
   };
 
   await scheduledAPI.createScheduledBackup(snapshotSchedule);
-  await backupAPI.waitForBackupFinish(null, `test_schedule_pbm_${current}`, 90);
+  await backupAPI.waitForBackupArtifact(service.service_name, `test_schedule_pbm_${current}`);
 
   // Test
-  const url = I.buildUrlWithParams(dashboardPage.mongodbPBMDetailsDashboard.url, {
+  const url = I.buildUrlWithParams(dashboardPage.mongodbBackupDetailsDashboard.url, {
     from: 'now-5m',
     cluster: current.cluster,
   });
 
   I.amOnPage(url);
   dashboardPage.waitForDashboardOpened();
-  await dashboardPage.mongodbPBMDetailsDashboard.verifyBackupConfiguredValue('Yes');
-  await dashboardPage.mongodbPBMDetailsDashboard.verifyPitrEnabledValue(current === 'BACKUP_MODE_PITR' ? 'Yes' : 'No');
+  await dashboardPage.mongodbBackupDetailsDashboard.verifyBackupConfiguredValue('YES');
+  await dashboardPage.mongodbBackupDetailsDashboard.verifyPitrEnabledValue(current === 'BACKUP_MODE_PITR' ? 'ON' : 'OFF');
   await dashboardPage.expandEachDashboardRow();
-  await dashboardPage.verifyMetricsExistence(dashboardPage.mongodbPBMDetailsDashboard.metrics);
+  await dashboardPage.verifyMetricsExistence(dashboardPage.mongodbBackupDetailsDashboard.metrics);
   await dashboardPage.verifyThereAreNoGraphsWithoutData();
 });

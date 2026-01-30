@@ -8,7 +8,7 @@ const {
 
 const connection = {
   host: '127.0.0.1',
-  port: 5447,
+  port: 5432,
   user: 'postgres',
   password: 'pass+this',
   database: 'postgres',
@@ -48,8 +48,8 @@ const cleanupClickhouse = async () => {
 Feature('PMM + PGSM Integration Scenarios');
 
 BeforeSuite(async ({ I, inventoryAPI }) => {
-  const pgsm_service = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pdpgsql_');
-  const socket_service = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'socket_pdpgsql_');
+  const pgsm_service = await inventoryAPI.getServiceDetailsByPartialName('pdpgsql_');
+  const socket_service = await inventoryAPI.getServiceDetailsByPartialName('socket_pdpgsql_');
 
   pgsm_service_name = pgsm_service.service_name;
   pgsm_service_name_socket = socket_service.service_name;
@@ -249,7 +249,8 @@ Scenario(
     await dashboardPage.expandEachDashboardRow();
     await dashboardPage.verifyMetricsExistence(dashboardPage.postgresqlInstanceSummaryDashboard.metrics);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
-    const log = await I.verifyCommand(`docker exec ${container_name} cat pmm-agent.log`);
+    const logLocation = await I.verifyCommand(`docker exec ${container_name} find / -name pmm-agent.log`);
+    const log = await I.verifyCommand(`docker exec ${container_name} cat ${logLocation}`);
 
     I.assertFalse(
       log.includes('Error opening connection to database \(postgres'),
@@ -506,6 +507,7 @@ Scenario(
 
     I.amOnPage(url);
     queryAnalyticsPage.waitForLoaded();
+    I.waitForVisible(queryAnalyticsPage.data.elements.queryRows.first(), 30);
 
     const count = await queryAnalyticsPage.data.getRowCount();
 
@@ -638,7 +640,8 @@ Scenario(
     await I.verifyCommand(`docker exec ${container_name} true > pmm-agent.log`);
     await I.verifyCommand(`docker exec ${container_name} pmm-admin list | grep "postgresql_pgstatmonitor_agent" | grep "Running"`);
     I.wait(defaultValue);
-    let log = await I.verifyCommand(`docker exec ${container_name} tail -n100 pmm-agent.log`);
+    const logLocation = await I.verifyCommand(`docker exec ${container_name} find / -name pmm-agent.log`);
+    let log = await I.verifyCommand(`docker exec ${container_name} tail -n100 ${logLocation}`);
 
     assert.ok(
       !log.includes('non default bucket time value is not supported, status changed to WAITING'),
@@ -650,7 +653,7 @@ Scenario(
     output = await I.pgExecuteQueryOnDemand('SELECT * FROM pg_settings WHERE name=\'pg_stat_monitor.pgsm_bucket_time\';', connection);
     assert.equal(output.rows[0].setting, alteredValue, `The value of 'pg_stat_monitor.pgsm_bucket_time' should be equal to ${alteredValue}`);
     I.wait(alteredValue);
-    log = await I.verifyCommand(`docker exec ${container_name} tail -n100 pmm-agent.log`);
+    log = await I.verifyCommand(`docker exec ${container_name} tail -n100 ${logLocation}`);
 
     assert.ok(
       log.includes('non default bucket time value is not supported, status changed to WAITING'),
@@ -707,7 +710,7 @@ Scenario(
     await pmmInventoryPage.openAgents(service_id);
     await pmmInventoryPage.checkAgentOtherDetailsSection('Qan postgresql pgstatmonitor agent', 'query_examples_disabled=true');
 
-    I.wait(90);
+    I.wait(120);
 
     const url = I.buildUrlWithParams(queryAnalyticsPage.url, {
       service_name: pgServiceName,
@@ -716,7 +719,7 @@ Scenario(
 
     I.amOnPage(url);
     queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.data.searchByValue('SELECT pg_sleep($1)');
+    queryAnalyticsPage.data.searchByValue('SELECT version()');
     queryAnalyticsPage.waitForLoaded();
     queryAnalyticsPage.data.selectRow(1);
     queryAnalyticsPage.waitForLoaded();

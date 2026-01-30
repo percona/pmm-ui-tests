@@ -98,7 +98,7 @@ Scenario(
     alertRulesPage.openAlertRulesTab();
     I.waitForElement(alertRulesPage.buttons.newAlertRuleFromTemplate, 10);
     I.usePlaywrightTo('click New Alert Rule from Template button', async ({ page }) => {
-      await page.click(alertRulesPage.buttons.newAlertRuleFromTemplate.value);
+      await page.locator(alertRulesPage.buttons.newAlertRuleFromTemplate.value).click();
     });
     I.waitForElement(alertRulesPage.fields.templatesLoader, 10);
   },

@@ -29,7 +29,7 @@ Data(filters).Scenario(
   async ({
     I, current, queryAnalyticsPage,
   }) => {
-    queryAnalyticsPage.filters.selectContainFilter('pdpgsql_pgsm_pmm');
+    queryAnalyticsPage.filters.selectContainFilter('pdpgsql_');
     I.waitForVisible(queryAnalyticsPage.filters.buttons.showSelected, 30);
     queryAnalyticsPage.filters.selectFilterInGroup(current.filterToApply, 'Command Type');
     queryAnalyticsPage.data.searchByValue(current.searchValue);
@@ -73,7 +73,7 @@ Scenario(
   'PMM-T126 - Verify user is able to Reset All filters @qan',
   async ({ I, queryAnalyticsPage }) => {
     const environmentName1 = 'pxc-dev';
-    const environmentName2 = 'dev';
+    const environmentName2 = 'ps-dev';
 
     const countBefore = await queryAnalyticsPage.data.getCountOfItems();
 
@@ -96,7 +96,7 @@ Scenario(
   'PMM-T125 - Verify user is able to Show only selected filter values and Show All filter values @qan',
   async ({ I, queryAnalyticsPage }) => {
     const environmentName1 = 'pxc-dev';
-    const environmentName2 = 'dev';
+    const environmentName2 = 'ps-dev';
 
     queryAnalyticsPage.filters.selectFilter(environmentName1);
     queryAnalyticsPage.filters.selectFilter(environmentName2);
@@ -152,7 +152,7 @@ Scenario(
   'PMM-T191 - Verify Reset All and Show Selected filters @qan',
   async ({ I, queryAnalyticsPage }) => {
     const environmentName1 = 'pxc-dev';
-    const environmentName2 = 'dev';
+    const environmentName2 = 'ps-dev';
 
     await queryAnalyticsPage.filters.selectFilter(environmentName1);
     await queryAnalyticsPage.filters.selectFilter(environmentName2);
@@ -198,9 +198,7 @@ Scenario(
     queryAnalyticsPage.filters.selectContainFilter(serviceName);
     queryAnalyticsPage.data.waitForNewItemsCount(count);
     queryAnalyticsPage.filters.selectFilterInGroup(db2, section);
-    await within(queryAnalyticsPage.data.root, () => {
-      I.waitForText('No queries available for this combination of filters', 30);
-    });
+    I.waitForText('No queries available for this combination of filters', 30);
   },
 ).retry(2);
 

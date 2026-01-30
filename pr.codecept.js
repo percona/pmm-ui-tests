@@ -1,5 +1,6 @@
 const { Agent } = require('https');
 const { pageObjects, getChunks } = require('./codeceptConfigHelper');
+const bootstrapHook = require('./tests/helper/hooks.js');
 
 require('dotenv').config();
 
@@ -16,6 +17,8 @@ exports.config = {
       url: pmmUrl.replace(/\/(?!.*\/)$/gm, ''),
       restart: true,
       show: false,
+      trace: true,
+      keepTraceForPassedTests: false,
       browser: 'chromium',
       windowSize: '1920x1080',
       timeout: 20000,
@@ -137,7 +140,7 @@ exports.config = {
       },
     },
   },
-  bootstrap: false,
+  bootstrap: bootstrapHook,
   teardown: null,
   hooks: [],
   gherkin: {},

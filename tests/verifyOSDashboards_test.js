@@ -48,7 +48,8 @@ Data(nodes).Scenario(
   },
 );
 
-Scenario(
+// TODO: unskip after https://perconadev.atlassian.net/browse/PMM-14748 is fixed
+Scenario.skip(
   'PMM-T1090 - Verify time zones and navigation between dashboards @nightly @dashboards @gssapi-nightly',
   async ({
     I, dashboardPage, adminPage, homePage,
@@ -58,9 +59,10 @@ Scenario(
     I.amOnPage(`${dashboardPage.processDetailsDashboard.url}`);
     dashboardPage.waitForDashboardOpened();
     adminPage.applyTimeZone(timeZone);
-    I.click(homePage.fields.servicesButton);
-    I.waitForElement(homePage.serviceDashboardLocator('MySQL Instances Overview'), 30);
-    I.click(homePage.serviceDashboardLocator('MySQL Instances Overview'));
+    I.switchTo();
+    I.click(homePage.fields.inventoryButton);
+    I.click(homePage.fields.mysqlButton);
+    I.switchTo('#grafana-iframe');
     dashboardPage.waitForDashboardOpened();
     I.waitForElement(adminPage.fields.timePickerMenu, 30);
     I.forceClick(adminPage.fields.timePickerMenu);

@@ -8,10 +8,10 @@ const services = [];
 services.push({ serviceName: 'rs101' });
 
 if (!isJenkinsGssapiJob) {
-  services.push({ serviceName: 'pdpgsql_pgsm_pmm' });
+  services.push({ serviceName: 'pdpgsql_' });
   services.push({ serviceName: 'pgsql_pgss_pmm' });
   services.push({ serviceName: 'ps_pmm' });
-  services.push({ serviceName: 'ms-single' });
+  services.push({ serviceName: 'mysql_pmm_' });
   services.push({ serviceName: 'pxc_node__1' });
 }
 
@@ -24,7 +24,13 @@ Data(services).Scenario(
   async ({
     I, queryAnalyticsPage, inventoryAPI, current,
   }) => {
-    const { service_name } = await inventoryAPI.getServiceDetailsByStartsWithName(current.serviceName);
+    let service_name;
+
+    if (current.serviceName === 'pdpgsql_') {
+      service_name = (await inventoryAPI.getServiceDetailsByRegex('pdpgsql_pmm_.*_1$')).service_name;
+    } else {
+      service_name = (await inventoryAPI.getServiceDetailsByStartsWithName(current.serviceName)).service_name;
+    }
 
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-120m', to: 'now' }));
 

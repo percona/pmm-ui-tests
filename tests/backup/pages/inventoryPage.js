@@ -96,7 +96,7 @@ module.exports = {
     I.waitForVisible(this.elements.backupStatusFailureIconByName(backupName), 120);
   },
 
-  openDeleteBackupModal(backupName) {
+  async openDeleteBackupModal(backupName) {
     I.waitForVisible(this.buttons.actionsMenuByName(backupName), 10);
     I.click(this.buttons.actionsMenuByName(backupName));
     I.waitForVisible(this.buttons.deleteByName(backupName), 2);

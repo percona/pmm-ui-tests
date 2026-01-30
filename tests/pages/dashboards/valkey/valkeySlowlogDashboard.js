@@ -1,7 +1,7 @@
 class ValkeySlowlogDashboard {
   constructor() {
     this.url = 'graph/d/valkey-slowlog/valkey-redis-slowlog';
-    this.metrics = ['Slowlog length', 'Slowlog', 'Slowlog maxlength', 'Slowlog slower than (ms)'];
+    this.metrics = ['Slowlog Length', 'Slowlog', 'Slowlog Maxlength', 'Slowlog Slower Than (ms)'];
   }
 }
 

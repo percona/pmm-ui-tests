@@ -1,7 +1,7 @@
 const { dashboardPage, homePage } = inject();
 const assert = require('assert');
-const { SERVICE_TYPE } = require('../helper/constants');
-const { locateOptions } = require('../helper/locatorHelper');
+const { SERVICE_TYPE } = require('./helper/constants');
+const { locateOptions } = require('./helper/locatorHelper');
 
 const {
   inventoryAPI,
@@ -153,7 +153,7 @@ Scenario.skip(
 Scenario(
   'PMM-T324 - Verify MySQL - MySQL User Details dashboard @nightly @dashboards',
   async ({ I, dashboardPage }) => {
-    const serviceName = serviceList.find((service) => service.name.includes('ps_pmm'));
+    const serviceName = serviceList.find((service) => service.name.includes('ps_pmm')).name;
     const url = I.buildUrlWithParams(dashboardPage.mysqlUserDetailsDashboard.clearUrl, { service_name: serviceName, from: 'now-5m' });
 
     I.amOnPage(url);

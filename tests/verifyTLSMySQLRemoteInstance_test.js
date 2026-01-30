@@ -107,7 +107,7 @@ Scenario(
 ).retry(1);
 
 Data(instances).Scenario(
-  'PMM-T937 + PMM-T938 - Verify MySQL cannot be added without specified --tls-key, Verify MySQL cannot be added without specified --tls-cert @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
+  'PMM-T937 + PMM-T938 + PMM-T2093 - Verify MySQL can be added without specified --tls-key, Verify MySQL can be added without specified --tls-cert, Verify adding MySQL for monitoring using --tls-ca only @ssl @ssl-mysql @ssl-remote @not-ui-pipeline',
   async ({
     I, current, remoteInstancesPage,
   }) => {
@@ -117,19 +117,15 @@ Data(instances).Scenario(
 
     I.amOnPage(remoteInstancesPage.url);
 
-    let responseMessage = 'Connection check failed: register MySQL client cert failed: tls: failed to find any PEM data in key input.';
+    const responseMessage = 'MySQL Service added.';
     let command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-cert=/var/lib/mysql/client-cert.pem TLS_mysql_no_tls_key`;
+    let output = await I.verifyCommand(command, responseMessage, 'pass');
 
-    let output = await I.verifyCommand(command, responseMessage, 'fail');
-
-    assert.ok(output.trim() === responseMessage.trim(), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
-
-    responseMessage = 'Connection check failed: register MySQL client cert failed: tls: failed to find any PEM data in certificate input.';
     command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem --tls-key=/var/lib/mysql/client-key.pem TLS_mysql_no_tls_cert`;
+    output = await I.verifyCommand(command, responseMessage, 'pass');
 
-    output = await I.verifyCommand(command, responseMessage, 'fail');
-
-    assert.ok(output.trim() === responseMessage.trim(), `The ${command} was supposed to return ${responseMessage} but actually got ${output}`);
+    command = `docker exec ${container} pmm-admin add mysql --username=pmm --password=pmm --port=3306 --query-source=perfschema --tls --tls-skip-verify --tls-ca=/var/lib/mysql/ca.pem TLS_mysql_only_ca`;
+    output = await I.verifyCommand(command, 'MySQL Service added.', 'pass');
   },
 ).retry(0);
 

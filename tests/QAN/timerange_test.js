@@ -4,7 +4,11 @@ const assert = require('assert');
 Feature('QAN timerange').retry(1);
 
 Before(async ({ I, queryAnalyticsPage, codeceptjsConfig }) => {
-  I.restartBrowser({ permissions: ['clipboard-read', 'clipboard-write'], origin: codeceptjsConfig.config.helpers.Playwright.url });
+  await I.usePlaywrightTo('Grant Permissions', async ({ browserContext }) => {
+    await browserContext.grantPermissions(['clipboard-read', 'clipboard-write'], {
+      origin: codeceptjsConfig.config.helpers.Playwright.url,
+    });
+  });
   await I.usePlaywrightTo('Mock BE Responses', async ({ page }) => {
     await page.route('**/v1/users/me', (route) => route.fulfill({
       status: 200,
@@ -117,6 +121,7 @@ Scenario(
     I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-12h' }));
     queryAnalyticsPage.waitForLoaded();
     await queryAnalyticsPage.data.selectRow(2);
+
     I.click(queryAnalyticsPage.buttons.copyButton);
     I.waitForVisible(I.getSuccessPopUpLocator(), 10);
 
@@ -135,6 +140,7 @@ Scenario(
     I.waitForVisible(I.getSuccessPopUpLocator(), 10);
     const url2 = new URL(await I.usePlaywrightTo('Read Clipboard', async ({ page }) => await page.evaluate(async () => navigator.clipboard.readText())));
     const toTimeFromUrl2 = url2.searchParams.get('to');
+    const queryText = await queryAnalyticsPage.data.getSelectedRowQueryText();
 
     assert.ok(Math.abs(toTimeFromUrl1 - toTimeFromUrl2) < 120000, 'Difference between moment time and second copied time must be less then two minutes');
     assert.notEqual(toTimeFromUrl1, toTimeFromUrl2, 'TimeFromUrl2 must not be the same as timeFromUrl1');
@@ -142,7 +148,10 @@ Scenario(
     I.openNewTab();
     I.amOnPage(url.toString());
     queryAnalyticsPage.waitForLoaded();
-    I.waitForVisible(queryAnalyticsPage.data.elements.selectedRowByNumber('2'));
+    I.waitForVisible(queryAnalyticsPage.data.elements.selectedRow);
+    const queryTextAfter = await queryAnalyticsPage.data.getSelectedRowQueryText();
+
+    assert.equal(queryText, queryTextAfter, 'Selected row query text is not the same after reload');
   },
 );
 
@@ -205,6 +214,8 @@ Scenario(
     await I.waitForVisible(queryAnalyticsPage.data.buttons.nextPage);
     await I.click(queryAnalyticsPage.data.buttons.nextPage);
     await queryAnalyticsPage.data.selectRow(2);
+    const queryText = await queryAnalyticsPage.data.getQueryRowQueryText(2);
+
     await I.click(queryAnalyticsPage.buttons.copyButton);
     await I.waitForVisible(I.getSuccessPopUpLocator(), 10);
 
@@ -216,7 +227,10 @@ Scenario(
     await I.assertContain(url, '&page_number=2', 'Expected the Url to contain selected page');
     await queryAnalyticsPage.waitForLoaded();
     await queryAnalyticsPage.data.verifyActivePage(2);
-    await I.waitForVisible(queryAnalyticsPage.data.elements.selectedRowByNumber(2), 20);
+    await I.waitForVisible(queryAnalyticsPage.data.elements.selectedRow, 20);
+    const queryTextAfter = await queryAnalyticsPage.data.getSelectedRowQueryText();
+
+    assert.equal(queryText, queryTextAfter, 'Selected row query text is not the same after reload');
     await I.waitForElement(queryAnalyticsPage.data.buttons.close, 30);
   },
 ).retry(2);

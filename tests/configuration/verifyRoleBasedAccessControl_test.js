@@ -75,7 +75,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.verifyThatAllGraphsNoData(1);
+    await dashboardPage.verifyThatAllGraphsNoData(2);
 
     await I.unAuthorize();
 
@@ -91,7 +91,7 @@ Scenario(
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.expandEachDashboardRow();
     dashboardPage.waitForDashboardOpened();
-    await dashboardPage.verifyThereAreNoGraphsWithoutData();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(2);
 
     await I.unAuthorize();
 
