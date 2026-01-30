@@ -90,19 +90,6 @@ Scenario(
   },
 );
 
-Scenario(
-  'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-advisors-alerting-upgrade',
-  async ({
-    settingsAPI, rulesAPI, alertsAPI,
-  }) => {
-    await settingsAPI.changeSettings({ alerting: true });
-    await rulesAPI.removeAllAlertRules(true);
-    await rulesAPI.createAlertRule({ ruleName }, 'Insight');
-    // Wait for alert to appear
-    await alertsAPI.waitForAlerts(60, 1);
-  },
-);
-
 const rareInterval = '48';
 const standardInterval = '12';
 const frequentInterval = '2';
@@ -148,13 +135,12 @@ Scenario(
     const alertName = 'Node high CPU load';
 
     I.amOnPage(alertsPage.url);
+    I.waitForElement(alertsPage.elements.alertRow(alertName), 120);
 
     await alertsAPI.waitForAlerts(120, 1);
     const alerts = await alertsAPI.getAlertsList();
 
     assert.ok(alerts[0].annotations.summary.includes(alertName), `Didn't find alert with name ${alertName}`);
-
-    I.waitForElement(alertsPage.elements.alertRow(alertName), 60);
   },
 );
 
