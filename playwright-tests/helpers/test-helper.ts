@@ -1,10 +1,6 @@
 import { test as base } from '@playwright/test';
 import HomeDashboardPage from '@pages/home-dashboard.page';
 import LoginPage from '@pages/login.page';
-import PerconaPlatformPage from '@pages/pmm-settings/percona-platform.page';
-import EntitlementsPage from '@pages/platformPages/entitlements.page';
-import EnvironmentOverviewPage from '@pages/platformPages/environment-overview.page';
-import TicketsPage from '@pages/platformPages/tickets.page';
 import { AccessRolesPage } from '@tests/configuration/pages/access-roles.page';
 import AdvancedSettingsPage from '@pages/pmm-settings/advanced-settings.page';
 import { CreateRolePage } from '@tests/configuration/pages/create-role.page';
@@ -25,8 +21,6 @@ type PagesCollection = {
   addServicePage: AddServicePage;
   advancedSettingsPage: AdvancedSettingsPage;
   createRolePage: CreateRolePage;
-  entitlementsPage: EntitlementsPage;
-  environmentOverviewPage: EnvironmentOverviewPage;
   homeDashboardPage: HomeDashboardPage;
   loginPage: LoginPage;
   mongoDBInstanceSummary: MongoDBInstanceSummary;
@@ -34,11 +28,9 @@ type PagesCollection = {
   newUserPage: NewUserPage;
   nodesOverviewDashboard: NodesOverviewDashboard;
   nodesPage: NodesPage;
-  perconaPlatformPage: PerconaPlatformPage;
   postgresqlInstancesOverviewDashboard: PostgresqlInstancesOverviewDashboard;
   qanPage: QanPage;
   servicesPage: ServicesPage;
-  ticketsPage: TicketsPage;
   usersConfigurationPage: UsersConfigurationPage;
 };
 
@@ -86,9 +78,6 @@ export const test = base.extend<PagesCollection>({
   },
   nodesPage: async ({ page }, use) => {
     await use(new NodesPage(page));
-  },
-  perconaPlatformPage: async ({ page }, use) => {
-    await use(new PerconaPlatformPage(page));
   },
   postgresqlInstancesOverviewDashboard: async ({ page }, use) => {
     await use(new PostgresqlInstancesOverviewDashboard(page));

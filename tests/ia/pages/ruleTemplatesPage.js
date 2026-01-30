@@ -58,7 +58,6 @@ module.exports = {
     ui: 'User Created (UI)',
     builtin: 'Built-in',
     file: 'User Created (file)',
-    saas: 'Percona Platform',
   },
   ruleTemplate: {
     // templateNameAndContent parses yaml file and returns
