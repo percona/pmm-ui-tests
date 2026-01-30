@@ -1,7 +1,6 @@
 import { server } from '@api/server.api';
 import { settingsApi } from '@tests/configuration/api/settings.api';
 import { oktaApi } from '@api/okta.api';
-import { portalApi } from '@api/portal.api';
 import { serviceNowApi } from '@api/service-now.api';
 import { inventoryApi } from '@api/inventory.api';
 import { managementApi } from '@api/management.api';
@@ -51,6 +50,5 @@ export const api = {
     managementV1: managementApi,
   },
   okta: oktaApi,
-  portal: portalApi,
   serviceNow: serviceNowApi,
 };
