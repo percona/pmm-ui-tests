@@ -39,13 +39,6 @@ Before(async ({ I, settingsAPI }) => {
 });
 
 Scenario(
-  'Add AMI Instance ID @ami-upgrade',
-  async ({ amiInstanceAPI }) => {
-    await amiInstanceAPI.verifyAmazonInstanceId(process.env.AMI_INSTANCE_ID);
-  },
-);
-
-Scenario(
   'PMM-T289 - Verify Whats New link is presented on Update Widget @ovf-upgrade @ami-upgrade @pre-upgrade @pmm-upgrade',
   async ({ I, homePage }) => {
     const locators = homePage.getLocators(versionMinor);
