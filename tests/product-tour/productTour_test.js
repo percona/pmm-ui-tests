@@ -5,9 +5,16 @@ Before(async ({ I, settingsAPI }) => {
   await I.Authorize();
   // get request will create the initial state
   await I.sendGetRequest('v1/users/me', { Authorization: `Basic ${await I.getAuth()}` });
+  await settingsAPI.setTourOptions(true, true, '3.2.0');
+  await I.switchPmmCompatPluginState(false);
   // todo: it would be better to disable updates once PMM-13608 is fixed
   // snooze update modal
   await settingsAPI.setTourOptions(false, true, '3.2.0');
+});
+
+After(async ({ I, settingsAPI }) => {
+  await settingsAPI.setTourOptions(true, true, '3.2.0');
+  await I.switchPmmCompatPluginState(true);
 });
 
 Scenario('PMM-T1879 - Verify that product tour dialog is displayed after check later button pressed. @grafana-pr', async ({ I, homePage }) => {
