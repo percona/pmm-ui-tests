@@ -19,15 +19,12 @@ export class CommonPage {
     mainView: this.page.locator('//*[@class="main-view"]'),
     emptyBlock: this.page.getByTestId('empty-block'),
     noDataTable: this.page.getByTestId('table-no-data'),
-    notPlatformUser: this.page.getByTestId('not-platform-user'),
     noData: this.page.getByTestId('page-no-data'),
-    notConnectedToPlatform: this.page.getByTestId('not-connected-platform'),
   };
 
   // TODO: not a part of a page... should be moved to the "toast" system message class
   messages: { [key: string]: string } = {
     loginWithPercona: 'Login with Percona Account to access this content',
-    notConnectedToThePortal: 'Not connected to Portal.',
     featureDisabled: 'Feature is disabled.',
   };
 
