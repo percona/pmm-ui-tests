@@ -337,7 +337,7 @@ Scenario(
   async ({
     I, remoteInstancesPage, grafanaAPI,
   }) => {
-    const errorMessage = 'Connection check failed: pq: database "postgres" does not exist.';
+    const errorMessage = 'Connection check failed: pq: database "postgres" does not exist';
     const remoteServiceName = `${faker.lorem.word()}_service`;
     const metric = 'pg_stat_database_xact_rollback';
     const details = {
