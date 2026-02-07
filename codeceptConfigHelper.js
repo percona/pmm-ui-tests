@@ -39,15 +39,11 @@ module.exports = {
     locationsAPI: './tests/backup/pages/api/locationsAPI.js',
     nPoliciesPage: './tests/ia/pages/notificationPolicies.js',
     psMySql: './tests/helper/psMySql.js',
-    organizationEntitlementsPage: './tests/pages/organizationEntitlementsPage.js',
-    organizationTicketsPage: './tests/pages/organizationTicketsPage.js',
-    perconaPlatformPage: './tests/pages/perconaPlatformPage/perconaPlatformPage.js',
     pmmDemoPage: './tests/pages/pmmDemoPage.js',
     pmmInventoryPage: './tests/configuration/pages/pmmInventoryPage.js',
     agentsPage: './tests/configuration/pages/agentsPage.js',
     pmmServerAdminSettingsPage: './tests/configuration/pages/pmmServerAdminSettingsPage.js',
     pmmSettingsPage: './tests/configuration/pages/pmmSettingsPage.js',
-    portalAPI: './tests/pages/api/portalAPI.js',
     profileAPI: './tests/configuration/api/profileApi.js',
     remoteInstancesPage: './tests/pages/remoteInstancesPage.js',
     remoteInstancesHelper: './tests/remoteInstances/remoteInstancesHelper.js',
@@ -62,12 +58,10 @@ module.exports = {
     serviceAccountsPage: './tests/pages/administration/serviceAccountsPage.js',
     silencesPage: './tests/ia/pages/silencesPage.js',
     iaCommon: './tests/ia/pages/iaCommonPage.js',
-    platformAPI: './tests/pages/api/platformAPI.js',
     advisorsAPI: './tests/advisors/pages/api/advisorsAPI.js',
     settingsAPI: './tests/pages/api/settingsAPI.js',
     templatesAPI: './tests/ia/pages/api/templatesAPI.js',
     qanAPI: './tests/QAN/api/qanAPI.js',
-    environmentOverviewPage: './tests/pages/environmentOverviewPage.js',
     tooltips: './tests/helper/tooltipHelper.js',
     statsAndLicensePage: './tests/server-admin/pages/statsAndLicensePage.js',
     dataSourcePage: './tests/pages/pmmSettingsPages/dataSourcePage.js',
@@ -82,14 +76,8 @@ module.exports = {
   },
   getChunks: (files) => {
     const dependentTests = files.filter((value) => /PMMSettings|ia|stt|backup|permissions|Azure/.test(value));
-    const portalTests = files.filter((value) => /portal/.test(value));
-    const otherTests = files.filter((val) => !dependentTests.includes(val)
-      && !portalTests.includes(val));
+    const otherTests = files.filter((val) => !dependentTests.includes(val));
 
-    return [
-      dependentTests,
-      portalTests,
-      otherTests,
-    ];
+    return [dependentTests, otherTests];
   },
 };
