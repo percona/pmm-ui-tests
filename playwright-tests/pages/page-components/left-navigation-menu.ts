@@ -25,9 +25,6 @@ export class LeftNavigationMenu {
   // Server admin
   // admin
   // Help
-  tickets = this.shortMenu.locator('//*[@href="/graph/tickets"]');
-  entitlements = this.shortMenu.locator('//*[@href="/graph/entitlements"]');
-  environmentOverview = this.shortMenu.locator('//*[@href="/graph/environment-overview"]');
 
   constructor(readonly page: Page) {}
 
