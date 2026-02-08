@@ -20,7 +20,7 @@ module.exports = {
     enterprisePlugins: locate('div').withText('Enterprise plugins'),
     oracle: locate('div').withText('Oracle'),
     splunk: locate('div').withText('Splunk'),
-    serviceNow: locate('div').withText('Service Now'),
+    // serviceNow: locate('div').withText('Service Now'),
     dynaTrace: locate('div').withText('Dynatrace'),
     newRelic: locate('div').withText('New Relic'),
     dataDog: locate('div').withText('DataDog'),
