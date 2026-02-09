@@ -1,12 +1,12 @@
 const assert = require('assert');
-const { SERVICE_TYPE } = require('../helper/constants');
+const { SERVICE_TYPE, isOvFAmiJenkinsJob} = require('../helper/constants');
 
 Feature('PMM upgrade tests for custom password');
 const { dashboardPage } = inject();
 
 const clientDbServices = new DataTable(['serviceType', 'name', 'metric', 'annotationName', 'dashboard', 'upgrade_service']);
 
-clientDbServices.add([SERVICE_TYPE.MYSQL, 'ps_pmm', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql']);
+clientDbServices.add([SERVICE_TYPE.MYSQL, 'ps_pmm_', 'mysql_global_status_max_used_connections', 'annotation-for-mysql', dashboardPage.mysqlInstanceSummaryDashboard.url, 'mysql']);
 clientDbServices.add([SERVICE_TYPE.POSTGRESQL, 'pgsql_pgss_pmm', 'pg_stat_database_xact_rollback', 'annotation-for-postgres', dashboardPage.postgresqlInstanceSummaryDashboard.url, 'postgresql']);
 clientDbServices.add([SERVICE_TYPE.MONGODB, 'rs101', 'mongodb_connections', 'annotation-for-mongo', dashboardPage.mongoDbInstanceSummaryDashboard.url, 'mongodb']);
 
@@ -18,12 +18,17 @@ Data(clientDbServices).Scenario(
     const {
       serviceType, name, upgrade_service,
     } = current;
-    const {
+    let {
+      // eslint-disable-next-line prefer-const
       service_id, node_id, address, port,
     } = await inventoryAPI.getServiceDetailsByPartialName(name);
 
     const { agent_id: pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
     let output;
+
+    if (isOvFAmiJenkinsJob) {
+      address = '127.0.0.1';
+    }
 
     switch (serviceType) {
       case SERVICE_TYPE.MYSQL:
