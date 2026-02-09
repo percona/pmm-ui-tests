@@ -75,11 +75,7 @@ Scenario(
 ).retry(0);
 
 Scenario('PMM-T1647 - Verify pmm-server package doesn\'t exist @pmm-upgrade', async ({ I }) => {
-  console.log(process.env.JOB_NAME);
-  console.log(process.env.JOB_NAME.includes('ami') || process.env.JOB_NAME.includes('ovf'));
-  console.log(isOvFAmiJenkinsJob);
   if (!isOvFAmiJenkinsJob) {
-    await I.amOnPage('');
     const packages = await I.verifyCommand('docker exec pmm-server rpm -qa');
 
     I.assertTrue(!packages.includes('pmm-server'), 'pmm-server package present in package list.');
@@ -95,7 +91,7 @@ Scenario.skip(
 );
 
 Scenario(
-  'PMM-T9999 - Verify pmm server is upgraded to correct version @pmm-upgrade',
+  'Verify pmm server is upgraded to correct version @pmm-upgrade',
   async ({ I, homePage }) => {
     await I.stopMockingUpgrade();
     I.amOnPage(homePage.url);

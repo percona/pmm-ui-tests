@@ -252,6 +252,8 @@ Scenario(
       allAgents.push(...o.agents.filter((agent) => agent.disabled === false));
     });
 
+    console.log(allAgents)
+
     const pmmAgents = allAgents.filter((o) => o.agent_type === 'pmm-agent');
     const otherAgents = allAgents.filter((o) => o.agent_type !== 'pmm-agent' && o.agent_type !== 'external-exporter');
 

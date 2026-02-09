@@ -1,4 +1,4 @@
-const { SERVICE_TYPE, isOvFAmiJenkinsJob } = require('../helper/constants');
+const { SERVICE_TYPE } = require('../helper/constants');
 
 const remoteInstanceStatus = {
   mysql: {

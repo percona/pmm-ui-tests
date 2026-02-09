@@ -49,8 +49,6 @@ Feature('BM: Backup Inventory');
 BeforeSuite(async ({
   I, locationsAPI, settingsAPI, inventoryAPI,
 }) => {
-  console.log(await I.verifyCommand('docker ps -a'));
-
   await settingsAPI.changeSettings({ backup: true });
   await locationsAPI.clearAllLocations(true);
   localStorageLocationId = await locationsAPI.createStorageLocation(
