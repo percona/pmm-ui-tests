@@ -29,7 +29,7 @@ Scenario(
     await grafanaAPI.starDashboard(resp.id);
     await grafanaAPI.setHomeDashboard(resp.id);
 
-    I.amOnPage('');
+    I.amOnPage('pmm-ui/graph/');
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.verifyMetricsExistence([additionalPanelName]);
     I.seeInCurrentUrl(grafanaAPI.customDashboardName);
@@ -60,7 +60,7 @@ Scenario(
 Scenario(
   'PMM-T391 + PMM-T1818 - Verify that custom home dashboard stays as home dashboard after upgrade @post-dashboards-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
-    I.amOnPage('');
+    I.amOnPage('/pmm-ui/');
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.verifyMetricsExistence([grafanaAPI.customPanelName]);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
@@ -112,9 +112,11 @@ Scenario(
 
     searchDashboardsModal.waitForOpened();
     const foldersNames = Object.values(searchDashboardsModal.folders).map((folder) => folder.name);
+
+    foldersNames.push('auto-test-folder');
     const actualFolders = (await searchDashboardsModal.getFoldersList());
 
-    I.assertDeepMembers(actualFolders, foldersNames);
+    I.assertDeepMembers([...actualFolders].sort(), [...foldersNames].sort());
   },
 );
 

@@ -68,12 +68,7 @@ xScenario(
 Scenario(
   'PMM-T1830 - Verify downloading server diagnostics logs @menu',
   async ({ I, homePage, serverApi }) => {
-    await homePage.open();
-
-    I.switchTo();
-    I.waitForVisible(homePage.buttons.pmmHelp);
-    I.click(homePage.buttons.pmmHelp);
-
+    I.amOnPage('pmm-ui/help');
     const path = await I.downloadFile(homePage.buttons.pmmLogs);
 
     await I.seeEntriesInZip(path, ['pmm-agent.yaml', 'pmm-managed.log', 'pmm-agent.log']);
