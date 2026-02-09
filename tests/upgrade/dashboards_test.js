@@ -1,3 +1,5 @@
+const { isOvFAmiJenkinsJob } = require('../helper/constants');
+
 Feature('PMM upgrade tests for dashboards');
 
 Before(async ({ I }) => {
@@ -70,19 +72,17 @@ Scenario(
     I.wait(1);
     let errorLogs;
 
-    if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && process.env.OVF_UPGRADE_TESTING_INSTANCE !== 'true') {
+    if (!isOvFAmiJenkinsJob) {
       errorLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/grafana.log | grep level=error');
-    } else {
-      errorLogs = await I.verifyCommand('cat /srv/logs/grafana.log | grep level=error || true');
+
+      const loadingLibraryErrorLine = errorLogs.split('\n')
+        .filter((line) => line.includes('Error while loading library panels'));
+
+      I.assertEmpty(
+        loadingLibraryErrorLine,
+        `Logs contains errors about while loading library panels! \n The line is: \n ${loadingLibraryErrorLine}`,
+      );
     }
-
-    const loadingLibraryErrorLine = errorLogs.split('\n')
-      .filter((line) => line.includes('Error while loading library panels'));
-
-    I.assertEmpty(
-      loadingLibraryErrorLine,
-      `Logs contains errors about while loading library panels! \n The line is: \n ${loadingLibraryErrorLine}`,
-    );
   },
 );
 
