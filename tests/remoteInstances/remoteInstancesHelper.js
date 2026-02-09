@@ -53,6 +53,9 @@ const remoteInstanceStatus = {
     aws_rds_8_0: {
       enabled: true,
     },
+    aws_rds_8_4: {
+      enabled: true,
+    },
     aws_rds_5_6: {
       enabled: false,
     },
@@ -98,7 +101,7 @@ DB_CONFIG = {
   MYSQL_SERVER_PORT: '3306',
   MYSQL_HOST_SERVER_PORT: '3309',
   POSTGRES_SERVER_PORT: '5432',
-  POSTGRES_HOST_SERVER_PORT: '5433',
+  POSTGRES_HOST_SERVER_PORT: '5432',
   MONGODB_SERVER_PORT: '27017',
   PROXYSQL_SERVER_PORT: '6033',
 };
@@ -132,10 +135,10 @@ module.exports = {
         clusterName: 'mysql_clstr',
       },
       ps_8_0: {
-        host: 'ps_pmm_8.0',
-        port: '3307',
-        username: 'msandbox',
-        password: 'msandbox',
+        host: 'ps_pmm_8_0_1',
+        port: '3306',
+        username: 'root',
+        password: 'GRgrO9301RuF',
         clusterName: 'mysql_clstr',
       },
       ms_8_0_ssl: {
@@ -185,7 +188,7 @@ module.exports = {
         clusterName: 'pgsql_clstr',
       },
       pdpgsql_17: {
-        host: (PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'pdpgsql_pgsm_pmm_17'),
+        host: PMM_SERVER_OVF_AMI_SETUP === 'true' ? SERVER_HOST : 'pdpgsql_pmm_17_1',
         server_port: DB_CONFIG.POSTGRES_SERVER_PORT,
         host_server_port: DB_CONFIG.POSTGRES_HOST_SERVER_PORT,
         username: 'pmm',
@@ -249,16 +252,16 @@ module.exports = {
         port: 42001,
       },
       aws_rds_8_0: {
-        address: secret(process.env.REMOTE_AWS_MYSQL80_HOST),
-        username: secret(process.env.REMOTE_AWS_MYSQL80_USER),
-        password: secret(process.env.REMOTE_AWS_MYSQL80_PASSWORD),
+        address: process.env.REMOTE_AWS_MYSQL80_HOST,
+        username: process.env.REMOTE_AWS_MYSQL80_USER,
+        password: process.env.REMOTE_AWS_MYSQL80_PASSWORD,
         clusterName: 'aws_rds_mysql_8_0',
         port: 42001,
       },
       aws_rds_8_4: {
-        address: secret(process.env.PMM_QA_MYSQL_RDS_8_4_HOST),
-        username: secret(process.env.PMM_QA_MYSQL_RDS_8_4_USER),
-        password: secret(process.env.PMM_QA_MYSQL_RDS_8_4_PASSWORD),
+        address: process.env.PMM_QA_MYSQL_RDS_8_4_HOST,
+        username: process.env.PMM_QA_MYSQL_RDS_8_4_USER,
+        password: process.env.PMM_QA_MYSQL_RDS_8_4_PASSWORD,
         clusterName: 'aws_rds_mysql_8_4',
         port: 42001,
       },
@@ -316,7 +319,9 @@ module.exports = {
           cluster_name: 'mysqlaws_aurora2',
         },
         mysqlaurora3: {
+          username: process.env.PMM_QA_AURORA3_MYSQL_USER,
           address: process.env.PMM_QA_AURORA3_MYSQL_HOST,
+          port: process.env.PMM_QA_AURORA3_MYSQL_PORT,
           password: process.env.PMM_QA_AURORA3_MYSQL_PASSWORD,
           instance_id: 'pmm-qa-aurora3-mysql-instance-1',
           cluster_name: 'mysqlaws_aurora3',
@@ -332,7 +337,7 @@ module.exports = {
           address: process.env.PMM_QA_RDS_AURORA_PGSQL16_HOST,
           username: process.env.PMM_QA_RDS_AURORA_PGSQL16_USER,
           password: process.env.PMM_QA_RDS_AURORA_PGSQL16_PASSWORD,
-          instance_id: 'pmm-qa-aurora-postgres-16-4-instance-1',
+          instance_id: 'pmm-qa-aurora-postgres-16-6-instance-1',
           cluster_name: 'postgres16aws_aurora',
         },
       },
@@ -531,7 +536,7 @@ module.exports = {
     mongodb: (remoteInstanceStatus.mongodb.psmdb_4_2.enabled ? 'psmdb_upgrade_scervice' : undefined),
     proxysql: (remoteInstanceStatus.proxysql.proxysql_2_1_1.enabled ? 'proxysql_upgrade_service' : undefined),
     postgresql: (remoteInstanceStatus.postgresql.pdpgsql_13_3.enabled ? 'postgres_upgrade_service' : undefined),
-    rds: (remoteInstanceStatus.aws.aws_rds_5_7.enabled ? 'mysql_rds_uprgade_service' : undefined),
+    rds: (remoteInstanceStatus.aws.aws_rds_8_4.enabled ? 'mysql_rds_uprgade_service' : undefined),
     rdsaurora: (remoteInstanceStatus.aurora.aurora2.enabled ? 'aurora_rds_upgrade_service' : undefined),
     postgresgc: (remoteInstanceStatus.gc.gc_postgresql.enabled ? 'postgresql_GC_remote_new' : undefined),
   },
