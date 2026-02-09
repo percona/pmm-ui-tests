@@ -6,7 +6,7 @@ class RemoteInstancesFixture {
       ps_8_4: {
         name: 'ps_8_4',
         type: 'MySQL',
-        host: 'ps_pmm_8.4_1',
+        host: 'ps_pmm_8_4_1',
         port: '3306',
         server_port: '3306',
         username: 'root',
@@ -35,7 +35,7 @@ class RemoteInstancesFixture {
       pdpgsql_17: {
         name: 'pdpgsql_17',
         type: 'PostgreSQL',
-        host: 'pdpgsql_pgsm_pmm_17',
+        host: 'pdpgsql_pmm_17_1',
         server_port: '5432',
         host_server_port: '5432',
         username: 'pmm',
