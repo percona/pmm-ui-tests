@@ -8,9 +8,8 @@ const { psMySql } = inject();
 const advisorName = 'Check for unsupported PostgreSQL';
 const groupName = 'Version Configuration';
 const ruleName = 'Alert Rule for upgrade';
-const psServiceName = 'upgrade-stt-ps-5.7.30';
-const connection = psMySql.defaultConnection;
-const failedCheckMessage = 'Newer version of Percona Server for MySQL is available';
+const checkName = 'MongoDB version check';
+const beforeUpgradePmmVersion = process.env.CLIENT_VERSION ? parseInt(process.env.CLIENT_VERSION.replace(/\./g, ''), 10) : 300;
 
 Before(async ({ I }) => {
   I.Authorize();
@@ -23,9 +22,9 @@ Scenario(
   }) => {
     await settingsAPI.changeSettings({ alerting: true });
     await rulesAPI.removeAllAlertRules(true);
-    const ruleFolder = 'PostgreSQL';
+    const ruleFolder = 'Insight';
 
-    await rulesAPI.createAlertRule({ ruleName }, ruleFolder);
+    await rulesAPI.createAlertRule({ ruleName, filters: [{ label: 'node_name', regexp: 'pmm-server', type: 'FILTER_TYPE_MATCH' }] }, ruleFolder, 'pmm_node_high_cpu_load');
     // Wait for alert to appear
     await alertsAPI.waitForAlerts(60, 1);
   },
@@ -62,31 +61,32 @@ Scenario(
   },
 );
 
+Scenario('Disable advisor before upgrade @pre-advisors-alerting-upgrade', async ({
+  I, advisorsPage,
+}) => {
+  if (beforeUpgradePmmVersion > 340) {
+    I.amOnPage(advisorsPage.urlConfiguration);
+    I.waitForVisible(advisorsPage.elements.advisorsGroupHeader(groupName));
+    I.click(advisorsPage.elements.advisorsGroupHeader(groupName));
+    I.waitForVisible(advisorsPage.buttons.disableEnableCheck(checkName));
+    I.click(advisorsPage.buttons.disableEnableCheck(checkName));
+    I.seeTextEquals('Enable', advisorsPage.buttons.disableEnableCheck(checkName));
+  }
+});
+
 Scenario(
   'Verify disabled advisor remain disabled after upgrade @post-advisors-alerting-upgrade',
   async ({
-    I,
-    advisorsPage,
+    I, advisorsPage,
   }) => {
-    const checkName = 'MongoDB Version';
+    if (beforeUpgradePmmVersion > 340) {
+      I.amOnPage(advisorsPage.urlConfiguration);
+      I.waitForVisible(advisorsPage.elements.advisorsGroupHeader(groupName));
+      I.click(advisorsPage.elements.advisorsGroupHeader(groupName));
 
-    I.amOnPage(advisorsPage.url);
-    I.waitForVisible(advisorsPage.buttons.disableEnableCheck(checkName));
-    I.seeTextEquals('Enable', advisorsPage.buttons.disableEnableCheck(checkName));
-    I.seeTextEquals('Disabled', advisorsPage.elements.statusCellByName(checkName));
-  },
-);
-
-Scenario(
-  'PMM-T577 Verify user is able to see IA alerts before upgrade @pre-advisors-alerting-upgrade',
-  async ({
-    settingsAPI, rulesAPI, alertsAPI,
-  }) => {
-    await settingsAPI.changeSettings({ alerting: true });
-    await rulesAPI.removeAllAlertRules(true);
-    await rulesAPI.createAlertRule({ ruleName }, 'Insight');
-    // Wait for alert to appear
-    await alertsAPI.waitForAlerts(60, 1);
+      I.waitForVisible(advisorsPage.buttons.disableEnableCheck(checkName));
+      I.seeTextEquals('Enable', advisorsPage.buttons.disableEnableCheck(checkName));
+    }
   },
 );
 
@@ -132,7 +132,7 @@ Scenario(
   async ({
     I, alertsPage, alertsAPI,
   }) => {
-    const alertName = 'PostgreSQL too many connections (pmm-server-postgresql)';
+    const alertName = 'Node high CPU load (pmm-server)';
 
     await alertsAPI.waitForAlerts(60, 1);
     const alerts = await alertsAPI.getAlertsList();
