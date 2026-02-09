@@ -1,5 +1,3 @@
-const { isOvFAmiJenkinsJob } = require('../../helper/constants');
-
 const storageLocationConnection = {
   endpoint: 'http://minio:9000',
   bucket_name: 'bcp',
