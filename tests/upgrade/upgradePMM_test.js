@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { NODE_TYPE, SERVICE_TYPE } = require('../helper/constants');
+const { isOvFAmiJenkinsJob, SERVICE_TYPE } = require('../helper/constants');
 
 const { psMySql, dashboardPage, databaseChecksPage } = inject();
 
@@ -32,21 +32,12 @@ const { versionMinor, patchVersionDiff, majorVersionDiff } = getVersions();
 
 Feature('PMM server Upgrade Tests and Executing test cases related to Upgrade Testing Cycle').retry(1);
 
-Before(async ({ I, settingsAPI }) => {
-  await settingsAPI.changeSettings({ updates: true });
+Before(async ({ I }) => {
   await I.Authorize();
-  I.setRequestTimeout(60000);
 });
 
 Scenario(
-  'Add AMI Instance ID @ami-upgrade',
-  async ({ amiInstanceAPI }) => {
-    await amiInstanceAPI.verifyAmazonInstanceId(process.env.AMI_INSTANCE_ID);
-  },
-);
-
-Scenario(
-  'PMM-T289 - Verify Whats New link is presented on Update Widget @ovf-upgrade @ami-upgrade @pre-upgrade @pmm-upgrade',
+  'PMM-T289 - Verify Whats New link is presented on Update Widget @pmm-upgrade',
   async ({ I, homePage }) => {
     const locators = homePage.getLocators(versionMinor);
 
@@ -64,7 +55,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T288 - Verify user can see Update widget before upgrade [critical] @pre-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  'PMM-T288 - Verify user can see Update widget before upgrade [critical] @pmm-upgrade',
   async ({ I, homePage }) => {
     await I.stopMockingUpgrade();
     I.amOnPage(homePage.url);
@@ -73,7 +64,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T3 - Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade @ovf-upgrade @ami-upgrade  ',
+  'PMM-T3 - Verify user is able to Upgrade PMM version [blocker] @pmm-upgrade',
   async ({ I, homePage }) => {
     await I.stopMockingUpgrade();
     I.amOnPage(homePage.url);
@@ -83,16 +74,28 @@ Scenario(
   },
 ).retry(0);
 
-Scenario('PMM-T1647 - Verify pmm-server package doesn\'t exist @post-upgrade @pmm-upgrade', async ({ I }) => {
-  const packages = await I.verifyCommand('docker exec pmm-server rpm -qa');
+Scenario('PMM-T1647 - Verify pmm-server package doesn\'t exist @pmm-upgrade', async ({ I }) => {
+  if (!isOvFAmiJenkinsJob) {
+    const packages = await I.verifyCommand('docker exec pmm-server rpm -qa');
 
-  I.assertTrue(!packages.includes('pmm-server'), 'pmm-server package present in package list.');
+    I.assertTrue(!packages.includes('pmm-server'), 'pmm-server package present in package list.');
+  }
 });
 
 Scenario.skip(
-  'Verify user can see Update widget [critical] @post-upgrade @ovf-upgrade @ami-upgrade @pmm-upgrade',
+  'Verify user can see Update widget [critical] @pmm-upgrade',
   async ({ I, homePage }) => {
     I.amOnPage(homePage.url);
     await homePage.verifyPostUpdateWidgetIsPresent();
+  },
+);
+
+Scenario(
+  'Verify pmm server is upgraded to correct version @pmm-upgrade',
+  async ({ I, homePage }) => {
+    await I.stopMockingUpgrade();
+    I.amOnPage(homePage.url);
+
+    await homePage.verifyPMMServerVersion(process.env.PMM_SERVER_LATEST);
   },
 );

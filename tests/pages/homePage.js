@@ -223,4 +223,15 @@ module.exports = {
       versionMinor,
     };
   },
+
+  async verifyPMMServerVersion(expectedVersion) {
+    I.waitForElement(this.fields.updateWidget.latest.currentVersion);
+    const actualVersion = await I.grabTextFrom(this.fields.updateWidget.latest.currentVersion);
+
+    I.assertContain(
+      actualVersion,
+      expectedVersion,
+      'After upgrade version of PMM Server is not correct.',
+    );
+  },
 };
