@@ -10,7 +10,7 @@ module.exports = {
     totalsLabel: '$pagination-items-inverval',
     firstPageButton: '$first-page-button',
     previousPageButton: '$previous-page-button',
-    pageNumberButton: (number) => locate('$page-button').withText(`${number}`),
+    pageNumberButton: (number) => locate('button').withAttr({'data-testid': "page-button-active"}).find('span').withText(`${number}`),
     pageNumberButtonLast: '(//button[@data-testid="page-button-active" or @data-testid="page-button"])[last()]',
     nextPageButton: '$next-page-button',
     lastPageButton: '$last-page-button',
