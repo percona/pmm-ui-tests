@@ -3,7 +3,7 @@ import * as cli from '@helpers/cli-helper';
 import { readZipFile } from '@helpers/zip-helper';
 
 test.describe('PMM Client "Generic" CLI tests', async () => {
-  let PMM_VERSION: string;
+  let PMM_VERSION = process.env.CLIENT_VERSION;
   if (/dev-latest|https:|pmm2-rc/.test(`${process.env.CLIENT_VERSION}`)) {
     // TODO: refactor to use docker hub API to remove file-update dependency
     // See: https://github.com/Percona-QA/package-testing/blob/master/playbooks/pmm2-client_integration_upgrade_custom_path.yml#L41
