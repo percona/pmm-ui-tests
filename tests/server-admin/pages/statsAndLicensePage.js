@@ -20,7 +20,6 @@ module.exports = {
     enterprisePlugins: locate('div').withText('Enterprise plugins'),
     oracle: locate('div').withText('Oracle'),
     splunk: locate('div').withText('Splunk'),
-    // serviceNow: locate('div').withText('Service Now'),
     dynaTrace: locate('div').withText('Dynatrace'),
     newRelic: locate('div').withText('New Relic'),
     dataDog: locate('div').withText('DataDog'),
@@ -39,8 +38,12 @@ module.exports = {
     handInHand: locate('div').withText('Hand-in-hand support'),
     inTheUpgradeProcess: locate('div').withText('in the upgrade process'),
     included: locate('strong').withText('Also included:'),
-    workingWithGrafana: locate('div').withText('Indemnification, working with Grafana Labs on future prioritization, and training from the core Grafana team.'),
-    trialVersion: locate('div').withText('You can use the trial version for free for 30 days. We will remind you about it five days before the trial period ends.'),
+    workingWithGrafana: locate('div').withText(
+      'Indemnification, working with Grafana Labs on future prioritization, and training from the core Grafana team.',
+    ),
+    trialVersion: locate('div').withText(
+      'You can use the trial version for free for 30 days. We will remind you about it five days before the trial period ends.',
+    ),
     contactUs: locate('span').withText('Contact us and get a free trial'),
   },
   buttons: {
