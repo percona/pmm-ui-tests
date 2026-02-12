@@ -8,7 +8,7 @@ const {
 module.exports = {
   tabNames: {
     firedAlerts: 'Fired alerts',
-    ruleTemplates: 'Percona Alert Templates',
+    ruleTemplates: 'Alert templates',
     alertRules: 'Alert rules',
     contactPoints: 'Contact points',
     notificationPolicies: 'Notification policies',

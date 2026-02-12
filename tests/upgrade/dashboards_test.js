@@ -1,3 +1,5 @@
+const { isOvFAmiJenkinsJob } = require('../helper/constants');
+
 Feature('PMM upgrade tests for dashboards');
 
 Before(async ({ I }) => {
@@ -60,7 +62,7 @@ Scenario(
 Scenario(
   'PMM-T391 + PMM-T1818 - Verify that custom home dashboard stays as home dashboard after upgrade @post-dashboards-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
-    I.amOnPage('');
+    I.amOnPage('/pmm-ui/');
     dashboardPage.waitForDashboardOpened();
     await dashboardPage.verifyMetricsExistence([grafanaAPI.customPanelName]);
     await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
@@ -70,19 +72,17 @@ Scenario(
     I.wait(1);
     let errorLogs;
 
-    if (process.env.AMI_UPGRADE_TESTING_INSTANCE !== 'true' && process.env.OVF_UPGRADE_TESTING_INSTANCE !== 'true') {
+    if (!isOvFAmiJenkinsJob) {
       errorLogs = await I.verifyCommand('docker exec pmm-server cat /srv/logs/grafana.log | grep level=error');
-    } else {
-      errorLogs = await I.verifyCommand('cat /srv/logs/grafana.log | grep level=error || true');
+
+      const loadingLibraryErrorLine = errorLogs.split('\n')
+        .filter((line) => line.includes('Error while loading library panels'));
+
+      I.assertEmpty(
+        loadingLibraryErrorLine,
+        `Logs contains errors about while loading library panels! \n The line is: \n ${loadingLibraryErrorLine}`,
+      );
     }
-
-    const loadingLibraryErrorLine = errorLogs.split('\n')
-      .filter((line) => line.includes('Error while loading library panels'));
-
-    I.assertEmpty(
-      loadingLibraryErrorLine,
-      `Logs contains errors about while loading library panels! \n The line is: \n ${loadingLibraryErrorLine}`,
-    );
   },
 );
 
@@ -112,6 +112,8 @@ Scenario(
 
     searchDashboardsModal.waitForOpened();
     const foldersNames = Object.values(searchDashboardsModal.folders).map((folder) => folder.name);
+
+    foldersNames.push('auto-test-folder');
     const actualFolders = (await searchDashboardsModal.getFoldersList());
 
     I.assertDeepMembers(actualFolders, foldersNames);

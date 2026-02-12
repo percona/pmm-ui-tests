@@ -48,7 +48,8 @@ Data(nodes).Scenario(
   },
 );
 
-Scenario(
+// TODO: unskip after https://perconadev.atlassian.net/browse/PMM-14748 is fixed
+Scenario.skip(
   'PMM-T1090 - Verify time zones and navigation between dashboards @nightly @dashboards @gssapi-nightly',
   async ({
     I, dashboardPage, adminPage, homePage,

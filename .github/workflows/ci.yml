@@ -23,7 +23,7 @@ jobs:
 
   e2e_matrix_tests:
     name: e2e matrix tests
-    uses: percona/pmm-qa/.github/workflows/e2e-codeceptjs-matrix.yml@main
+    uses: percona/pmm-qa/.github/workflows/e2e-tests-matrix.yml@main
     with:
       sha: 'null'
       pmm_ui_tests_branch: ${{ github.head_ref }}

@@ -808,6 +808,8 @@ module.exports = {
         break;
       case 'pmm-qa-aurora-postgres-16-6-instance-1':
         inputs = this.postgres16auroraInputs;
+        I.click(this.fields.useTLS);
+        I.click(this.fields.skipTLSL);
         this.fillFields(inputs);
         break;
       case 'azure-MySQL':

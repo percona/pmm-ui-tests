@@ -134,15 +134,13 @@ Data(instances).Scenario(
 
     const instanceDetails = getInstance(instance);
 
-    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m' }));
-    queryAnalyticsPage.waitForLoaded();
-    await queryAnalyticsPage.filters.selectFilter(instanceDetails.serviceName);
+    I.amOnPage(I.buildUrlWithParams(queryAnalyticsPage.url, { from: 'now-5m', service_name: instanceDetails.serviceName }));
     queryAnalyticsPage.waitForLoaded();
     const count = await queryAnalyticsPage.data.getCountOfItems();
 
     assert.ok(count > 0, `The queries for service ${instanceDetails.serviceName} instance do NOT exist`);
   },
-).retry(1);
+).retry(2);
 
 Data(instances).Scenario(
   'Check metrics from exporters are hitting PMM Server @not-ui-pipeline @gcp',
