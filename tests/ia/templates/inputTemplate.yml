@@ -3,7 +3,6 @@ templates:
   - name: input_template_yml
     version: 1
     summary: E2E TemplateForAutomation input YML
-    tiers: [anonymous, registered]
     expr: |-
       max_over_time(mysql_global_status_threads_connected[5m]) / ignoring (job)
       mysql_global_variables_max_connections
