@@ -34,23 +34,6 @@ const config: PlaywrightTestConfig = {
     {
       name: 'Chromium',
       testMatch: 'tests/**/*.spec.ts',
-      testIgnore: 'tests/portal/*.ts',
-      use: {
-        contextOptions: { ignoreHTTPSErrors: true },
-        screenshot: 'on',
-        ...devices['Desktop Chrome'],
-        viewport: { width: 1920, height: 1080 },
-      },
-    },
-    {
-      name: 'Portal Setup',
-      testMatch: 'tests/portal/test-users.setup.ts',
-    },
-    {
-      name: 'Portal',
-      dependencies: ['Portal Setup'],
-      testMatch: 'tests/portal/*.spec.ts',
-      retries: 0,
       use: {
         contextOptions: { ignoreHTTPSErrors: true },
         screenshot: 'on',
