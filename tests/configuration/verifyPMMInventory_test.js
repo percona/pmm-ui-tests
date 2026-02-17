@@ -253,7 +253,7 @@ Scenario(
     });
 
     const pmmAgents = allAgents.filter((o) => o.agent_type === 'pmm-agent');
-    const otherAgents = allAgents.filter((o) => o.agent_type !== 'pmm-agent' && o.agent_type !== 'external-exporter');
+    const otherAgents = allAgents.filter((o) => o.agent_type !== 'pmm-agent');
 
     const pmmAgentsNotConnected = pmmAgents.filter((o) => o.is_connected !== true);
     const agentsNotRunning = otherAgents.filter((o) => o.status !== AGENT_STATUS.RUNNING);
@@ -636,3 +636,28 @@ Scenario('PMM-T2024 - Verify services list does not refresh to first page @inven
   );
   I.assertTrue(numberOfRows < 50, `Expected number of rows to be less than 25, actual number of rows is: ${numberOfRows}`);
 });
+
+const tabs = [pmmInventoryPage.servicesTab.url, pmmInventoryPage.nodesTab.url];
+
+Data(tabs).Scenario(
+  'PMM-T2146 - Verify that all services/nodes have correct monitoring status @nightly',
+  async ({ I, pmmInventoryPage, current }) => {
+    I.amOnPage(current);
+    await pmmInventoryPage.pagination.selectRowsPerPage('100');
+    I.waitForVisible(pmmInventoryPage.fields.servicesMonitoringStatus);
+    const monitoringStatuses = await I.grabTextFromAll(pmmInventoryPage.fields.servicesMonitoringStatus);
+    const failedStatuses = [];
+
+    for (const monitoringStatus of monitoringStatuses) {
+      const index = monitoringStatuses.indexOf(monitoringStatus);
+
+      if (monitoringStatus !== 'OK') {
+        const serviceName = await I.grabTextFrom(pmmInventoryPage.fields.serviceNameByIndex(index + 1));
+
+        failedStatuses.push({ serviceName, status: monitoringStatus });
+      }
+    }
+
+    I.assertEqual(failedStatuses.length, 0, `Services with incorrect monitoring statuses are: ${JSON.stringify(failedStatuses)}`);
+  },
+);
