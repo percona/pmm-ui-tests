@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { SERVICE_TYPE } = require('./helper/constants');
+const { SERVICE_TYPE, AGENT_NAMES } = require('./helper/constants');
 
 const { remoteInstancesPage } = inject();
 
@@ -75,9 +75,9 @@ Data(instances).Scenario(
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, serviceName);
 
     await agentsPage.open(service_id);
-    await agentsPage.verifyAgentOtherDetailsSection('Postgres exporter', 'auto_discovery_limit=1');
+    await agentsPage.verifyAgentOtherDetailsSection(AGENT_NAMES.POSTGRESQL_EXPORTER, 'auto_discovery_limit=1');
 
-    const agentId = await I.grabTextFrom(agentsPage.fields.agentIdByAgentName('Postgres exporter'));
+    const agentId = await I.grabTextFrom(agentsPage.fields.agentIdByAgentName(AGENT_NAMES.POSTGRESQL_EXPORTER));
 
     I.wait(3);
 
