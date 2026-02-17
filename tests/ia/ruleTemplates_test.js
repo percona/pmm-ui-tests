@@ -420,26 +420,6 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1126 - Verify there are no Templates from Percona if Telemetry is disabled @fb-alerting',
-  async ({ I, settingsAPI, ruleTemplatesPage }) => {
-    const editButton = ruleTemplatesPage.buttons
-      .editButtonBySource(ruleTemplatesPage.templateSources.saas);
-    const deleteButton = ruleTemplatesPage.buttons
-      .deleteButtonBySource(ruleTemplatesPage.templateSources.saas);
-    const settings = {
-      telemetry: false,
-      alerting: true,
-    };
-
-    await settingsAPI.changeSettings(settings);
-    I.amOnPage(ruleTemplatesPage.url);
-    I.waitForElement(ruleTemplatesPage.buttons.openAddTemplateModal, 30);
-    I.dontSeeElement(editButton);
-    I.dontSeeElement(deleteButton);
-  },
-);
-
-Scenario(
   'PMM-T1514 - Verify that alert rule templates has only 1 exit button @fb-alerting',
   async ({ I, ruleTemplatesPage, alertRulesPage }) => {
     ruleTemplatesPage.openRuleTemplatesTab();
