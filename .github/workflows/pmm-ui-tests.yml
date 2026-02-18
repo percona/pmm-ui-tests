@@ -82,7 +82,7 @@ jobs:
 
       PMM_SERVER_VERSION: ${{ inputs.pmm_server_version }}
       PMM_CLIENT_VERSION: ${{ inputs.pmm_client_version }}
-      PMM_QA_BRANCH: ${{ inputs.pmm_qa_branch }}
+      PMM_QA_BRANCH: ${{ inputs.pmm_qa_branch || 'main' }}
 
       OKTA_TOKEN: ${{ secrets.OKTA_TOKEN }}
       OAUTH_ISSUER_URL: 'https://id-dev.percona.com/oauth2/aus15pi5rjdtfrcH51d7'
@@ -129,7 +129,7 @@ jobs:
           npm ci
           npx playwright install
 
-      - name: 'Checkout pmm-qa: "${{ inputs.pmm_qa_branch }}"'
+      - name: 'Checkout pmm-qa: "${{ env.PMM_QA_BRANCH }}"'
         uses: actions/checkout@v3
         with:
           # token: ${{ secrets.ROBOT_TOKEN }}
