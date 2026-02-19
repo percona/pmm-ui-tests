@@ -89,6 +89,13 @@ const REMOTE_INSTANCE_TYPES = {
   PGSQL_GC: 'postgresGC',
 };
 
+const AGENT_NAMES = {
+  POSTGRESQL_EXPORTER: 'PostgreSQL exporter',
+  QAN_PG_STAT_MONITOR: 'QAN PostgreSQL pg_stat_monitor agent',
+  QAN_PG_STAT_STATEMENTS: 'QAN PostgreSQL pg_stat_statements agent',
+  QAN_MYSQL_PERFSCHEMA_AGENT: 'QAN MySQL Performance Schema agent',
+};
+
 const isJenkinsGssapiJob = !!(!!process.env.JOB_NAME && process.env.JOB_NAME.includes('gssapi'));
 
 const isOvFAmiJenkinsJob = !!(!!process.env.JOB_NAME && (process.env.JOB_NAME.includes('ami') || process.env.JOB_NAME.includes('ovf')));
@@ -106,4 +113,5 @@ module.exports = {
   isOvFAmiJenkinsJob,
   gssapi,
   REMOTE_INSTANCE_TYPES,
+  AGENT_NAMES,
 };

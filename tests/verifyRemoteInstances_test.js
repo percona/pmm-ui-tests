@@ -1,6 +1,6 @@
 const assert = require('assert');
 const faker = require('faker');
-const { SERVICE_TYPE } = require('./helper/constants');
+const { SERVICE_TYPE, AGENT_NAMES } = require('./helper/constants');
 
 const {
   remoteInstancesPage, remoteInstancesHelper, pmmInventoryPage,
@@ -386,7 +386,7 @@ Scenario(
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.MYSQL, psServiceName);
 
     await pmmInventoryPage.openAgents(service_id);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mysql perfschema agent', 'query_examples_disabled=true');
+    await pmmInventoryPage.checkAgentOtherDetailsSection(AGENT_NAMES.QAN_MYSQL_PERFSCHEMA_AGENT, 'query_examples_disabled=true');
 
     I.wait(90);
 
