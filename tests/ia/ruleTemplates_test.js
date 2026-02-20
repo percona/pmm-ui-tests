@@ -450,14 +450,14 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T2164 - Verify user can create alert from template without tiers field @fb-alerting',
+  'PMM-T2164 - Verify user can create alert from template with tiers field @fb-alerting',
   async ({
     I, ruleTemplatesPage,
   }) => {
     ruleTemplatesPage.openRuleTemplatesTab();
     I.waitForVisible(ruleTemplatesPage.buttons.openAddTemplateModal);
     I.click(ruleTemplatesPage.buttons.openAddTemplateModal);
-    const alertRule = await ruleTemplatesPage.ruleTemplate.templateContent('tests/ia/templates/templateWithoutTiers.yml');
+    const alertRule = await ruleTemplatesPage.ruleTemplate.templateContent('tests/ia/templates/templateWithTiers.yml');
 
     I.usePlaywrightTo('Fill alert rule template', async ({ page }) => {
       await page.locator(ruleTemplatesPage.fields.templateInput.value).waitFor({ state: 'visible' });
