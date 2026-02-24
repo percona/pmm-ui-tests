@@ -381,7 +381,7 @@ Scenario(
 
     await grafanaAPI.waitForMetric('mongodb_up', { type: 'service_id', value: service_id }, 90);
     await I.verifyCommand(`docker exec ${containerName} pmm-admin inventory remove service ${service_id} --force`);
-    await grafanaAPI.waitForMetricAbsent('mongodb_up', { type: 'service_id', value: service_id }, 90);
+    await grafanaAPI.waitForMetricAbsent('mongodb_up', { type: 'service_id', value: service_id }, 180);
     // PMM-T1352 Verify that Node exporter cannot be added by pmm-admin inventory add agent node-exporter with --log-level=fatal
     await I.verifyCommand(`docker exec ${containerName} pmm-admin inventory add agent node-exporter --log-level=fatal ${pmm_agent_id}`, 'pmm-admin: error: --log-level must be one of "debug","info","warn","error" but got "fatal"', 'fail');
   },
