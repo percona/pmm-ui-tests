@@ -9,24 +9,12 @@ class Grafana extends Helper {
   constructor(config) {
     super(config);
     this.resultFilesFolder = `${global.output_dir}/`;
-    this.signInWithSSOButton = '//a[contains(@href,"login/generic_oauth")]';
-    this.ssoLoginUsername = '//input[@id="idp-discovery-username"]';
-    this.ssoLoginNext = '//input[@id="idp-discovery-submit"]';
-    this.ssoLoginPassword = '//input[@id="okta-signin-password"]';
-    this.ssoLoginSubmit = '//input[@id="okta-signin-submit"]';
+    // this.signInWithSSOButton = '//a[contains(@href,"login/generic_oauth")]';
+    // this.ssoLoginUsername = '//input[@id="idp-discovery-username"]';
+    // this.ssoLoginNext = '//input[@id="idp-discovery-submit"]';
+    // this.ssoLoginPassword = '//input[@id="okta-signin-password"]';
+    // this.ssoLoginSubmit = '//input[@id="okta-signin-submit"]';
     this.mainView = '//main[contains(@class, "main-view")]';
-  }
-
-  async loginWithSSO(username, password) {
-    const { page } = this.helpers.Playwright;
-
-    await page.isVisible(this.mainView);
-    await page.click(this.signInWithSSOButton);
-    await page.fill(this.ssoLoginUsername, username);
-    await page.click(this.ssoLoginNext);
-    await page.click(this.ssoLoginPassword);
-    await page.fill(this.ssoLoginPassword, password);
-    await page.click(this.ssoLoginSubmit);
   }
 
   async Authorize(username = 'admin', password = process.env.ADMIN_PASSWORD, baseUrl = '') {
