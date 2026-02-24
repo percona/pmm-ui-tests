@@ -325,6 +325,30 @@ class Grafana extends Helper {
 
     return false;
   }
+
+  async switchPmmCompatPluginState(state) {
+    const { Playwright } = this.helpers;
+    const baseUrl = Playwright.config.url;
+
+    await Playwright.page.goto(`${baseUrl}/pmm-ui/graph/plugins/pmm-compat-app`);
+    const enableDisableButton = Playwright.page.frameLocator('#grafana-iframe').locator('//span[text()="Disable" or text()="Enable"]');
+
+    // Wait for page title
+    await enableDisableButton.waitFor({ state: 'visible', timeout: 10000 });
+    const textContent = await enableDisableButton.textContent();
+
+    if (state === true) {
+      if (textContent === 'Enable') {
+        await enableDisableButton.click();
+      }
+    } else if (textContent === 'Disable') {
+      await enableDisableButton.click();
+    }
+
+    // Wait for the button to be visible again
+    await Playwright.page.reload({ waitUntil: 'networkidle0' });
+    await enableDisableButton.waitFor({ state: 'visible', timeout: 10000 });
+  }
 }
 
 module.exports = Grafana;
