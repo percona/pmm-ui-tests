@@ -70,6 +70,8 @@ module.exports = {
     savePopupMessage: locate('p').withText('Changing existing labels can affect other parts of PMM dependent on it'),
     runningStatusAgent: '//td/div[contains(text(), "Running")]',
     serviceNames: locate('//tr[@role="row"]//td[3]//span'),
+    servicesMonitoringStatus: locate('//tbody//tr[@role="row"]//td[position()=5]'),
+    serviceNameByIndex: (index) => locate(`(//tbody//tr[@role="row"]//td[position()=3])[${index}]`),
   },
   servicesTab,
   nodesTab: NodesTab,
