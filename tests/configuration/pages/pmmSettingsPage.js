@@ -2,11 +2,10 @@ const assert = require('assert');
 const { communicationData, emailDefaults } = require('../../pages/testData');
 
 const {
-  I, adminPage, links, perconaPlatformPage, codeceptjsConfig, settingsAPI,
+  I, adminPage, links, codeceptjsConfig, settingsAPI,
 } = inject();
 
 const locateLabel = (selector) => locate(I.useDataQA(selector)).find('span');
-const deprecatedFeaturesSection = '//fieldset[legend[contains(text(),"Deprecated features")]]';
 
 module.exports = {
   url: 'graph/settings',
@@ -15,7 +14,6 @@ module.exports = {
   advancedSettingsUrl: 'graph/settings/advanced-settings',
   sshKeyUrl: 'graph/settings/ssh-key',
   alertManagerIntegrationUrl: 'graph/settings/am-integration',
-  perconaPlatformUrl: perconaPlatformPage,
   communicationSettingsUrl: 'graph/settings/communication',
   prometheusAlertUrl: '/prometheus/rules',
   stateOfAlertsUrl: '/prometheus/alerts',
@@ -85,7 +83,6 @@ module.exports = {
     metrics: 'Metrics Resolution',
     advanced: 'Advanced Settings',
     ssh: 'SSH Key',
-    perconaPlatform: 'Percona Platform',
   },
   sectionButtonText: {
     applyChanges: 'Apply changes', applySSHKey: 'Apply SSH key', applyAlertmanager: 'Apply Alertmanager settings',
@@ -157,7 +154,6 @@ module.exports = {
         link: links.sshKeyDocs,
       },
     },
-    perconaPlatform: {},
     communication: {
       email: {
         serverAddress: {
@@ -275,7 +271,6 @@ module.exports = {
     lowInput: '$lr-number-input',
     mediumInput: '$mr-number-input',
     highInput: '$hr-number-input',
-    perconaPlatformLink: '//li[contains(text(), \'Percona Platform\')]',
     privacyPolicy: '//span[contains(text(), "Privacy Policy")]',
     publicAddressLabel: locate('$public-address-label').find('span'),
     publicAddressInput: '$publicAddress-text-input',
@@ -584,10 +579,6 @@ module.exports = {
       {
         subPage: this.sshKeyUrl,
         tooltips: this.tooltips.ssh,
-      },
-      {
-        subPage: this.perconaPlatformUrl.url,
-        tooltips: this.tooltips.perconaPlatform,
       },
     ];
   },
