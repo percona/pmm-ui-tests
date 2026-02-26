@@ -1,6 +1,6 @@
 const assert = require('assert');
 const faker = require('faker');
-const { SERVICE_TYPE } = require('./helper/constants');
+const { SERVICE_TYPE, AGENT_NAMES } = require('./helper/constants');
 
 const { adminPage } = inject();
 
@@ -263,7 +263,7 @@ Data(maxQueryLengthInstances).Scenario(
 
     if (maxQueryLength !== '') {
       await pmmInventoryPage.openAgents(service_id);
-      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mysql perfschema agent', `max_query_length=${maxQueryLength}`);
+      await pmmInventoryPage.checkAgentOtherDetailsSection(AGENT_NAMES.QAN_MYSQL_PERFSCHEMA_AGENT, `max_query_length=${maxQueryLength}`);
     }
 
     // This extra time is needed for queries to appear in QAN

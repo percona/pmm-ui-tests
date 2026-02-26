@@ -2,6 +2,7 @@ const assert = require('assert');
 const {
   SERVICE_TYPE, NODE_TYPE,
   AGENT_STATUS,
+  AGENT_NAMES,
 } = require('../helper/constants');
 
 const {
@@ -289,7 +290,7 @@ Scenario(
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, 'pmm-server-postgresql');
 
     await pmmInventoryPage.openAgents(service_id);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('Postgres exporter', 'process_exec_path=/usr/local/percona/pmm/exporters/postgres_exporter');
+    await pmmInventoryPage.checkAgentOtherDetailsSection(AGENT_NAMES.POSTGRESQL_EXPORTER, 'process_exec_path=/usr/local/percona/pmm/exporters/postgres_exporter');
 
     const actAg = await inventoryAPI.apiGetAgents();
     const arr = [];

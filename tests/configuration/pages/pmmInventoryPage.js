@@ -4,6 +4,7 @@ const assert = require('assert');
 const paginationPart = require('./paginationFragment');
 const servicesTab = require('./servicesTab');
 const NodesTab = require('./nodesTab');
+const { AGENT_NAMES } = require('../../helper/constants');
 
 const service = (serviceName) => `//span[contains(text(),'${serviceName}')]`;
 const node = (nodeName) => `//td[@title='${nodeName}'][2]`;
@@ -46,7 +47,7 @@ module.exports = {
     pmmAgentLocator: locate('td').withText('PMM Agent'),
     pmmServerPostgresLocator: locate('td').withText('pmm-server-postgresql'),
     pmmServicesSelector: locate('[role="tablist"] a').withText('Services').withAttr({ 'aria-label': 'Tab Services' }),
-    postgresExporter: locate('td').withText('Postgres exporter'),
+    postgresExporter: locate('td').withText(AGENT_NAMES.POSTGRESQL_EXPORTER),
     postgresPgStatements: locate('td').withText('QAN PostgreSQL PgStatements'),
     postgresPgstatmonitor: locate('td').withText('QAN PostgreSQL Pgstatmonitor'),
     proceedButton: locate('span').withText('Proceed'),
@@ -352,7 +353,7 @@ module.exports = {
     const countAfter = await this.getCountOfItems();
 
     /* we are using count 10 because we have two agents for RDS Instance also,
-    hence (pmm-agent, Node exporter, postgres exporter, mysql exporter, QAN RDS,
+    hence (pmm-agent, Node exporter, PostgreSQL exporter, mysql exporter, QAN RDS,
     QAN postgres, RDS exporter, QAN PostgreSQL PgStatements Agent,
     QAN PostgreSQL PgStatements Agent, QAN MySQL Slowlog Agent)
      */
