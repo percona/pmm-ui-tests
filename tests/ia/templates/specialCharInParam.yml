@@ -2,7 +2,6 @@ templates:
   - name: test_template_for_rules_specialCharset
     version: 1
     summary: special character in parameter
-    tiers: [anonymous, registered]
     expr: |-
       max_over_time(mysql_global_status_threads_connected[5m]) / ignoring (job)
       mysql_global_variables_max_connections

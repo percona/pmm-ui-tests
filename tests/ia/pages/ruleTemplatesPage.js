@@ -38,7 +38,7 @@ module.exports = {
     addRuleButtonByName: (name) => `//td[contains(text(), "${name}")]/following-sibling::td//a[@data-testid="create-from-template-button"]`,
   },
   fields: {
-    templateInput: '$yaml-textarea-input',
+    templateInput: locate('$yaml-textarea-input'),
     fileInput: locate('$modal-content').find('input').withAttr({ type: 'file' }),
   },
   messages: {
@@ -76,6 +76,7 @@ module.exports = {
       }
     },
 
+    templateContent: async (ymlPath) => await I.readFile(ymlPath),
     parseTemplates: async (ymlPath) => {
       const content = await I.readFile(ymlPath);
 
