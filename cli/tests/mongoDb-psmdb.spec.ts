@@ -163,7 +163,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     const agentId = await cli.exec(`docker exec ${containerName} pmm-admin list | grep "mongodb_exporter" | awk -F" " '{print $4}'`);
 
     console.log('Output is:')
-    console.log(agentId.stdout);
+    console.log(agentId.getStdOutLines()[0]);
     console.log(await cli.exec(`docker exec ${containerName} pmm-admin list`));
 
     await output.outContains('MongoDB Service added');
