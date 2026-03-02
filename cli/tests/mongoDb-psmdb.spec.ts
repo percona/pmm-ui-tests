@@ -153,4 +153,25 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
       expect(metrics).toContain('mongodb_pbm_agent_status{host="rs103:27017",replica_set="rs",role="S",self="1"} 0');
     }).toPass({ intervals: [2_000], timeout: 120_000 });
   });
+
+  test('PMM-T9999', async ({}) => {
+    const serviceName = 'mongo_agent_password';
+    await cli.exec(`docker exec ${containerName} pmm-admin remove mongodb ${serviceName} || true`);
+
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} --host=${ip} --agent-password=mypass --port=${port} --service-name=${serviceName}`);
+    await output.assertSuccess();
+    console.log('Output is:')
+    console.log(output.getStdOutLines())
+    await output.outContains('MongoDB Service added');
+
+    await test.step('PMM-T964 check metrics from mongodb service with custom agent password', async () => {
+      await expect(async () => {
+        const metrics = await cli.getMetrics(serviceName, 'pmm', 'mypass', containerName);
+        const expectedValue = 'mongodb_up{cluster_role="mongod"} 1';
+        expect(metrics, `Scraped metrics do not contain ${expectedValue}!`).toContain(expectedValue);
+      }).toPass({ intervals: [2_000], timeout: 120_000 });
+    });
+
+    await removeMongoService(containerName, serviceName);
+  });
 });
