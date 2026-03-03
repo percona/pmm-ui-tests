@@ -100,7 +100,7 @@ test.describe('MongoDB CLI tests ', async () => {
   test('PMM-T160 User can\'t use both socket and address while using pmm-admin add mongodb', async ({}) => {
     let n = 1;
     for (const host of mongoHosts) {
-      // console.log(host);
+      console.log(host);
       const port = host.split(':')[1];
       const output = await cli.exec(`sudo pmm-admin add mongodb --socket=/tmp/mongodb-${port}.sock mongo_inst_${n++} ${host}`);
       await output.exitCodeEquals(1);
@@ -133,7 +133,7 @@ test.describe('MongoDB CLI tests ', async () => {
     test.skip(process.env.instance_t === 'modb', 'Skipping this test, because you are running for official Mongodb');
     let n = 1;
     for (const host of mongoHosts) {
-      // console.log(host);
+      console.log(host);
       const port = host.split(':')[1];
       const output = await cli.exec(`sudo pmm-admin add mongodb --socket=/tmp/mongodb-${port}.sock mongo_inst_${n++}`);
       await output.assertSuccess();
@@ -152,7 +152,7 @@ test.describe('MongoDB CLI tests ', async () => {
     );
     let n = 1;
     for (const host of mongoHosts) {
-      // console.log(host);
+      console.log(host);
       const port = host.split(':')[1];
       const output = await cli.exec(`sudo pmm-admin add mongodb --socket=/tmp/modb_${port}/mongodb-27017.sock mongo_inst_${n++}`);
       await output.assertSuccess();
