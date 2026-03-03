@@ -158,13 +158,13 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     const serviceId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep "rs101" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
     const pmmAgentId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep pmm_agent | awk -F" " '{print $3}'`)).getStdOutLines()[0];
     console.log(`PMM Agent id is: ${pmmAgentId}`);
-    const output = await cli.exec(`docker exec ${containerName} pmm-admin inventory add agent rta-mongodb-agent --server-url=https://admin:admin@pmm-server:8443 --server-insecure-tls pmm-server ${serviceId} pmm --password=pmmpass`);
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin inventory add agent rta-mongodb-agent --server-url=https://admin:admin@pmm-server:8443 --server-insecure-tls ${pmmAgentId} ${serviceId} pmm --password=pmmpass`);
     await output.outContains('Real-Time Analytics MongoDB agent added.');
 
     await expect(async () => {
       const pmmAdminListOutput = await cli.exec(`docker exec ${containerName} pmm-admin list`);
 
-      await pmmAdminListOutput.outContains('rta_mongodb_agent             Running');
+      await pmmAdminListOutput.outContains('rta_mongodb_agent Running');
     }).toPass({ intervals: [1_000], timeout: 60_000 });
 
     console.log('Command');
