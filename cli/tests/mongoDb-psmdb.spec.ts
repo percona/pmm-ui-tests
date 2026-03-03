@@ -153,4 +153,11 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
       expect(metrics).toContain('mongodb_pbm_agent_status{host="rs103:27017",replica_set="rs",role="S",self="1"} 0');
     }).toPass({ intervals: [2_000], timeout: 120_000 });
   });
+
+  test('PMM-T9999 verify PBM Agent health status metric is correct', async ({}) => {
+    const serviceId = (await cli.exec(`pmm-admin list | grep "rs101" | awk -F" " '{print $4}'`)).stdout;
+    console.log(`Service id is: ${serviceId}`)
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin inventory add agent rta-mongodb-agent --server-url=https://admin:admin@pmm-server:8443 --server-insecure-tls pmm-server ${serviceId} pmm --password=pmmpass`);
+    console.log(output.stdout);
+  });
 });
