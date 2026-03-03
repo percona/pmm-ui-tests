@@ -29,7 +29,7 @@ class PipeAssertions {
     for (const val of expectedValues) {
       expect.soft(this.text, `Verify ${this.pipeName} contains '${val}'`).toContain(val);
     }
-    console.log(test.info().errors.length);
+    // console.log(test.info().errors.length);
     const errorMsg = test.info().errors.length === 0
       ? ''
       : ` But got ${test.info().errors.length} error(s):\n${this.getErrors()}`;

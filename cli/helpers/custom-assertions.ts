@@ -27,9 +27,9 @@ export async function waitForApiReady(address: string, httpPort = 80, timeout = 
   const httpClient: Promise<APIRequestContext> = request.newContext({ baseURL, ignoreHTTPSErrors: true });
   await test.step(`Waiting for ${baseURL}:${httpPort}${path} to return 200(${timeout} sec)`, async () => {
     await expect(async () => {
-      console.log(`GET: ${baseURL}${path}`);
+      // console.log(`GET: ${baseURL}${path}`);
       const response = await (await httpClient).get(path);
-      console.log(`Status: ${response.status()} ${response.statusText()}`);
+      // console.log(`Status: ${response.status()} ${response.statusText()}`);
       await expect(response, `${baseURL}:${httpPort}${path} should return 200`).toBeOK();
     }).toPass({
       intervals: [2_000, 2_000, 2_000],
