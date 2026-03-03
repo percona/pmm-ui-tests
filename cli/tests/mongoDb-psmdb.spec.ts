@@ -155,7 +155,8 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   });
 
   test('PMM-T9999 verify PBM Agent health status metric is correct', async ({}) => {
-    const serviceId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep "rs101" | awk -F" " '{print $4}'`)).stdout;
+    console.log((await cli.exec(`docker exec ${containerName} pmm-admin list`)).stdout)
+    const serviceId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep "rs101" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
     console.log(`Service id is: ${serviceId}`)
     const output = await cli.exec(`docker exec ${containerName} pmm-admin inventory add agent rta-mongodb-agent --server-url=https://admin:admin@pmm-server:8443 --server-insecure-tls pmm-server ${serviceId} pmm --password=pmmpass`);
     console.log(output.stdout);
