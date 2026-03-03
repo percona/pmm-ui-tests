@@ -167,8 +167,24 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
       await pmmAdminListOutput.outContains('rta_mongodb_agent Running');
     }).toPass({ intervals: [1_000], timeout: 60_000 });
 
-    console.log('Command');
-    console.log(await cli.exec(`docker exec ${containerName} pmm-admin list`));
+    await expect(async () => {
+      const pmmAdminListOutput = await cli.exec(`docker exec ${containerName} pmm-admin inventory list agents`);
+
+      await pmmAdminListOutput.outContains('rta_mongodb_agent Running');
+    }).toPass({ intervals: [1_000], timeout: 60_000 });
+
+    await expect(async () => {
+      const pmmAdminListOutput = await cli.exec(`docker exec ${containerName} pmm-admin status`);
+
+      await pmmAdminListOutput.outContains('rta_mongodb_agent Running');
+    }).toPass({ intervals: [1_000], timeout: 60_000 });
+
+    await expect(async () => {
+      const pmmAdminListOutput = await cli.exec(`docker exec ${containerName} pmm-admin inventory list agents --service-id=${serviceId}`);
+
+      await pmmAdminListOutput.outContains('rta_mongodb_agent Running');
+    }).toPass({ intervals: [1_000], timeout: 60_000 });
+
     console.log('Command');
     console.log(await cli.exec(`docker exec ${containerName} pmm-admin inventory list agents`));
     console.log('Command');
