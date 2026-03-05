@@ -23,7 +23,7 @@ class QueryAnalyticsPage {
       addColumn: '//ancestor::div[contains(@class, "add-columns-selector")]//input',
       searchDashboard: '//div[contains(@class, "input-wrapper")]',
       copyButton: locate(I.useDataQA('copy-link-button')),
-      qanBreadcrumb: locate(I.useDataQA('data-testid QueryAnalytics breadcrumb')),
+      qanBreadcrumb: locate(I.useDataQA('data-testid Query Analytics breadcrumb')),
       refresh: I.useDataQA('data-testid RefreshPicker run button'),
     };
   }

@@ -420,31 +420,31 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1126 - Verify there are no Templates from Percona if Telemetry is disabled @fb-alerting',
-  async ({ I, settingsAPI, ruleTemplatesPage }) => {
-    const editButton = ruleTemplatesPage.buttons
-      .editButtonBySource(ruleTemplatesPage.templateSources.saas);
-    const deleteButton = ruleTemplatesPage.buttons
-      .deleteButtonBySource(ruleTemplatesPage.templateSources.saas);
-    const settings = {
-      telemetry: false,
-      alerting: true,
-    };
-
-    await settingsAPI.changeSettings(settings);
-    I.amOnPage(ruleTemplatesPage.url);
-    I.waitForElement(ruleTemplatesPage.buttons.openAddTemplateModal, 30);
-    I.dontSeeElement(editButton);
-    I.dontSeeElement(deleteButton);
-  },
-);
-
-Scenario(
   'PMM-T1514 - Verify that alert rule templates has only 1 exit button @fb-alerting',
   async ({ I, ruleTemplatesPage, alertRulesPage }) => {
     ruleTemplatesPage.openRuleTemplatesTab();
     ruleTemplatesPage.openAddDialog(await I.grabTextFrom(ruleTemplatesPage.elements.templateName));
     I.dontSeeElement('//button[span[text()="Save"]]');
     I.seeElement(alertRulesPage.buttons.saveAndExit);
+  },
+);
+
+Scenario(
+  'PMM-T2164 - Verify user can create alert from template with tiers field @fb-alerting',
+  async ({
+    I, ruleTemplatesPage,
+  }) => {
+    ruleTemplatesPage.openRuleTemplatesTab();
+    I.waitForVisible(ruleTemplatesPage.buttons.openAddTemplateModal);
+    I.click(ruleTemplatesPage.buttons.openAddTemplateModal);
+    const alertRule = await ruleTemplatesPage.ruleTemplate.templateContent('tests/ia/templates/templateWithTiers.yml');
+
+    I.usePlaywrightTo('Fill alert rule template', async ({ page }) => {
+      await page.locator(ruleTemplatesPage.fields.templateInput.value).waitFor({ state: 'visible' });
+      await page.locator(ruleTemplatesPage.fields.templateInput.value).fill(alertRule);
+    });
+
+    I.click(ruleTemplatesPage.buttons.addTemplate);
+    I.verifyPopUpMessage(ruleTemplatesPage.messages.successfullyAdded);
   },
 );

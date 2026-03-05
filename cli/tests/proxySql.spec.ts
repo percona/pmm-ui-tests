@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
+import * as zipHelper from '@helpers/zip-helper';
 
 const PXC_USER = 'admin';
 const PXC_PASSWORD = 'admin';
@@ -76,5 +77,45 @@ test.describe('PMM Client CLI tests for ProxySQL', async () => {
     const output = await cli.exec(`docker exec ${containerName} pmm-admin remove proxysql ${proxysqlServiceName}`);
     await output.assertSuccess();
     await output.outContains('Service removed.');
+  });
+
+  test('PMM-T2158 - verify proxysql monitoring by viewer user', async ({}) => {
+    const viewerPassword = 'read_user';
+    const viewerUsername = 'read_user';
+    const serviceName = `viewer_proxysql_${containerName}_${Date.now()}`;
+
+    const serviceId = JSON.parse(
+      await cli.executeAndVerify(
+        `docker exec ${containerName} pmm-admin add proxysql --username=${viewerUsername} --password=${viewerPassword} --agent-password=mypass --service-name=${serviceName} --host=127.0.0.1 --port=6032 --json`,
+      ),
+    ).service.service_id;
+
+    await test.step('verify proxysql metrics', async () => {
+      await expect(async () => {
+        const metrics = await cli.getMetrics(serviceName, 'pmm', 'mypass', containerName);
+        const expectedValue = 'proxysql_up 1';
+        expect(metrics, `Scraped metrics do not contain ${expectedValue}!`).toContain(expectedValue);
+      }).toPass({
+        intervals: [5_000],
+        timeout: 60_000,
+      });
+    });
+
+    await test.step('verify there are no errors in proxysql agent logs', async () => {
+      const jsonList = JSON.parse(await cli.executeAndVerify(`docker exec ${containerName} pmm-admin list --json`));
+      const { agent_id: agentId } = jsonList
+        .agent
+        .find(({ agent_type, service_id, status }: { agent_type: string; service_id: string; status: string }) => {
+          return service_id === serviceId && agent_type === 'AGENT_TYPE_PROXYSQL_EXPORTER' && status === 'RUNNING';
+        });
+
+      await cli.executeAndVerify(`docker exec ${containerName} pmm-admin summary --filename=pmm-summary.zip`, '.zip created.');
+      await cli.executeAndVerify(`docker cp ${containerName}:/pmm-summary.zip ./`);
+      const logFileContent = await zipHelper.getFileContentFromZip('pmm-summary.zip', `client/pmm-agent/AGENT_TYPE_PROXYSQL_EXPORTER ${agentId}.log`);
+
+      expect(logFileContent.toLowerCase(), 'Log file content does not contain any errors!').not.toContain('error');
+    });
+
+    await cli.executeAndVerify(`docker exec ${containerName} pmm-admin remove proxysql ${serviceName}`, 'Service removed.');
   });
 });

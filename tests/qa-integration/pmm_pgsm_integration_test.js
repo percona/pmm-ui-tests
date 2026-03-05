@@ -4,6 +4,7 @@ const { faker } = require('@faker-js/faker');
 const {
   SERVICE_TYPE,
   CLI_AGENT_STATUS,
+  AGENT_NAMES,
 } = require('../helper/constants');
 
 const connection = {
@@ -708,7 +709,7 @@ Scenario(
     const { service_id } = await inventoryAPI.apiGetNodeInfoByServiceName(SERVICE_TYPE.POSTGRESQL, pgServiceName);
 
     await pmmInventoryPage.openAgents(service_id);
-    await pmmInventoryPage.checkAgentOtherDetailsSection('Qan postgresql pgstatmonitor agent', 'query_examples_disabled=true');
+    await pmmInventoryPage.checkAgentOtherDetailsSection(AGENT_NAMES.QAN_PG_STAT_MONITOR, 'query_examples_disabled=true');
 
     I.wait(120);
 

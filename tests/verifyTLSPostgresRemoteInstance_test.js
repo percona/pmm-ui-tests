@@ -1,5 +1,8 @@
 const assert = require('assert');
-const { SERVICE_TYPE } = require('./helper/constants');
+const {
+  SERVICE_TYPE,
+  AGENT_NAMES,
+} = require('./helper/constants');
 
 const noSslCheckServiceName = 'pg_no_ssl_check';
 
@@ -249,9 +252,9 @@ Data(instances).Scenario(
 
     await pmmInventoryPage.openAgents(service_id);
     if (maxQueryLength !== '') {
-      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan postgresql pgstatements agent', `max_query_length=${maxQueryLength}`);
+      await pmmInventoryPage.checkAgentOtherDetailsSection(AGENT_NAMES.QAN_PG_STAT_STATEMENTS, `max_query_length=${maxQueryLength}`);
     } else {
-      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan postgresql pgstatements agent', `max_query_length=${maxQueryLength}`, false);
+      await pmmInventoryPage.checkAgentOtherDetailsSection(AGENT_NAMES.QAN_PG_STAT_STATEMENTS, `max_query_length=${maxQueryLength}`, false);
     }
 
     await I.wait(70);

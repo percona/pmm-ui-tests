@@ -1,6 +1,4 @@
 import { CommonPage } from '@pages/common.page';
-import LoginPlatformPage from '@pages/login-platform.page';
-import Wait from '@helpers/enums/wait';
 
 export default class LoginPage extends CommonPage {
   readonly PAGE_PATH = 'graph/login';
@@ -11,7 +9,6 @@ export default class LoginPage extends CommonPage {
     headingLocator: this.page.locator('//h1'),
     username: this.page.locator('//input[@name="username"]'),
     password: this.page.locator('//input[@name="password"]'),
-    signInWithPerconaAccountButton: this.page.locator('//*[@href="login/generic_oauth"]'),
   };
 
   /**
@@ -19,13 +16,5 @@ export default class LoginPage extends CommonPage {
    */
   public open = async () => {
     await this.openPageByPath(this.PAGE_PATH, this.PAGE_HEADING, this.PAGE_HEADING_LOCATOR);
-  };
-
-  signInWithPerconaAccount = async (username: string, password: string) => {
-    await this.elements.signInWithPerconaAccountButton.click();
-    await new LoginPlatformPage(this.page).login(username, password);
-    if (this.page.url().includes(this.PAGE_PATH)) {
-      await this.toastMessage.catchError(Wait.TwoSeconds);
-    }
   };
 }
