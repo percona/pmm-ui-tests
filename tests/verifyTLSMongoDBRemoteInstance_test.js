@@ -1,5 +1,8 @@
 const assert = require('assert');
-const { SERVICE_TYPE } = require('./helper/constants');
+const {
+  SERVICE_TYPE,
+  AGENT_NAMES,
+} = require('./helper/constants');
 
 const { adminPage } = inject();
 const pathToPMMFramework = adminPage.pathToPMMTests;
@@ -236,9 +239,9 @@ Data(instances).Scenario(
     // Check Remote Instance also added and have correct max_query_length option set
     await pmmInventoryPage.openAgents(service_id);
     if (maxQueryLength !== '') {
-      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mongodb profiler agent', `max_query_length=${maxQueryLength}`);
+      await pmmInventoryPage.checkAgentOtherDetailsSection(AGENT_NAMES.QAN_MONGODB_PROFILER, `max_query_length=${maxQueryLength}`);
     } else {
-      await pmmInventoryPage.checkAgentOtherDetailsSection('Qan mongodb profiler agent', `max_query_length=${maxQueryLength}`, false);
+      await pmmInventoryPage.checkAgentOtherDetailsSection(AGENT_NAMES.QAN_MONGODB_PROFILER, `max_query_length=${maxQueryLength}`, false);
     }
   },
 );

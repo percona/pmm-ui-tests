@@ -94,6 +94,7 @@ const AGENT_NAMES = {
   QAN_PG_STAT_MONITOR: 'QAN PostgreSQL pg_stat_monitor agent',
   QAN_PG_STAT_STATEMENTS: 'QAN PostgreSQL pg_stat_statements agent',
   QAN_MYSQL_PERFSCHEMA_AGENT: 'QAN MySQL Performance Schema agent',
+  QAN_MONGODB_PROFILER: 'QAN MongoDB Profiler agent',
 };
 
 const isJenkinsGssapiJob = !!(!!process.env.JOB_NAME && process.env.JOB_NAME.includes('gssapi'));
