@@ -247,7 +247,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     await expect(async () => {
       const metrics = await cli.getMetrics('rs101', 'pmm', 'mypass', 'rs101');
       expect(metrics).toContain('mongodb_up{cluster_role="mongod"} 1');
-    }).toPass({ intervals: [2_000], timeout: 120_000 });
+    }).toPass({ intervals: [2_000], timeout: 30_000 });
   });
 
   test('PMM-T9999 - TEST04', async ({ }) => {
