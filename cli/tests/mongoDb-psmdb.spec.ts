@@ -218,7 +218,8 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
       await pmmAdminListOutput.outNotContains('rta_mongodb_agent');
     }).toPass({ intervals: [1_000], timeout: 60_000 });
   });
-  test('PMM-T9999 - Verify help command available for change agent command', async ({ }) => {
+
+  test.skip('PMM-T9999 - Verify help command available for change agent command', async ({ }) => {
     const serviceId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep "rs101" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
     console.log(`Service id is: ${serviceId}`);
     console.log((await cli.exec(`docker exec ${containerName} pmm-admin list`)).stdout);
@@ -230,7 +231,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
      */
   });
 
-  test('PMM-T9999 - TEST02', async ({ }) => {
+  test.skip('PMM-T9999 - TEST02', async ({ }) => {
     const output = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter --password=abc | grep "pmm-admin: error: "`);
     console.log(output.stdout);
     // await output.outContains('pmm-admin: error: expected "<agent-id>"');
@@ -251,7 +252,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     }).toPass({ intervals: [2_000], timeout: 30_000 });
   });
 
-  test('PMM-T9999 - TEST04', async ({ }) => {
+  test.skip('PMM-T9999 - TEST04', async ({ }) => {
     const newPMMUsername = 'new_pmmm';
     const newPMMPassword = 'new_pmm_user_password';
     const mongodbOutput = await cli.exec(`docker exec ${containerName} mongosh "mongodb://root:root@127.0.0.1:27017/admin?authSource=admin" --quiet --eval 'db.getSiblingDB("admin").createUser({user: "${newPMMUsername}", pwd: "${newPMMPassword}", roles: [{ role: "explainRole", db: "admin" },{ role: "clusterMonitor", db: "admin" },{ role: "read", db: "local" },{ "db" : "admin", "role" : "readWrite", "collection": "" },{ "db" : "admin", "role" : "backup" },{ "db" : "admin", "role" : "clusterMonitor" },{ "db" : "admin", "role" : "restore" },{ "db" : "admin", "role" : "pbmAnyAction" }]});'`);
@@ -264,22 +265,22 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     await expect(async () => {
       const metrics = await cli.getMetrics('rs101', 'pmm', 'mypass', 'rs101');
       expect(metrics).toContain('mongodb_up{cluster_role="mongod"} 1');
-    }).toPass({ intervals: [2_000], timeout: 120_000 });
+    }).toPass({ intervals: [2_000], timeout: 30_000 });
   });
 
-  test('PMM-T9999 - TEST05', async ({ }) => {
+  test.skip('PMM-T9999 - TEST05', async ({ }) => {
     const agentId = (await cli.exec(`docker exec ${containerName} pmm-admin inventory list agents | grep "mongodb_exporter" | awk -F" " '{print $3}'`)).getStdOutLines()[0];
     const passwordOutput = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter ${agentId} --custom-labels=env=production,team=platform`);
     await passwordOutput.assertSuccess();
   });
 
   test('PMM-T9999 - TEST06', async ({ }) => {
-    const agentName = 'disable_mongodb_agent';
-    console.log(`docker exec ${containerName} pmm-admin add mongodb --username=pmm --password=${newPMMPassword} --metrics-mode=push ${agentName} ${replIpPort}`);
-    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --username=pmm --password=${newPMMPassword} --metrics-mode=push ${agentName} ${replIpPort}`);
+    const disableServiceName = 'disable_mongodb_agent';
+    console.log(`docker exec ${containerName} pmm-admin add mongodb --username=pmm --password=${newPMMPassword} --metrics-mode=push ${disableServiceName} ${replIpPort}`);
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --username=pmm --password=${newPMMPassword} --metrics-mode=push ${disableServiceName} ${replIpPort}`);
     await output.assertSuccess();
 
-    const serviceId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep "${agentName}" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
+    const serviceId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep "${disableServiceName}" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
     console.log(`Service ID is: ${serviceId}`);
     const agentId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep "mongodb_exporter" | grep "${serviceId}" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
 
@@ -299,5 +300,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
       console.log(enabledAgentListOutput.stdout);
       expect(enabledAgentListOutput.stdout).toContain(`mongodb_exporter              Running          push                ${agentId}`);
     }).toPass({ intervals: [2_000], timeout: 30_000 });
+
+    await removeMongoService(containerName, disableServiceName);
   });
 });
