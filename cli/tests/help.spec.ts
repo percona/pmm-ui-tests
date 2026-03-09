@@ -276,4 +276,9 @@ test.describe('PMM Client "--help" validation', async () => {
       'skip-connection-check',
     ]);
   });
+  test('PMM-T9999 - Verify help command available for change agent command', async ({}) => {
+    const changeMongoDBAgentHelp = await cli.exec(`sudo pmm-admin inventory change agent mongodb-exporter --help`);
+    await changeMongoDBAgentHelp.assertSuccess();
+    console.log(changeMongoDBAgentHelp.stdout);
+  });
 });
