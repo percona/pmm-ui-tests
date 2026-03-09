@@ -250,4 +250,21 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
       expect(metrics).toContain('mongodb_up{cluster_role="mongod"} 1');
     }).toPass({ intervals: [2_000], timeout: 120_000 });
   });
+
+  test('PMM-T9999 - TEST03', async ({ }) => {
+    const newPMMUsername = 'new_pmmm';
+    const newPMMPassword = 'new_pmm_user_password';
+    const mongodbOutput = await cli.exec(`docker exec ${containerName} mongosh "mongodb://root:root@127.0.0.1:27017/admin?authSource=admin" --quiet --eval 'db.getSiblingDB("admin").createUser({user: "${newPMMUsername}", pwd: "${newPMMPassword}", roles: [{ role: "explainRole", db: "admin" },{ role: "clusterMonitor", db: "admin" },{ role: "read", db: "local" },{ "db" : "admin", "role" : "readWrite", "collection": "" },{ "db" : "admin", "role" : "backup" },{ "db" : "admin", "role" : "clusterMonitor" },{ "db" : "admin", "role" : "restore" },{ "db" : "admin", "role" : "pbmAnyAction" }]});'`);
+    await mongodbOutput.assertSuccess();
+    // const agentId = (await cli.exec(`docker exec ${containerName} pmm-admin inventory list agents | grep "mongodb_exporter" | awk -F" " '{print $3}'`)).getStdOutLines()[0];
+    // console.log(`Agent id is: ${agentId}`);
+    // const passwordOutput = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter ${agentId} --password=${newPMMPassword}`);
+    // await passwordOutput.assertSuccess();
+    //
+    // await expect(async () => {
+    //   const metrics = await cli.getMetrics('rs101', 'pmm', 'mypass', 'rs103');
+    //
+    //   expect(metrics).toContain('mongodb_up{cluster_role="mongod"} 1');
+    // }).toPass({ intervals: [2_000], timeout: 120_000 });
+  });
 });
