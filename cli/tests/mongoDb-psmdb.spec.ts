@@ -280,7 +280,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     console.log((await cli.exec(`docker exec ${containerName} pmm-admin list`)).stdout);
     const disabledOutput = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter ${agentId} --enable=false`);
     await disabledOutput.assertSuccess();
-    const disabledAgentListOutput = await cli.exec(`docker exec ${containerName} pmm-admin list`);
+    const disabledAgentListOutput = await cli.exec(`docker exec ${containerName} pmm-admin list | grep "${agentId}"`);
     console.log(`Agent id is: ${agentId}`);
     console.log(disabledAgentListOutput.stdout);
 
