@@ -219,19 +219,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     }).toPass({ intervals: [1_000], timeout: 60_000 });
   });
 
-  test.skip('PMM-T9999 - Verify help command available for change agent command', async ({ }) => {
-    const serviceId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep "rs101" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
-    console.log(`Service id is: ${serviceId}`);
-    console.log((await cli.exec(`docker exec ${containerName} pmm-admin list`)).stdout);
-
-    /*
-    inventory change agent mongodb-exporter
-    qan-mongodb-profiler-agent
-    inventory change agent
-     */
-  });
-
-  test.skip('PMM-T9999 - TEST02', async ({ }) => {
+  test('PMM-T9999 - TEST02', async ({ }) => {
     const output = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter --password=abc | grep "pmm-admin: error: "`);
     console.log(output.stdout);
     // await output.outContains('pmm-admin: error: expected "<agent-id>"');
@@ -274,7 +262,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   });
 
   test('PMM-T2188 - Verify pmm-admin inventory change agent mongodb-exporter enable/disable', async ({ }) => {
-    const mongodbOutput = await cli.exec(`docker exec ${containerName} mongosh "mongodb://root:root@127.0.0.1:27017/admin?authSource=admin" --quiet --eval 'db.updateUser("pmm", { pwd: "${newPMMPassword}" })'`);
+    await cli.exec(`docker exec ${containerName} mongosh "mongodb://root:root@127.0.0.1:27017/admin?authSource=admin" --quiet --eval 'db.updateUser("pmm", { pwd: "${newPMMPassword}" })'`);
     const disableServiceName = 'disable_mongodb_agent';
     console.log(`docker exec ${containerName} pmm-admin add mongodb --username=pmm --password=${newPMMPassword} --metrics-mode=push ${disableServiceName} ${replIpPort}`);
     const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --username=pmm --password=${newPMMPassword} --metrics-mode=push ${disableServiceName} ${replIpPort}`);
@@ -304,3 +292,4 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     await removeMongoService(containerName, disableServiceName);
   });
 });
+// Test ALL mongodb agents RTA, mongolog...
