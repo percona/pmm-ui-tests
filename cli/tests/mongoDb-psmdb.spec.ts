@@ -222,10 +222,9 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
 
   /* CHANGE AGENT TESTS */
   test('PMM-T2189 - Verify pmm-admin inventory change agent mongodb-exporter without agent id', async ({ }) => {
-    const output = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter --password=abc"`);
-    console.log(output.stderr.text);
-    await output.exitCodeEquals(80);
-    // await output.outContains('pmm-admin: error: expected "<agent-id>"');
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter --password=abc | grep "pmm-admin: error: "`);
+    await output.exitCodeEquals(1);
+    await output.outContains('pmm-admin: error: expected "<agent-id>"');
   });
 
   test('PMM-T2190 - Verify pmm-admin inventory change agent mongodb-exporter change password', async ({ }) => {
@@ -239,7 +238,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
 
     const serviceId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep "${changePasswordService}" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
     const agentId = (await cli.exec(`docker exec ${containerName} pmm-admin inventory list agents | grep "mongodb_exporter" | grep "${serviceId}" | awk -F" " '{print $3}'`)).getStdOutLines()[0];
-    console.log(`Agent id is: ${agentId}`);
+
     const passwordOutput = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter ${agentId} --password=${newPMMPassword}`);
     await passwordOutput.assertSuccess();
     await passwordOutput.outContains('- updated password');
