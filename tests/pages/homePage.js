@@ -121,6 +121,7 @@ module.exports = {
     I.seeElement(locators.triggerUpdate);
 
     I.click(locators.triggerUpdate);
+    I.switchTo();
     I.waitForElement(pmmUpgradePage.elements.updateNowButton);
 
     I.wait(5);
