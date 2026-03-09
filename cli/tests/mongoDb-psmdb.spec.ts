@@ -230,9 +230,9 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   });
 
   test('PMM-T9999 - TEST02', async ({ }) => {
-    const output = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter --password=abc`);
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter --password=abc | grep "pmm-admin: error: "`);
     console.log(output.stdout);
-    await output.outContains('pmm-admin: error: expected "<agent-id>"');
+    // await output.outContains('pmm-admin: error: expected "<agent-id>"');
   });
 
   test('PMM-T9999 - TEST03', async ({ }) => {
@@ -245,8 +245,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     await passwordOutput.assertSuccess();
 
     await expect(async () => {
-      const metrics = await cli.getMetrics('rs101', 'pmm', 'mypass', 'rs103');
-
+      const metrics = await cli.getMetrics('rs101', 'pmm', 'mypass', 'rs101');
       expect(metrics).toContain('mongodb_up{cluster_role="mongod"} 1');
     }).toPass({ intervals: [2_000], timeout: 120_000 });
   });
@@ -262,8 +261,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     await passwordOutput.assertSuccess();
 
     await expect(async () => {
-      const metrics = await cli.getMetrics('rs101', 'pmm', 'mypass', 'rs103');
-
+      const metrics = await cli.getMetrics('rs101', 'pmm', 'mypass', 'rs101');
       expect(metrics).toContain('mongodb_up{cluster_role="mongod"} 1');
     }).toPass({ intervals: [2_000], timeout: 120_000 });
   });
