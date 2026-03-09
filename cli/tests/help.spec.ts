@@ -280,5 +280,25 @@ test.describe('PMM Client "--help" validation', async () => {
     const changeMongoDBAgentHelp = await cli.exec(`sudo pmm-admin inventory change agent mongodb-exporter --help`);
     await changeMongoDBAgentHelp.assertSuccess();
     console.log(changeMongoDBAgentHelp.stdout);
+    await changeMongoDBAgentHelp.outContainsMany([
+      '--log-level',
+      '--enable',
+      '--username',
+      '--password',
+      '--agent-password',
+      '--tls',
+      '--tls-skip-verify',
+      '--tls-certificate-key-file',
+      '--tls-certificate-key-file-password',
+      '--tls-ca-file',
+      '--authentication-mechanism',
+      '--authentication-database',
+      '--stats-collections',
+      '--collections-limit',
+      '--disable-collectors',
+      '--expose-exporter',
+      '--push-metrics',
+      '--custom-labels'
+    ])
   });
 });
