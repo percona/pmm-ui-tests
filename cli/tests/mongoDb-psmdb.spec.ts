@@ -273,7 +273,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   });
 
   test('PMM-T9999 - TEST06', async ({ }) => {
-    const agentId = (await cli.exec(`docker exec ${containerName} pmm-admin inventory list agents | grep "mongodb_exporter" | awk -F" " '{print $3}'`)).getStdOutLines()[0];
+    const agentId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep "mongodb_exporter" | awk -F" " '{print $5}'`)).getStdOutLines()[0];
     console.log('Inventory list agents is \n\n');
     console.log((await cli.exec(`docker exec ${containerName} pmm-admin inventory list agents`)).stdout);
     console.log('\nAdmin list agents is \n\n');
