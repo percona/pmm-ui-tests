@@ -212,6 +212,9 @@ module.exports = () => actor({
         case 'cluster':
           queryParams['var-cluster'] = value;
           break;
+        case 'replica_set':
+          queryParams['var-replset'] = value;
+          break;
         case 'service_name':
           queryParams['var-service_name'] = value;
           break;
