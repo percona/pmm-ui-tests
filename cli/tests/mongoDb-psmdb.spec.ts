@@ -273,6 +273,11 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   });
 
   test('PMM-T9999 - TEST06', async ({ }) => {
+    const agentName = 'disable_mongodb_agent';
+    console.log(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} --metrics-mode=push ${agentName} ${replIpPort}`);
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} --metrics-mode=push ${agentName} ${replIpPort}`);
+    await output.assertSuccess();
+
     const agentId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep "mongodb_exporter" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
 
     const disabledOutput = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter ${agentId} --enable=false`);
