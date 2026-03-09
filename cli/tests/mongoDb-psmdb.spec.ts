@@ -217,9 +217,21 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
       await pmmAdminListOutput.outNotContains('rta_mongodb_agent');
     }).toPass({ intervals: [1_000], timeout: 60_000 });
   });
-  test('PMM-T9999 - Verify removing RTA Agent in pmm-admin CLI', async ({ }) => {
+  test('PMM-T9999 - Verify help command available for change agent command', async ({ }) => {
     const serviceId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep "rs101" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
     console.log(`Service id is: ${serviceId}`);
     console.log((await cli.exec(`docker exec ${containerName} pmm-admin list`)).stdout);
+
+    /*
+    inventory change agent mongodb-exporter
+    qan-mongodb-profiler-agent
+    inventory change agent
+     */
+  });
+
+  test('PMM-T9999 - TEST02', async ({ }) => {
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter --password=abc`);
+    await output.exitCodeEquals(1);
+    await output.outContains('pmm-admin: error: expected "<agent-id>"');
   });
 });
