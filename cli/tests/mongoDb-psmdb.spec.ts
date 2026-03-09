@@ -243,5 +243,11 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     console.log(`Agent id is: ${agentId}`);
     const passwordOutput = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter ${agentId} --password=${newPMMPassword}`);
     await passwordOutput.assertSuccess();
+
+    await expect(async () => {
+      const metrics = await cli.getMetrics('rs101', 'pmm', 'mypass', 'rs103');
+
+      expect(metrics).toContain('mongodb_up{cluster_role="mongod"} 1');
+    }).toPass({ intervals: [2_000], timeout: 120_000 });
   });
 });
