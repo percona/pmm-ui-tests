@@ -282,7 +282,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     await expect(async () => {
       const disabledAgentListOutput = await cli.exec(`docker exec ${containerName} pmm-admin list | grep "${agentId}"`);
       console.log(disabledAgentListOutput.stdout);
-      expect(disabledAgentListOutput.stdout).toContain('mongodb_exporter Done (disabled)');
+      expect(disabledAgentListOutput.stdout).toContain(`mongodb_exporter              Done (disabled)        push                ${agentId}`);
     }).toPass({ intervals: [2_000], timeout: 30_000 });
 
     const enabledOutput = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter ${agentId} --enable`);
@@ -291,7 +291,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     await expect(async () => {
       const enabledAgentListOutput = await cli.exec(`docker exec ${containerName} pmm-admin list | grep "${agentId}"`);
       console.log(enabledAgentListOutput.stdout);
-      expect(enabledAgentListOutput.stdout).toContain('mongodb_exporter Running');
+      expect(enabledAgentListOutput.stdout).toContain(`mongodb_exporter              Running          push                ${agentId}`);
     }).toPass({ intervals: [2_000], timeout: 30_000 });
   });
 });
