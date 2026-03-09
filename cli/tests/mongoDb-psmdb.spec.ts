@@ -190,7 +190,6 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     const serviceId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep "rs101" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
 
     const rtaAgentId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep rta_mongodb_agent | awk -F" " '{print $3}'`)).getStdOutLines()[0];
-    console.log(`RTA Agent id is: ${rtaAgentId}`);
     const rtaAgentRemoved = await cli.exec(`docker exec ${containerName} pmm-admin inventory remove agent ${rtaAgentId}`);
     await rtaAgentRemoved.outContains('Agent removed.');
 
@@ -217,5 +216,10 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
 
       await pmmAdminListOutput.outNotContains('rta_mongodb_agent');
     }).toPass({ intervals: [1_000], timeout: 60_000 });
+  });
+  test('PMM-T9999 - Verify removing RTA Agent in pmm-admin CLI', async ({ }) => {
+    const serviceId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep "rs101" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
+    console.log(`Service id is: ${serviceId}`);
+    console.log((await cli.exec(`docker exec ${containerName} pmm-admin list`)).stdout);
   });
 });
