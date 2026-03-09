@@ -251,7 +251,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     }).toPass({ intervals: [2_000], timeout: 120_000 });
   });
 
-  test('PMM-T9999 - TEST03', async ({ }) => {
+  test('PMM-T9999 - TEST04', async ({ }) => {
     const newPMMUsername = 'new_pmmm';
     const newPMMPassword = 'new_pmm_user_password';
     const mongodbOutput = await cli.exec(`docker exec ${containerName} mongosh "mongodb://root:root@127.0.0.1:27017/admin?authSource=admin" --quiet --eval 'db.getSiblingDB("admin").createUser({user: "${newPMMUsername}", pwd: "${newPMMPassword}", roles: [{ role: "explainRole", db: "admin" },{ role: "clusterMonitor", db: "admin" },{ role: "read", db: "local" },{ "db" : "admin", "role" : "readWrite", "collection": "" },{ "db" : "admin", "role" : "backup" },{ "db" : "admin", "role" : "clusterMonitor" },{ "db" : "admin", "role" : "restore" },{ "db" : "admin", "role" : "pbmAnyAction" }]});'`);
