@@ -230,7 +230,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
 
   test('PMM-T2190 - Verify pmm-admin inventory change agent mongodb-exporter change password', async ({ }) => {
     const changePasswordService = 'change_mongodb_user_password_service';
-    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb ${clientCredentialsFlags} ${changePasswordService} ${replIpPort}`);
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --agent-password=mypass ${clientCredentialsFlags} ${changePasswordService} ${replIpPort}`);
     await output.assertSuccess();
     await output.outContains('MongoDB Service added');
 
