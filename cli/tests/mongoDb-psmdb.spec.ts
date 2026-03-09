@@ -275,17 +275,23 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
   test('PMM-T9999 - TEST06', async ({ }) => {
     const agentId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep "mongodb_exporter" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
     console.log(`Agent id is: ${agentId}`);
-    console.log('Admin list agents is:');
-    console.log((await cli.exec(`docker exec ${containerName} pmm-admin list`)).stdout);
+
     const disabledOutput = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter ${agentId} --enable=false`);
     await disabledOutput.assertSuccess();
-    const disabledAgentListOutput = await cli.exec(`docker exec ${containerName} pmm-admin list | grep "${agentId}"`);
 
-    console.log(disabledAgentListOutput.stdout);
+    await expect(async () => {
+      const disabledAgentListOutput = await cli.exec(`docker exec ${containerName} pmm-admin list | grep "${agentId}"`);
+      console.log(disabledAgentListOutput.stdout);
+      expect(disabledAgentListOutput.stdout).toContain('mongodb_exporter Done (disabled)');
+    }).toPass({ intervals: [2_000], timeout: 30_000 });
 
     const enabledOutput = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter ${agentId} --enable`);
     await enabledOutput.assertSuccess();
-    const enabledAgentListOutput = await cli.exec(`docker exec ${containerName} pmm-admin list`);
-    console.log(enabledAgentListOutput.stdout);
+
+    await expect(async () => {
+      const enabledAgentListOutput = await cli.exec(`docker exec ${containerName} pmm-admin list | grep "${agentId}"`);
+      console.log(enabledAgentListOutput.stdout);
+      expect(enabledAgentListOutput.stdout).toContain('mongodb_exporter Running');
+    }).toPass({ intervals: [2_000], timeout: 30_000 });
   });
 });
