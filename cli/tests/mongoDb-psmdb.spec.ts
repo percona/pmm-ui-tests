@@ -274,7 +274,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     await passwordOutput.assertSuccess();
   });
 
-  test('PMM-T9999 - TEST06', async ({ }) => {
+  test('PMM-T9999 - Verify pmm-admin inventory change agent mongodb-exporter enable/disable', async ({ }) => {
     const disableServiceName = 'disable_mongodb_agent';
     console.log(`docker exec ${containerName} pmm-admin add mongodb --username=pmm --password=${newPMMPassword} --metrics-mode=push ${disableServiceName} ${replIpPort}`);
     const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --username=pmm --password=${newPMMPassword} --metrics-mode=push ${disableServiceName} ${replIpPort}`);
