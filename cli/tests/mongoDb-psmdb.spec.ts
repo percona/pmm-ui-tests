@@ -265,4 +265,18 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
       expect(metrics).toContain('mongodb_up{cluster_role="mongod"} 1');
     }).toPass({ intervals: [2_000], timeout: 120_000 });
   });
+
+  test('PMM-T9999 - TEST04', async ({ }) => {
+    const agentId = (await cli.exec(`docker exec ${containerName} pmm-admin inventory list agents | grep "mongodb_exporter" | awk -F" " '{print $3}'`)).getStdOutLines()[0];
+    const passwordOutput = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter ${agentId} --custom-labels=env=production,team=platform`);
+    await passwordOutput.assertSuccess();
+  });
+
+  test('PMM-T9999 - TEST05', async ({ }) => {
+    const agentId = (await cli.exec(`docker exec ${containerName} pmm-admin inventory list agents | grep "mongodb_exporter" | awk -F" " '{print $3}'`)).getStdOutLines()[0];
+    const passwordOutput = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter ${agentId} --enable=false`);
+    await passwordOutput.assertSuccess();
+    const disabledAgentListOutput = await cli.exec(`docker exec ${containerName} pmm-admin list | grep "${agentId}"`);
+    console.log(disabledAgentListOutput.stdout);
+  });
 });
