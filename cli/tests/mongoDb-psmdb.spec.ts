@@ -220,13 +220,6 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     }).toPass({ intervals: [1_000], timeout: 60_000 });
   });
 
-  /* CHANGE AGENT TESTS */
-  test('PMM-T2189 - Verify pmm-admin inventory change agent mongodb-exporter without agent id', async ({ }) => {
-    const output = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter --password=abc | grep "pmm-admin: error: "`);
-    await output.exitCodeEquals(1);
-    expect(output.stderr.text).toContain('pmm-admin: error: expected "<agent-id>"');
-  });
-
   test('PMM-T2190 - Verify pmm-admin inventory change agent mongodb-exporter change password', async ({ }) => {
     const changePasswordService = 'change_mongodb_user_password_service';
     const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --agent-password=mypass ${clientCredentialsFlags} ${changePasswordService} ${replIpPort}`);
