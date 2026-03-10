@@ -279,6 +279,16 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     await removeMongoService(containerName, changeUsernamePasswordService);
   });
 
+  test.skip('PMM-T9999 - TEST050', async ({ }) => {
+    const agentId = (await cli.exec(`docker exec ${containerName} pmm-admin inventory list agents | grep "mongodb_exporter" | awk -F" " '{print $3}'`)).getStdOutLines()[0];
+    const logLevelOutput = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter ${agentId} --log-level=info`);
+    await logLevelOutput.assertSuccess();
+    await logLevelOutput.outContains('- changed log level to info');
+
+    const invalidLogLevelOutput = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter ${agentId} --log-level=invalid-log-level`);
+    expect(invalidLogLevelOutput.stderr.text).toContain('pmm-admin: error: --log-level must be one of "debug","info","warn","error","fatal"');
+  });
+
   test.skip('PMM-T9999 - TEST05', async ({ }) => {
     const agentId = (await cli.exec(`docker exec ${containerName} pmm-admin inventory list agents | grep "mongodb_exporter" | awk -F" " '{print $3}'`)).getStdOutLines()[0];
     const passwordOutput = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter ${agentId} --custom-labels=env=production,team=platform`);
