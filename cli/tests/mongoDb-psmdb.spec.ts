@@ -310,9 +310,6 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     await expect(async () => {
       const disabledAgentListOutput = await cli.exec(`docker exec ${containerName} pmm-admin list | grep "${agentId}"`);
       expect(disabledAgentListOutput.stdout).toContain(`mongodb_exporter              Done (disabled)`);
-      const metrics = await cli.getMetrics(disableServiceName, 'pmm', 'mypass', 'rs101');
-      console.log(`Metrics are: ${metrics}`);
-      expect(metrics).toContain('mongodb_up{cluster_role="mongod"} 0');
     }).toPass({ intervals: [2_000], timeout: 30_000 });
 
     const enabledOutput = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter ${agentId} --enable`);

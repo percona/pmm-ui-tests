@@ -22,9 +22,8 @@ AfterSuite(async ({ I }) => {
   await I.verifyCommand('docker compose -f docker-compose-clickhouse.yml down -v');
 });
 
-// Tag only for adding into matrix job, to be fixed later.
 Scenario(
-  'PMM-T1218 Verify PMM with external Clickhouse @docker-configuration @cli',
+  'PMM-T1218 Verify PMM with external Clickhouse @docker-configuration',
   async ({ I, dataSourcePage, queryAnalyticsPage }) => {
     I.amOnPage(basePmmUrl + dataSourcePage.url);
     I.waitForVisible(dataSourcePage.elements.clickHouseDatasource, 5);
