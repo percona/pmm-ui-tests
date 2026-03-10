@@ -18,7 +18,7 @@ export const createPMMUser = async (username: string, password: string, containe
   const output = await cli.exec(
     `${
       containerName ? `docker exec ${containerName}` : ''
-    } mongosh "mongodb://root:root@127.0.0.1:27017/admin?authSource=admin" --quiet --eval 'db.getSiblingDB("admin").createUser(${user});'`,
+    } mongosh "mongodb://root:root@127.0.0.1:27017/admin?authSource=admin" --quiet --eval 'db.getSiblingDB("admin").createUser(${JSON.stringify(user)});'`,
   );
   await output.assertSuccess();
 };
