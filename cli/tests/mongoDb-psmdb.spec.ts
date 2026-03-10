@@ -244,29 +244,39 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', async () => {
     await passwordOutput.outContains('- updated password');
 
     await expect(async () => {
-      const metrics = await cli.getMetrics(changePasswordService, 'pmm', 'mypass', 'rs101');
-      expect(metrics).toContain('mongodb_up{cluster_role="mongod"} 1');
       const enabledAgentListOutput = await cli.exec(`docker exec ${containerName} pmm-admin list | grep "${agentId}"`);
       expect(enabledAgentListOutput.stdout).toContain(`mongodb_exporter              Running`);
+      const metrics = await cli.getMetrics(changePasswordService, 'pmm', 'mypass', 'rs101');
+      expect(metrics).toContain('mongodb_up{cluster_role="mongod"} 1');
     }).toPass({ intervals: [2_000], timeout: 30_000 });
 
     await cli.exec(`docker exec ${containerName} mongosh "mongodb://root:root@127.0.0.1:27017/admin?authSource=admin" --quiet --eval 'db.updateUser("pmm", { pwd: "pmmpass" })'`);
     await removeMongoService(containerName, changePasswordService);
   });
 
-  test.skip('PMM-T9999 - TEST04', async ({ }) => {
+  test('PMM-T9999 - Verify pmm-admin inventory change agent mongodb-exporter change password and username', async ({ }) => {
+    const changeUsernamePasswordService = 'change_mongodb_user_password_service';
+    const output = await cli.exec(`docker exec ${containerName} pmm-admin add mongodb --agent-password=mypass ${clientCredentialsFlags} ${changeUsernamePasswordService} ${replIpPort}`);
+    await output.assertSuccess();
+    await output.outContains('MongoDB Service added');
+
     const newPMMUsername = 'new_pmmm';
     const newPMMPassword = 'new_pmm_user_password';
     await createPMMUser(newPMMUsername, newPMMPassword, containerName);
-    const agentId = (await cli.exec(`docker exec ${containerName} pmm-admin inventory list agents | grep "mongodb_exporter" | awk -F" " '{print $3}'`)).getStdOutLines()[0];
+
+    const serviceId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep "${changeUsernamePasswordService}" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
+    const agentId = (await cli.exec(`docker exec ${containerName} pmm-admin inventory list agents | grep "mongodb_exporter" | grep "${serviceId}" | awk -F" " '{print $3}'`)).getStdOutLines()[0];
     const passwordOutput = await cli.exec(`docker exec ${containerName} pmm-admin inventory change agent mongodb-exporter ${agentId} --username=${newPMMUsername} --password=${newPMMPassword}`);
     await passwordOutput.assertSuccess();
-    console.log(passwordOutput);
 
     await expect(async () => {
+      const enabledAgentListOutput = await cli.exec(`docker exec ${containerName} pmm-admin list | grep "${agentId}"`);
+      expect(enabledAgentListOutput.stdout).toContain(`mongodb_exporter              Running`);
       const metrics = await cli.getMetrics('rs101', 'pmm', 'mypass', 'rs101');
       expect(metrics).toContain('mongodb_up{cluster_role="mongod"} 1');
     }).toPass({ intervals: [2_000], timeout: 30_000 });
+
+    await removeMongoService(containerName, changeUsernamePasswordService);
   });
 
   test.skip('PMM-T9999 - TEST05', async ({ }) => {
