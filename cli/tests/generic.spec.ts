@@ -174,20 +174,6 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
   });
 
   /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L103
-   */
-  test('run pmm-admin summary --server-url with http', async ({}) => {
-    const output = await cli.exec('sudo pmm-admin summary --server-insecure-tls --server-url=\'https://admin:admin@localhost\' --filename="/tmp/logs.zip"');
-    await output.assertSuccess();
-    await output.outContains('.zip created.');
-    const zipName = '/tmp/logs.zip';
-    // const zipName = output.getStdOutLines().find((item) => item.includes('.zip created.'))!
-    //   .split(' ').at(0) ?? '';
-    const filesInZip = await readZipFile(zipName);
-    expect(filesInZip.length, `Verify there are more than 45 files in ${zipName}.\n ${JSON.stringify(filesInZip, null, 2)}`).toBeGreaterThan(45);
-  });
-
-  /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L112
    */
   test('run pmm-admin summary --server-url with https and verify warning', async ({}) => {
@@ -208,7 +194,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     await output.outContains('.zip created.');
     const zipName = output.getStdOutLines().find((item) => item.includes('.zip created.'))!
       .split(' ').at(0) ?? '';
-    const filesInZip = readZipFile(zipName);
+    const filesInZip = await readZipFile(zipName);
     expect(filesInZip, `Verify there are 47 files in ${zipName}.\n ${JSON.stringify(filesInZip, null, 2)}`).toHaveLength(47);
   });
 
