@@ -8,10 +8,10 @@ const ipPort = async () => ((await cli.exec('docker ps')).stdout.includes('pdpgs
 
 test.describe('PMM Client "Generic" CLI tests', async () => {
   test.beforeAll(async ({}) => {
-    // const result = await cli.exec('docker ps | grep pdpgsql_pmm | awk \'{print $NF}\'');
-    // await result.outContains('pdpgsql_pmm', 'PDPGSQL docker container should exist. please run pmm-framework with --database pdpgsql');
-    // const result1 = await cli.exec('sudo pmm-admin status');
-    // await result1.outContains('pmm-admin', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
+    const result = await cli.exec('docker ps | grep pdpgsql_pmm | awk \'{print $NF}\'');
+    await result.outContains('pdpgsql_pmm', 'PDPGSQL docker container should exist. please run pmm-framework with --database pdpgsql');
+    const result1 = await cli.exec('sudo pmm-admin status');
+    await result1.outContains('pmm-admin', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
   });
 
   let PMM_VERSION = `${process.env.CLIENT_VERSION}`;
