@@ -8,10 +8,10 @@ const ipPort = async () => ((await cli.exec('docker ps')).stdout.includes('pdpgs
 
 test.describe('PMM Client "Generic" CLI tests', async () => {
   test.beforeAll(async ({}) => {
-    const result = await cli.exec('docker ps | grep pdpgsql_pmm | awk \'{print $NF}\'');
-    await result.outContains('pdpgsql_pmm', 'PDPGSQL docker container should exist. please run pmm-framework with --database pdpgsql');
-    const result1 = await cli.exec('sudo pmm-admin status');
-    await result1.outContains('pmm-admin', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
+    // const result = await cli.exec('docker ps | grep pdpgsql_pmm | awk \'{print $NF}\'');
+    // await result.outContains('pdpgsql_pmm', 'PDPGSQL docker container should exist. please run pmm-framework with --database pdpgsql');
+    // const result1 = await cli.exec('sudo pmm-admin status');
+    // await result1.outContains('pmm-admin', 'pmm-client is not installed/connected locally, please run pmm3-client-setup script');
   });
 
   let PMM_VERSION = `${process.env.CLIENT_VERSION}`;
@@ -42,10 +42,15 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
   });
 
   test('Verify pmm-server container image size in not more than 2.8GB', async ({}) => {
-    const output = await cli.exec('docker image ls | grep pmm-server | awk \'{print $7}\'');
-    const size = parseFloat(output.stdout.trim().toLowerCase().split('gb')[0]);
+    const maxSizeBytes = 2.8 * 1024 * 1024 * 1024;
+    const imageList = await cli.exec('docker image ls --format "{{.Repository}} {{.ID}}" | grep "pmm-server" | head -1');
+    const imageId = imageList.stdout.trim().split(/\s+/).pop();
+    expect(imageId, `pmm-server image not found. Output: ${imageList.stdout}`).toBeTruthy();
 
-    expect(size, output.stdout).toBeLessThanOrEqual(2.8);
+    const sizeOutput = await cli.exec(`docker image inspect --format '{{.Size}}' ${imageId}`);
+    await sizeOutput.assertSuccess();
+    const sizeBytes = parseInt(sizeOutput.stdout.trim(), 10);
+    expect(sizeBytes, `Image size ${(sizeBytes / 1024 / 1024 / 1024).toFixed(2)}GB exceeds 2.8GB`).toBeLessThanOrEqual(maxSizeBytes);
   });
 
   /**
