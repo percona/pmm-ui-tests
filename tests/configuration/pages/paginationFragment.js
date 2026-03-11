@@ -9,6 +9,7 @@ module.exports = {
   wrapperDiv: '$pagination',
   elements: {
     rowsPerPageDropdown: locate('$pagination').find('div[class*="-singleValue"]'),
+    rowsPerPageOption: (selectedOption) => locate(`//div[contains(@class, "grafana-select-option-body")]//span[text()="${selectedOption}"]`),
     totalsLabel: '$pagination-items-inverval',
     firstPageButton: '$first-page-button',
     previousPageButton: '$previous-page-button',
@@ -53,8 +54,8 @@ module.exports = {
     const rowsShowing = (await I.grabTextFrom(this.elements.totalsLabel)).split(' ')[1].split('-')[1];
 
     I.click(this.elements.rowsPerPageDropdown);
-    I.waitForVisible(locateOption(option), 30);
-    I.click(locateOption(option));
+    I.waitForVisible(this.elements.rowsPerPageOption(option), 30);
+    I.click(this.elements.rowsPerPageOption(option));
 
     if ((rowsShowing !== rowsTotal) && (rowsTotal > option)) {
       // 20 sec wait for pages count to change

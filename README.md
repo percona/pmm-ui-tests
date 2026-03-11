@@ -84,7 +84,6 @@ Execute command in the Project Root folder
     @not-ovf                Tests with this tag are excluded from execution for OVF image tests
     @nightly                executed on a nightly Job, mostly related to Dashboards. Includes tests 
                                 to verify Metrics, Custom Filters and Navigation between Dashboards.
-    @platform               Portal functionality tests
     @pmm-demo               Performs basic Sanity on PMM-Demo, ensures all expected Services are still running 
     @pmm-upgrade	        upgrade testing Scenarios to verify UI Upgrade for docker based PMM Server
     @pre-upgrade	        upgrade testing Scenarios to verify Docker way Upgrade. Executed BEFORE the upgrade
@@ -93,10 +92,6 @@ Execute command in the Project Root folder
     @qan	                Query Analytics(QAN) functionality tests
     @settings               PMM Settings functionality tests
     @stt                    Security Checks (STT) functionality tests
-    @portal                 Integration tests between PMM and Percona Portal
-    @pre-pmm-portal-upgrade  upgrade testing Scenarios to verify PMM connection to the Portal. Executed BEFORE the upgrade
-    @post-pmm-portal-upgrade upgrade testing Scenarios to verify PMM connection to the Portal. Executed After the upgrade
-    @pmm-portal-upgrade      upgrade testing Scenarios to verify UI PMM connected to the Portal
     @perf-testing           UI performance tests for PMM
     @docker-configuration  Tests containing different docker configuration (env variables, ports, volumes etc.)
     @pmm-ami                legacy/deprecated

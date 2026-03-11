@@ -104,3 +104,25 @@ export async function getMetrics(
   // TODO: parse into map(k => v) or json
   return output.stdout;
 }
+/**
+ * Execute command and verify output contains expected content
+ * Wrapper around {@link execute} that automatically asserts success and optionally verifies output
+ *
+ * @param   command         sh command to execute
+ * @param   expectedOutput  optional string or array of strings to verify in command output
+ * @return  command stdout as string
+ */
+export async function executeAndVerify(command: string, expectedOutput?: string | string[]): Promise<string> {
+  return test.step(`Run "${command}" command and verify output contains "${expectedOutput}"`, async () => {
+    const output = await execute(command);
+    await output.assertSuccess();
+    if (expectedOutput) {
+      if (Array.isArray(expectedOutput)) {
+        await output.outContainsMany(expectedOutput);
+      } else {
+        await output.outContains(expectedOutput);
+      }
+    }
+    return output.stdout;
+  });
+}

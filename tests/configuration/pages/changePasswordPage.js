@@ -21,7 +21,7 @@ module.exports = {
   },
 
   fillChangePasswordForm(currentPassword, newPassword) {
-    I.seeElement(this.elements.oldPasswordInput);
+    I.waitForVisible(this.elements.oldPasswordInput);
     I.fillField(this.elements.oldPasswordInput, currentPassword);
     I.seeElement(this.elements.newPasswordInput);
     I.fillField(this.elements.newPasswordInput, newPassword);
