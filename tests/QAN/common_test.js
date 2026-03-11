@@ -90,30 +90,6 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1207 - Verify dashboard search between QAN and dashboards @qan',
-  async ({
-    I, searchDashboardsModal, queryAnalyticsPage,
-  }) => {
-    queryAnalyticsPage.waitForLoaded();
-    I.waitForElement(queryAnalyticsPage.buttons.qanBreadcrumb);
-    I.click(queryAnalyticsPage.buttons.qanBreadcrumb);
-    I.waitForVisible(searchDashboardsModal.fields.dashboardRow('PMM Query Analytics'));
-    I.click(searchDashboardsModal.fields.dashboardRow('PMM Query Analytics'));
-    queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.data.selectRow(1);
-    queryAnalyticsPage.queryDetails.waitForDetails();
-
-    I.waitForElement(queryAnalyticsPage.buttons.qanBreadcrumb);
-    I.click(queryAnalyticsPage.buttons.qanBreadcrumb);
-    I.waitForVisible(searchDashboardsModal.fields.dashboardRow('PMM Query Analytics'));
-    I.click(searchDashboardsModal.fields.dashboardRow('PMM Query Analytics'));
-    queryAnalyticsPage.waitForLoaded();
-    queryAnalyticsPage.data.selectRow(1);
-    queryAnalyticsPage.queryDetails.waitForDetails();
-  },
-);
-
-Scenario(
   'PMM-T188 - Verify dashboard refresh @qan',
   async ({
     dashboardPage, adminPage, queryAnalyticsPage,

@@ -133,7 +133,6 @@ module.exports = {
     closeButton: locate('button[aria-label="Close search"]').as('Close button'),
     folderRowLocator: locate('[data-testid^="data-testid browse dashboards row "]'),
     itemsLocator: locate('[data-testid^="data-testid browse dashboards row"]'),
-    dashboardRow: (dashboardName) => locate(`//*[@data-testid="data-testid browse dashboards row ${dashboardName}"]//a`),
   },
 
   waitForOpened() {
