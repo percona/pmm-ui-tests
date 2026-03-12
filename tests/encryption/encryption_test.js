@@ -4,7 +4,7 @@ const { SERVICE_TYPE } = require('../helper/constants');
 const { I } = inject();
 
 Feature('Encryption');
-const dockerVersion = process.env.DOCKER_VERSION || 'perconalab/pmm-server-fb:PR-4261-94b0f3c';
+const dockerVersion = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-latest';
 
 BeforeSuite(async ({ I }) => {
   await I.verifyCommand(`PMM_SERVER_IMAGE=${dockerVersion} docker compose -f docker-compose-encryption.yml up -d`);
