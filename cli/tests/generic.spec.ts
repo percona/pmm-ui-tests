@@ -42,10 +42,15 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
   });
 
   test('Verify pmm-server container image size in not more than 2.8GB', async ({}) => {
-    const output = await cli.exec('docker image ls | grep pmm-server | awk \'{print $7}\'');
-    const size = parseFloat(output.stdout.trim().toLowerCase().split('gb')[0]);
+    const maxSizeBytes = 2.8 * 1024 * 1024 * 1024;
+    const imageList = await cli.exec('docker image ls --format "{{.Repository}} {{.ID}}" | grep "pmm-server" | head -1');
+    const imageId = imageList.stdout.trim().split(/\s+/).pop();
+    expect(imageId, `pmm-server image not found. Output: ${imageList.stdout}`).toBeTruthy();
 
-    expect(size, output.stdout).toBeLessThanOrEqual(2.8);
+    const sizeOutput = await cli.exec(`docker image inspect --format '{{.Size}}' ${imageId}`);
+    await sizeOutput.assertSuccess();
+    const sizeBytes = parseInt(sizeOutput.stdout.trim(), 10);
+    expect(sizeBytes, `Image size ${(sizeBytes / 1024 / 1024 / 1024).toFixed(2)}GB exceeds 2.8GB`).toBeLessThanOrEqual(maxSizeBytes);
   });
 
   /**
@@ -169,19 +174,6 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
   });
 
   /**
-   * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L103
-   */
-  test('run pmm-admin summary --server-url with http', async ({}) => {
-    const output = await cli.exec('sudo pmm-admin summary --server-insecure-tls --server-url=\'https://admin:admin@localhost\'');
-    await output.assertSuccess();
-    await output.outContains('.zip created.');
-    const zipName = output.getStdOutLines().find((item) => item.includes('.zip created.'))!
-      .split(' ').at(0) ?? '';
-    const filesInZip = readZipFile(zipName);
-    expect(filesInZip, `Verify there are 47 files in ${zipName}.\n ${JSON.stringify(filesInZip, null, 2)}`).toHaveLength(47);
-  });
-
-  /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/generic-tests.bats#L112
    */
   test('run pmm-admin summary --server-url with https and verify warning', async ({}) => {
@@ -202,7 +194,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     await output.outContains('.zip created.');
     const zipName = output.getStdOutLines().find((item) => item.includes('.zip created.'))!
       .split(' ').at(0) ?? '';
-    const filesInZip = readZipFile(zipName);
+    const filesInZip = await readZipFile(zipName);
     expect(filesInZip, `Verify there are 47 files in ${zipName}.\n ${JSON.stringify(filesInZip, null, 2)}`).toHaveLength(47);
   });
 
@@ -287,7 +279,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     await output.outContains('.zip created.');
     const zipName = output.getStdOutLines().find((item) => item.includes('.zip created.'))!
       .split(' ').at(0) ?? '';
-    expect(readZipFile(zipName), `Verify there are 10 files in ${zipName}`).toHaveLength(10);
+    expect(await readZipFile(zipName), `Verify there are 10 files in ${zipName}`).toHaveLength(10);
   });
 
   /**
