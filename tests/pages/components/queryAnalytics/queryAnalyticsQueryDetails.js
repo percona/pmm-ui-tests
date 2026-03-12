@@ -28,7 +28,8 @@ class QueryAnalyticsQueryDetails {
       close: locate('button').find('span').withText('Close'),
     };
     this.messages = {
-      notSupportedExplain: 'Failed to create action: EXPLAIN functionality is supported only for DML queries - SELECT, INSERT, UPDATE, DELETE and REPLACE.',
+      notSupportedExplain:
+        'Failed to create action: EXPLAIN functionality is supported only for DML queries - SELECT, INSERT, UPDATE, DELETE and REPLACE.',
     };
   }
 
@@ -84,7 +85,10 @@ class QueryAnalyticsQueryDetails {
         assert.ok(value.startsWith('0.01'), `Values don't match. Value: ${value}, calculated Result: ${result}`);
         break;
       default:
-        assert.ok(parseFloat(parseFloat(result).toFixed(2)) === parseFloat(value), `Values don't match. Value: ${value}, calculated Result: ${result}`);
+        assert.ok(
+          parseFloat(parseFloat(result).toFixed(2)) === parseFloat(value),
+          `Values don't match. Value: ${value}, calculated Result: ${result}`,
+        );
     }
   }
 
@@ -93,7 +97,11 @@ class QueryAnalyticsQueryDetails {
     queryAnalyticsPage.waitForLoaded();
     I.waitForVisible(this.elements.codeBlock, 30);
 
-    if (isNoExamplesVisible) { I.seeElement(this.elements.noExamples); } else { I.dontSeeElement(this.elements.noExamples); }
+    if (isNoExamplesVisible) {
+      I.seeElement(this.elements.noExamples);
+    } else {
+      I.dontSeeElement(this.elements.noExamples);
+    }
   }
 
   async verifyExamples(parameters = {}) {
@@ -191,6 +199,16 @@ class QueryAnalyticsQueryDetails {
   checkTab(tabName) {
     I.waitForVisible(this.buttons.tab(tabName), 30);
     I.click(this.buttons.tab(tabName));
+    I.wait(5);
+    queryAnalyticsPage.waitForLoaded();
+    I.dontSeeElement(this.elements.noClassic);
+    I.dontSeeElement(this.elements.noJSON);
+    I.waitForDetached(this.elements.explainError);
+  }
+
+  waitForDetails() {
+    I.waitForVisible(this.buttons.tab('Details'), 30);
+    I.click(this.buttons.tab('Details'));
     I.wait(5);
     queryAnalyticsPage.waitForLoaded();
     I.dontSeeElement(this.elements.noClassic);
