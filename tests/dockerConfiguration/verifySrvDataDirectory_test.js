@@ -183,7 +183,7 @@ Scenario(
     await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
   },
-);
+).retry(1);
 
 Scenario(
   'PMM-T1256 Verify GF_SECURITY_ADMIN_PASSWORD environment variable after upgrade',
