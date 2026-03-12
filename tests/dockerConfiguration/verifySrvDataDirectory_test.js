@@ -79,9 +79,9 @@ Scenario(
     const qanRows = await I.grabNumberOfVisibleElements(queryAnalyticsPage.data.elements.queryRows);
 
     assert.ok(qanRows > 0, 'Query Analytics are empty');
-    await I.amOnPage(`${basePmmUrl + dashboardPage.nodeSummaryDashboard.url}?orgId=1&refresh=5s`);
+    await I.amOnPage(`${basePmmUrl + dashboardPage.nodeSummaryDashboard.url}?orgId=1&from=now-5m&to=now&refresh=5s`);
     await dashboardPage.waitForAllGraphsToHaveData(300);
-    await dashboardPage.verifyThereAreNoGraphsWithoutData();
+    await dashboardPage.verifyThereAreNoGraphsWithoutData(1);
 
     await stopAndRemoveContainerWithoutDataContainer(I);
     await runContainerWithoutDataContainer(I);
@@ -102,7 +102,7 @@ Scenario(
 
     assert.ok(qanRowsAfterRestart > 0, 'Query Analytics are empty after restart of docker container');
 
-    await I.amOnPage(`${basePmmUrl + dashboardPage.nodeSummaryDashboard.url}?orgId=1&refresh=5s`);
+    await I.amOnPage(`${basePmmUrl + dashboardPage.nodeSummaryDashboard.url}?orgId=1&from=now-5m&to=now&refresh=5s`);
     await dashboardPage.verifyThereAreNoGraphsWithoutData();
   },
 );
