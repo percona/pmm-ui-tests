@@ -177,7 +177,7 @@ Scenario(
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
     await I.verifyCommand('docker exec -t pmm-server-password change-admin-password anotherpass');
     await I.unAuthorize();
-    await I.wait(5);
+    await I.wait(10);
     await I.amOnPage(basePmmUrl + loginPage.url);
     await I.Authorize('admin', 'anotherpass', basePmmUrl);
     await I.amOnPage(basePmmUrl + homePage.url);
