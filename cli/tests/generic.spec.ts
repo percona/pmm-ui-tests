@@ -559,7 +559,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     const container = (await cli.exec('docker ps --format \'{{.Names}}\' | grep pdpgsql_pmm')).getStdOutLines()[0];
     console.log(`Container name is: ${container}`)
     const serviceName = (await cli.exec(`docker exec ${container} pmm-admin list | grep "pdpgsql_pmm" | awk -F" " '{print $2}'`)).getStdOutLines()[0];
-    const serviceId = (await cli.exec(`docker exec ${container} pmm-admin list | grep "pdpgsql_pmm" | awk -F" " '{print $2}'`)).getStdOutLines()[0];
+    const serviceId = (await cli.exec(`docker exec ${container} pmm-admin list | grep "pdpgsql_pmm" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
     console.log(`Service name is: ${serviceName}`);
     console.log(`Service id is: ${serviceId}`);
     const agent = (await cli.exec(`docker exec ${container} pmm-admin list | grep ${serviceId} | grep "postgres_exporter" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
