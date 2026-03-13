@@ -25,10 +25,10 @@ export async function createFile(pathToFile: string, content: string, stepTitle:
  * @return      {@link ExecReturnClass} instance
  */
 export function execute(command: string): ExecReturn {
-  // console.log(`exec: "${command}"`);
+  console.log(`exec: "${command}"`);
   const { stdout, stderr, code } = shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: true });
-  // if (stdout.length > 0) console.log(`Out: "${stdout}"`);
-  // if (stderr.length > 0) console.log(`Error: "${stderr}"`);
+  if (stdout.length > 0) console.log(`Out: "${stdout}"`);
+  if (stderr.length > 0) console.log(`Error: "${stderr}"`);
   return new ExecReturn(command, code, stdout, stderr);
 }
 
