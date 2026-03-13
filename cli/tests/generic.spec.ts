@@ -537,6 +537,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
 
   test('PMM-T9999 - Verify encrypted pmm client config file @inventory', async ({}) => {
     const container = await cli.exec('docker ps --format \'{{.Names}}\' | grep ps_pmm');
+    console.log(container.stdout)
     const service = await cli.exec(`docker exec ${container.stdout} pmm-admin list | grep "ps_pmm" | awk -F" " '{print $2}'`)
     const agent = await cli.exec(`docker exec ${container.stdout} pmm-admin list | grep ${service.stdout} | grep "mysqld_exporter" | awk -F" " '{print $4}'`)
     const output = await cli.exec(`docker exec ${container.stdout} cat /usr/local/percona/pmm/config/pmm-agent.yaml | grep "server"`);
