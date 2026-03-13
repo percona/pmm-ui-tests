@@ -1206,6 +1206,7 @@ module.exports = {
   async verifyMetricsExistence(metrics) {
     I.click(this.fields.reportTitle);
     await adminPage.performPageDown(5);
+    I.waitForElement(this.graphsLocator(metrics[0]), 60);
     for (const i in metrics) {
       I.pressKey('PageDown');
       await this.expandEachDashboardRow();
