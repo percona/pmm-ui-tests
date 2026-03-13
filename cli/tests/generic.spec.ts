@@ -565,7 +565,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     await expect(async () => {
       const metrics = await cli.getMetrics(serviceName, 'pmm', agent, container);
       console.log(`Metrics are: ${metrics}`);
-      const expectedValue = 'pg_up 1';
+      const expectedValue = 'pg_up{collector="custom_query.hr"} 1';
       expect(metrics, `Metrics for percona server for MySQL with non-encrypted pmm client config are not present!`).toContain(expectedValue);
     }).toPass({ intervals: [2_000], timeout: 30_000 });
   });
