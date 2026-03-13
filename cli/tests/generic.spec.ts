@@ -552,19 +552,14 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
 
   test('PMM-T2194 - Verify non-encrypted PMM Client config file', async ({}) => {
     const container = (await cli.exec('docker ps --format \'{{.Names}}\' | grep pdpgsql_pmm')).getStdOutLines()[0];
-    console.log(`Container name is: ${container}`)
     const serviceName = (await cli.exec(`docker exec ${container} pmm-admin list | grep "pdpgsql_pmm" | awk -F" " '{print $2}'`)).getStdOutLines()[0];
     const serviceId = (await cli.exec(`docker exec ${container} pmm-admin list | grep "pdpgsql_pmm" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
-    console.log(`Service name is: ${serviceName}`);
-    console.log(`Service id is: ${serviceId}`);
     const agent = (await cli.exec(`docker exec ${container} pmm-admin list | grep ${serviceId} | grep "postgres_exporter" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
-    console.log(`Agent id is: ${agent}`);
     const output = await cli.exec(`docker exec ${container} cat /usr/local/percona/pmm/config/pmm-agent.yaml | grep "server"`);
     await output.exitCodeEquals(0);
 
     await expect(async () => {
       const metrics = await cli.getMetrics(serviceName, 'pmm', agent, container);
-      console.log(`Metrics are: ${metrics}`);
       const expectedValue = 'pg_up{collector="custom_query.hr"} 1';
       expect(metrics, `Metrics for percona server for MySQL with non-encrypted pmm client config are not present!`).toContain(expectedValue);
     }).toPass({ intervals: [2_000], timeout: 30_000 });
