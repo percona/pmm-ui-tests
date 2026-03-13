@@ -534,4 +534,18 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
     // no information about failure reasons is shown
     await output.outContains('Failed to register pmm-agent on PMM Server: Node with name');
   });
+
+  test('PMM-T9999 - Verify encrypted pmm client config file @inventory', async ({}) => {
+    const container = await cli.exec('docker ps --format \'{{.Names}}\' | grep ps_pmm');
+    const service = await cli.exec(`docker exec ${container.stdout} pmm-admin list | grep "ps_pmm" | awk -F" " '{print $2}'`)
+    const agent = await cli.exec(`docker exec ${container.stdout} pmm-admin list | grep ${service.stdout} | grep "mysqld_exporter" | awk -F" " '{print $4}'`)
+    const output = await cli.exec(`docker exec ${container.stdout} cat /usr/local/percona/pmm/config/pmm-agent.yaml | grep "server"`);
+    await output.exitCodeEquals(1);
+
+    await expect(async () => {
+      const metrics = await cli.getMetrics(service.stdout, 'pmm', agent.stdout, '127.0.0.1');
+      const expectedValue = 'mysql_up 1';
+      expect(metrics, `Metrics for percona server for MySQL with encrypted pmm client config are not present!`).toContain(expectedValue);
+    }).toPass({ intervals: [2_000], timeout: 30_000 });
+  });
 });
