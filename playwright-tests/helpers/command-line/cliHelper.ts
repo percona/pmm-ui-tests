@@ -11,7 +11,7 @@ import ExecReturn from '@helpers/types/exec-return.class';
  */
 export function execute(command: string): ExecReturn {
   // console.log(`exec: "${command}"`);
-  const obj = shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: false });
+  const obj = shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: true });
   // if (obj.stdout.length > 0) console.log(`Out: "${obj.stdout}"`);
   // if (obj.stderr.length > 0) console.log(`Error: "${obj.stderr}"`);
   return new ExecReturn(command, obj);

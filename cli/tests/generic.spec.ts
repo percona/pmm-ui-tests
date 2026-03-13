@@ -545,6 +545,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
 
     await expect(async () => {
       const metrics = await cli.getMetrics(service.stdout, 'pmm', agent.stdout, container.stdout);
+      console.log(`Metrics are: ${metrics}`);
       const expectedValue = 'mysql_up 1';
       expect(metrics, `Metrics for percona server for MySQL with encrypted pmm client config are not present!`).toContain(expectedValue);
     }).toPass({ intervals: [2_000], timeout: 30_000 });
@@ -561,6 +562,7 @@ test.describe('PMM Client "Generic" CLI tests', async () => {
 
     await expect(async () => {
       const metrics = await cli.getMetrics(service.stdout, 'pmm', agent.stdout, container.stdout);
+      console.log(`Metrics are: ${metrics}`);
       const expectedValue = 'mysql_up 1';
       expect(metrics, `Metrics for percona server for MySQL with non-encrypted pmm client config are not present!`).toContain(expectedValue);
     }).toPass({ intervals: [2_000], timeout: 30_000 });
