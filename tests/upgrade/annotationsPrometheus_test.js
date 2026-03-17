@@ -33,7 +33,7 @@ Data(clientDbServices).Scenario(
 );
 
 Data(clientDbServices).Scenario(
-  'Verify added Annotations at service level, also available post upgrade @post-client-upgrade @post-annotations-prometheus-upgrade',
+  'Verify added Annotations at service level, also available post upgrade @post-client-upgrade @post-annotations-prometheus-upgrade @post-upgrade',
   async ({
     I, dashboardPage, current, inventoryAPI,
   }) => {

@@ -31,7 +31,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days, Custom Resolution is still preserved after upgrade @post-settings-metrics-upgrade @post-upgrade',
+  'PMM-T262 Open PMM Settings page and verify DATA_RETENTION value is set to 2 days, Custom Resolution is still preserved after upgrade @post-upgrade',
   async ({ I, pmmSettingsPage }) => {
     const advancedSection = pmmSettingsPage.sectionTabsList.advanced;
     const metricResolutionSection = pmmSettingsPage.sectionTabsList.metrics;
@@ -52,7 +52,7 @@ Scenario(
 
 Data(clientDbServices)
   .Scenario(
-    'Check Metrics for Client Nodes [critical] @post-settings-metrics-upgrade @post-client-upgrade',
+    'Check Metrics for Client Nodes [critical] @post-settings-metrics-upgrade @post-client-upgrade @post-upgrade',
     async ({
       inventoryAPI,
       grafanaAPI,
@@ -69,7 +69,7 @@ Data(clientDbServices)
   );
 
 Scenario(
-  'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-client-upgrade @post-settings-metrics-upgrade',
+  'Verify Metrics from custom queries for mysqld_exporter after upgrade (UI) @post-client-upgrade @post-settings-metrics-upgrade @post-upgrade',
   async ({ I, grafanaAPI, inventoryAPI }) => {
     const metricName = 'mysql_performance_schema_memory_summary_current_bytes';
     const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName('ps_pmm');
@@ -79,7 +79,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify textfile collector extend metrics is still collected post upgrade (UI) @post-client-upgrade @post-settings-metrics-upgrade',
+  'Verify textfile collector extend metrics is still collected post upgrade (UI) @post-client-upgrade @post-settings-metrics-upgrade @post-upgrade',
   async ({ grafanaAPI }) => {
     const metricName = 'node_role';
 
@@ -88,7 +88,7 @@ Scenario(
 );
 
 Scenario(
-  'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @post-client-upgrade @post-settings-metrics-upgrade',
+  'Verify Metrics from custom queries for postgres_exporter after upgrade (UI) @post-client-upgrade @post-settings-metrics-upgrade @post-upgrade',
   async ({ grafanaAPI, inventoryAPI, I }) => {
     const metricName = 'pg_stat_user_tables_analyze_count';
     const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName('pgsql_pgs');
