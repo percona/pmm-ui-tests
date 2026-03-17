@@ -25,20 +25,22 @@ Data(clientDbServices).Scenario(
     const { agent_id: pmm_agent_id } = await inventoryAPI.apiGetPMMAgentInfoByServiceId(service_id);
     let output;
 
+    const getContainerName = async (partialContainerName) => await I.verifyCommand(`docker ps --format "{{.Names}}" | grep ${partialContainerName}`);
+
     switch (serviceType) {
       case SERVICE_TYPE.MYSQL:
         output = await I.verifyCommand(
-          `pmm-admin add mysql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --password=${credentials.perconaServer.root.password} --host=${address} --query-source=perfschema --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
+          `docker exec ${await getContainerName('ps_pmm')} pmm-admin add mysql --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --password=${credentials.perconaServer.root.password} --host=${address} --query-source=perfschema --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
         );
         break;
       case SERVICE_TYPE.POSTGRESQL:
         output = await I.verifyCommand(
-          `pmm-admin add postgresql --username=${credentials.pdpgsql.username} --password=${credentials.pdpgsql.password} --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
+          `docker exec ${await getContainerName('pgsql_pgss_pmm')} pmm-admin add postgresql --username=${credentials.pdpgsql.username} --password=${credentials.pdpgsql.password} --node-id=${node_id} --pmm-agent-id=${pmm_agent_id} --port=${port} --host=${address} --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
         );
         break;
       case SERVICE_TYPE.MONGODB:
         output = await I.verifyCommand(
-          `pmm-admin add mongodb --username=${credentials.mongoReplicaPrimaryForBackups.username} --password="${credentials.mongoReplicaPrimaryForBackups.password}" --port=${credentials.mongoReplicaPrimaryForBackups.port} --host=127.0.0.1 --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
+          `${await getContainerName('rs101')} pmm-admin add mongodb --username=${credentials.mongoReplicaPrimaryForBackups.username} --password="${credentials.mongoReplicaPrimaryForBackups.password}" --port=${credentials.mongoReplicaPrimaryForBackups.port} --host=127.0.0.1 --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
         );
         break;
       default:
