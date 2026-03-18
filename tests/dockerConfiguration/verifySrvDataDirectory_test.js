@@ -180,6 +180,7 @@ Scenario(
     await I.unAuthorize();
     await I.amOnPage(basePmmUrl + loginPage.url);
     await I.Authorize('admin', 'anotherpass', basePmmUrl);
+    await I.wait(10);
     await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
   },
