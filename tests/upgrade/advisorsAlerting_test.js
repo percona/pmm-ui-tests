@@ -136,7 +136,7 @@ Scenario(
 
     I.amOnPage(alertsPage.url);
 
-    await alertsAPI.waitForAlerts(120, 1);
+    await alertsAPI.waitForAlerts(10, 1);
     const alerts = await alertsAPI.getAlertsList();
 
     assert.ok(alerts[0].annotations.summary.includes(alertName), `Didn't find alert with name ${alertName}`);
