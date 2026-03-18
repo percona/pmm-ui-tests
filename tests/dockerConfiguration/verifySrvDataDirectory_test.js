@@ -175,7 +175,11 @@ Scenario(
     await I.wait(1);
     await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
-    await I.verifyCommand('docker exec -t pmm-server-password change-admin-password anotherpass');
+    const response = await I.verifyCommand('docker exec -t pmm-server-password change-admin-password anotherpass');
+
+    console.log('Password change response is: ');
+    console.log(response);
+
     await I.wait(10);
     await I.unAuthorize();
     await I.amOnPage(basePmmUrl + loginPage.url);
