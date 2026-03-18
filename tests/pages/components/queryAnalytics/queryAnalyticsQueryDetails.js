@@ -198,6 +198,16 @@ class QueryAnalyticsQueryDetails {
     I.waitForDetached(this.elements.explainError);
   }
 
+  waitForDetails() {
+    I.waitForVisible(this.buttons.tab('Details'), 30);
+    I.click(this.buttons.tab('Details'));
+    I.wait(5);
+    queryAnalyticsPage.waitForLoaded();
+    I.dontSeeElement(this.elements.noClassic);
+    I.dontSeeElement(this.elements.noJSON);
+    I.waitForDetached(this.elements.explainError);
+  }
+
   async checkPlanTabIsNotEmpty() {
     I.dontSeeElement(this.elements.emptyPlanText);
     I.waitForVisible(this.elements.planText, 20);
