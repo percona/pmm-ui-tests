@@ -59,7 +59,7 @@ After(async ({ I }) => {
     await stopAndRemoveContainerWithDataContainer(I);
     await I.verifyCommand('docker volume rm srvFolder || true');
   } else if (testCaseName === 'PMM-T1255') {
-    await stopAndRemoveContainerWithPasswordVariable(I);
+    // await stopAndRemoveContainerWithPasswordVariable(I);
   }
 });
 
