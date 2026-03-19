@@ -155,7 +155,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', () => {
   });
 
   test('PMM-T2179 - Verify adding RTA Agent in pmm-admin CLI', async ({ }) => {
-    test.skip(adminVersion < 6, 'This test is relevant for pmm-client version 3.6.0 and above');
+    test.skip(adminVersion < 7, 'This test is relevant for pmm-client version 3.7.0 and above');
 
     const serviceId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep "rs101" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
     const pmmAgentId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep pmm_agent | awk -F" " '{print $3}'`)).getStdOutLines()[0];
@@ -189,7 +189,7 @@ test.describe('Percona Server MongoDB (PSMDB) CLI tests', () => {
   });
 
   test('PMM-T2180 - Verify removing RTA Agent in pmm-admin CLI', async ({ }) => {
-    test.skip(adminVersion < 6, 'This test is relevant for pmm-client version 3.6.0 and above');
+    test.skip(adminVersion < 7, 'This test is relevant for pmm-client version 3.7.0 and above');
 
     const serviceId = (await cli.exec(`docker exec ${containerName} pmm-admin list | grep "rs101" | awk -F" " '{print $4}'`)).getStdOutLines()[0];
 

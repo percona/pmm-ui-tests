@@ -83,7 +83,7 @@ test.describe('PMM Client CLI tests for ProxySQL', () => {
   });
 
   test('PMM-T2158 - verify proxysql monitoring by viewer user', async ({}) => {
-    test.skip(adminVersion < 6, 'This test is relevant for pmm-client version 3.6.0 and above');
+    test.skip(adminVersion < 7, 'This test is relevant for pmm-client version 3.7.0 and above');
 
     const viewerPassword = 'read_user';
     const viewerUsername = 'read_user';
