@@ -52,7 +52,7 @@ Data(clientDbServices).Scenario(
 );
 
 Data(clientDbServices).Scenario(
-  'Verify if Agents added with custom password and custom label work as expected Post Upgrade @post-client-upgrade @post-custom-password-upgrade @post-upgrade',
+  'Verify if Agents added with custom password and custom label work as expected Post Upgrade @post-client-upgrade @post-custom-password-upgrade',
   async ({
     current, inventoryAPI, grafanaAPI,
   }) => {
@@ -70,7 +70,7 @@ Data(clientDbServices).Scenario(
 );
 
 Scenario(
-  'PMM-T1189 - verify user is able to change password after upgrade @post-custom-password-upgrade @post-upgrade',
+  'PMM-T1189 - verify user is able to change password after upgrade @post-custom-password-upgrade',
   async ({ I, homePage, profileAPI }) => {
     const newPass = process.env.NEW_ADMIN_PASSWORD || 'admin1';
 

@@ -36,7 +36,7 @@ Data(remoteUpgradeInstances).Scenario(
 );
 
 Scenario(
-  'Verify Redis as external Service Works After Upgrade @post-external-upgrade @post-client-upgrade @post-upgrade',
+  'Verify Redis as external Service Works After Upgrade @post-external-upgrade @post-client-upgrade',
   async ({
     I, grafanaAPI, remoteInstancesHelper,
   }) => {
@@ -75,7 +75,7 @@ Scenario(
 ).retry(2);
 
 Data(remoteUpgradeInstances).Scenario(
-  'PMM-T2073 - Verify Agents are RUNNING after Upgrade (API) [critical] @post-external-upgrade @post-client-upgrade @post-upgrade',
+  'PMM-T2073 - Verify Agents are RUNNING after Upgrade (API) [critical] @post-external-upgrade @post-client-upgrade',
   async ({ inventoryAPI, current }) => {
     const remoteInstance = remoteInstancesFixture.getUpgradeRemoteServiceByName(current);
 
@@ -84,7 +84,7 @@ Data(remoteUpgradeInstances).Scenario(
 );
 
 Data(remoteUpgradeInstances).Scenario(
-  'PMM-T2072 - Verify Agents are RUNNING after Upgrade (UI) [critical] @post-external-upgrade @post-client-upgrade @post-upgrade',
+  'PMM-T2072 - Verify Agents are RUNNING after Upgrade (UI) [critical] @post-external-upgrade @post-client-upgrade',
   async ({ I, pmmInventoryPage, current }) => {
     const remoteInstance = remoteInstancesFixture.getUpgradeRemoteServiceByName(current);
 
@@ -95,7 +95,7 @@ Data(remoteUpgradeInstances).Scenario(
 );
 
 Data(remoteUpgradeInstances).Scenario(
-  'PMM-T2071 - Verify Agents are Running and Metrics are being collected Pre and Post Upgrade (API) [critical] @pre-external-upgrade @post-external-upgrade @post-client-upgrade @post-upgrade',
+  'PMM-T2071 - Verify Agents are Running and Metrics are being collected Pre and Post Upgrade (API) [critical] @pre-external-upgrade @post-external-upgrade @post-client-upgrade',
   async ({ I, grafanaAPI, current }) => {
     const remoteInstance = remoteInstancesFixture.getUpgradeRemoteServiceByName(current);
 
@@ -104,7 +104,7 @@ Data(remoteUpgradeInstances).Scenario(
 );
 
 Data(remoteUpgradeInstances).Scenario(
-  'PMM-T2070 - Verify QAN has specific filters for Remote Instances after Upgrade (UI) @post-external-upgrade @post-client-upgrade @post-upgrade',
+  'PMM-T2070 - Verify QAN has specific filters for Remote Instances after Upgrade (UI) @post-external-upgrade @post-client-upgrade',
   async ({ I, queryAnalyticsPage, current }) => {
     const remoteInstance = remoteInstancesFixture.getUpgradeRemoteServiceByName(current);
 

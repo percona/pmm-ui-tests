@@ -60,7 +60,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T391 + PMM-T1818 - Verify that custom home dashboard stays as home dashboard after upgrade @post-dashboards-upgrade @post-upgrade',
+  'PMM-T391 + PMM-T1818 - Verify that custom home dashboard stays as home dashboard after upgrade @post-dashboards-upgrade',
   async ({ I, grafanaAPI, dashboardPage }) => {
     I.amOnPage('/pmm-ui/');
     dashboardPage.waitForDashboardOpened();
@@ -87,7 +87,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T998 - Verify dashboard folders after upgrade @post-dashboards-upgrade @post-upgrade',
+  'PMM-T998 - Verify dashboard folders after upgrade @post-dashboards-upgrade',
   async ({
     I, searchDashboardsModal, grafanaAPI, homePage, dashboardPage,
   }) => {
@@ -104,7 +104,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1091 - Verify PMM Dashboards folders are correct @post-dashboards-upgrade @post-upgrade',
+  'PMM-T1091 - Verify PMM Dashboards folders are correct @post-dashboards-upgrade',
   async ({
     I, searchDashboardsModal,
   }) => {
@@ -121,7 +121,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T1003 - Verify UI upgrade with Custom dashboard @post-dashboards-upgrade @post-upgrade',
+  'PMM-T1003 - Verify UI upgrade with Custom dashboard @post-dashboards-upgrade',
   async ({
     I, searchDashboardsModal, grafanaAPI, homePage, dashboardPage,
   }) => {
@@ -136,7 +136,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-T424 Verify PT Summary Panel is available after Upgrade @post-dashboards-upgrade @post-upgrade',
+  'PMM-T424 Verify PT Summary Panel is available after Upgrade @post-dashboards-upgrade',
   async ({ I, dashboardPage }) => {
     const filter = 'Node Name';
 
@@ -151,7 +151,7 @@ Scenario(
 );
 
 Scenario(
-  'PMM-12587-2 Verify duplicate dashboards dont break after upgrade @post-dashboards-upgrade @post-upgrade',
+  'PMM-12587-2 Verify duplicate dashboards dont break after upgrade @post-dashboards-upgrade',
   async ({
     I, grafanaAPI, dashboardPage,
   }) => {
