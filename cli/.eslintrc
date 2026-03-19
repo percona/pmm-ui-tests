@@ -19,7 +19,7 @@
       "parserOptions": {
         "ecmaVersion": "latest",
         "parser": "@typescript-eslint/parser",
-        "project": ["./tsconfig.json"]
+        "project": ["./cli/tsconfig.json"]
       },
       "rules": {
         "@typescript-eslint/no-unsafe-assignment": ["off"],
