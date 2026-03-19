@@ -1,18 +1,21 @@
 import { test, expect } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 import * as zipHelper from '@helpers/zip-helper';
+import { getPmmAdminMinorVersion } from '@root/helpers/pmm-admin';
 
 const PXC_USER = 'admin';
 const PXC_PASSWORD = 'admin';
 let containerName: string;
 const dbHostPort = '127.0.0.1:6032';
 const proxysqlServiceName = 'proxysql_1';
+let adminVersion: number;
 
-test.describe('PMM Client CLI tests for ProxySQL', async () => {
+test.describe('PMM Client CLI tests for ProxySQL', () => {
   test.beforeAll(async ({}) => {
     const result = await cli.exec('docker ps | grep pxc_proxysql_pmm | awk \'{print $NF}\'');
     await result.outContains('pxc_proxysql_pmm', 'PROXYSQL docker container should exist. please run pmm-framework with --database pxc');
     containerName = result.stdout.trim();
+    adminVersion = await getPmmAdminMinorVersion(containerName);
   });
 
   /**
@@ -80,6 +83,8 @@ test.describe('PMM Client CLI tests for ProxySQL', async () => {
   });
 
   test('PMM-T2158 - verify proxysql monitoring by viewer user', async ({}) => {
+    test.skip(adminVersion < 6, 'This test is relevant for pmm-client version 3.6.0 and above');
+
     const viewerPassword = 'read_user';
     const viewerUsername = 'read_user';
     const serviceName = `viewer_proxysql_${containerName}_${Date.now()}`;
