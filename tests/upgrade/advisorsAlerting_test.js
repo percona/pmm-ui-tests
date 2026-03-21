@@ -135,6 +135,7 @@ Scenario(
     const alertName = 'Node high CPU load';
 
     I.amOnPage(alertsPage.url);
+    I.waitForElement(alertsPage.elements.alertRow(alertName), 120);
 
     await alertsAPI.waitForAlerts(10, 1);
     const alerts = await alertsAPI.getAlertsList();

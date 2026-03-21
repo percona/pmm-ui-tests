@@ -69,7 +69,7 @@ Scenario(
     await I.stopMockingUpgrade();
     I.amOnPage(homePage.url);
 
-    await I.clickIfVisible(homePage.updatesModal.closeIcon);
+    await homePage.updatesModal.closeModal();
     await homePage.upgradePMM(versionMinor);
   },
 ).retry(0);
