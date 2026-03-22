@@ -3,7 +3,7 @@ const { I } = inject();
 class UpdatesAvailableModalComponent {
   constructor() {
     this.root = locate('[role="dialog"]');
-    this.closeIcon = this.root.find('[aria-label="Close"]');
+    this.closeIcon = locate('//*[@aria-label="Close" or @data-testid="modal-close-button"]');
     this.dismissButton = this.root.find('button').withText('Dismiss');
     this.goToUpdatesPage = this.root.find('button').withText('Go to updates page');
   }
