@@ -3,7 +3,7 @@ const { I } = inject();
 class UpdatesAvailableModalComponent {
   constructor() {
     this.root = locate('//*[contains(@class, "MuiStack-root")]');
-    this.closeIcon = this.root.find('//*[@data-testid="CloseIcon"]');
+    this.closeIcon = this.root.find('//*[@data-testid="CloseIcon" or @data-testid="modal-close-button"]');
     this.dismissButton = this.root.find('button').withText('Dismiss');
     this.goToUpdatesPage = this.root.find('button').withText('Go to updates page');
   }
