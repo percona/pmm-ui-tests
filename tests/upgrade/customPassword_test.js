@@ -45,7 +45,7 @@ Data(clientDbServices).Scenario(
         break;
       case SERVICE_TYPE.MONGODB:
         output = await I.verifyCommand(
-          `docker exec ${await getContainerName('rs101')} pmm-admin add mongodb --username=${credentials.mongoReplicaPrimaryForBackups.username} --password="${credentials.mongoReplicaPrimaryForBackups.password}" --port=${credentials.mongoReplicaPrimaryForBackups.port} --host=127.0.0.1 --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
+          `docker exec ${await getContainerName('rs101')} pmm-admin add mongodb --username=${credentials.mongoReplicaPrimaryForBackups.username} --password="${credentials.mongoReplicaPrimaryForBackups.password}" --port=27017 --host=127.0.0.1 --agent-password=uitests --custom-labels="testing=upgrade" upgrade-${upgrade_service}`,
         );
         break;
       default:
