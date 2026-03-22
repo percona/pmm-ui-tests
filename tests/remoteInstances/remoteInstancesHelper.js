@@ -138,14 +138,14 @@ module.exports = {
         clusterName: 'mysql_clstr',
       },
       ps_8_0: {
-        host: 'ps_pmm_8.0',
+        host: 'ps_pmm_8_4_1',
         port: '3307',
         username: 'msandbox',
         password: 'msandbox',
         clusterName: 'mysql_clstr',
       },
       ps_8_4: {
-        host: 'ps_pmm_8.4_1',
+        host: 'ps_pmm_8_4_1',
         port: '3306',
         server_port: '3306',
         username: 'root',
