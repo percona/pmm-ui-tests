@@ -276,10 +276,10 @@ class Grafana extends Helper {
     const { Playwright } = this.helpers;
 
     for (let i = 0; i < timeout; i++) {
-      const numVisible = await Playwright.page.locator(element).count();
+      const numVisible = await Playwright.grabNumberOfVisibleElements(element);
 
       if (numVisible) {
-        await Playwright.page.locator(element).click(element);
+        await Playwright.click(element);
 
         return element;
       }
