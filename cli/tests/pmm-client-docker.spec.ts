@@ -4,6 +4,9 @@ import * as cli from '@helpers/cli-helper';
 test.describe('PMM Client Docker CLI tests', async () => {
   test.beforeAll(async ({}) => {
     const response = await cli.exec('docker compose -f test-setup/docker-compose-pmm-client.yaml up -d --quiet-pull');
+    await cli.exec('docker exec pmm-client-1 pmm-admin add mysql --service-name=mysql-ps --username=pmm --password=pmm-pass --address=ps:3306');
+    await cli.exec('docker exec pmm-client-1 pmm-admin add mongodb --service-name=mongodb-psmdb --username=pmm --password=pmm-pass --address=mongodb:27017 --authentication-database=admin');
+    await cli.exec('docker exec pmm-client-1 pmm-admin add postgresql --service-name=postgres-pdpgsql --username=pmm --password=pmm-pass --address=postgres:5432');
     console.log(response.stdout);
     console.log((await cli.exec('docker ps')).stdout);
     console.log((await cli.exec('docker logs pmm-client-1')).stdout);
