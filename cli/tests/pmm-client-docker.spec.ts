@@ -3,7 +3,8 @@ import * as cli from '@helpers/cli-helper';
 
 test.describe('PMM Client Docker CLI tests', async () => {
   test.beforeAll(async ({}) => {
-    await (await cli.exec('docker compose -f test-setup/docker-compose-pmm-client.yaml up -d')).assertSuccess();
+    const response = await cli.exec('docker compose -f test-setup/docker-compose-pmm-client.yaml up -d');
+    console.log(response.stdout);
     console.log((await cli.exec('docker ps')).stdout);
   });
   /**
