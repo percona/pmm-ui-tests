@@ -32,15 +32,16 @@ services:
         condition: service_started
       postgres:
         condition: service_started
-    entrypoint: ["/bin/bash", "-c"]
+    entrypoint: ["/bin/bash", "-lc"]
     command: |
       set -e
-      # start the agent in the background so pmm-admin can talk to it
       pmm-agent-entrypoint &
-      # wait for databases to accept TCP connections
+
       for host in ps:3306 mongodb:27017 postgres:5432; do
-        echo "Waiting for $host..."
-        until nc -z ${host/:/ }; do sleep 2; done
+        echo "Waiting for $$host..."
+        h="$${host%%:*}"
+        p="$${host##*:}"
+        until nc -z "$$h" "$$p"; do sleep 2; done
       done
       echo "Adding MySQL..."
       pmm-admin add mysql --service-name=mysql-ps --username=pmm --password=pmm-pass --address=ps:3306
@@ -48,7 +49,6 @@ services:
       pmm-admin add mongodb --service-name=mongodb-psmdb --username=pmm --password=pmm-pass --address=mongodb:27017 --authentication-database=admin
       echo "Adding PostgreSQL..."
       pmm-admin add postgresql --service-name=postgres-pdpgsql --username=pmm --password=pmm-pass --address=postgres:5432
-      # keep the container alive
       wait -n
     networks:
       - docker-client-check
