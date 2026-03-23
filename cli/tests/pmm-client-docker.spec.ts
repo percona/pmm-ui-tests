@@ -4,6 +4,7 @@ import * as cli from '@helpers/cli-helper';
 test.describe('PMM Client Docker CLI tests', async () => {
   test.beforeAll(async ({}) => {
     await (await cli.exec('docker compose -f test-setup/docker-compose-pmm-client.yaml up -d')).assertSuccess();
+    console.log((await cli.exec('docker ps')).stdout);
   });
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pmm-client-docker-tests.bats#L6
