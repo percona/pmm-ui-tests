@@ -32,17 +32,24 @@ services:
         condition: service_started
       postgres:
         condition: service_started
-    command: >
-      sh -c '
-        for host in ps:3306 mongodb:27017 postgres:5432; do
-          echo "Waiting for $host...";
-          until nc -z $(echo $host | tr ":" " "); do sleep 2; done;
-        done;
-        echo "Adding MySQL..."; pmm-admin add mysql --service-name=mysql-ps --username=pmm --password=pmm-pass --address=ps:3306;
-        echo "Adding MongoDB..."; pmm-admin add mongodb --service-name=mongodb-psmdb --username=pmm --password=pmm-pass --address=mongodb:27017 --authentication-database=admin;
-        echo "Adding PostgreSQL..."; pmm-admin add postgresql --service-name=postgres-pdpgsql --username=pmm --password=pmm-pass --address=postgres:5432;
-        tail -f /dev/null
-      '
+    entrypoint: ["/bin/bash", "-c"]
+    command: |
+      set -e
+      # start the agent in the background so pmm-admin can talk to it
+      pmm-agent-entrypoint &
+      # wait for databases to accept TCP connections
+      for host in ps:3306 mongodb:27017 postgres:5432; do
+        echo "Waiting for $host..."
+        until nc -z ${host/:/ }; do sleep 2; done
+      done
+      echo "Adding MySQL..."
+      pmm-admin add mysql --service-name=mysql-ps --username=pmm --password=pmm-pass --address=ps:3306
+      echo "Adding MongoDB..."
+      pmm-admin add mongodb --service-name=mongodb-psmdb --username=pmm --password=pmm-pass --address=mongodb:27017 --authentication-database=admin
+      echo "Adding PostgreSQL..."
+      pmm-admin add postgresql --service-name=postgres-pdpgsql --username=pmm --password=pmm-pass --address=postgres:5432
+      # keep the container alive
+      wait -n
     networks:
       - docker-client-check
 
