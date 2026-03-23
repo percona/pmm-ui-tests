@@ -116,7 +116,7 @@ Scenario(
     foldersNames.push('auto-test-folder');
     const actualFolders = (await searchDashboardsModal.getFoldersList());
 
-    I.assertDeepMembers(actualFolders, foldersNames);
+    I.assertDeepMembers([...actualFolders].sort(), [...foldersNames].sort());
   },
 );
 
