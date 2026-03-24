@@ -1,17 +1,6 @@
 version: '3.7'
 
 services:
-  pmm-server:
-    container_name: pmm-server-1
-    image: ${DOCKER_VERSION:-perconalab/pmm-server:3-dev-latest}
-    ports:
-      - "2553:8443"
-      - "8085:8080"
-    environment:
-      - PMM_DEBUG=1
-    networks:
-      - docker-client-check
-
   pmm-client:
     container_name: pmm-client-1
     image: ${CLIENT_DOCKER_VERSION:-perconalab/pmm-client:3-dev-latest}
