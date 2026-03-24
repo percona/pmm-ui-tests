@@ -10,10 +10,10 @@ import ExecReturn from '@helpers/types/exec-return.class';
  * @return      {@link CliOutput} instance
  */
 export function execute(command: string): ExecReturn {
-  // console.log(`exec: "${command}"`);
-  const obj = shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: true });
-  // if (obj.stdout.length > 0) console.log(`Out: "${obj.stdout}"`);
-  // if (obj.stderr.length > 0) console.log(`Error: "${obj.stderr}"`);
+  console.log(`exec: "${command}"`);
+  const obj = shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: false });
+  if (obj.stdout.length > 0) console.log(`Out: "${obj.stdout}"`);
+  if (obj.stderr.length > 0) console.log(`Error: "${obj.stderr}"`);
   return new ExecReturn(command, obj);
 }
 
@@ -40,7 +40,7 @@ export async function execSilent(command: string): Promise<ExecReturn> {
   return new ExecReturn(
     command,
     await test.step(`Run "${command}" command`, async (): Promise<ExecOutputReturnValue> => {
-      return shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: true });
+      return shell.exec(command.replace(/(\r\n|\n|\r)/gm, ''), { silent: false });
     }),
   );
 }
