@@ -7,8 +7,10 @@ test.describe('PMM Client Docker CLI tests', async () => {
     const connectResponse = await cli.exec('docker network connect docker-client-check pmm-server');
     console.log(connectResponse);
     const response = await cli.exec('docker compose -f test-setup/docker-compose-pmm-client.yaml up -d --quiet-pull');
+    console.log(await cli.exec('docker logs pmm-client-1'));
     console.log(response);
     await cli.exec('sleep 2');
+    console.log(await cli.exec('docker logs pmm-client-1'));
     const mysql = await cli.exec('docker exec pmm-client-1 pmm-admin add mysql --username=pmm --password=pmm-pass --service-name=ps-8.0 --query-source=perfschema --host=ps-1 --port=3306 --server-url=https://admin:admin@pmm-server:8443 --server-insecure-tls=true');
     console.log(mysql);
     await cli.exec('docker exec pmm-client-1 pmm-admin add postgresql --query-source=pgstatements --username=pmm --password=pmm-pass --service-name=pdpgsql-1 --host=pdpgsql-1 --port=5432 --server-url=https://admin:admin@pmm-server:8443 --server-insecure-tls=true');
