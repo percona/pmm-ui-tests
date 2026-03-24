@@ -1,6 +1,17 @@
 version: '3.7'
 
 services:
+  pmm-server:
+    container_name: pmm-server-1
+    image: ${DOCKER_VERSION:-perconalab/pmm-server:3-dev-latest}
+    ports:
+      - "2553:8443"
+      - "8085:8080"
+    environment:
+      - PMM_DEBUG=1
+    networks:
+      - docker-client-check
+
   pmm-client:
     container_name: pmm-client-1
     image: ${CLIENT_DOCKER_VERSION:-perconalab/pmm-client:3-dev-latest}
@@ -31,7 +42,7 @@ services:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_USER=pmm
       - MYSQL_PASSWORD=pmm-pass
-      - PMM_AGENT_SERVER_ADDRESS=pmm-server:8443
+      - PMM_AGENT_SERVER_ADDRESS=pmm-server-1:8443
     networks:
       - docker-client-check
 
@@ -39,7 +50,7 @@ services:
     container_name: psmdb-1
     image: percona/percona-server-mongodb:7.0
     environment:
-      - PMM_AGENT_SERVER_ADDRESS=pmm-server:8443
+      - PMM_AGENT_SERVER_ADDRESS=pmm-server-1:8443
       - MONGO_INITDB_ROOT_USERNAME=pmm
       - MONGO_INITDB_ROOT_PASSWORD=pmm-pass
     networks:
@@ -51,7 +62,7 @@ services:
     environment:
       - POSTGRES_USER=pmm
       - POSTGRES_PASSWORD=pmm-pass
-      - PMM_AGENT_SERVER_ADDRESS=pmm-server:8443
+      - PMM_AGENT_SERVER_ADDRESS=pmm-server-1:8443
     networks:
       - docker-client-check
 
