@@ -3,9 +3,13 @@ import * as cli from '@helpers/cli-helper';
 
 test.describe('PMM Client Docker CLI tests', async () => {
   test.beforeAll(async ({}) => {
-    const result = await cli.exec('docker ps | grep pmm-client-1 | awk \'{print $NF}\'');
-    await result.outContains('pmm-client-1', 'Docker container pmm-client-1 should exist. please run pmm-framework with --database dockerclients');
+    await cli.exec('docker compose -f test-setup/docker-compose-pmm-client.yaml up -d --quiet-pull');
+    await cli.exec('sleep 2');
+    await cli.exec('docker exec pmm-client-1 pmm-admin add mysql --username=pmm --password=pmm-pass --service-name=ps-8.0 --query-source=perfschema --host=ps-1 --port=3306 --server-url=https://admin:admin@pmm-server-1:8443 --server-insecure-tls=true');
+    await cli.exec('docker exec pmm-client-1 pmm-admin add postgresql --query-source=pgstatements --username=pmm --password=pmm-pass --service-name=pdpgsql-1 --host=pdpgsql-1 --port=5432 --server-url=https://admin:admin@pmm-server-1:8443 --server-insecure-tls=true');
+    await cli.exec('docker exec pmm-client-1 pmm-admin add mongodb --username=pmm --password=pmm-pass --service-name=mongodb-7.0  --host=psmdb-1 --port=27017 --server-url=https://admin:admin@pmm-server-1:8443 --server-insecure-tls=true');
   });
+
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pmm-client-docker-tests.bats#L6
    */
