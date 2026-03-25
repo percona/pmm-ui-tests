@@ -176,6 +176,7 @@ Scenario(
     await I.wait(1);
     await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
+    console.log(await I.verifyCommand('docker exec pmm-server-password cat /srv/logs/grafana.log'));
     const response = await I.verifyCommand('docker exec -t pmm-server-password change-admin-password anotherpass');
 
     console.log('Password change response is: ');
