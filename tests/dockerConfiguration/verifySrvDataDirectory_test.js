@@ -182,13 +182,6 @@ Scenario(
 
     console.log('Password change response is: ');
     console.log(response);
-
-    I.wait(5);
-    // const logsPassword = await I.verifyCommand('docker logs pmm-server-password');
-    //
-    // console.log('Logs are: ');
-    // console.log(logsPassword);
-
     console.log(await I.verifyCommand('docker exec pmm-server-password cat /srv/logs/grafana.log'));
     await I.wait(10);
     await I.unAuthorize();
