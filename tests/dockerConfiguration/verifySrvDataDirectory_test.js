@@ -13,6 +13,7 @@ const runContainerWithoutDataContainer = async (I) => {
 };
 
 const runContainerWithPasswordVariable = async (I) => {
+  await I.verifyCommand('rm -fr $HOME/srvPassword/ || true');
   await I.verifyCommand('mkdir $HOME/srvPassword/ || true');
   await I.verifyCommand('chmod -R 777 $HOME/srvPassword/ || true');
   await I.verifyCommand(`docker run -v $HOME/srvPassword:/srv -d -e GF_SECURITY_ADMIN_PASSWORD=newpass -e PMM_ENABLE_INTERNAL_PG_QAN=1 --restart always --publish 8082:8080 --name pmm-server-password ${dockerVersion}`);
@@ -175,11 +176,12 @@ Scenario(
     await I.wait(1);
     await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
-    await I.verifyCommand('docker exec -t pmm-server-password change-admin-password anotherpass');
     await I.unAuthorize();
     await I.amOnPage(basePmmUrl + loginPage.url);
+    await I.verifyCommand('docker exec -t pmm-server-password change-admin-password anotherpass');
+    await I.wait(10);
     await I.Authorize('admin', 'anotherpass', basePmmUrl);
-    await I.wait(5);
+    await I.wait(10);
     await I.amOnPage(basePmmUrl + homePage.url);
     await I.waitForElement(homePage.fields.dashboardHeaderLocator, 60);
   },
