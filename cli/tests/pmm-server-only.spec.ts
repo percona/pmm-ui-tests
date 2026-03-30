@@ -9,7 +9,7 @@ const DOCKER_IMAGE = process.env.DOCKER_VERSION && process.env.DOCKER_VERSION.le
 const stopList: string[] = [];
 const removeList: string[] = [];
 
-test.describe('PMM Server CLI tests for Docker Environment Variables', async () => {
+test.describe('PMM Server CLI tests for Docker Environment Variables', { tag: '@server-only' }, async () => {
   test.afterEach(async () => {
     while (stopList.length > 0) {
       await (await cli.exec(`docker stop ${stopList.shift()}`)).assertSuccess();

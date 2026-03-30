@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
 
-test.describe('PMM Client Docker CLI tests', async () => {
+test.describe('PMM Client Docker CLI tests', { tag: '@client-docker' }, async () => {
   test.beforeAll(async ({}) => {
     await cli.exec('docker compose -f test-setup/docker-compose-pmm-client.yaml up -d --quiet-pull');
     await cli.exec('sleep 2');
@@ -83,7 +83,7 @@ test.describe('PMM Client Docker CLI tests', async () => {
   });
 });
 
-test.describe('-promscrape.maxScapeSize tests', async () => {
+test.describe('-promscrape.maxScapeSize tests', { tag: '@client-docker' }, async () => {
   const defaultScrapeSize = '64';
   test.beforeAll(async () => {
     await (await cli.exec('docker compose -f test-setup/docker-compose-scrape-intervals.yml up -d')).assertSuccess();

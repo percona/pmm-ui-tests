@@ -10,7 +10,7 @@ const dbHostPort = '127.0.0.1:6032';
 const proxysqlServiceName = 'proxysql_1';
 let adminVersion: number;
 
-test.describe('PMM Client CLI tests for ProxySQL', () => {
+test.describe('PMM Client CLI tests for ProxySQL', { tag: '@proxysql' }, async () => {
   test.beforeAll(async ({}) => {
     const result = await cli.exec('docker ps | grep pxc_proxysql_pmm | awk \'{print $NF}\'');
     await result.outContains('pxc_proxysql_pmm', 'PROXYSQL docker container should exist. please run pmm-framework with --database pxc');

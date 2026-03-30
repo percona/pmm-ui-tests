@@ -13,7 +13,7 @@ const mongoServiceName = 'mongo_service_1';
 const containerName = 'rs101';
 let adminVersion: number;
 
-test.describe('Percona Server MongoDB (PSMDB) CLI tests', () => {
+test.describe('Percona Server MongoDB (PSMDB) CLI tests', { tag: '@psmdb' }, async () => {
   test.beforeAll(async ({}) => {
     const result = await cli.exec(`docker ps | grep ${containerName} | awk '{print $NF}'`);
     await result.outContains(containerName, 'PSMDB rs101 docker container should exist. please run pmm-framework with --database psmdb,SETUP_TYPE=pss');
