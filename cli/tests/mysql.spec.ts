@@ -10,7 +10,7 @@ const grepServicesCmd = (serviceName: string) => {
   return `sudo  pmm-admin list | grep "MySQL" | grep "${serviceName}" | awk -F" " '{print $2}'`;
 };
 
-test.describe('PMM Client CLI tests for MySQL', async () => {
+test.describe('PMM Client CLI tests for MySQL', { tag: '@mysql' }, async () => {
   test.beforeAll(async ({}) => {
     const result = await cli.exec('docker ps | grep mysql_pmm | awk \'{print $NF}\'');
     await result.outContains('mysql_pmm', 'MYSQL docker container should exist. please run pmm-framework with --database mysql');
