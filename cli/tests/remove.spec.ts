@@ -10,7 +10,7 @@ const PMM_CLIENT_IMAGE = process.env.CLIENT_IMAGE && process.env.CLIENT_IMAGE.le
 const clientPassword = 'gfaks4d8OH';
 const services = ['mysql', 'mongodb', 'postgresql', 'proxysql', 'external', 'haproxy'];
 
-test.describe('PMM Server CLI tests for Docker Environment Variables', async () => {
+test.describe('PMM Server CLI tests for Docker Environment Variables', { tag: '@service-removal' }, async () => {
   test.beforeAll(async () => {
     await cli.exec(`PMM_SERVER_IMAGE=${PMM_SERVER_IMAGE}
       PMM_CLIENT_IMAGE=${PMM_CLIENT_IMAGE}
