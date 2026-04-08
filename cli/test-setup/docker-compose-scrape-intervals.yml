@@ -11,6 +11,7 @@ services:
   pmm-server-scrape-interval:
     image: ${DOCKER_VERSION:-perconalab/pmm-server:3-dev-latest}
     container_name: pmm-server-scrape-interval
+    platform: linux/amd64
     ports:
       - "180:80"
       - "1443:8443"
@@ -22,6 +23,7 @@ services:
   pmm-client-scrape-interval:
     image: ${CLIENT_DOCKER_VERSION:-perconalab/pmm-client:3-dev-latest}
     container_name: pmm-client-scrape-interval
+    platform: linux/amd64
     depends_on:
       pmm-server-scrape-interval:
         condition: service_healthy
@@ -44,6 +46,7 @@ services:
   pmm-server-custom-scrape-interval:
     image: ${DOCKER_VERSION:-perconalab/pmm-server:3-dev-latest}
     container_name: pmm-server-custom-scrape-interval
+    platform: linux/amd64
     ports:
       - "280:80"
       - "2443:8443"
@@ -57,6 +60,7 @@ services:
   pmm-client-custom-scrape-interval:
     image: ${CLIENT_DOCKER_VERSION:-perconalab/pmm-client:3-dev-latest}
     container_name: pmm-client-custom-scrape-interval
+    platform: linux/amd64
     depends_on:
       pmm-server-custom-scrape-interval:
         condition: service_healthy
