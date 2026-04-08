@@ -1,12 +1,9 @@
-import { test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
+import { clientDockerImage, dockerImage } from '@helpers/constants';
 
-const PMM_SERVER_IMAGE = process.env.DOCKER_VERSION && process.env.DOCKER_VERSION.length > 0
-  ? process.env.DOCKER_VERSION
-  : 'perconalab/pmm-server:3-dev-latest';
-const PMM_CLIENT_IMAGE = process.env.CLIENT_IMAGE && process.env.CLIENT_IMAGE.length > 0
-  ? process.env.CLIENT_IMAGE
-  : 'perconalab/pmm-client:3-dev-latest';
+const PMM_SERVER_IMAGE = dockerImage;
+const PMM_CLIENT_IMAGE = clientDockerImage;
 const clientPassword = 'gfaks4d8OH';
 const services = ['mysql', 'mongodb', 'postgresql', 'proxysql', 'external', 'haproxy'];
 
@@ -15,7 +12,13 @@ test.describe('PMM Server CLI tests for Docker Environment Variables', { tag: '@
     await cli.exec(`PMM_SERVER_IMAGE=${PMM_SERVER_IMAGE}
       PMM_CLIENT_IMAGE=${PMM_CLIENT_IMAGE}
       docker compose -f test-setup/docker-compose-pmm-admin-remove.yml up -d`);
-    await cli.exec('sleep 10');
+    await expect(async () => {
+      const status = await cli.exec('docker exec pmm-client-remove pmm-admin status');
+      await status.assertSuccess();
+    }).toPass({
+      timeout: 60_000,
+      intervals: [2_000],
+    });
 
     for (let i = 0; i < 2; i++) {
       await cli.exec(`docker exec pmm-client-remove pmm-admin add mysql --username=root --password=${clientPassword} mysql5.7 --service-name=mysql${i} mysql5.7:3306`);
