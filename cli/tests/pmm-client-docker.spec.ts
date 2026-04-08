@@ -20,7 +20,7 @@ test.describe('PMM Client Docker CLI tests', { tag: '@client-docker' }, async ()
   /**
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pmm-client-docker-tests.bats#L6
    */
-  test.only('run pmm-admin list on pmm-client docker container', async ({}) => {
+  test('run pmm-admin list on pmm-client docker container', async ({}) => {
     const output = await cli.exec('docker exec pmm-client-1 pmm-admin list');
     await output.assertSuccess();
     await output.outContainsMany([
