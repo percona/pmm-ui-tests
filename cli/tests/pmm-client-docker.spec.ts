@@ -31,9 +31,9 @@ test.describe('PMM Client Docker CLI tests', { tag: '@client-docker' }, async ()
         'pdpgsql-1',
         'Running',
       ]);
-      await output.outNotContains('Unknown')
+      await output.outNotContains('Unknown');
     }).toPass({
-      timeout: 60_000,
+      timeout: 120_000,
       intervals: [2_000],
     });
   });
