@@ -21,15 +21,21 @@ test.describe('PMM Client Docker CLI tests', { tag: '@client-docker' }, async ()
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pmm-client-docker-tests.bats#L6
    */
   test('run pmm-admin list on pmm-client docker container', async ({}) => {
-    const output = await cli.exec('docker exec pmm-client-1 pmm-admin list');
-    await output.assertSuccess();
-    await output.outContainsMany([
-      'Service type',
-      'ps-8.0',
-      'mongodb-7.0',
-      'pdpgsql-1',
-      'Running',
-    ]);
+    await expect(async () => {
+      const output = await cli.exec('docker exec pmm-client-1 pmm-admin list');
+      await output.assertSuccess();
+      await output.outContainsMany([
+        'Service type',
+        'ps-8.0',
+        'mongodb-7.0',
+        'pdpgsql-1',
+        'Running',
+      ]);
+      await output.outNotContains('Unknown')
+    }).toPass({
+      timeout: 60_000,
+      intervals: [2_000],
+    });
   });
 
   /**
