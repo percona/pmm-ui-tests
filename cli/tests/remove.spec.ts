@@ -9,13 +9,12 @@ const services = ['mysql', 'mongodb', 'postgresql', 'proxysql', 'external', 'hap
 
 test.describe('PMM Server CLI tests for Docker Environment Variables', { tag: '@service-removal' }, async () => {
   test.beforeAll(async () => {
-    await cli.exec(`PMM_SERVER_IMAGE=${PMM_SERVER_IMAGE}
-      PMM_CLIENT_IMAGE=${PMM_CLIENT_IMAGE}
-      docker compose -f test-setup/docker-compose-pmm-admin-remove.yml up -d`);
+    const startCommand = `PMM_SERVER_IMAGE=${PMM_SERVER_IMAGE} PMM_CLIENT_IMAGE=${PMM_CLIENT_IMAGE} docker compose -f test-setup/docker-compose-pmm-admin-remove.yml up -d`;
+    await cli.exec(startCommand);
     await expect(async () => {
       const status = await cli.exec('docker exec pmm-client-remove pmm-admin status');
       await status.assertSuccess();
-    }).toPass({
+    }, { message: `"${startCommand}" failed to start.\nLogs:${(await cli.exec('docker logs pmm-server-remove')).stdout}` }).toPass({
       timeout: 60_000,
       intervals: [2_000],
     });

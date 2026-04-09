@@ -4,11 +4,12 @@ import { clientDockerImage, dockerImage } from '@root/helpers/constants';
 
 test.describe('PMM Client Docker CLI tests', { tag: '@client-docker' }, async () => {
   test.beforeAll(async ({}) => {
-    await cli.exec(`DOCKER_VERSION=${dockerImage} CLIENT_DOCKER_VERSION=${clientDockerImage} docker compose -f test-setup/docker-compose-pmm-client.yaml up -d`);
+    const startCommand = `DOCKER_VERSION=${dockerImage} CLIENT_DOCKER_VERSION=${clientDockerImage} docker compose -f test-setup/docker-compose-pmm-client.yaml up -d`;
+    await cli.exec(startCommand);
     await expect(async () => {
       const status = await cli.exec('docker exec pmm-client-1 pmm-admin status');
       await status.assertSuccess();
-    }).toPass({
+    }, { message: `"${startCommand}" failed to start.\nLogs:${(await cli.exec('docker logs pmm-server-1')).stdout}` }).toPass({
       timeout: 60_000,
       intervals: [2_000],
     });
