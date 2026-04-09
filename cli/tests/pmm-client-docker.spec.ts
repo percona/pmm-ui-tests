@@ -1,10 +1,18 @@
 import { expect, test } from '@playwright/test';
 import * as cli from '@helpers/cli-helper';
+import { clientDockerImage, dockerImage } from '@root/helpers/constants';
 
 test.describe('PMM Client Docker CLI tests', { tag: '@client-docker' }, async () => {
   test.beforeAll(async ({}) => {
-    await cli.exec('docker compose -f test-setup/docker-compose-pmm-client.yaml up -d --quiet-pull');
-    await cli.exec('sleep 2');
+    const startCommand = `DOCKER_VERSION=${dockerImage} CLIENT_DOCKER_VERSION=${clientDockerImage} docker compose -f test-setup/docker-compose-pmm-client.yaml up -d`;
+    await cli.exec(startCommand);
+    await expect(async () => {
+      const status = await cli.exec('docker exec pmm-client-1 pmm-admin status');
+      await status.assertSuccess();
+    }, { message: `"${startCommand}" failed to start.\nLogs:${(await cli.exec('docker logs pmm-server-1')).stdout}` }).toPass({
+      timeout: 60_000,
+      intervals: [2_000],
+    });
     await cli.exec('docker exec pmm-client-1 pmm-admin add mysql --username=pmm --password=pmm-pass --service-name=ps-8.0 --query-source=perfschema --host=ps-1 --port=3306 --server-url=https://admin:admin@pmm-server-1:8443 --server-insecure-tls=true');
     await cli.exec('docker exec pmm-client-1 pmm-admin add postgresql --query-source=pgstatements --username=pmm --password=pmm-pass --service-name=pdpgsql-1 --host=pdpgsql-1 --port=5432 --server-url=https://admin:admin@pmm-server-1:8443 --server-insecure-tls=true');
     await cli.exec('docker exec pmm-client-1 pmm-admin add mongodb --username=pmm --password=pmm-pass --service-name=mongodb-7.0  --host=psmdb-1 --port=27017 --server-url=https://admin:admin@pmm-server-1:8443 --server-insecure-tls=true');
@@ -14,15 +22,21 @@ test.describe('PMM Client Docker CLI tests', { tag: '@client-docker' }, async ()
    * @link https://github.com/percona/pmm-qa/blob/main/pmm-tests/pmm-2-0-bats-tests/pmm-client-docker-tests.bats#L6
    */
   test('run pmm-admin list on pmm-client docker container', async ({}) => {
-    const output = await cli.exec('docker exec pmm-client-1 pmm-admin list');
-    await output.assertSuccess();
-    await output.outContainsMany([
-      'Service type',
-      'ps-8.0',
-      'mongodb-7.0',
-      'pdpgsql-1',
-      'Running',
-    ]);
+    await expect(async () => {
+      const output = await cli.exec('docker exec pmm-client-1 pmm-admin list');
+      await output.assertSuccess();
+      await output.outContainsMany([
+        'Service type',
+        'ps-8.0',
+        'mongodb-7.0',
+        'pdpgsql-1',
+        'Running',
+      ]);
+      await output.outNotContains('Unknown');
+    }).toPass({
+      timeout: 120_000,
+      intervals: [2_000],
+    });
   });
 
   /**
@@ -86,7 +100,14 @@ test.describe('PMM Client Docker CLI tests', { tag: '@client-docker' }, async ()
 test.describe('-promscrape.maxScapeSize tests', { tag: '@client-docker' }, async () => {
   const defaultScrapeSize = '64';
   test.beforeAll(async () => {
-    await (await cli.exec('docker compose -f test-setup/docker-compose-scrape-intervals.yml up -d')).assertSuccess();
+    await (await cli.exec(`DOCKER_VERSION=${dockerImage} CLIENT_DOCKER_VERSION=${clientDockerImage} docker compose -f test-setup/docker-compose-scrape-intervals.yml up -d`)).assertSuccess();
+    await expect(async () => {
+      const status = await cli.exec('docker exec pmm-client-scrape-interval pmm-admin status');
+      await status.assertSuccess();
+    }).toPass({
+      timeout: 60_000,
+      intervals: [2_000],
+    });
   });
 
   test.afterAll(async () => {

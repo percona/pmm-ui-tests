@@ -11,3 +11,6 @@ export const gssapi = {
 export const clientCredentialsFlags = gssapi.enabled === 'true'
   ? gssapi.credentials_flags
   : `--username=${mongoConnection.username} --password=${mongoConnection.password}`;
+
+export const dockerImage = process.env.DOCKER_VERSION || 'perconalab/pmm-server:3-dev-latest';
+export const clientDockerImage = process.env.CLIENT_DOCKER_VERSION || 'perconalab/pmm-client:3-dev-latest';
