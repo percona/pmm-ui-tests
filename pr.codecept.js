@@ -98,6 +98,12 @@ exports.config = {
     ReporterHelper: {
       require: './tests/helper/reporter_helper.js',
     },
+    ResembleHelper: {
+      require: 'codeceptjs-resemblehelper',
+      baseFolder: './tests/screenshots/base/',
+      diffFolder: './tests/screenshots/diff/',
+      prepareBaseImage: true,
+    },
   },
   include: pageObjects,
   multiple: {
