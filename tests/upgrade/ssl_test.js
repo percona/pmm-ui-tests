@@ -112,6 +112,8 @@ Data(sslinstances).Scenario(
     } = current;
     const remoteServiceName = `remote_api_${serviceName}`;
 
+    console.log(await I.verifyCommand('docker ps -a'));
+
     // Waiting for metrics to start hitting for remotely added services
     I.wait(10);
     const apiServiceDetails = await inventoryAPI.getServiceDetailsByPartialName(serviceName);
