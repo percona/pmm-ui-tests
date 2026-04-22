@@ -76,6 +76,8 @@ module.exports = {
   async getServiceDetailsByPartialName(serviceName) {
     const service = await this.apiGetServices();
 
+    console.log(service.data);
+
     assert.ok(
       service.status === 200,
       `Failed to getService. Response message is "${service.data.message}"`,
