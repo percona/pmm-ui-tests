@@ -48,6 +48,8 @@ Scenario(
     const resp2 = await grafanaAPI.createCustomDashboard('test-dashboard', experimentalFolder.id);
     const workFolder = await I.verifyCommand('pwd');
 
+    console.log(`Work folder is: ${workFolder}`);
+
     await I.writeFileSync(`${workFolder}/dashboard.json`, JSON.stringify({
       DASHBOARD1_UID: resp1.uid,
       DASHBOARD2_UID: resp2.uid,
