@@ -76,7 +76,7 @@ Scenario(
   },
 ).retry(0);
 
-Scenario.skip('PMM-T1647 - Verify pmm-server package doesn\'t exist @post-upgrade @pmm-upgrade', async ({ I }) => {
+Scenario('PMM-T1647 - Verify pmm-server package doesn\'t exist @post-upgrade @pmm-upgrade', async ({ I }) => {
   await I.amOnPage('');
   const packages = await I.verifyCommand('docker exec pmm-server rpm -qa');
 
