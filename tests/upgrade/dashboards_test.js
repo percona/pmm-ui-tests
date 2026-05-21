@@ -7,7 +7,7 @@ Before(async ({ I }) => {
 });
 
 Scenario(
-  'PMM-T391 + PMM-T1818 - Verify user is able to create and set custom home dashboard @pre-dashboards-upgrade',
+  'PMM-T391 + PMM-T9999 - Verify user is able to create and set custom home dashboard @pre-dashboards-upgrade',
   async ({
     I, grafanaAPI, dashboardPage, searchDashboardsModal,
   }) => {
@@ -28,11 +28,8 @@ Scenario(
 
     const resp = await grafanaAPI.createCustomDashboard(grafanaAPI.customDashboardName, folder.id, additionalPanel, []);
 
-    console.log('Dashboard response is: ');
-    console.log(resp);
-
-    await grafanaAPI.starDashboard(grafanaAPI.customDashboardName);
-    await grafanaAPI.setHomeDashboard(resp.id);
+    await grafanaAPI.starDashboard(resp.uid);
+    await grafanaAPI.setHomeDashboard(resp.uid);
 
     I.amOnPage('pmm-ui/graph/');
     dashboardPage.waitForDashboardOpened();
