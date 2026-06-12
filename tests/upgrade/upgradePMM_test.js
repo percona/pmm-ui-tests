@@ -1,6 +1,5 @@
 const assert = require('assert');
 const { NODE_TYPE, SERVICE_TYPE, isOvFAmiJenkinsJob } = require('../helper/constants');
-const constants = require('../helper/constants');
 
 const { psMySql, dashboardPage, databaseChecksPage } = inject();
 
@@ -78,11 +77,6 @@ Scenario(
 ).retry(0);
 
 Scenario('PMM-T1647 - Verify pmm-server package doesn\'t exist @post-upgrade @pmm-upgrade', async ({ I }) => {
-  console.log(`Is Ovf or AMI jenkins job : ${isOvFAmiJenkinsJob}`);
-  console.log(`Job name is: ${process.env.JOB_NAME}`);
-  console.log('Test is running from pmm ui tests');
-  console.log(constants);
-
   if (!isOvFAmiJenkinsJob) {
     const packages = await I.verifyCommand('docker exec pmm-server rpm -qa');
 
