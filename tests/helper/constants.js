@@ -102,6 +102,7 @@ module.exports = {
   AGENT_TYPE,
   users,
   isJenkinsGssapiJob,
+  isOvFAmiJenkinsJob,
   gssapi,
   REMOTE_INSTANCE_TYPES,
 };
