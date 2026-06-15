@@ -190,14 +190,14 @@ module.exports = {
     );
   },
 
-  async starDashboard(id) {
+  async starDashboard(uid) {
     const headers = { Authorization: `Basic ${await I.getAuth()}` };
 
-    const resp = await I.sendPostRequest(`graph/api/user/stars/dashboard/${id}`, {}, headers);
+    const resp = await I.sendPostRequest(`graph/api/user/stars/dashboard/uid/${uid}`, {}, headers);
 
     assert.ok(
       resp.status === 200,
-      `Failed to star dashboard with id '${id}' . Response message is ${resp.data.message}`,
+      `Failed to star dashboard with uid: '${uid}' . Response message is ${resp.data.message}`,
     );
   },
 
