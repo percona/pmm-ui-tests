@@ -7,6 +7,10 @@ Before(async ({ I }) => {
   await I.Authorize();
 });
 
+After(async ({ I }) => {
+  await I.verifyCommand('docker start rs102');
+});
+
 const version = process.env.PSMDB_VERSION ? `${process.env.PSMDB_VERSION}` : '4.4';
 const replica_container_name = `psmdb_pmm_${version}_replica`;
 const regular_container_name = `psmdb_pmm_${version}_regular`;
@@ -233,4 +237,23 @@ Scenario('PMM-T1889 - Verify Mongo replication lag graph shows correct info @pmm
   const maxValue = await I.grabTextFrom(dashboardPage.getColumnLegendMaxValue(graphName, serviceName));
 
   I.assertFalse(/min|hour|day|week|month|year/.test(maxValue), `Max replication value should be in seconds. Value is: ${maxValue}`);
+});
+
+Scenario('PMM-T1956 Verify Node States panel when one node is down @pmm-psmdb-replica-integration', async ({
+  I, dashboardPage, grafanaAPI, inventoryAPI,
+}) => {
+  I.amOnPage(I.buildUrlWithParams(dashboardPage.mongodbReplicaSetSummaryDashboard.cleanUrl, {
+    from: 'now-15s',
+    refresh: '5s',
+    replica_set: 'rs',
+  }));
+  dashboardPage.waitForDashboardOpened();
+
+  await I.verifyCommand('docker stop rs102');
+
+  I.wait(30);
+
+  I.waitForElement(dashboardPage.panelByTitle('Node States').find('.u-over'), 15);
+  I.screenshotElement(dashboardPage.panelByTitle('Node States').find('.u-over'), 'Mongo_down_nodes_states');
+  I.seeVisualDiffForElement(dashboardPage.panelByTitle('Node States').find('.u-over'), 'Mongo_down_nodes_states.png', { prepareBaseImage: false });
 });
