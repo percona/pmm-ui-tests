@@ -26,7 +26,6 @@ jobs:
     uses: percona/pmm-qa/.github/workflows/e2e-tests-matrix.yml@main
     with:
       sha: 'null'
-      pmm_ui_tests_branch: ${{ github.head_ref }}
       pmm_qa_branch: 'main'
       pmm_server_image: 'perconalab/pmm-server:3-dev-latest'
       pmm_client_image: 'perconalab/pmm-client:3-dev-latest'
