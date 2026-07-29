@@ -5,6 +5,7 @@ class PmmUpgradePage {
       updateNowButton: locate('button').withText('Update now'),
       checkUpdatesNow: locate('button').withText('Check Updates Now'),
       updateSuccess: locate('p').withText('PMM Server installation complete!'),
+      checkLogs: locate('button').withText('Check log'),
     };
   }
 }
