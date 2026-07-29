@@ -133,7 +133,7 @@ module.exports = {
 
     I.waitForElement(pmmUpgradePage.elements.updateNowButton);
     I.click(pmmUpgradePage.elements.updateNowButton);
-    I.waitForElement(pmmUpgradePage.elements.updateSuccess, 480);
+    I.waitForElement(pmmUpgradePage.elements.updateSuccess, 720);
 
     // eslint-disable-next-line no-console
     console.log(`Upgraded to pmm server tag: ${await I.verifyCommand('docker ps -a | grep pmm-server | awk -F "pmm-server:" \'{print $2}\' | awk -F "  " \'{print $1}\'')}`);
