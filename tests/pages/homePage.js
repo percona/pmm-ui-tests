@@ -133,9 +133,7 @@ module.exports = {
 
     I.waitForElement(pmmUpgradePage.elements.updateNowButton);
     I.click(pmmUpgradePage.elements.updateNowButton);
-
     I.wait(240);
-    // I.click(pmmUpgradePage.elements.checkLogs);
     // I.waitForElement(pmmUpgradePage.elements.updateSuccess, 240);
 
     // eslint-disable-next-line no-console
